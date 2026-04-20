@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visão executiva — Câmara | Análise de campanhas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --accent2: #34d399;
+      --warn: #fbbf24;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 100% 70% at 80% -15%, rgba(52, 211, 153, 0.12), transparent),
+        radial-gradient(ellipse 90% 60% at 10% 0%, rgba(61, 139, 253, 0.16), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.25rem 3.5rem; }
+
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+    }
+    .site-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+
+    header { margin-bottom: 1.75rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 2.8vw, 2.05rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+    header .lede {
+      margin: 0;
+      color: var(--muted);
+      max-width: 72ch;
+      font-size: 0.98rem;
+    }
+    header a { color: var(--accent); text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .toolbar button {
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+    .toolbar .meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .kpi .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    .kpi .value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: "JetBrains Mono", monospace;
+      letter-spacing: -0.02em;
+    }
+    .kpi .hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.35rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .chart-box { position: relative; height: 320px; }
+
+    .panel-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+      line-height: 1.45;
+    }
+
+    .tables {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .num { font-family: "JetBrains Mono", monospace; text-align: right; }
+    tr:hover td { background: rgba(61, 139, 253, 0.04); }
+
+    .insight {
+      border-left: 3px solid var(--accent2);
+      padding-left: 1rem;
+      margin: 0.5rem 0 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .insight strong { color: var(--text); }
+
+    .exec-block h2 { font-size: 1.05rem; margin-bottom: 0.65rem; }
+    .exec-block ul {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .exec-block li { margin-bottom: 0.4rem; }
+
+    .loading, .error {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+    }
+    .error { color: #f87171; }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 0.85rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer.note-footer {
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      max-width: 85ch;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="executivo.html" aria-current="page">Visão executiva</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+
+    <header>
+      <h1>Visão executiva — Câmara dos Deputados</h1>
+      <p class="lede">
+        Painel para <strong>análises e estudos de campanha</strong> a partir da
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API de Dados Abertos</a>:
+        composição da Câmara, dispersão partidária, peso estadual e frentes parlamentares na legislatura atual.
+        Combine estes recortes com dados eleitorais (TSE) e de prestação de contas para narrativas completas.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <button type="button" id="refresh">Atualizar dados</button>
+      <span class="meta" id="fetchMeta"></span>
+    </div>
+
+    <div id="main">
+      <div class="loading"><div class="spinner"></div>Consolidando indicadores…</div>
+    </div>
+
+    <footer class="note-footer">
+      Fonte: API REST v2 da Câmara (<code>dadosabertos.camara.leg.br</code>). Indicadores derivados (HHI, fragmentação)
+      são calculados no navegador sobre a lista de deputados em exercício. Despesas de gabinete (cota parlamentar) e
+      proposições detalhadas possuem outros endpoints ou arquivos no mesmo ecossistema de dados abertos.
+    </footer>
+  </div>
+
+  <script>
+    const API = "https://dadosabertos.camara.leg.br/api/v2";
+    const JSON_HDR = { Accept: "application/json" };
+    const LEG_ID = 57;
+
+    let chartPartidos = null;
+    let chartUfs = null;
+
+    function linkHref(links, rel) {
+      const x = (links || []).find((l) => l.rel === rel);
+      return x ? x.href : null;
+    }
+
+    function pageFromHref(href) {
+      if (!href) return 1;
+      try {
+        const p = new URL(href).searchParams.get("pagina");
+        return p ? Math.max(1, parseInt(p, 10) || 1) : 1;
+      } catch {
+        return 1;
+      }
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url, { headers: JSON_HDR });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return res.json();
+    }
+
+    async function fetchAllDeputadosLegislatura() {
+      const out = [];
+      let url = `${API}/deputados?idLegislatura=${LEG_ID}&itens=100&ordem=ASC&ordenarPor=nome`;
+      while (url) {
+        const data = await fetchJson(url);
+        out.push(...(data.dados || []));
+        const next = linkHref(data.links, "next");
+        url = next || null;
+      }
+      return out;
+    }
+
+    async function countFrentesAtual() {
+      const first = await fetchJson(`${API}/frentes?idLegislatura=${LEG_ID}&itens=100&pagina=1`);
+      const lastHref = linkHref(first.links, "last");
+      if (!lastHref) return (first.dados || []).length;
+      const lastPage = pageFromHref(lastHref);
+      if (lastPage === 1) return (first.dados || []).length;
+      const last = await fetchJson(lastHref);
+      return (lastPage - 1) * 100 + (last.dados || []).length;
+    }
+
+    async function fetchLegislatura() {
+      return fetchJson(`${API}/legislaturas/${LEG_ID}`);
+    }
+
+    function countBy(arr, keyFn) {
+      const m = new Map();
+      for (const row of arr) {
+        const k = keyFn(row);
+        if (k == null || k === "") continue;
+        m.set(k, (m.get(k) || 0) + 1);
+      }
+      return m;
+    }
+
+    function sortedEntries(map, desc = true) {
+      return [...map.entries()].sort((a, b) => (desc ? b[1] - a[1] : a[1] - b[1]));
+    }
+
+    function hhiFromCounts(counts, total) {
+      let s = 0;
+      for (const c of counts) {
+        const p = c / total;
+        s += p * p;
+      }
+      return s;
+    }
+
+    function palette(n) {
+      const base = [
+        "#3d8bfd", "#34d399", "#f472b6", "#fbbf24", "#a78bfa", "#fb7185",
+        "#2dd4bf", "#818cf8", "#facc15", "#4ade80", "#60a5fa", "#c084fc",
+        "#f97316", "#38bdf8", "#94a3b8",
+      ];
+      const out = [];
+      for (let i = 0; i < n; i++) out.push(base[i % base.length]);
+      return out;
+    }
+
+    function chartDefaults() {
+      return {
+        color: "#8b95a8",
+        borderColor: "rgba(255,255,255,0.06)",
+        font: { family: "'DM Sans', sans-serif", size: 11 },
+      };
+    }
+
+    function renderKpis({ dep, ufs, partidos, frentes, leg, hhi, enp, maxParty, maxUf }) {
+      const di = leg.dataInicio || "—";
+      const df = leg.dataFim || "—";
+      return `
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Deputados (exercício)</div>
+            <div class="value">${dep}</div>
+            <div class="hint">Legislatura ${LEG_ID} · API filtrada por <code>idLegislatura</code></div>
+          </div>
+          <div class="kpi">
+            <div class="label">Partidos com assento</div>
+            <div class="value">${partidos}</div>
+            <div class="hint">Siglas distintas na base</div>
+          </div>
+          <div class="kpi">
+            <div class="label">UFs com representação</div>
+            <div class="value">${ufs}</div>
+            <div class="hint">Distrito/estado eleitoral (sigla)</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Frentes parlamentares</div>
+            <div class="value">${frentes}</div>
+            <div class="hint">Cadastro na legislatura ${LEG_ID}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Índice HHI (bancada)</div>
+            <div class="value">${hhi.toFixed(3)}</div>
+            <div class="hint">Concentração: mais alto = menos fragmentado</div>
+          </div>
+          <div class="kpi">
+            <div class="label">N. efetivo de partidos</div>
+            <div class="value">${enp.toFixed(2)}</div>
+            <div class="hint">≈ 1 / HHI (pesos iguais por deputado)</div>
+          </div>
+        </div>
+        <p class="insight">
+          <strong>Mandato:</strong> ${di} a ${df}. <strong>Maior bancada:</strong> ${maxParty.p} (${maxParty.n}).
+          <strong>Maior colégio:</strong> ${maxUf.u} (${maxUf.n}).
+        </p>`;
+    }
+
+    function renderTables(sortedParties, sortedUfs, total) {
+      const rowsP = sortedParties
+        .map(
+          ([p, n]) => `
+        <tr>
+          <td><strong>${escapeHtml(p)}</strong></td>
+          <td class="num">${n}</td>
+          <td class="num">${((100 * n) / total).toFixed(1)}%</td>
+        </tr>`
+        )
+        .join("");
+      const rowsU = sortedUfs
+        .map(
+          ([u, n]) => `
+        <tr>
+          <td><strong>${escapeHtml(u)}</strong></td>
+          <td class="num">${n}</td>
+          <td class="num">${((100 * n) / total).toFixed(1)}%</td>
+        </tr>`
+        )
+        .join("");
+      return `
+        <div class="tables">
+          <div class="panel">
+            <h2>Bancada por partido</h2>
+            <table>
+              <thead><tr><th>Partido</th><th class="num">Cadeiras</th><th class="num">% do plenário</th></tr></thead>
+              <tbody>${rowsP}</tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Bancada por UF</h2>
+            <table>
+              <thead><tr><th>UF</th><th class="num">Cadeiras</th><th class="num">% do plenário</th></tr></thead>
+              <tbody>${rowsU}</tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    function renderExecBlock() {
+      return `
+        <div class="panel exec-block">
+          <h2>Como usar na análise de campanhas</h2>
+          <ul>
+            <li><strong>Cenário partidário:</strong> compare a distribuição de cadeiras com o desempenho eleitoral histórico no TSE para identificar onde a tradução de votos em assentos diverge.</li>
+            <li><strong>Geografia:</strong> o corte por UF apoia planejamento de mídia, agenda e coalizões regionais; cruze com pesquisas e gastos por estado quando disponíveis.</li>
+            <li><strong>Frentes:</strong> número e temas das frentes sinalizam eixos de articulação além da bancada partidária — úteis para mapear redes de apoio temático.</li>
+            <li><strong>Fragmentação (HHI / N efetivo):</strong> resumem o quão “espalhado” está o plenário; quedas no HHI costumam indicar maior necessidade de negociação multipolar.</li>
+            <li><strong>Limites da API da Câmara:</strong> não substitui prestação de contas eleitoral, pesquisas ou despesas de campanha; integre com bases do TSE e outras fontes para estudos completos.</li>
+          </ul>
+        </div>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function destroyCharts() {
+      if (chartPartidos) {
+        chartPartidos.destroy();
+        chartPartidos = null;
+      }
+      if (chartUfs) {
+        chartUfs.destroy();
+        chartUfs = null;
+      }
+    }
+
+    async function loadDashboard() {
+      const main = document.getElementById("main");
+      const meta = document.getElementById("fetchMeta");
+      main.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando deputados, legislatura e frentes…</div>';
+      destroyCharts();
+
+      const t0 = performance.now();
+      try {
+        const [deps, leg, nFrentes] = await Promise.all([
+          fetchAllDeputadosLegislatura(),
+          fetchLegislatura(),
+          countFrentesAtual(),
+        ]);
+        const ms = Math.round(performance.now() - t0);
+        meta.textContent = `Atualizado em ${new Date().toLocaleString("pt-BR")} · ${deps.length} registros · ${ms} ms`;
+
+        const total = deps.length;
+        if (total === 0) {
+          main.innerHTML = '<p class="error">Nenhum deputado retornado para esta legislatura.</p>';
+          return;
+        }
+
+        const byParty = countBy(deps, (d) => (d.siglaPartido || "").trim() || "—");
+        const byUf = countBy(deps, (d) => (d.siglaUf || "").trim() || "—");
+
+        const sortedP = sortedEntries(byParty, true);
+        const sortedU = sortedEntries(byUf, true);
+
+        const counts = sortedP.map(([, n]) => n);
+        const hhi = hhiFromCounts(counts, total);
+        const enp = hhi > 0 ? 1 / hhi : 0;
+
+        const maxParty = { p: sortedP[0][0], n: sortedP[0][1] };
+        const maxUf = { u: sortedU[0][0], n: sortedU[0][1] };
+
+        main.innerHTML =
+          renderKpis({
+            dep: total,
+            ufs: byUf.size,
+            partidos: byParty.size,
+            frentes: nFrentes,
+            leg,
+            hhi,
+            enp,
+            maxParty,
+            maxUf,
+          }) +
+          `<div class="grid-2">
+            <div class="panel">
+              <h2>Top partidos por cadeiras</h2>
+              <div class="chart-box"><canvas id="cPartidos" aria-label="Gráfico de partidos"></canvas></div>
+              <p class="panel-note">Mostrando até 15 siglas; demais partidos podem ser vistos na tabela abaixo.</p>
+            </div>
+            <div class="panel">
+              <h2>Distribuição por UF</h2>
+              <div class="chart-box"><canvas id="cUfs" aria-label="Gráfico por UF"></canvas></div>
+              <p class="panel-note">Cada estado com o número de deputados federais em exercício nesta legislatura.</p>
+            </div>
+          </div>` +
+          renderTables(sortedP, sortedU, total) +
+          renderExecBlock();
+
+        const dCfg = chartDefaults();
+        const topN = 15;
+        const topP = sortedP.slice(0, topN);
+        const ctxP = document.getElementById("cPartidos");
+        chartPartidos = new Chart(ctxP, {
+          type: "bar",
+          data: {
+            labels: topP.map(([p]) => p),
+            datasets: [
+              {
+                label: "Cadeiras",
+                data: topP.map(([, n]) => n),
+                backgroundColor: palette(topP.length).map((c) => c + "cc"),
+                borderColor: palette(topP.length),
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { color: dCfg.borderColor },
+                ticks: { color: dCfg.color, font: dCfg.font },
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: dCfg.color, font: dCfg.font },
+              },
+            },
+          },
+        });
+
+        const ctxU = document.getElementById("cUfs");
+        chartUfs = new Chart(ctxU, {
+          type: "bar",
+          data: {
+            labels: sortedU.map(([u]) => u),
+            datasets: [
+              {
+                label: "Deputados",
+                data: sortedU.map(([, n]) => n),
+                backgroundColor: "rgba(61, 139, 253, 0.35)",
+                borderColor: "#3d8bfd",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { color: dCfg.borderColor },
+                ticks: { color: dCfg.color, font: dCfg.font, maxRotation: 90, minRotation: 45 },
+              },
+              y: {
+                grid: { color: dCfg.borderColor },
+                ticks: { color: dCfg.color, font: dCfg.font },
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      } catch (e) {
+        console.error(e);
+        meta.textContent = "";
+        main.innerHTML = `<p class="error">Falha ao montar o painel: ${escapeHtml(e.message)}</p>`;
+      }
+    }
+
+    document.getElementById("refresh").addEventListener("click", loadDashboard);
+    loadDashboard();
+  </script>
+</body>
+</html>

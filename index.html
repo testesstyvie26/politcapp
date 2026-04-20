@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Candidatos — Deputados federais | Dados Abertos Câmara</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --accent-dim: rgba(61, 139, 253, 0.15);
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.18), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    header {
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.35rem;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 58ch;
+      font-size: 0.95rem;
+    }
+
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    header a:hover {
+      text-decoration: underline;
+    }
+
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+    }
+    .site-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .site-nav a:hover {
+      color: var(--accent);
+    }
+    .site-nav a[aria-current="page"] {
+      color: var(--accent);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .filters {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      align-items: end;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    input,
+    select {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.65rem 1.1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: var(--accent);
+      color: #041018;
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    button.secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .stats span {
+      color: var(--muted);
+    }
+
+    .stats strong {
+      color: var(--text);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 500;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+      line-height: 1.45;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      font-weight: 600;
+      background: var(--surface2);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(61, 139, 253, 0.04);
+    }
+
+    .cand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: var(--surface2);
+    }
+
+    .cand span {
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .mono {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+    }
+
+    .contact a {
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .pager {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .pager-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pager-meta {
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .pager-meta strong {
+      color: var(--text);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 500;
+    }
+
+    .pager-goto {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .pager-goto input {
+      width: 4.5rem;
+      padding: 0.45rem 0.5rem;
+      text-align: center;
+    }
+
+    .pager button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .loading,
+    .error {
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .error {
+      color: #f87171;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html" aria-current="page">Lista de candidatos</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+    <header>
+      <h1>Candidatos a deputado federal</h1>
+      <p>
+        Lista paginada com base nos deputados em exercício na
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API v2 da Câmara</a>
+        (mandato / legislatura atual). Ajuste filtros e use a paginação para navegar.
+      </p>
+    </header>
+
+    <section class="panel">
+      <div class="filters">
+        <label>
+          Nome
+          <input type="search" id="nome" placeholder="Ex.: Maria" autocomplete="off" />
+        </label>
+        <label>
+          Partido (sigla)
+          <input type="text" id="siglaPartido" placeholder="Ex.: PT" maxlength="10" />
+        </label>
+        <label>
+          UF
+          <input type="text" id="siglaUf" placeholder="Ex.: SP" maxlength="2" />
+        </label>
+        <label>
+          Legislatura
+          <input type="number" id="idLegislatura" placeholder="Ex.: 57" min="1" />
+        </label>
+        <label>
+          Por página
+          <select id="itens">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+        <div class="actions">
+          <button type="button" id="buscar">Buscar</button>
+          <button type="button" class="secondary" id="limpar">Limpar</button>
+        </div>
+      </div>
+      <div class="stats" id="stats" hidden>
+        <span><strong id="statPagina">0</strong> candidatos nesta página</span>
+        <span>Total de páginas: <strong id="statTotalPaginas">—</strong></span>
+        <span>Partido: <strong id="statPartido">—</strong> · UF: <strong id="statUf">—</strong></span>
+      </div>
+      <p class="note">
+        <strong>Votos na urna</strong> não vêm desta API; para resultado eleitoral histórico, use o
+        <a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener">portal de dados abertos do TSE</a>.
+      </p>
+    </section>
+
+    <div id="content">
+      <div class="loading"><div class="spinner"></div>Carregando candidatos…</div>
+    </div>
+
+    <div class="pager" id="pager" hidden>
+      <p class="pager-meta" id="pagerMeta"></p>
+      <div class="pager-row">
+        <button type="button" class="secondary" id="first">Primeira</button>
+        <button type="button" class="secondary" id="prev">Anterior</button>
+        <button type="button" class="secondary" id="next">Próxima</button>
+        <button type="button" class="secondary" id="last">Última</button>
+      </div>
+      <div class="pager-goto">
+        <span>Ir para a página</span>
+        <input type="number" id="gotoPage" min="1" value="1" aria-label="Número da página" />
+        <button type="button" class="secondary" id="gotoBtn">Ir</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://dadosabertos.camara.leg.br/api/v2/deputados";
+    const JSON_HEADERS = { Accept: "application/json" };
+
+    const el = (id) => document.getElementById(id);
+
+    let pageLinks = { first: null, prev: null, next: null, last: null, self: null };
+    let pagination = { current: 1, total: 1 };
+
+    function buildQuery(page) {
+      const params = new URLSearchParams();
+      params.set("ordem", "ASC");
+      params.set("ordenarPor", "nome");
+      params.set("itens", el("itens").value || "20");
+      if (page != null && page >= 1) params.set("pagina", String(page));
+
+      const nome = el("nome").value.trim();
+      const siglaPartido = el("siglaPartido").value.trim().toUpperCase();
+      const siglaUf = el("siglaUf").value.trim().toUpperCase();
+      const idLegislatura = el("idLegislatura").value.trim();
+
+      if (nome) params.set("nome", nome);
+      if (siglaPartido) params.set("siglaPartido", siglaPartido);
+      if (siglaUf) params.set("siglaUf", siglaUf);
+      if (idLegislatura) params.set("idLegislatura", idLegislatura);
+
+      return params.toString();
+    }
+
+    function linkHref(links, rel) {
+      const item = (links || []).find((l) => l.rel === rel);
+      return item ? item.href : null;
+    }
+
+    function readPageFromUrl(href) {
+      if (!href) return 1;
+      try {
+        const u = new URL(href);
+        const p = u.searchParams.get("pagina");
+        return p ? Math.max(1, parseInt(p, 10) || 1) : 1;
+      } catch {
+        return 1;
+      }
+    }
+
+    function computePagination(links) {
+      const last = linkHref(links, "last");
+      const self = linkHref(links, "self");
+      const current = readPageFromUrl(self);
+      let total = 1;
+      if (last) total = readPageFromUrl(last);
+      else if (!linkHref(links, "next")) total = Math.max(1, current);
+      total = Math.max(total, current, 1);
+      return { current, total };
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url, { headers: JSON_HEADERS });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return res.json();
+    }
+
+    function formatContact(email) {
+      const e = (email || "").trim();
+      return e
+        ? `<a href="mailto:${escapeHtml(e)}">${escapeHtml(e)}</a>`
+        : '<span class="muted">Não informado</span>';
+    }
+
+    function renderTable(rows, pageInfo) {
+      const thead = `
+        <thead>
+          <tr>
+            <th>Candidato(a)</th>
+            <th>Partido</th>
+            <th>#</th>
+            <th>Votos (urna)</th>
+            <th>Cargo</th>
+            <th>Contato</th>
+          </tr>
+        </thead>`;
+      const startIdx = (pageInfo.current - 1) * pageInfo.pageSize + 1;
+      const body = rows
+        .map(
+          (r, i) => `
+        <tr>
+          <td>
+            <div class="cand">
+              <img src="${escapeHtml(r.urlFoto || "")}" alt="" width="40" height="40" loading="lazy" onerror="this.style.opacity=0" />
+              <div>
+                <span>${escapeHtml(r.nome || "—")}</span>
+                <div class="muted mono" style="font-size:0.8rem">${escapeHtml(r.siglaUf || "")} · leg. ${r.idLegislatura ?? "—"}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge">${escapeHtml(r.siglaPartido || "—")}</span></td>
+          <td class="mono">${startIdx + i}</td>
+          <td class="muted" title="Não disponível na API da Câmara">—</td>
+          <td>Deputado(a) federal</td>
+          <td class="contact">${formatContact(r.email)}</td>
+        </tr>`
+        )
+        .join("");
+      return `<div class="table-wrap"><table>${thead}<tbody>${body}</tbody></table></div>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function updatePagerControls() {
+      el("pager").hidden = false;
+      el("pagerMeta").innerHTML =
+        `Página <strong>${pagination.current}</strong> de <strong>${pagination.total}</strong>`;
+      el("first").disabled = !pageLinks.first || pagination.current <= 1;
+      el("prev").disabled = !pageLinks.prev;
+      el("next").disabled = !pageLinks.next;
+      el("last").disabled = !pageLinks.last || pagination.current >= pagination.total;
+      el("gotoPage").value = String(pagination.current);
+      el("gotoPage").max = String(pagination.total);
+    }
+
+    async function loadPage(url) {
+      el("content").innerHTML = '<div class="loading"><div class="spinner"></div>Buscando…</div>';
+      el("pager").hidden = true;
+
+      try {
+        const data = await fetchJson(url);
+        const lista = data.dados || [];
+
+        pageLinks = {
+          first: linkHref(data.links, "first"),
+          prev: linkHref(data.links, "prev"),
+          next: linkHref(data.links, "next"),
+          last: linkHref(data.links, "last"),
+          self: linkHref(data.links, "self"),
+        };
+
+        pagination = computePagination(data.links);
+        const pageSize = parseInt(el("itens").value, 10) || 20;
+
+        const rows = lista.map((item) => ({
+          id: item.id,
+          nome: item.nome,
+          siglaPartido: item.siglaPartido,
+          siglaUf: item.siglaUf,
+          idLegislatura: item.idLegislatura,
+          urlFoto: item.urlFoto,
+          email: item.email,
+        }));
+
+        el("content").innerHTML = rows.length
+          ? renderTable(rows, { current: pagination.current, pageSize })
+          : '<p class="loading">Nenhum candidato encontrado com esses filtros.</p>';
+
+        el("stats").hidden = false;
+        el("statPagina").textContent = String(rows.length);
+        el("statTotalPaginas").textContent = String(pagination.total);
+        el("statPartido").textContent = el("siglaPartido").value.trim().toUpperCase() || "—";
+        el("statUf").textContent = el("siglaUf").value.trim().toUpperCase() || "—";
+
+        updatePagerControls();
+      } catch (e) {
+        console.error(e);
+        el("content").innerHTML = `<p class="error">Erro ao carregar dados: ${escapeHtml(e.message)}</p>`;
+      }
+    }
+
+    function initialUrl() {
+      return `${API}?${buildQuery(1)}`;
+    }
+
+    function goToPageNumber(n) {
+      const target = Math.min(Math.max(1, n), pagination.total);
+      const base = pageLinks.first || pageLinks.self || `${API}?${buildQuery(1)}`;
+      try {
+        const u = new URL(base);
+        u.searchParams.set("pagina", String(target));
+        loadPage(u.toString());
+      } catch {
+        loadPage(`${API}?${buildQuery(target)}`);
+      }
+    }
+
+    el("buscar").addEventListener("click", () => loadPage(initialUrl()));
+    el("limpar").addEventListener("click", () => {
+      el("nome").value = "";
+      el("siglaPartido").value = "";
+      el("siglaUf").value = "";
+      el("idLegislatura").value = "";
+      el("itens").value = "20";
+      loadPage(initialUrl());
+    });
+
+    el("first").addEventListener("click", () => {
+      if (pageLinks.first) loadPage(pageLinks.first);
+    });
+    el("prev").addEventListener("click", () => {
+      if (pageLinks.prev) loadPage(pageLinks.prev);
+    });
+    el("next").addEventListener("click", () => {
+      if (pageLinks.next) loadPage(pageLinks.next);
+    });
+    el("last").addEventListener("click", () => {
+      if (pageLinks.last) loadPage(pageLinks.last);
+    });
+
+    el("gotoBtn").addEventListener("click", () => {
+      const n = parseInt(el("gotoPage").value, 10);
+      if (!Number.isFinite(n)) return;
+      goToPageNumber(n);
+    });
+    el("gotoPage").addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        el("gotoBtn").click();
+      }
+    });
+
+    loadPage(initialUrl());
+  </script>
+</body>
+</html>
