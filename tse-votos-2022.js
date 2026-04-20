@@ -134,6 +134,15 @@
     return loadFull();
   }
 
+  /** Uso nas páginas: uma UF → só JSONs necessários; vazio → todas as UFs. Sempre preferir a este método direto em ensureUfs/loadFull. */
+  function loadTseCacheForListing(ufUpperOrEmpty) {
+    var uf = ufUpperOrEmpty != null ? String(ufUpperOrEmpty).trim() : "";
+    if (uf) {
+      return ensureUfs([uf.toLowerCase()]);
+    }
+    return loadFull();
+  }
+
   function lookupVote(cache, uf, names) {
     if (!cache || !uf) return null;
     var U = uf.toUpperCase();
@@ -156,6 +165,7 @@
     load: loadTseDepFederal2022,
     loadFull: loadFull,
     ensureUfs: ensureUfs,
+    loadTseCacheForListing: loadTseCacheForListing,
     lookupVote: lookupVote,
     normalizeName: normalizeName,
     siglaFromCc: siglaFromCc,

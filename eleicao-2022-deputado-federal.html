@@ -286,7 +286,7 @@
     </div>
   </div>
 
-  <script src="tse-votos-2022.js"></script>
+  <script src="tse-votos-2022.js?v=20250220"></script>
   <script>
     const ESTADOS_BR = [
       { sigla: "AC", nome: "Acre" }, { sigla: "AL", nome: "Alagoas" }, { sigla: "AP", nome: "Amapá" },
@@ -462,10 +462,14 @@
       el("stats").hidden = true;
 
       try {
-        if (ufSel) {
-          cacheRef = await TSE2022DF.ensureUfs([ufSel.toLowerCase()]);
+        if (typeof TSE2022DF.loadTseCacheForListing === "function") {
+          cacheRef = await TSE2022DF.loadTseCacheForListing(ufSel);
+        } else if (typeof TSE2022DF.ensureUfs === "function") {
+          cacheRef = ufSel
+            ? await TSE2022DF.ensureUfs([ufSel.toLowerCase()])
+            : await TSE2022DF.loadFull();
         } else {
-          cacheRef = await TSE2022DF.loadFull();
+          cacheRef = await TSE2022DF.load();
         }
         rowsBrutos = coletarLinhas(cacheRef, ufSel || null);
         refiltrarERender();

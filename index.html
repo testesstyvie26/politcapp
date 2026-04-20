@@ -564,7 +564,7 @@
     </footer>
   </div>
 
-  <script src="tse-votos-2022.js"></script>
+  <script src="tse-votos-2022.js?v=20250220"></script>
   <script>
     const API = "https://dadosabertos.camara.leg.br/api/v2/deputados";
     const JSON_HEADERS = { Accept: "application/json" };
@@ -960,9 +960,13 @@
       try {
         const tseLoadPromise =
           window.TSE2022DF != null
-            ? (ufTse
-                ? TSE2022DF.ensureUfs([ufTse.toLowerCase()])
-                : TSE2022DF.loadFull()
+            ? (typeof TSE2022DF.loadTseCacheForListing === "function"
+                ? TSE2022DF.loadTseCacheForListing(ufTse)
+                : typeof TSE2022DF.ensureUfs === "function"
+                  ? ufTse
+                    ? TSE2022DF.ensureUfs([ufTse.toLowerCase()])
+                    : TSE2022DF.loadFull()
+                  : TSE2022DF.load()
               ).catch((te) => {
                 console.warn(te);
                 return null;
