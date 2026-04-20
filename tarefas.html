@@ -183,7 +183,7 @@
 
     <header>
       <h1>Tarefas e anotações do dia</h1>
-      <p>Checklist com concluído e bloco de notas por data. Com login, tarefas e anotações ficam no Supabase por unidade.</p>
+      <p>Checklist com concluído e bloco de notas por data. <strong>Os dados são salvos no banco</strong> (Supabase), por unidade — acessíveis ao time da mesma unidade, não apenas neste navegador.</p>
     </header>
 
     <p id="modeBanner" class="mode-banner" hidden></p>
@@ -222,7 +222,7 @@
     <section class="panel tab-panel" role="tabpanel" id="panel-n" aria-labelledby="tab-n" hidden>
       <h2>Anotações</h2>
       <textarea class="notes" id="notas" placeholder="Reuniões, ideias, contatos, lembretes de campanha…"></textarea>
-      <p class="hint">Salva automaticamente ao sair do campo ou ao trocar de data.</p>
+      <p class="hint">Grava no banco (Supabase) ao sair do campo, após uma pausa na digitação ou ao trocar a data.</p>
     </section>
 
     <footer class="site-credit" role="contentinfo">

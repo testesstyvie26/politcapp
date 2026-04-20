@@ -123,7 +123,7 @@ function initModoCloud(supabase, session, profile) {
   if (elGrupoBadge) elGrupoBadge.textContent = grupoLabel(profile.grupo);
   if (elHeaderP) {
     elHeaderP.innerHTML =
-      "Tarefas e anotações por <strong>unidade</strong> e data, guardadas no Supabase (visíveis para o time da mesma unidade).";
+      "Tarefas e anotações por <strong>unidade</strong> e data, <strong>salvas no banco</strong> (Supabase) — visíveis ao time da mesma unidade.";
   }
 
   let unidadeId = null;

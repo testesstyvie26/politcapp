@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unidades — Admin | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --ok: #34d399;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.12), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .site-nav { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    h1 { font-size: 1.45rem; margin: 0 0 0.5rem; }
+    .lede { color: var(--muted); margin: 0 0 1.25rem; font-size: 0.95rem; max-width: 56ch; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1rem; margin: 0 0 1rem; font-weight: 600; }
+    label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; margin-bottom: 0.35rem; }
+    input[type="text"] {
+      width: 100%; max-width: 420px;
+      font: inherit; font-size: 0.95rem; padding: 0.6rem 0.75rem;
+      border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text);
+    }
+    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .row { margin-bottom: 1rem; }
+    .row:last-of-type { margin-bottom: 0; }
+    button.primary {
+      font: inherit; font-weight: 600; font-size: 0.9rem;
+      padding: 0.55rem 1.1rem; border-radius: 8px; border: none;
+      cursor: pointer; background: var(--accent); color: #041018; margin-top: 0.75rem;
+    }
+    button.primary:hover { filter: brightness(1.06); }
+    button.primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.65rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .empty { color: var(--muted); }
+    .err { color: #f87171; font-size: 0.9rem; margin-bottom: 1rem; }
+    .mono { font-family: ui-monospace, monospace; font-size: 0.82rem; word-break: break-all; }
+    .muted { color: var(--muted); font-size: 0.82rem; }
+    .hint { font-size: 0.82rem; color: var(--muted); margin: 0.35rem 0 0; }
+  </style>
+</head>
+<body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap" id="root" hidden>
+    <nav class="site-nav" aria-label="Navegação">
+      <a href="admin.html">Painel admin</a>
+      <a href="admin-aprovacoes.html">Aprovar contas</a>
+      <a href="conta.html">Conta</a>
+      <a href="index.html">Início</a>
+    </nav>
+    <h1>Unidades</h1>
+    <p class="lede">Cada unidade tem um <strong>slug</strong> único (URL-friendly). Se deixar o slug em branco, ele é gerado a partir do nome.</p>
+    <p id="err" class="err" hidden></p>
+
+    <section class="panel">
+      <h2>Nova unidade</h2>
+      <form id="formNova">
+        <div class="row">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" maxlength="120" placeholder="Ex.: Operações — SP" autocomplete="organization" required />
+        </div>
+        <div class="row">
+          <label for="slug">Slug <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+          <input type="text" id="slug" name="slug" maxlength="80" placeholder="ex.: operacoes-sp" autocomplete="off" />
+          <p class="hint" id="slugHint">—</p>
+        </div>
+        <button type="submit" class="primary">Criar unidade</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Lista</h2>
+      <div style="overflow-x: auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Slug</th>
+              <th>Criada em</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="3" class="empty">A carregar…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  <script type="module" src="js/admin-unidades.mjs"></script>
+</body>
+</html>

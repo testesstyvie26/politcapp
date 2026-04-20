@@ -1,6 +1,5 @@
-import { getSupabase } from "./auth-client.mjs";
-import { politappAuthReady } from "./auth-guard.mjs";
-import { loadProfile, grupoLabel } from "./org-api.mjs";
+import { requireAdmin } from "./admin-guard.mjs";
+import { grupoLabel } from "./org-api.mjs";
 
 const tbody = document.getElementById("tbody");
 const errEl = document.getElementById("err");
@@ -12,24 +11,9 @@ function showErr(msg) {
 }
 
 (async function init() {
-  try {
-    await politappAuthReady;
-  } catch (e) {
-    showErr(e?.message || "Erro de sessão.");
-    return;
-  }
-
-  const supabase = getSupabase();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) return;
-
-  const { data: me } = await loadProfile(supabase, session.user.id);
-  if (me?.grupo !== "admin") {
-    window.location.replace("index.html");
-    return;
-  }
+  const ctx = await requireAdmin();
+  if (!ctx) return;
+  const { supabase } = ctx;
 
   async function load() {
     showErr("");
@@ -40,7 +24,12 @@ function showErr(msg) {
       .order("email", { ascending: true });
 
     if (error) {
-      showErr(error.message || "Não foi possível listar pedidos. Confirme se executou sql/supabase-conta-aprovacao.sql.");
+      let msg = error.message || "Não foi possível listar pedidos.";
+      if (/policy|permission|RLS|42501|violates row/i.test(msg)) {
+        msg +=
+          " Verifique se o seu utilizador tem grupo admin (sql/promover-admin.sql no Supabase).";
+      }
+      showErr(msg);
       tbody.innerHTML = `<tr><td colspan="4" class="empty">—</td></tr>`;
       return;
     }
@@ -81,7 +70,12 @@ function showErr(msg) {
           .eq("id", id);
         btn.disabled = false;
         if (upErr) {
-          alert(upErr.message);
+          let m = upErr.message || "Erro ao atualizar.";
+          if (/policy|permission|RLS|42501|violates row/i.test(m)) {
+            m +=
+              "\n\nSó um admin pode aprovar. Execute no Supabase o script sql/promover-admin.sql (definir grupo = admin).";
+          }
+          alert(m);
           return;
         }
         load();

@@ -12,7 +12,7 @@ const providerEl = document.getElementById("provider");
 const grupoEl = document.getElementById("grupo");
 const unidadeEl = document.getElementById("unidadeNome");
 const contaStatusEl = document.getElementById("contaStatus");
-const adminAprovLink = document.getElementById("adminAprovLink");
+const adminHubLink = document.getElementById("adminHubLink");
 const logoutBtn = document.getElementById("logout");
 
 (async function init() {
@@ -67,8 +67,8 @@ const logoutBtn = document.getElementById("logout");
       ? contaStatusLabel(profile.conta_status)
       : "— (migração: sql/supabase-conta-aprovacao.sql)";
   }
-  if (adminAprovLink && profile?.grupo === "admin") {
-    adminAprovLink.hidden = false;
+  if (adminHubLink && profile?.grupo === "admin") {
+    adminHubLink.hidden = false;
   }
 
   logoutBtn?.addEventListener("click", async () => {

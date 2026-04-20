@@ -115,6 +115,27 @@ DROP POLICY IF EXISTS "unidades_select_auth" ON public.unidades;
 CREATE POLICY "unidades_select_auth" ON public.unidades
   FOR SELECT TO authenticated USING (public.current_user_can_use_app());
 
+-- Unidades: criar e editar apenas admin
+DROP POLICY IF EXISTS "unidades_insert_admin" ON public.unidades;
+CREATE POLICY "unidades_insert_admin" ON public.unidades
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    public.current_user_can_use_app()
+    AND EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.grupo = 'admin')
+  );
+
+DROP POLICY IF EXISTS "unidades_update_admin" ON public.unidades;
+CREATE POLICY "unidades_update_admin" ON public.unidades
+  FOR UPDATE TO authenticated
+  USING (
+    public.current_user_can_use_app()
+    AND EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.grupo = 'admin')
+  )
+  WITH CHECK (
+    public.current_user_can_use_app()
+    AND EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.grupo = 'admin')
+  );
+
 -- Perfis: próprio registro ou admin
 DROP POLICY IF EXISTS "profiles_select" ON public.profiles;
 CREATE POLICY "profiles_select" ON public.profiles
