@@ -12,4 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verificar arquivos principais
-        run: test -f index.html && test -f package.json && test -f js/auth-config.js && test -f js/login.mjs
+        run: test -f index.html && test -f package.json && test -f js/auth-config.js && test -f js/auth-guard.mjs && test -f js/login.mjs && test -f sql/supabase-org-tarefas.sql

@@ -74,6 +74,8 @@
   </style>
 </head>
 <body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
@@ -100,6 +102,10 @@
           <dd id="name">—</dd>
           <dt>Provedor</dt>
           <dd id="provider">—</dd>
+          <dt>Grupo</dt>
+          <dd id="grupo">—</dd>
+          <dt>Unidade</dt>
+          <dd id="unidadeNome">—</dd>
         </dl>
         <button type="button" class="primary" id="logout">Sair</button>
         <p style="margin-top: 1rem"><a href="index.html">Voltar à lista de candidatos</a></p>
@@ -117,7 +123,6 @@
       </p>
     </footer>
   </div>
-  <script src="js/auth-config.js"></script>
   <script type="module" src="js/conta.mjs"></script>
 </body>
 </html>

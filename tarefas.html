@@ -32,7 +32,26 @@
       color: var(--text);
       line-height: 1.5;
     }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .mode-banner {
+      font-size: 0.88rem; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; line-height: 1.5;
+    }
+    .mode-banner code { font-size: 0.82rem; background: var(--surface); padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .cloud-toolbar {
+      display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .cloud-toolbar label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .cloud-toolbar select {
+      font-family: inherit; font-size: 0.95rem; min-width: 220px; padding: 0.5rem 0.65rem;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+    }
+    .badge-grupo {
+      font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.65rem; border-radius: 8px;
+      background: rgba(61, 139, 253, 0.18); color: var(--accent); align-self: center;
+    }
     .site-nav {
       display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
     }
@@ -145,6 +164,8 @@
   </style>
 </head>
 <body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
@@ -164,6 +185,16 @@
       <h1>Tarefas e anotações do dia</h1>
       <p>Checklist com concluído e bloco de notas por data. Os dados ficam salvos apenas neste navegador (localStorage).</p>
     </header>
+
+    <p id="modeBanner" class="mode-banner" hidden></p>
+
+    <div id="cloudBar" class="cloud-toolbar" hidden>
+      <label>
+        Unidade
+        <select id="selUnidade" aria-label="Unidade"></select>
+      </label>
+      <span id="grupoBadge" class="badge-grupo" title="Seu grupo no sistema"></span>
+    </div>
 
     <div class="toolbar">
       <label>
@@ -205,163 +236,6 @@
     </footer>
   </div>
 
-  <script>
-    const STORAGE_KEY = "politapp.diary.v1";
-
-    function todayISODate() {
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    }
-
-    function loadAll() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch {
-        return {};
-      }
-    }
-
-    function saveAll(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function uid() {
-      return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    }
-
-    const elDia = document.getElementById("dia");
-    const elLista = document.getElementById("lista");
-    const elVazia = document.getElementById("listaVazia");
-    const elNova = document.getElementById("novaTarefa");
-    const elNotas = document.getElementById("notas");
-    const elProgress = document.getElementById("progress");
-
-    elDia.value = todayISODate();
-
-    function getDay() {
-      return elDia.value || todayISODate();
-    }
-
-    function dayData() {
-      const all = loadAll();
-      const key = getDay();
-      if (!all[key]) all[key] = { tasks: [], notes: "" };
-      if (!Array.isArray(all[key].tasks)) all[key].tasks = [];
-      if (typeof all[key].notes !== "string") all[key].notes = "";
-      return { all, key, day: all[key] };
-    }
-
-    function persistDay(dayObj) {
-      const { all, key } = dayData();
-      all[key] = dayObj;
-      saveAll(all);
-    }
-
-    function updateProgress(tasks) {
-      const total = tasks.length;
-      const done = tasks.filter((t) => t.done).length;
-      elProgress.innerHTML = `<strong>${done}</strong> / ${total} concluída${total === 1 ? "" : "s"}`;
-    }
-
-    function render() {
-      const { day } = dayData();
-      elLista.innerHTML = "";
-      elNotas.value = day.notes;
-      updateProgress(day.tasks);
-
-      if (!day.tasks.length) {
-        elVazia.hidden = false;
-        return;
-      }
-      elVazia.hidden = true;
-
-      day.tasks.forEach((t) => {
-        const li = document.createElement("li");
-        li.className = "task-item" + (t.done ? " done" : "");
-        li.dataset.id = t.id;
-
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = !!t.done;
-        cb.setAttribute("aria-label", t.done ? "Marcar como pendente" : "Marcar como concluída");
-        cb.addEventListener("change", () => {
-          t.done = cb.checked;
-          persistDay(day);
-          li.classList.toggle("done", t.done);
-          updateProgress(day.tasks);
-        });
-
-        const span = document.createElement("span");
-        span.className = "task-text";
-        span.textContent = t.text;
-
-        const del = document.createElement("button");
-        del.type = "button";
-        del.className = "task-del";
-        del.setAttribute("aria-label", "Remover tarefa");
-        del.innerHTML = "&times;";
-        del.addEventListener("click", () => {
-          day.tasks = day.tasks.filter((x) => x.id !== t.id);
-          persistDay(day);
-          render();
-        });
-
-        li.appendChild(cb);
-        li.appendChild(span);
-        li.appendChild(del);
-        elLista.appendChild(li);
-      });
-    }
-
-    function addTask() {
-      const text = elNova.value.trim();
-      if (!text) return;
-      const { all, key, day } = dayData();
-      day.tasks.push({ id: uid(), text, done: false });
-      all[key] = day;
-      saveAll(all);
-      elNova.value = "";
-      elNova.focus();
-      render();
-    }
-
-    document.getElementById("btnAdd").addEventListener("click", addTask);
-    elNova.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addTask();
-      }
-    });
-
-    elDia.addEventListener("change", () => render());
-
-    elNotas.addEventListener("change", () => {
-      const { all, key, day } = dayData();
-      day.notes = elNotas.value;
-      all[key] = day;
-      saveAll(all);
-    });
-
-    elNotas.addEventListener("blur", () => elNotas.dispatchEvent(new Event("change")));
-
-    document.getElementById("tab-t").addEventListener("click", () => {
-      document.getElementById("tab-t").setAttribute("aria-selected", "true");
-      document.getElementById("tab-n").setAttribute("aria-selected", "false");
-      document.getElementById("panel-t").hidden = false;
-      document.getElementById("panel-n").hidden = true;
-    });
-    document.getElementById("tab-n").addEventListener("click", () => {
-      document.getElementById("tab-n").setAttribute("aria-selected", "true");
-      document.getElementById("tab-t").setAttribute("aria-selected", "false");
-      document.getElementById("panel-n").hidden = false;
-      document.getElementById("panel-t").hidden = true;
-    });
-
-    render();
-  </script>
+  <script type="module" src="js/tarefas-app.mjs"></script>
 </body>
 </html>
