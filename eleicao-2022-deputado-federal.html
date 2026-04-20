@@ -200,8 +200,6 @@
   </style>
 </head>
 <body>
-  <script src="js/api-config.js"></script>
-  <script src="js/auth-guard.js"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
@@ -213,6 +211,7 @@
       <a href="midia-social.html">Mídia social</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
+      <a href="conta.html">Conta</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
@@ -475,7 +474,7 @@
         const msg = e && e.message ? e.message : String(e);
         el("content").innerHTML =
           `<p class="error">Não foi possível carregar os dados do TSE. ${escapeHtml(msg)}</p>
-          <p class="note">Se estiver em <span class="mono">file://</span>, use um servidor local (ex.: <span class="mono">npm start</span>).</p>`;
+          <p class="note">Se estiver em <span class="mono">file://</span>, abra o site por um servidor HTTP local (ex.: extensão Live Server no VS Code ou <span class="mono">npx serve</span>).</p>`;
       }
     }
 

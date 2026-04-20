@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Página não encontrada — Politapp</title>
+  <style>
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      max-width: 32rem;
+      margin: 3rem auto;
+      padding: 0 1.25rem;
+      background: #0c0f14;
+      color: #e8ecf2;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.35rem; margin-top: 0; }
+    a { color: #4d9fff; }
+    code { font-size: 0.88rem; background: #141a24; padding: 0.15rem 0.35rem; border-radius: 4px; }
+    ul { padding-left: 1.2rem; }
+    li { margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>404 — Página não encontrada</h1>
+  <p>O GitHub Pages não encontrou um arquivo nesse caminho.</p>
+  <ul>
+    <li>Inclua o nome do arquivo com extensão, por exemplo <code>login.html</code> (não use só <code>/login</code>).</li>
+    <li>Em repositório de <strong>projeto</strong>, o site fica em <code>https://SEU_USUARIO.github.io/NOME_DO_REPO/</code> — links que começam com <code>/</code> apontam para a raiz do domínio, não do repositório.</li>
+    <li>Este site é estático: não há rotas <code>/api/...</code> no GitHub Pages.</li>
+  </ul>
+  <p><a id="home" href="/index.html">Ir para a página inicial</a></p>
+  <script>
+    (function () {
+      var el = document.getElementById("home");
+      var host = location.hostname;
+      if (host.indexOf("github.io") !== -1) {
+        var parts = location.pathname.split("/").filter(Boolean);
+        if (parts.length) {
+          el.setAttribute("href", "/" + parts[0] + "/index.html");
+        }
+      } else if (host === "politcapp.com.br" || host.indexOf(".") !== -1) {
+        el.setAttribute("href", "/index.html");
+      }
+    })();
+  </script>
+</body>
+</html>

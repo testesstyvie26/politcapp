@@ -152,8 +152,6 @@
   </style>
 </head>
 <body>
-  <script src="js/api-config.js"></script>
-  <script src="js/auth-guard.js"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
@@ -165,6 +163,7 @@
       <a href="midia-social.html">Mídia social</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
+      <a href="conta.html">Conta</a>
     </nav>
 
     <header>
@@ -206,8 +205,8 @@
     <section class="panel">
       <h2>Consultar emendas via API do Portal</h2>
       <p class="note">
-        Em desenvolvimento local, use <span class="mono">npm start</span> e abra esta página em
-        <span class="mono">http://localhost:8080/transparencia.html</span> para o proxy evitar bloqueio CORS do navegador.
+        As consultas usam diretamente a API oficial (<span class="mono">api.portaldatransparencia.gov.br</span>). Se o navegador bloquear por CORS,
+        use o <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a> ou outra ferramenta autorizada.
         Guarde a chave no navegador (somente neste aparelho).
       </p>
       <div id="msgApi"></div>
@@ -316,9 +315,7 @@
     }
 
     function apiBase() {
-      const proto = window.location.protocol;
-      if (proto === "file:") return "https://api.portaldatransparencia.gov.br/api-de-dados";
-      return `${window.location.origin}/api/portaldatransparencia`;
+      return "https://api.portaldatransparencia.gov.br/api-de-dados";
     }
 
     function renderPartyGrid() {
@@ -440,18 +437,11 @@
         document.getElementById("btnPrev").disabled = pagina <= 1;
         document.getElementById("btnNext").disabled = lista.length === 0;
 
-        if (window.location.protocol === "file:") {
-          mostrarMsg(
-            "Você abriu o arquivo pelo disco (<span class=\"mono\">file://</span>). Se o navegador bloquear a API por CORS, sirva o site com <span class=\"mono\">npm start</span> e use <span class=\"mono\">http://localhost:8080/transparencia.html</span>.",
-            true
-          );
-        } else {
-          mostrarMsg("Consulta concluída. Respeite o limite de requisições por minuto da CGU.", true);
-        }
+        mostrarMsg("Consulta concluída. Respeite o limite de requisições por minuto da CGU.", true);
       } catch (e) {
         console.error(e);
         mostrarMsg(
-          "Falha na requisição. Se for CORS, use o servidor local (<span class=\"mono\">npm start</span>) para ativar o proxy em <span class=\"mono\">/api/portaldatransparencia/emendas</span>.",
+          "Falha na requisição (rede ou bloqueio CORS no navegador). Consulte os dados no <a href=\"https://portaldatransparencia.gov.br/emendas\" target=\"_blank\" rel=\"noopener\">portal oficial</a>.",
           false
         );
         tbody.innerHTML = "";

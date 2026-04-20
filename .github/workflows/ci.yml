@@ -1,4 +1,4 @@
-# Instala dependências e valida sintaxe do server.js (sem subir MySQL).
+# Repositório: site estático servido pelo GitHub Pages (sem build Node).
 name: CI
 on:
   push:
@@ -7,13 +7,9 @@ on:
     branches: [main, master]
 
 jobs:
-  node:
+  static:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-      - run: npm ci
-      - run: node --check server.js
+      - name: Verificar arquivos principais
+        run: test -f index.html && test -f package.json && test -f js/auth-config.js && test -f js/login.mjs

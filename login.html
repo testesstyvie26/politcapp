@@ -3,36 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Entrar — Politapp · contexto 2026</title>
+  <title>Entrar ou cadastrar — Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #070a0f;
-      --surface: rgba(20, 26, 36, 0.72);
-      --surface-solid: #121a26;
+      --surface: rgba(20, 26, 36, 0.88);
+      --surface2: #121a26;
       --border: rgba(255, 255, 255, 0.09);
       --text: #f0f3f8;
       --muted: #94a0b8;
       --accent: #4d9fff;
       --accent-soft: rgba(77, 159, 255, 0.14);
       --gold: #e8c547;
-      --green: #34d399;
       --radius: 16px;
       --radius-sm: 10px;
       --font-display: "Outfit", system-ui, sans-serif;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       min-height: 100vh;
@@ -42,7 +34,6 @@
       background: var(--bg);
       overflow-x: hidden;
     }
-
     .login-bg {
       position: fixed;
       inset: 0;
@@ -50,34 +41,17 @@
       background:
         radial-gradient(ellipse 100% 80% at 10% -10%, rgba(77, 159, 255, 0.22), transparent 50%),
         radial-gradient(ellipse 80% 60% at 100% 30%, rgba(52, 211, 153, 0.08), transparent 45%),
-        radial-gradient(ellipse 60% 50% at 50% 100%, rgba(232, 197, 71, 0.06), transparent 40%),
         linear-gradient(180deg, #070a0f 0%, #0d1219 100%);
       pointer-events: none;
     }
-
-    .login-bg::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
-      opacity: 0.5;
-    }
-
     .page {
       position: relative;
       z-index: 1;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 1.25rem 1.25rem 2.5rem;
       max-width: 1120px;
       margin: 0 auto;
+      padding: 1.25rem 1.25rem 2.5rem;
     }
-
     .top-bar {
       display: flex;
       flex-wrap: wrap;
@@ -86,7 +60,6 @@
       gap: 1rem;
       margin-bottom: 2rem;
     }
-
     .brand {
       font-family: var(--font-display);
       font-weight: 700;
@@ -94,448 +67,209 @@
       letter-spacing: -0.03em;
       color: var(--text);
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
     }
-
-    .brand span {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--green), var(--gold));
-      box-shadow: 0 0 16px rgba(52, 211, 153, 0.45);
-    }
-
     .site-nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem 1rem;
-      font-size: 0.82rem;
+      gap: 0.75rem 1.1rem;
+      font-size: 0.88rem;
     }
-
     .site-nav a {
       color: var(--muted);
       text-decoration: none;
       font-weight: 500;
-      padding: 0.35rem 0;
-      border-bottom: 1px solid transparent;
-      transition: color 0.15s, border-color 0.15s;
     }
-
-    .site-nav a:hover {
-      color: var(--accent);
-    }
-
-    .site-nav a[aria-current="page"] {
-      color: var(--accent);
-      border-bottom-color: rgba(77, 159, 255, 0.5);
-    }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
 
     .login-grid {
       display: grid;
-      gap: 2.5rem;
+      gap: 2rem;
       align-items: start;
-      flex: 1;
+      grid-template-columns: 1fr;
     }
-
     @media (min-width: 900px) {
-      .login-grid {
-        grid-template-columns: 1fr minmax(320px, 400px);
-        gap: 3.5rem;
-        align-items: center;
-      }
+      .login-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
     }
 
-    .hero {
-      padding-right: 0;
-    }
-
-    @media (min-width: 900px) {
-      .hero {
-        padding-right: 1rem;
-      }
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: var(--font-display);
+    .hero .pill {
+      display: inline-block;
       font-size: 0.72rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       color: var(--gold);
-      background: rgba(232, 197, 71, 0.1);
-      border: 1px solid rgba(232, 197, 71, 0.22);
-      padding: 0.4rem 0.85rem;
-      border-radius: 999px;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.75rem;
     }
-
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-size: clamp(1.5rem, 3vw, 2rem);
       font-weight: 700;
-      line-height: 1.12;
-      letter-spacing: -0.035em;
-      margin: 0 0 1rem;
-      max-width: 16ch;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.75rem;
+      line-height: 1.2;
     }
-
     .hero h1 em {
       font-style: normal;
-      background: linear-gradient(120deg, var(--accent), #7ec8ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .lede {
-      margin: 0 0 2rem;
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 42ch;
-    }
-
-    .insights {
-      display: grid;
-      gap: 0.85rem;
-    }
-
-    @media (min-width: 560px) {
-      .insights {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 900px) {
-      .insights {
-        grid-template-columns: 1fr;
-        max-width: 380px;
-      }
-    }
-
-    .insight-card {
-      background: rgba(18, 26, 38, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1rem 1.15rem;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .insight-card:hover {
-      border-color: rgba(77, 159, 255, 0.25);
-      transform: translateY(-1px);
-    }
-
-    .insight-card strong {
-      font-family: var(--font-display);
-      font-size: 0.8rem;
-      font-weight: 600;
       color: var(--accent);
-      display: block;
-      margin-bottom: 0.35rem;
-      letter-spacing: 0.02em;
     }
-
-    .insight-card p {
-      margin: 0;
-      font-size: 0.88rem;
+    .hero .lede {
       color: var(--muted);
-      line-height: 1.5;
+      margin: 0;
+      max-width: 42ch;
     }
 
     .card-form {
       background: var(--surface);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.75rem 1.65rem;
-      box-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      padding: 1.5rem 1.35rem 1.65rem;
+      backdrop-filter: blur(8px);
     }
-
     .card-form h2 {
       font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0 0 0.25rem;
-      letter-spacing: -0.02em;
+      font-size: 1.2rem;
+      margin: 0 0 0.35rem;
     }
-
     .card-form .sub {
-      font-size: 0.85rem;
       color: var(--muted);
-      margin: 0 0 1.35rem;
+      font-size: 0.92rem;
+      margin: 0 0 1.1rem;
     }
 
-    label {
+    .tabs {
       display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-
-    input {
-      font-family: inherit;
-      font-size: 0.95rem;
-      padding: 0.75rem 0.9rem;
+      gap: 0.35rem;
+      margin-bottom: 1.15rem;
+      padding: 0.2rem;
+      background: var(--surface2);
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      background: rgba(7, 10, 15, 0.55);
-      color: var(--text);
-      transition: border-color 0.15s, box-shadow 0.15s;
     }
-
-    input:focus {
-      outline: none;
-      border-color: rgba(77, 159, 255, 0.55);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .row-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      margin-top: 0.25rem;
-    }
-
-    button {
-      font-family: var(--font-display);
+    .tabs button {
+      flex: 1;
+      font: inherit;
+      font-weight: 600;
       font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.72rem 1.25rem;
-      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.75rem;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
-      background: linear-gradient(135deg, var(--accent), #2d7bdc);
-      color: #041018;
-      transition: filter 0.15s, transform 0.1s;
+      background: transparent;
+      color: var(--muted);
     }
-
-    button:hover {
-      filter: brightness(1.08);
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    button.secondary {
-      background: rgba(255, 255, 255, 0.06);
+    .tabs button[aria-selected="true"] {
+      background: var(--accent-soft);
       color: var(--text);
-      border: 1px solid var(--border);
+    }
+    .tabs button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
-    button.secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      filter: none;
-    }
-
-    .error {
-      color: #fb7185;
+    .tab-panel[hidden] { display: none !important; }
+    .tab-panel p.hint {
       font-size: 0.88rem;
+      color: var(--muted);
       margin: 0 0 1rem;
-      padding: 0.65rem 0.85rem;
-      background: rgba(251, 113, 133, 0.08);
-      border: 1px solid rgba(251, 113, 133, 0.25);
-      border-radius: var(--radius-sm);
-    }
-
-    .error[hidden] {
-      display: none !important;
-    }
-
-    .oauth-row {
-      margin-bottom: 1rem;
-    }
-
-    .oauth-row[hidden] {
-      display: none !important;
     }
 
     .btn-google {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.6rem;
       width: 100%;
-      padding: 0.7rem 1rem;
-      font-family: inherit;
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-weight: 600;
       font-size: 0.95rem;
-      font-weight: 600;
-      color: #1f1f1f;
+      color: #1a1a1a;
       background: #fff;
-      border: 1px solid rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: var(--radius-sm);
+      cursor: pointer;
       text-decoration: none;
-      cursor: pointer;
-      transition: background 0.15s, box-shadow 0.15s;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      transition: filter 0.15s ease;
+    }
+    .btn-google:hover { filter: brightness(1.03); }
+    .btn-google:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
-    .btn-google:hover {
-      background: #f8f9fa;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    .error {
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fecaca;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
     }
-
-    .oauth-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 1rem 0 1.1rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .oauth-divider::before,
-    .oauth-divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .oauth-divider[hidden] {
-      display: none !important;
-    }
-
-    .toggle-reg {
-      font-size: 0.82rem;
-      color: var(--accent);
-      cursor: pointer;
-      margin-top: 1rem;
-      display: inline-block;
-      background: none;
-      border: none;
-      padding: 0;
-      font-weight: 600;
-      font-family: inherit;
-    }
-
-    .toggle-reg:hover {
-      text-decoration: underline;
-    }
-
-    #regFields {
-      display: none;
-    }
-
-    #regFields.show {
-      display: block;
-    }
+    .error[hidden] { display: none !important; }
 
     details.dev-hint {
-      margin-top: 1.35rem;
-      font-size: 0.78rem;
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
       color: var(--muted);
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
     }
-
-    details.dev-hint summary {
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--muted);
-      list-style: none;
-    }
-
-    details.dev-hint summary::-webkit-details-marker {
-      display: none;
-    }
-
+    details.dev-hint summary { cursor: pointer; font-weight: 600; color: var(--text); }
     details.dev-hint code {
-      font-size: 0.74rem;
-      color: #9ec5ff;
+      font-size: 0.78rem;
+      background: var(--surface2);
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
     }
 
     .site-credit {
-      margin-top: 2rem;
+      margin-top: 2.5rem;
       padding-top: 1.25rem;
       border-top: 1px solid var(--border);
       font-size: 0.8rem;
       color: var(--muted);
       text-align: center;
-      line-height: 1.55;
     }
-
-    .site-credit a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .site-credit a:hover {
-      text-decoration: underline;
-    }
-
-    .site-credit-role {
-      font-weight: 400;
-      opacity: 0.92;
-    }
+    .site-credit a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .site-credit a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="login-bg" aria-hidden="true"></div>
   <div class="page">
     <header class="top-bar">
-      <a class="brand" href="index.html"><span aria-hidden="true"></span> Politapp</a>
+      <a class="brand" href="index.html">Politapp</a>
       <nav class="site-nav" aria-label="Navegação principal">
         <a href="index.html">Candidatos</a>
-        <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
-        <a href="executivo.html">Executivo</a>
-        <a href="insights-rj.html">Insights RJ</a>
-        <a href="prefeituras-rj.html">Prefeituras RJ</a>
         <a href="transparencia.html">Transparência</a>
-        <a href="midia-social.html">Mídia social</a>
         <a href="tarefas.html">Tarefas</a>
+        <a href="conta.html">Conta</a>
         <a href="login.html" aria-current="page">Entrar</a>
       </nav>
     </header>
 
     <main class="login-grid">
-      <section class="hero" aria-labelledby="login-hero-title">
-        <p class="pill">Ciclo eleitoral · preparação 2026</p>
-        <h1 id="login-hero-title">Dados, território e <em>campanha</em> no mesmo lugar</h1>
+      <section class="hero" aria-labelledby="auth-hero-title">
+        <p class="pill">Conta Politapp</p>
+        <h1 id="auth-hero-title">Entre ou <em>crie sua conta</em> com Google</h1>
         <p class="lede">
-          Acesso reservado à área do Politapp: monitore a Câmara, cruze com o TSE e organize narrativas para o calendário político à frente — com responsabilidade e respeito à legislação.
+          O primeiro acesso com Google cria o cadastro automaticamente. Nas próximas vezes, use a mesma conta para entrar.
         </p>
-        <div class="insights">
-          <article class="insight-card">
-            <strong>Agenda 2026</strong>
-            <p>O período pré-eleitoral exige planejamento de mídia, prestação de contas e coerência entre discurso e dados públicos — antecipe gargalos.</p>
-          </article>
-          <article class="insight-card">
-            <strong>Transparência</strong>
-            <p>API da Câmara e bases do TSE fortalecem mensagens verificáveis; combine com pesquisa local e ouvidorias.</p>
-          </article>
-          <article class="insight-card">
-            <strong>Redes e território</strong>
-            <p>Conteúdo que performa costuma unir termômetro nacional com problema concreto de rua, bairro ou microrregião.</p>
-          </article>
-        </div>
       </section>
 
-      <section class="card-form" aria-labelledby="login-form-title">
-        <h2 id="login-form-title">Acesso à plataforma</h2>
-        <p class="sub">Entre com sua conta para continuar.</p>
+      <section class="card-form" aria-labelledby="auth-form-title">
+        <h2 id="auth-form-title">Acesso</h2>
+        <p class="sub">Escolha entrar ou cadastro — em ambos os casos use o botão do Google.</p>
         <p id="err" class="error" hidden></p>
-        <div id="googleLoginRow" class="oauth-row" hidden>
-          <a id="googleLink" class="btn-google" href="#">
+
+        <div class="tabs" role="tablist" aria-label="Entrar ou cadastrar">
+          <button type="button" role="tab" id="tabLogin" aria-selected="true" aria-controls="panelLogin">Entrar</button>
+          <button type="button" role="tab" id="tabRegister" aria-selected="false" aria-controls="panelRegister" tabindex="-1">Cadastrar</button>
+        </div>
+
+        <div id="panelLogin" class="tab-panel" role="tabpanel" aria-labelledby="tabLogin">
+          <p class="hint">Já tem conta? Continue com Google para entrar.</p>
+          <button type="button" class="btn-google" id="btnLoginGoogle">
             <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -543,226 +277,42 @@
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
             Continuar com Google
-          </a>
+          </button>
         </div>
-        <div id="oauthDivider" class="oauth-divider" hidden><span>ou e-mail</span></div>
-        <form id="form">
-          <label>
-            E-mail
-            <input type="email" name="email" id="email" required autocomplete="username" />
-          </label>
-          <label>
-            Senha
-            <input type="password" name="password" id="password" required minlength="8" autocomplete="current-password" />
-          </label>
-          <div id="regFields">
-            <label>
-              Nome (opcional)
-              <input type="text" name="name" id="name" autocomplete="name" />
-            </label>
-          </div>
-          <div class="row-actions">
-            <button type="button" id="btnLogin">Entrar</button>
-            <button type="button" class="secondary" id="btnRegister">Criar conta</button>
-          </div>
-        </form>
-        <button type="button" class="toggle-reg" id="toggleReg">Mostrar / ocultar nome no cadastro</button>
+
+        <div id="panelRegister" class="tab-panel" role="tabpanel" aria-labelledby="tabRegister" hidden>
+          <p class="hint">Primeira vez? O Google cria seu cadastro na primeira autenticação.</p>
+          <button type="button" class="btn-google" id="btnRegisterGoogle">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Cadastrar com Google
+          </button>
+        </div>
 
         <details class="dev-hint">
-          <summary>Notas técnicas (deploy / API)</summary>
+          <summary>Configuração (Supabase + Google)</summary>
           <p style="margin: 0.75rem 0 0">
-            <strong>GitHub Pages</strong>: <code>productionApi</code> em <code>js/api-config.js</code> apontando para o Node. Google OAuth: <code>GOOGLE_*</code> e <code>FRONTEND_BASE_URL</code> no <code>.env</code>.
-            Local: <code>npm start</code>. Banco: <code>sql/auth-schema.sql</code> ou <code>sql/auth-google-migration.sql</code> se a tabela já existia. CLI: <code>npm run create-user -- email senha</code>
+            Preencha <code>js/auth-config.js</code> (URL + chave publishable em Project Settings → API).
+            No Supabase, em <strong>Authentication → URL Configuration</strong>, cadastre a URL exata de <code>login.html</code>;
+            no Google Cloud, o redirect autorizado é <code>…supabase.co/auth/v1/callback</code> (não é o seu domínio).
+            Passo a passo: <code>docs/supabase-login-setup.md</code> no repositório.
           </p>
         </details>
       </section>
     </main>
 
-    <footer class="site-credit" role="contentinfo">
+    <footer class="site-credit">
       <p>
-        <strong>Politapp</strong> — apoio a análises políticas com dados abertos. Cumpra a legislação eleitoral vigente.
-      </p>
-      <p style="margin-top: 0.65rem">
-        Criado por
-        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
-        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
-        ·
-        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        ·
-        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Portfólio</a>
+        <strong>Politapp</strong> — dados públicos para análise. Cumpra a legislação eleitoral vigente.
       </p>
     </footer>
   </div>
 
-  <script src="js/api-config.js"></script>
-  <script>
-    (async () => {
-      try {
-        const r = await fetch(politappApiUrl("/api/me"), { credentials: "include" });
-        if (!r.ok) return;
-        const d = await r.json();
-        if (!d.user) return;
-        const n = politappSafeNext(new URLSearchParams(location.search).get("next"));
-        location.replace(n || "index.html");
-      } catch {}
-    })();
-  </script>
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const err = $("err");
-    const form = $("form");
-    const regFields = $("regFields");
-
-    const googleErrMap = {
-      google_denied: "Login com Google cancelado.",
-      google_state: "Sessão inválida ou expirada. Tente novamente.",
-      google_token: "Falha ao validar o token do Google.",
-      google_profile: "Não foi possível ler o perfil do Google.",
-      google_server: "Erro no servidor ao finalizar o login com Google.",
-      google_config: "Google OAuth não está configurado no servidor.",
-    };
-
-    function showError(msg) {
-      err.textContent = msg || "";
-      err.hidden = !msg;
-    }
-
-    (function showGoogleErrorFromQuery() {
-      const code = new URLSearchParams(location.search).get("error");
-      if (code && googleErrMap[code]) showError(googleErrMap[code]);
-    })();
-
-    function canReachBackend() {
-      if (location.protocol === "file:") return false;
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") return true;
-      if (window.POLITAPP_API && String(window.POLITAPP_API).trim()) return true;
-      // Site em produção com API na mesma origem (URLs relativas /api/...)
-      if (location.hostname === "politcapp.com.br") return true;
-      return false;
-    }
-
-    $("toggleReg").addEventListener("click", () => {
-      regFields.classList.toggle("show");
-    });
-
-    form.addEventListener("submit", (e) => e.preventDefault());
-
-    function apiUnreachableMsg() {
-      if (location.hostname === "politcapp.com.br" || (window.POLITAPP_API && String(window.POLITAPP_API).indexOf("politcapp.com.br") !== -1)) {
-        return (
-          "O domínio politcapp.com.br no GitHub Pages não executa a API Node: POST /api/login não existe aí. " +
-          "Hospede o server.js (Render, Railway, VPS…) e em js/api-config.js defina productionApi com a URL HTTPS desse backend; " +
-          "no servidor, ALLOWED_ORIGINS=https://politcapp.com.br e SESSION_CROSS_SITE=true."
-        );
-      }
-      return (
-        "O backend (Node + MySQL) não devolveu JSON. Verifique se o server.js está no ar, CORS e js/api-config.js (productionApi)."
-      );
-    }
-
-    function fetchFailedMsg(requestUrl) {
-      const h = location.hostname;
-      const isLocal = h === "localhost" || h === "127.0.0.1";
-      if (isLocal) {
-        return (
-          "Sem conexão com a API em " +
-          requestUrl +
-          ". Na pasta do projeto rode `npm start` e abra esta página em http://localhost:8080/login.html (mesma porta do .env PORT)."
-        );
-      }
-      if (h === "politcapp.com.br") {
-        return (
-          "Não foi possível contactar o servidor de login (rede, CORS ou API indisponível). " +
-          "O site estático em politcapp.com.br não inclui o Node: publique server.js em outro host e aponte productionApi em js/api-config.js para essa URL HTTPS."
-        );
-      }
-      return (
-        "Não foi possível contactar o servidor de login. Confira productionApi em js/api-config.js, se a API está no ar e CORS (ALLOWED_ORIGINS)."
-      );
-    }
-
-    async function auth(path) {
-      showError("");
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      const name = ($("name").value || "").trim();
-      const url = politappApiUrl(path);
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(
-            path === "/api/register" ? { email, password, name: name || null } : { email, password }
-          ),
-        });
-        const raw = await res.text();
-        const ct = (res.headers.get("content-type") || "").toLowerCase();
-        let data = null;
-        if (raw && ct.indexOf("application/json") !== -1) {
-          try {
-            data = JSON.parse(raw);
-          } catch {
-            data = null;
-          }
-        }
-        if (!res.ok && data == null) {
-          showError(apiUnreachableMsg());
-          return;
-        }
-        if (!res.ok) {
-          showError((data && data.error) || res.statusText);
-          return;
-        }
-        const next = politappSafeNext(new URLSearchParams(location.search).get("next"));
-        window.location.href = next || "index.html";
-      } catch {
-        showError(fetchFailedMsg(url));
-      }
-    }
-
-    $("btnLogin").addEventListener("click", () => auth("/api/login"));
-    $("btnRegister").addEventListener("click", () => {
-      regFields.classList.add("show");
-      auth("/api/register");
-    });
-
-    (async function setupGoogleButton() {
-      const row = document.getElementById("googleLoginRow");
-      const div = document.getElementById("oauthDivider");
-      const link = document.getElementById("googleLink");
-      if (!canReachBackend()) return;
-      const next = politappSafeNext(new URLSearchParams(location.search).get("next"));
-      link.href =
-        politappApiUrl("/api/auth/google") + "?next=" + encodeURIComponent(next || "");
-      row.hidden = false;
-      div.hidden = false;
-      try {
-        const r = await fetch(politappApiUrl("/api/auth/providers"));
-        if (r.ok) {
-          const data = await r.json();
-          if (data && data.google === false) {
-            link.title =
-              "No servidor, defina GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET e GOOGLE_CALLBACK_URL no .env e reinicie o Node.";
-            link.style.opacity = "0.75";
-          }
-        }
-      } catch (_) {
-        /* API pode não expor /api/auth/providers (ex.: proxy); o link /api/auth/google ainda pode funcionar */
-      }
-    })();
-
-    if (
-      location.hostname &&
-      location.hostname !== "localhost" &&
-      location.hostname !== "127.0.0.1" &&
-      !(window.POLITAPP_API && String(window.POLITAPP_API).trim()) &&
-      !new URLSearchParams(location.search).get("error")
-    ) {
-      showError(
-        "Defina a URL da API em js/api-config.js (productionApi) para o login funcionar no GitHub Pages."
-      );
-    }
-  </script>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/login.mjs"></script>
 </body>
 </html>
