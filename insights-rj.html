@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Insights de campanha — Rio de Janeiro | Politapp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.14), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    header { margin-bottom: 1.75rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 68ch; font-size: 0.95rem; }
+    header a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
+    .panel h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; color: var(--muted); font-weight: 600; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0; }
+    .grid-2 { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+    @media (min-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    .map-wrap { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); min-height: 420px; }
+    #map { height: 480px; width: 100%; background: var(--surface2); }
+    @media (max-width: 640px) { #map { height: 360px; } }
+    .map-toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem;
+    }
+    .map-toolbar label {
+      display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+    }
+    select, input[type="search"] {
+      font-family: inherit; font-size: 0.9rem; padding: 0.5rem 0.65rem;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+      min-width: 180px;
+    }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 0.75rem; font-size: 0.8rem; color: var(--muted);
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+    .cards-meso { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .card-meso {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--accent);
+    }
+    .card-meso h3 { margin: 0 0 0.5rem; font-size: 1rem; color: var(--text); }
+    .card-meso .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.5rem 0; }
+    .tag {
+      font-size: 0.7rem; padding: 0.2rem 0.45rem; border-radius: 6px;
+      background: rgba(61, 139, 253, 0.12); color: #9ec5ff;
+    }
+    .card-meso ul { margin: 0.35rem 0 0; padding-left: 1.1rem; font-size: 0.88rem; color: var(--muted); }
+    .card-meso ul li { margin-bottom: 0.35rem; }
+    .error { color: #f87171; }
+    .leaflet-popup-content-wrapper {
+      border-radius: 10px;
+      background: #1c2433;
+      color: #e8ecf2;
+      box-shadow: var(--shadow);
+    }
+    .leaflet-popup-content { margin: 12px 14px; line-height: 1.45; font-size: 0.88rem; min-width: 220px; }
+    .leaflet-popup-tip { background: #1c2433; }
+    .popup-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem; }
+    .popup-meso { font-size: 0.75rem; color: #9ec5ff; margin-bottom: 0.5rem; }
+    .leaflet-container a.leaflet-popup-close-button { color: #e8ecf2; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html" aria-current="page">Insights RJ</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+
+    <header>
+      <h1>Insights para publicações de campanha — Estado do Rio de Janeiro</h1>
+      <p>
+        Referência para <strong>conteúdo regionalizado</strong>: eixos de necessidades frequentemente debatidas por
+        <strong>mesorregião do IBGE</strong>, com sugestões de formato e tom. O mapa usa a malha oficial de municípios do RJ;
+        combine sempre com pesquisa local, dados setoriais e legislação eleitoral.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>Mapa interativo — necessidades públicas por município</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Cores por mesorregião. Ao clicar em um município, veja eixos temáticos e dicas de publicação.
+        Fontes espaciais: <a href="https://servicodados.ibge.gov.br/api/v3/malhas/estados/33" target="_blank" rel="noopener">IBGE — malhas municipais (UF 33)</a> e
+        <a href="https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios" target="_blank" rel="noopener">localidades</a>.
+        O conteúdo temático é <strong>sintético</strong> (não substitui indicadores oficiais como IDHM, SNIS, CNES, etc.).
+      </p>
+      <div class="map-toolbar">
+        <label>
+          Filtrar mesorregião
+          <select id="filtroMeso">
+            <option value="">Todas</option>
+          </select>
+        </label>
+        <label>
+          Buscar município
+          <input type="search" id="buscaMun" placeholder="Ex.: Niterói" autocomplete="off" />
+        </label>
+      </div>
+      <div class="map-wrap">
+        <div id="map" role="application" aria-label="Mapa do Rio de Janeiro"></div>
+      </div>
+      <div class="legend" id="legendaMeso" aria-hidden="true"></div>
+      <p id="mapStatus" class="note" style="margin-top:0.75rem">Carregando mapa…</p>
+    </section>
+
+    <section class="panel">
+      <h2>Boas práticas rápidas (qualquer região)</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Conteúdo</h3>
+          <ul class="note" style="padding-left:1.2rem;margin:0">
+            <li>Priorize <strong>problemas concretos</strong> (linha de ônibus, posto de saúde, esgoto) em vez de slogans genéricos.</li>
+            <li>Use <strong>voz de morador</strong> ou parceiros locais; cite bairro, distrito ou conselho quando fizer sentido.</li>
+            <li>Em áreas com histórico de abandono, evite tom salvacionista; combine proposta com <strong>escuta e accountability</strong>.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Formato e canais</h3>
+          <ul class="note" style="padding-left:1.2rem;margin:0">
+            <li><strong>Reels / vídeo curto:</strong> 20–40 s, legenda com texto (muitos assistem sem som).</li>
+            <li><strong>WhatsApp / comunidade:</strong> card simples com 1 pedido e 1 compromisso verificável.</li>
+            <li><strong>Stories:</strong> sequência 3–5 telas: contexto → dado ou foto → pergunta ou CTA (“o que falta aí?”).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Dicas por mesorregião</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Eixos alinhados a debates recorrentes em políticas públicas fluminenses. Ajuste ao seu público e à pesquisa de campo.
+      </p>
+      <div class="cards-meso" id="cardsMeso"></div>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const IBGE_MALHA_RJ =
+      "https://servicodados.ibge.gov.br/api/v3/malhas/estados/33?intrarregiao=municipio&qualidade=intermediaria&formato=application/vnd.geo+json";
+    const IBGE_MUN_RJ = "https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios";
+
+    const MESO_INSIGHTS = {
+      "Baixadas": {
+        color: "#e07a5f",
+        prioridade: 5,
+        eixos: ["Saneamento e drenagem", "Saúde da família e urgência", "Mobilidade metropolitana", "Segurança e prevenção social"],
+        necessidades:
+          "Corredores densos entre a capital e o interior costumam concentrar demandas por infraestrutura urbana, acesso a serviços e redução de riscos em enchentes.",
+        publicacoes:
+          "Mostre comparativos de tempo de deslocamento ou filas; parcerias com líderes comunitários. Evite prometer obras sem etapas: prefira etapas ou demandas já protocoladas.",
+      },
+      "Norte Fluminense": {
+        color: "#81b29a",
+        prioridade: 5,
+        eixos: ["Desenvolvimento regional e portos", "Saúde suplementar à rede estadual", "Educação técnica e emprego", "Meio ambiente e resíduos"],
+        necessidades:
+          "Municípios com forte vínculo industrial e portuário costumam pautar emprego formal, logística e pressão sobre serviços de saúde regionais.",
+        publicacoes:
+          "Destaque cadeias produtivas locais e políticas de transição justa. Use dados de emprego com fonte. Vídeos em parques industriais ou porto humanizam a pauta.",
+      },
+      "Metropolitana do Rio de Janeiro": {
+        color: "#3d8bfd",
+        prioridade: 4,
+        eixos: ["Mobilidade e integração (BRT, trens, barcas)", "Habitação e aluguel", "Segurança com enfoque territorial", "Saúde de média complexidade"],
+        necessidades:
+          "Alta heterogeneidade: áreas centrais com custo de vida e periferias com déficit de saneamento e tempo de deslocamento elevado.",
+        publicacoes:
+          "Segmente por sub-região ou linha de transporte. Testemunhos curtos funcionam bem; cruzar tema nacional com ‘como isso aparece no seu bairro’ aumenta relevância.",
+      },
+      "Noroeste Fluminense": {
+        color: "#9b86bd",
+        prioridade: 3,
+        eixos: ["Agricultura familiar e crédito rural", "Conectividade e estradas", "Saúde básica no interior", "Água e mananciais"],
+        necessidades:
+          "Territórios com presença agrícola e cidades médias: combinação de infraestrutura rodoviária, atenção primária e políticas de abastecimento.",
+        publicacoes:
+          "Valorize feiras, cooperativas e produtores. Evite romantizar o campo: fale de preço mínimo, seguro safra e postos de atendimento.",
+      },
+      "Centro Fluminense": {
+        color: "#f4a261",
+        prioridade: 3,
+        eixos: ["Educação e universidades na região", "Turismo religioso/cultural", "Rodovias estaduais", "Pequenos negócios"],
+        necessidades:
+          "Eixo histórico de cidades médias e montanhas: mobilidade entre municípios, turismo e fortalecimento de comércio local.",
+        publicacoes:
+          "Calendário de eventos locais ajuda a ritmar o conteúdo. Parcerias com comerciantes e estudantes geram alcance orgânico.",
+      },
+      "Sul Fluminense": {
+        color: "#2ec4b6",
+        prioridade: 3,
+        eixos: ["Turismo sustentável", "Preservação ambiental e licenciamento", "Pesca e economia do mar", "Saúde no litoral (sazonalidade)"],
+        necessidades:
+          "Costa e ilhas: tensão entre desenvolvimento turístico, conservação e serviços públicos sob demanda sazonal.",
+        publicacoes:
+          "Imagens do território com responsabilidade (não exponha comunidades vulneráveis sem consentimento). Una turismo a saneamento e acesso a praia para moradores.",
+      },
+    };
+
+    function escapeHtml(s) {
+      if (s == null) return "";
+      const d = document.createElement("div");
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function buildCards() {
+      const root = document.getElementById("cardsMeso");
+      root.innerHTML = "";
+      for (const [nome, d] of Object.entries(MESO_INSIGHTS)) {
+        const el = document.createElement("article");
+        el.className = "card-meso";
+        el.style.borderLeftColor = d.color;
+        el.innerHTML = `
+          <h3>${escapeHtml(nome)}</h3>
+          <p class="note" style="margin:0 0 0.35rem">Prioridade temática referência: <strong>${d.prioridade}</strong>/5 (escala ilustrativa para campanha)</p>
+          <div class="tags">${d.eixos.map((e) => `<span class="tag">${escapeHtml(e)}</span>`).join("")}</div>
+          <p class="note" style="margin:0.5rem 0 0"><strong>Necessidades públicas (visão sintética):</strong> ${escapeHtml(d.necessidades)}</p>
+          <p class="note" style="margin:0.5rem 0 0"><strong>Publicações:</strong> ${escapeHtml(d.publicacoes)}</p>
+        `;
+        root.appendChild(el);
+      }
+    }
+
+    function fillMesoSelect(mesos) {
+      const sel = document.getElementById("filtroMeso");
+      const sorted = [...mesos].sort((a, b) => a.localeCompare(b, "pt-BR"));
+      for (const m of sorted) {
+        const o = document.createElement("option");
+        o.value = m;
+        o.textContent = m;
+        sel.appendChild(o);
+      }
+    }
+
+    function buildLegend() {
+      const leg = document.getElementById("legendaMeso");
+      leg.innerHTML = Object.entries(MESO_INSIGHTS)
+        .map(
+          ([nome, d]) =>
+            `<span><span class="swatch" style="background:${d.color}"></span>${escapeHtml(nome)}</span>`
+        )
+        .join("");
+    }
+
+    async function main() {
+      buildCards();
+      buildLegend();
+
+      const statusEl = document.getElementById("mapStatus");
+      const map = L.map("map", { scrollWheelZoom: true }).setView([-22.35, -42.75], 7.5);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(map);
+
+      const munRes = await fetch(IBGE_MUN_RJ);
+      if (!munRes.ok) {
+        statusEl.innerHTML = `<span class="error">Não foi possível carregar municípios (IBGE).</span>`;
+        return;
+      }
+      const municipios = await munRes.json();
+      const byId = new Map();
+      const mesos = new Set();
+      for (const m of municipios) {
+        const meso = m.microrregiao && m.microrregiao.mesorregiao ? m.microrregiao.mesorregiao.nome : "—";
+        mesos.add(meso);
+        byId.set(String(m.id), { nome: m.nome, meso });
+      }
+      fillMesoSelect(mesos);
+
+      const geoRes = await fetch(IBGE_MALHA_RJ);
+      if (!geoRes.ok) {
+        statusEl.innerHTML = `<span class="error">Malha IBGE indisponível (${geoRes.status}).</span>`;
+        return;
+      }
+      const geo = await geoRes.json();
+
+      let filtroMeso = "";
+      const layers = [];
+
+      function styleFeat(feature) {
+        const id = feature.properties.codarea;
+        const info = byId.get(String(id));
+        const meso = info && info.meso !== "—" ? info.meso : "Centro Fluminense";
+        const def = MESO_INSIGHTS[meso] || MESO_INSIGHTS["Centro Fluminense"];
+        const dim = filtroMeso && filtroMeso !== meso;
+        return {
+          fillColor: def.color,
+          weight: dim ? 0.5 : 1.2,
+          opacity: 1,
+          color: "rgba(255,255,255,0.25)",
+          fillOpacity: dim ? 0.12 : 0.62,
+        };
+      }
+
+      function popupHtml(id) {
+        const info = byId.get(String(id));
+        if (!info) return `<div class="popup-title">Código ${escapeHtml(id)}</div>`;
+        const meso = MESO_INSIGHTS[info.meso] ? info.meso : "Centro Fluminense";
+        const d = MESO_INSIGHTS[meso] || MESO_INSIGHTS["Centro Fluminense"];
+        const eixos = d.eixos.map((e) => `<li>${escapeHtml(e)}</li>`).join("");
+        return `
+          <div class="popup-title">${escapeHtml(info.nome)}</div>
+          <div class="popup-meso">${escapeHtml(meso)} · prioridade ref. ${d.prioridade}/5</div>
+          <div><strong>Eixos:</strong><ul style="margin:0.25rem 0 0;padding-left:1.1rem">${eixos}</ul></div>
+          <p style="margin:0.5rem 0 0"><strong>Necessidades:</strong> ${escapeHtml(d.necessidades)}</p>
+          <p style="margin:0.35rem 0 0"><strong>Dica de post:</strong> ${escapeHtml(d.publicacoes)}</p>
+        `;
+      }
+
+      const gj = L.geoJSON(geo, {
+        style: styleFeat,
+        onEachFeature(feature, layer) {
+          const id = feature.properties.codarea;
+          layer.bindPopup(popupHtml(id), { maxWidth: 320 });
+          layer.on("mouseover", function () {
+            if (!filtroMeso || byId.get(String(id))?.meso === filtroMeso) {
+              this.setStyle({ weight: 2, fillOpacity: 0.78 });
+            }
+          });
+          layer.on("mouseout", function () {
+            gj.resetStyle(this);
+          });
+          layers.push({ id: String(id), layer });
+        },
+      }).addTo(map);
+
+      gj.bringToFront();
+      map.fitBounds(gj.getBounds(), { padding: [24, 24] });
+
+      document.getElementById("filtroMeso").addEventListener("change", (e) => {
+        filtroMeso = e.target.value;
+        gj.eachLayer((layer) => {
+          gj.resetStyle(layer);
+        });
+      });
+
+      document.getElementById("buscaMun").addEventListener("input", (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        if (!q) return;
+        for (const { id, layer } of layers) {
+          const n = byId.get(id)?.nome;
+          if (n && n.toLowerCase().includes(q)) {
+            map.fitBounds(layer.getBounds(), { padding: [80, 80], maxZoom: 11 });
+            layer.openPopup();
+            break;
+          }
+        }
+      });
+
+      statusEl.textContent =
+        "Mapa pronto. Clique nos municípios para ver eixos e dicas. Use o filtro ou a busca para focar.";
+    }
+
+    main().catch((err) => {
+      console.error(err);
+      document.getElementById("mapStatus").innerHTML = `<span class="error">${escapeHtml(err.message)}</span>`;
+    });
+  </script>
+</body>
+</html>
