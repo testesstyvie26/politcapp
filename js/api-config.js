@@ -10,7 +10,7 @@
     host === "[::1]" ||
     /^192\.168\./.test(host || "");
 
-  var productionApi = "";
+  var productionApi = "politcapp.com.br";
 
   window.POLITAPP_API = isLocal ? "" : productionApi;
 
