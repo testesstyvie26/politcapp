@@ -1,5 +1,4 @@
 node_modules/
-.env
 *.log
 _tmp/
 consulta_cand_2024_RJ.csv
