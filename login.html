@@ -3,135 +3,507 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Entrar | Politapp</title>
+  <title>Entrar — Politapp · contexto 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0c0f14;
-      --surface: #141a24;
-      --surface2: #1c2433;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e8ecf2;
-      --muted: #8b95a8;
-      --accent: #3d8bfd;
-      --radius: 12px;
-      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+      --bg: #070a0f;
+      --surface: rgba(20, 26, 36, 0.72);
+      --surface-solid: #121a26;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #f0f3f8;
+      --muted: #94a0b8;
+      --accent: #4d9fff;
+      --accent-soft: rgba(77, 159, 255, 0.14);
+      --gold: #e8c547;
+      --green: #34d399;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --font-display: "Outfit", system-ui, sans-serif;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
       font-family: "DM Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.18), transparent),
-        var(--bg);
       color: var(--text);
+      line-height: 1.55;
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    .login-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 100% 80% at 10% -10%, rgba(77, 159, 255, 0.22), transparent 50%),
+        radial-gradient(ellipse 80% 60% at 100% 30%, rgba(52, 211, 153, 0.08), transparent 45%),
+        radial-gradient(ellipse 60% 50% at 50% 100%, rgba(232, 197, 71, 0.06), transparent 40%),
+        linear-gradient(180deg, #070a0f 0%, #0d1219 100%);
+      pointer-events: none;
+    }
+
+    .login-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+      opacity: 0.5;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem 1.25rem 2.5rem;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--gold));
+      box-shadow: 0 0 16px rgba(52, 211, 153, 0.45);
+    }
+
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      font-size: 0.82rem;
+    }
+
+    .site-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .site-nav a:hover {
+      color: var(--accent);
+    }
+
+    .site-nav a[aria-current="page"] {
+      color: var(--accent);
+      border-bottom-color: rgba(77, 159, 255, 0.5);
+    }
+
+    .login-grid {
+      display: grid;
+      gap: 2.5rem;
+      align-items: start;
+      flex: 1;
+    }
+
+    @media (min-width: 900px) {
+      .login-grid {
+        grid-template-columns: 1fr minmax(320px, 400px);
+        gap: 3.5rem;
+        align-items: center;
+      }
+    }
+
+    .hero {
+      padding-right: 0;
+    }
+
+    @media (min-width: 900px) {
+      .hero {
+        padding-right: 1rem;
+      }
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      background: rgba(232, 197, 71, 0.1);
+      border: 1px solid rgba(232, 197, 71, 0.22);
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 700;
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+      margin: 0 0 1rem;
+      max-width: 16ch;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(120deg, var(--accent), #7ec8ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lede {
+      margin: 0 0 2rem;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 42ch;
+    }
+
+    .insights {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    @media (min-width: 560px) {
+      .insights {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .insights {
+        grid-template-columns: 1fr;
+        max-width: 380px;
+      }
+    }
+
+    .insight-card {
+      background: rgba(18, 26, 38, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.15rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .insight-card:hover {
+      border-color: rgba(77, 159, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .insight-card strong {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.02em;
+    }
+
+    .insight-card p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
       line-height: 1.5;
     }
-    .wrap { max-width: 440px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-    .site-nav {
-      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
-    }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
-    .site-nav a[aria-current="page"] { color: var(--accent); }
-    header { margin-bottom: 1.5rem; }
-    header h1 {
-      font-size: clamp(1.35rem, 3vw, 1.75rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.4rem;
-    }
-    header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
-    .panel {
+
+    .card-form {
       background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.35rem 1.4rem;
-      box-shadow: var(--shadow);
+      padding: 1.75rem 1.65rem;
+      box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
+
+    .card-form h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .card-form .sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0 0 1.35rem;
+    }
+
     label {
-      display: flex; flex-direction: column; gap: 0.35rem;
-      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--muted); margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 1rem;
     }
+
     input {
-      font-family: inherit; font-size: 0.95rem; padding: 0.65rem 0.75rem;
-      border-radius: 8px; border: 1px solid var(--border);
-      background: var(--surface2); color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(7, 10, 15, 0.55);
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-    .row-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1.1rem; }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(77, 159, 255, 0.55);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 0.25rem;
+    }
+
     button {
-      font-family: inherit; font-size: 0.9rem; font-weight: 600;
-      padding: 0.65rem 1.15rem; border-radius: 8px; border: none; cursor: pointer;
-      background: var(--accent); color: #041018;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.72rem 1.25rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #2d7bdc);
+      color: #041018;
+      transition: filter 0.15s, transform 0.1s;
     }
-    button:hover { filter: brightness(1.08); }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
     button.secondary {
-      background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
-    .error { color: #f87171; font-size: 0.88rem; margin: 0 0 0.75rem; }
-    .note { font-size: 0.8rem; color: var(--muted); margin-top: 1rem; line-height: 1.45; }
-    .note code { font-size: 0.78rem; color: #9ec5ff; }
-    #regFields { display: none; }
-    #regFields.show { display: block; }
-    .toggle-reg { font-size: 0.85rem; color: var(--accent); cursor: pointer; margin-top: 0.75rem; display: inline-block; background: none; border: none; padding: 0; font-weight: 600; }
-    .toggle-reg:hover { text-decoration: underline; }
+
+    button.secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      filter: none;
+    }
+
+    .error {
+      color: #fb7185;
+      font-size: 0.88rem;
+      margin: 0 0 1rem;
+      padding: 0.65rem 0.85rem;
+      background: rgba(251, 113, 133, 0.08);
+      border: 1px solid rgba(251, 113, 133, 0.25);
+      border-radius: var(--radius-sm);
+    }
+
+    .error[hidden] {
+      display: none !important;
+    }
+
+    .toggle-reg {
+      font-size: 0.82rem;
+      color: var(--accent);
+      cursor: pointer;
+      margin-top: 1rem;
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      font-weight: 600;
+      font-family: inherit;
+    }
+
+    .toggle-reg:hover {
+      text-decoration: underline;
+    }
+
+    #regFields {
+      display: none;
+    }
+
+    #regFields.show {
+      display: block;
+    }
+
+    details.dev-hint {
+      margin-top: 1.35rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    details.dev-hint summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--muted);
+      list-style: none;
+    }
+
+    details.dev-hint summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.dev-hint code {
+      font-size: 0.74rem;
+      color: #9ec5ff;
+    }
+
+    .foot-note {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(148, 160, 184, 0.65);
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <nav class="site-nav" aria-label="Navegação principal">
-      <a href="index.html">Lista de candidatos</a>
-      <a href="executivo.html">Visão executiva</a>
-      <a href="insights-rj.html">Insights RJ</a>
-      <a href="midia-social.html">Mídia social</a>
-      <a href="login.html" aria-current="page">Entrar</a>
-    </nav>
-
-    <header>
-      <h1>Entrar</h1>
-      <p>
-        <strong>GitHub Pages</strong> só serve páginas estáticas: o MySQL fica no <strong>backend</strong> (Render, Railway, VPS…).
-        Edite <code>js/api-config.js</code> (<code>productionApi</code>) com a URL HTTPS da API e, no servidor, <code>ALLOWED_ORIGINS</code> + <code>SESSION_CROSS_SITE=true</code>.
-        Localmente use <code>npm start</code> e deixe <code>productionApi</code> vazio.
-      </p>
+  <div class="login-bg" aria-hidden="true"></div>
+  <div class="page">
+    <header class="top-bar">
+      <a class="brand" href="index.html"><span aria-hidden="true"></span> Politapp</a>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <a href="index.html">Candidatos</a>
+        <a href="executivo.html">Executivo</a>
+        <a href="insights-rj.html">Insights RJ</a>
+        <a href="midia-social.html">Mídia social</a>
+        <a href="login.html" aria-current="page">Entrar</a>
+      </nav>
     </header>
 
-    <section class="panel">
-      <p id="err" class="error" hidden></p>
-      <form id="form">
-        <label>
-          E-mail
-          <input type="email" name="email" id="email" required autocomplete="username" />
-        </label>
-        <label>
-          Senha
-          <input type="password" name="password" id="password" required minlength="8" autocomplete="current-password" />
-        </label>
-        <div id="regFields">
+    <main class="login-grid">
+      <section class="hero" aria-labelledby="login-hero-title">
+        <p class="pill">Ciclo eleitoral · preparação 2026</p>
+        <h1 id="login-hero-title">Dados, território e <em>campanha</em> no mesmo lugar</h1>
+        <p class="lede">
+          Acesso reservado à área do Politapp: monitore a Câmara, cruze com o TSE e organize narrativas para o calendário político à frente — com responsabilidade e respeito à legislação.
+        </p>
+        <div class="insights">
+          <article class="insight-card">
+            <strong>Agenda 2026</strong>
+            <p>O período pré-eleitoral exige planejamento de mídia, prestação de contas e coerência entre discurso e dados públicos — antecipe gargalos.</p>
+          </article>
+          <article class="insight-card">
+            <strong>Transparência</strong>
+            <p>API da Câmara e bases do TSE fortalecem mensagens verificáveis; combine com pesquisa local e ouvidorias.</p>
+          </article>
+          <article class="insight-card">
+            <strong>Redes e território</strong>
+            <p>Conteúdo que performa costuma unir termômetro nacional com problema concreto de rua, bairro ou microrregião.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-form" aria-labelledby="login-form-title">
+        <h2 id="login-form-title">Acesso à plataforma</h2>
+        <p class="sub">Entre com sua conta para continuar.</p>
+        <p id="err" class="error" hidden></p>
+        <form id="form">
           <label>
-            Nome (opcional)
-            <input type="text" name="name" id="name" autocomplete="name" />
+            E-mail
+            <input type="email" name="email" id="email" required autocomplete="username" />
           </label>
-        </div>
-        <div class="row-actions">
-          <button type="button" id="btnLogin">Entrar</button>
-          <button type="button" class="secondary" id="btnRegister">Criar conta</button>
-        </div>
-      </form>
-      <button type="button" class="toggle-reg" id="toggleReg">Mostrar / ocultar nome no cadastro</button>
-      <p class="note">
-        Backend: <code>.env</code> (MySQL, <code>SESSION_SECRET</code>, CORS). Banco: <code>sql/auth-schema.sql</code>.
-        Usuário: <code>npm run create-user -- email senha</code>
-      </p>
-    </section>
+          <label>
+            Senha
+            <input type="password" name="password" id="password" required minlength="8" autocomplete="current-password" />
+          </label>
+          <div id="regFields">
+            <label>
+              Nome (opcional)
+              <input type="text" name="name" id="name" autocomplete="name" />
+            </label>
+          </div>
+          <div class="row-actions">
+            <button type="button" id="btnLogin">Entrar</button>
+            <button type="button" class="secondary" id="btnRegister">Criar conta</button>
+          </div>
+        </form>
+        <button type="button" class="toggle-reg" id="toggleReg">Mostrar / ocultar nome no cadastro</button>
+
+        <details class="dev-hint">
+          <summary>Notas técnicas (deploy / API)</summary>
+          <p style="margin: 0.75rem 0 0">
+            <strong>GitHub Pages</strong> só entrega HTML estático: configure <code>productionApi</code> em <code>js/api-config.js</code> e CORS no backend.
+            Local: <code>npm start</code> e <code>productionApi</code> vazio. Banco: <code>sql/auth-schema.sql</code> · CLI:
+            <code>npm run create-user -- email senha</code>
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <p class="foot-note">Politapp — apoio a análises políticas com dados abertos. Cumpra a legislação eleitoral vigente.</p>
   </div>
 
   <script src="js/api-config.js"></script>
+  <script>
+    (async () => {
+      try {
+        const r = await fetch(politappApiUrl("/api/me"), { credentials: "include" });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!d.user) return;
+        const n = politappSafeNext(new URLSearchParams(location.search).get("next"));
+        location.replace(n || "index.html");
+      } catch {}
+    })();
+  </script>
   <script>
     const $ = (id) => document.getElementById(id);
     const err = $("err");
@@ -169,7 +541,8 @@
           showError(data.error || res.statusText);
           return;
         }
-        window.location.href = "conta.html";
+        const next = politappSafeNext(new URLSearchParams(location.search).get("next"));
+        window.location.href = next || "index.html";
       } catch {
         showError(
           "Não foi possível falar com o servidor. Rode `npm start` e abra esta página via http://localhost:8080/login.html"

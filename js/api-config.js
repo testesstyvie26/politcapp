@@ -19,4 +19,18 @@
     var base = (window.POLITAPP_API || "").replace(/\/$/, "");
     return base + p;
   };
+
+  /** Evita open-redirect no ?next= após login (só caminhos relativos ou absolutos no mesmo site). */
+  window.politappSafeNext = function (raw) {
+    if (raw == null || raw === "") return "";
+    try {
+      var d = decodeURIComponent(String(raw).trim());
+      if (/^[a-z][a-z0-9+.-]*:/i.test(d)) return "";
+      if (d.slice(0, 2) === "//") return "";
+      if (d.toLowerCase().indexOf("javascript:") === 0) return "";
+      return d;
+    } catch (e) {
+      return "";
+    }
+  };
 })();

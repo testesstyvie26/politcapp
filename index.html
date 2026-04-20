@@ -46,6 +46,36 @@
       margin-bottom: 2rem;
     }
 
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .header-top h1 {
+      margin: 0;
+    }
+
+    .btn-login {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #041018;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-login:hover {
+      filter: brightness(1.08);
+    }
+
     header h1 {
       font-size: clamp(1.5rem, 3vw, 2rem);
       font-weight: 700;
@@ -414,6 +444,8 @@
   </style>
 </head>
 <body>
+  <script src="js/api-config.js"></script>
+  <script src="js/auth-guard.js"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html" aria-current="page">Lista de candidatos</a>
@@ -424,7 +456,10 @@
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
     <header>
-      <h1>Candidatos a deputado federal</h1>
+      <div class="header-top">
+        <h1>Candidatos a deputado federal</h1>
+        <a class="btn-login" href="login.html">Entrar</a>
+      </div>
       <p>
         Lista paginada com base nos deputados em exercício na
         <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API v2 da Câmara</a>
