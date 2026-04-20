@@ -1,6 +1,10 @@
 /**
- * - Local (npm start): deixe productionApi vazio; as chamadas vão para o mesmo host.
- * - GitHub Pages: defina productionApi com a URL HTTPS do seu backend (Node + MySQL em Render, Railway, VPS…).
+ * Base URL do backend de autenticação deste repositório (Express em server.js: /api/login, /api/me, …).
+ * Não é a API pública da Câmara (dadosabertos.camara.leg.br).
+ *
+ * - Local (npm start): deixe productionApi vazio; o front usa o mesmo host que o Node.
+ * - GitHub Pages: defina a URL HTTPS completa onde o server.js está publicado (Render, Railway, VPS…),
+ *   com CORS (ALLOWED_ORIGINS) e sessão cross-site conforme .env.example.
  */
 (function () {
   var host = typeof location !== "undefined" ? location.hostname : "";
@@ -10,7 +14,8 @@
     host === "[::1]" ||
     /^192\.168\./.test(host || "");
 
-  var productionApi = "politcapp.com.br";
+  /** Ex.: "https://api.seudominio.com" ou "https://seudominio.com" se o Node responder na raiz. */
+  var productionApi = "https://politcapp.com.br";
 
   window.POLITAPP_API = isLocal ? "" : productionApi;
 
