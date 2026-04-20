@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aguardando aprovação — Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg: #0c0f14; --text: #e8ecf2; --muted: #8b95a8; --accent: #3d8bfd; --border: rgba(255,255,255,0.08); --surface: #141a24; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; padding: 1.25rem; }
+    .card { max-width: 420px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; }
+    h1 { font-size: 1.25rem; margin: 0 0 0.75rem; }
+    p { color: var(--muted); line-height: 1.55; margin: 0 0 1rem; font-size: 0.95rem; }
+    button { font: inherit; font-weight: 600; padding: 0.6rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #041018; margin-right: 0.5rem; }
+    button.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="card" id="root">
+    <h1>A validar o seu acesso</h1>
+    <p>A sua conta foi criada e está à espera de aprovação de um administrador. Volte mais tarde ou atualize esta página.</p>
+    <p><button type="button" id="btnRefresh">Atualizar</button><button type="button" class="secondary" id="btnSair">Sair</button></p>
+    <p style="margin:0;font-size:0.85rem"><a href="index.html">Tentar entrar no site</a></p>
+  </div>
+  <script src="js/auth-config.js"></script>
+  <script type="module">
+    import { getSupabase, isAuthConfigured } from "./js/auth-client.mjs";
+
+    async function route() {
+      if (!isAuthConfigured()) {
+        window.location.replace("login.html?next=aguarde-aprovacao.html");
+        return;
+      }
+      const supabase = getSupabase();
+      if (!supabase) {
+        window.location.replace("login.html");
+        return;
+      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.replace("login.html?next=aguarde-aprovacao.html");
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("conta_status, grupo")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      const ok =
+        profile?.grupo === "admin" ||
+        profile?.conta_status === "aprovado";
+      if (ok) {
+        window.location.replace("index.html");
+        return;
+      }
+      if (profile?.conta_status === "rejeitado") {
+        window.location.replace("conta-recusada.html");
+        return;
+      }
+    }
+
+    await route();
+    document.getElementById("btnRefresh").addEventListener("click", () => location.reload());
+    document.getElementById("btnSair").addEventListener("click", async () => {
+      const sb = getSupabase();
+      if (sb) await sb.auth.signOut();
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>

@@ -10,10 +10,20 @@ export function grupoLabel(codigo) {
   return GRUPO_LABEL[codigo] || codigo || "—";
 }
 
+export const CONTA_STATUS_LABEL = {
+  pendente: "Aguardando aprovação",
+  aprovado: "Aprovada",
+  rejeitado: "Recusada",
+};
+
+export function contaStatusLabel(codigo) {
+  return CONTA_STATUS_LABEL[codigo] || codigo || "—";
+}
+
 export async function loadProfile(supabase, userId) {
   return supabase
     .from("profiles")
-    .select("grupo, unidade_id, unidades ( id, nome, slug )")
+    .select("grupo, unidade_id, conta_status, unidades ( id, nome, slug )")
     .eq("id", userId)
     .maybeSingle();
 }

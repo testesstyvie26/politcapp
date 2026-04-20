@@ -1,13 +1,12 @@
 /**
- * Exige sessão Supabase: redireciona para login.html?next=...
- * Exporta politappAuthReady — aguarde antes de lógica que não deve rodar sem login.
+ * Exige sessão Supabase + conta aprovada (exceto páginas de espera/recusa).
+ * Exporta politappAuthReady → resolve com { session, profile }.
  */
 import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
 
 let resolveReady;
 let rejectReady;
 
-/** Resolve com a sessão quando o utilizador está autenticado; nunca resolve se houver redirect. */
 export const politappAuthReady = new Promise((res, rej) => {
   resolveReady = res;
   rejectReady = rej;
@@ -16,6 +15,11 @@ export const politappAuthReady = new Promise((res, rej) => {
 function loginUrlWithNext() {
   const path = (location.pathname.replace(/^\//, "") || "index.html") + location.search;
   return "login.html?" + new URLSearchParams({ next: path }).toString();
+}
+
+function currentPageFile() {
+  const parts = location.pathname.split("/").filter(Boolean);
+  return parts.length ? parts[parts.length - 1] : "index.html";
 }
 
 (function injectHideStyle() {
@@ -49,8 +53,36 @@ function loginUrlWithNext() {
       return;
     }
 
+    const page = currentPageFile();
+    const onAguarde = page === "aguarde-aprovacao.html";
+    const onRecusada = page === "conta-recusada.html";
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("conta_status, grupo")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    if (!profile && !onAguarde) {
+      window.location.replace(new URL("aguarde-aprovacao.html", location.href).href);
+      return;
+    }
+
+    const st = profile?.conta_status;
+    const isAdmin = profile?.grupo === "admin";
+
+    if (st === "rejeitado" && !onRecusada) {
+      window.location.replace(new URL("conta-recusada.html", location.href).href);
+      return;
+    }
+
+    if (st === "pendente" && !isAdmin && !onAguarde) {
+      window.location.replace(new URL("aguarde-aprovacao.html", location.href).href);
+      return;
+    }
+
     document.documentElement.classList.remove("auth-pending");
-    resolveReady(session);
+    resolveReady({ session, profile });
   } catch (e) {
     rejectReady(e);
   }

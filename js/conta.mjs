@@ -1,6 +1,6 @@
 import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
 import { politappAuthReady } from "./auth-guard.mjs";
-import { loadProfile, grupoLabel } from "./org-api.mjs";
+import { loadProfile, grupoLabel, contaStatusLabel } from "./org-api.mjs";
 
 const loading = document.getElementById("loading");
 const content = document.getElementById("content");
@@ -11,6 +11,8 @@ const nameEl = document.getElementById("name");
 const providerEl = document.getElementById("provider");
 const grupoEl = document.getElementById("grupo");
 const unidadeEl = document.getElementById("unidadeNome");
+const contaStatusEl = document.getElementById("contaStatus");
+const adminAprovLink = document.getElementById("adminAprovLink");
 const logoutBtn = document.getElementById("logout");
 
 (async function init() {
@@ -58,6 +60,15 @@ const logoutBtn = document.getElementById("logout");
     const raw = profile?.unidades;
     const u = Array.isArray(raw) ? raw[0] : raw;
     unidadeEl.textContent = u?.nome || "—";
+  }
+
+  if (contaStatusEl) {
+    contaStatusEl.textContent = profile?.conta_status
+      ? contaStatusLabel(profile.conta_status)
+      : "— (migração: sql/supabase-conta-aprovacao.sql)";
+  }
+  if (adminAprovLink && profile?.grupo === "admin") {
+    adminAprovLink.hidden = false;
   }
 
   logoutBtn?.addEventListener("click", async () => {
