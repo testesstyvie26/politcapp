@@ -162,6 +162,77 @@ function dbErrorMessage(e) {
   return "Erro no servidor. Tente novamente.";
 }
 
+const PORTAL_TRANSPARENCIA_API = "https://api.portaldatransparencia.gov.br/api-de-dados";
+
+/**
+ * Proxy para a API de dados do Portal da Transparência (evita bloqueio CORS no navegador).
+ * A chave gratuita deve ser enviada no cabeçalho chave-api-dados (igual à API oficial).
+ * Documentação: https://portaldatransparencia.gov.br/api-de-dados
+ */
+app.get("/api/portaldatransparencia/emendas", async (req, res) => {
+  const chave = req.get("chave-api-dados");
+  if (!chave || !String(chave).trim()) {
+    return res.status(400).json({
+      erro: "Informe o cabeçalho chave-api-dados com o token obtido em portaldatransparencia.gov.br/api-de-dados/cadastrar-email",
+    });
+  }
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(req.query)) {
+    if (v === undefined || v === null || v === "") continue;
+    q.set(k, String(v));
+  }
+  const url = `${PORTAL_TRANSPARENCIA_API}/emendas?${q.toString()}`;
+  try {
+    const r = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        "chave-api-dados": String(chave).trim(),
+      },
+    });
+    const text = await r.text();
+    let body;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      body = { erro: "Resposta não JSON do Portal", corpo: text.slice(0, 500) };
+    }
+    return res.status(r.status).json(body);
+  } catch (e) {
+    console.error("portaldatransparencia proxy:", e);
+    return res.status(502).json({ erro: "Falha ao contatar api.portaldatransparencia.gov.br" });
+  }
+});
+
+app.get("/api/portaldatransparencia/emendas/:codigo", async (req, res) => {
+  const chave = req.get("chave-api-dados");
+  if (!chave || !String(chave).trim()) {
+    return res.status(400).json({
+      erro: "Informe o cabeçalho chave-api-dados com o token da API do Portal.",
+    });
+  }
+  const codigo = encodeURIComponent(req.params.codigo);
+  const url = `${PORTAL_TRANSPARENCIA_API}/emendas/${codigo}`;
+  try {
+    const r = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        "chave-api-dados": String(chave).trim(),
+      },
+    });
+    const text = await r.text();
+    let body;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      body = { erro: "Resposta não JSON do Portal", corpo: text.slice(0, 500) };
+    }
+    return res.status(r.status).json(body);
+  } catch (e) {
+    console.error("portaldatransparencia proxy detalhe:", e);
+    return res.status(502).json({ erro: "Falha ao contatar api.portaldatransparencia.gov.br" });
+  }
+});
+
 app.use(express.static(__dirname));
 
 app.listen(PORT, () => {

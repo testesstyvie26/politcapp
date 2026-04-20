@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eleições 2022 — Deputado federal (histórico TSE) | Politapp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --accent-dim: rgba(61, 139, 253, 0.15);
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.16), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    header { margin-bottom: 1.5rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 70ch; font-size: 0.95rem; }
+    header a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
+    .filters {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      align-items: end;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    input, select {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+    input:focus, select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+    button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.65rem 1.1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: var(--accent);
+      color: #041018;
+    }
+    button:hover { filter: brightness(1.08); }
+    button.secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    button:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; }
+    .check-line {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+      cursor: pointer;
+      margin: 0;
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 500;
+    }
+    .check-line input { margin-top: 0.2rem; accent-color: var(--accent); }
+    .note { font-size: 0.82rem; color: var(--muted); margin: 0.75rem 0 0; line-height: 1.45; }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .stats strong { color: var(--text); font-family: "JetBrains Mono", monospace; font-weight: 500; }
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 0.75rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 600;
+      background: var(--surface2);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(61, 139, 253, 0.04); }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+    .mono { font-family: "JetBrains Mono", monospace; font-size: 0.82rem; }
+    .muted { color: var(--muted); }
+    .social-mini {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .social-mini:hover { filter: brightness(1.15); }
+    .loading, .error { padding: 2rem; text-align: center; color: var(--muted); }
+    .error { color: #f87171; }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pager {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .pager-row { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+    .pager-meta { font-size: 0.9rem; color: var(--muted); }
+    .pager-meta strong { color: var(--text); font-family: "JetBrains Mono", monospace; }
+  </style>
+</head>
+<body>
+  <script src="js/api-config.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html" aria-current="page">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="transparencia.html">Transparência</a>
+      <a href="midia-social.html">Mídia social</a>
+      <a href="tarefas.html">Tarefas</a>
+      <a href="login.html">Entrar</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+
+    <header>
+      <h1>Histórico — Eleições gerais 2022 · Deputado federal</h1>
+      <p>
+        Nómina e votação nominal do <strong>1º turno</strong> (outubro de 2022), cargo código <span class="mono">c0006</span>,
+        eleição TSE <span class="mono">546</span>, por UF. Fonte oficial:
+        <a href="https://resultados.tse.jus.br/oficial/ele2022/546/dados-simplificados/" target="_blank" rel="noopener">resultados TSE — dados simplificados</a>.
+        Para mandato atual e redes na Câmara, use a <a href="index.html">lista de deputados</a> (API Dados Abertos).
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>Filtros</h2>
+      <div class="filters">
+        <label>
+          UF
+          <select id="siglaUf" aria-label="Unidade da Federação">
+            <option value="">Brasil inteiro (27 arquivos)</option>
+          </select>
+        </label>
+        <label>
+          Busca (nome)
+          <input type="search" id="nome" placeholder="Parte do nome de urna…" autocomplete="off" />
+        </label>
+        <label>
+          Partido (sigla)
+          <input type="text" id="siglaPartido" placeholder="Ex.: PSOL" maxlength="12" />
+        </label>
+        <label>
+          Por página
+          <select id="porPagina">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <label class="check-line">
+          <input type="checkbox" id="excluirSuplentes" />
+          <span>Ocultar candidatos cuja <strong>situação</strong> indica suplência (filtro textual TSE)</span>
+        </label>
+        <div class="actions">
+          <button type="button" id="btnCarregar">Carregar / atualizar dados</button>
+          <button type="button" class="secondary" id="btnFiltrar">Aplicar filtros na tabela</button>
+        </div>
+      </div>
+      <p class="note">
+        Na primeira visita, apenas a UF <strong>RJ</strong> é baixada. “Brasil inteiro” dispara 27 requisições aos JSON do TSE (pode levar um minuto).
+        O botão <strong>Perfil</strong> abre <span class="mono">candidato.html</span> com o sequencial TSE quando não houver id da Câmara.
+      </p>
+      <div class="stats" id="stats" hidden>
+        <span>UF: <strong id="statUf">—</strong></span>
+        <span>Após filtros: <strong id="statTotal">0</strong></span>
+        <span>Nesta página: <strong id="statFiltrados">0</strong></span>
+        <span>Página: <strong id="statPagina">1</strong> / <strong id="statPaginas">1</strong></span>
+      </div>
+    </section>
+
+    <div id="content">
+      <div class="loading"><div class="spinner"></div>Escolha a UF e clique em Carregar, ou aguarde o carregamento inicial do RJ…</div>
+    </div>
+
+    <div class="pager" id="pager" hidden>
+      <p class="pager-meta" id="pagerMeta"></p>
+      <div class="pager-row">
+        <button type="button" class="secondary" id="first">Primeira</button>
+        <button type="button" class="secondary" id="prev">Anterior</button>
+        <button type="button" class="secondary" id="next">Próxima</button>
+        <button type="button" class="secondary" id="last">Última</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="tse-votos-2022.js"></script>
+  <script>
+    const ESTADOS_BR = [
+      { sigla: "AC", nome: "Acre" }, { sigla: "AL", nome: "Alagoas" }, { sigla: "AP", nome: "Amapá" },
+      { sigla: "AM", nome: "Amazonas" }, { sigla: "BA", nome: "Bahia" }, { sigla: "CE", nome: "Ceará" },
+      { sigla: "DF", nome: "Distrito Federal" }, { sigla: "ES", nome: "Espírito Santo" }, { sigla: "GO", nome: "Goiás" },
+      { sigla: "MA", nome: "Maranhão" }, { sigla: "MT", nome: "Mato Grosso" }, { sigla: "MS", nome: "Mato Grosso do Sul" },
+      { sigla: "MG", nome: "Minas Gerais" }, { sigla: "PA", nome: "Pará" }, { sigla: "PB", nome: "Paraíba" },
+      { sigla: "PR", nome: "Paraná" }, { sigla: "PE", nome: "Pernambuco" }, { sigla: "PI", nome: "Piauí" },
+      { sigla: "RJ", nome: "Rio de Janeiro" }, { sigla: "RN", nome: "Rio Grande do Norte" },
+      { sigla: "RS", nome: "Rio Grande do Sul" }, { sigla: "RO", nome: "Rondônia" }, { sigla: "RR", nome: "Roraima" },
+      { sigla: "SC", nome: "Santa Catarina" }, { sigla: "SP", nome: "São Paulo" }, { sigla: "SE", nome: "Sergipe" },
+      { sigla: "TO", nome: "Tocantins" },
+    ];
+
+    let cacheRef = null;
+    let rowsBrutos = [];
+    let filtradas = [];
+    let pagina = 1;
+
+    function el(id) {
+      return document.getElementById(id);
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function fmtInt(n) {
+      if (n == null || !Number.isFinite(n)) return "—";
+      return n.toLocaleString("pt-BR");
+    }
+
+    function normaliza(s) {
+      if (!s) return "";
+      return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
+    function preencherUfs() {
+      const sel = el("siglaUf");
+      sel.innerHTML = "";
+      const o0 = document.createElement("option");
+      o0.value = "";
+      o0.textContent = "Brasil inteiro (27 arquivos)";
+      sel.appendChild(o0);
+      [...ESTADOS_BR].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).forEach(({ sigla, nome }) => {
+        const o = document.createElement("option");
+        o.value = sigla;
+        o.textContent = `${sigla} — ${nome}`;
+        sel.appendChild(o);
+      });
+      sel.value = "RJ";
+    }
+
+    function coletarLinhas(cache, ufOpt) {
+      if (!cache) return [];
+      if (!ufOpt) return [...cache.all];
+      return [...(cache.byUf.get(ufOpt.toUpperCase()) || [])];
+    }
+
+    function aplicarFiltrosLista(lista) {
+      const qNome = normaliza(el("nome").value);
+      const qPart = el("siglaPartido").value.trim().toUpperCase();
+      const exclSupl = el("excluirSuplentes").checked;
+      let out = lista;
+      if (exclSupl && window.TSE2022DF) {
+        out = out.filter((r) => !TSE2022DF.isSuplenteTse(r.st));
+      }
+      if (qNome) {
+        out = out.filter((r) => normaliza(r.nm).includes(qNome));
+      }
+      if (qPart) {
+        out = out.filter((r) => {
+          const sig = TSE2022DF ? TSE2022DF.siglaFromCc(r.cc) : "";
+          return String(sig).toUpperCase().includes(qPart);
+        });
+      }
+      return out;
+    }
+
+    function ordenarPorVotos(lista) {
+      return [...lista].sort((a, b) => {
+        const va = a.vap != null ? a.vap : -1;
+        const vb = b.vap != null ? b.vap : -1;
+        return vb - va;
+      });
+    }
+
+    function renderTabela() {
+      const porPag = Math.max(5, parseInt(el("porPagina").value, 10) || 50);
+      const total = filtradas.length;
+      const totalPag = Math.max(1, Math.ceil(total / porPag));
+      pagina = Math.min(Math.max(1, pagina), totalPag);
+      const ini = (pagina - 1) * porPag;
+      const fatia = filtradas.slice(ini, ini + porPag);
+      const ufAmpla = !el("siglaUf").value;
+
+      const thead = `
+        <thead><tr>
+          ${ufAmpla ? "<th>UF</th>" : ""}
+          <th>Nº</th>
+          <th>Nome de urna</th>
+          <th>Partido</th>
+          <th>Coligação / chapa (TSE)</th>
+          <th class="mono">Votos</th>
+          <th class="mono">% válidos</th>
+          <th>Situação</th>
+          <th>Perfil</th>
+        </tr></thead>`;
+
+      const body = fatia
+        .map((r) => {
+          const uf = r.uf || "—";
+          const sig = window.TSE2022DF ? TSE2022DF.siglaFromCc(r.cc) : "—";
+          const ccFull = r.cc || "—";
+          const pv = r.pvap != null && r.pvap !== "" ? `${escapeHtml(r.pvap)}%` : "—";
+          const perfil = `candidato.html?tse=${encodeURIComponent(r.sqcand)}&uf=${encodeURIComponent(uf)}`;
+          return `<tr>
+            ${ufAmpla ? `<td><span class="badge">${escapeHtml(uf)}</span></td>` : ""}
+            <td class="mono">${escapeHtml(r.n != null ? String(r.n) : "—")}</td>
+            <td><strong>${escapeHtml(r.nm || "—")}</strong>
+              <div class="muted mono" style="font-size:0.75rem">sqcand ${escapeHtml(r.sqcand)}</div>
+            </td>
+            <td><span class="badge">${escapeHtml(sig)}</span></td>
+            <td style="font-size:0.8rem;max-width:14rem">${escapeHtml(ccFull)}</td>
+            <td class="mono">${escapeHtml(fmtInt(r.vap))}</td>
+            <td class="mono">${pv}</td>
+            <td style="font-size:0.8rem;max-width:10rem">${escapeHtml(r.st || "—")}</td>
+            <td><a class="social-mini" href="${escapeHtml(perfil)}">Perfil</a></td>
+          </tr>`;
+        })
+        .join("");
+
+      el("content").innerHTML = `<div class="table-wrap"><table>${thead}<tbody>${body}</tbody></table></div>`;
+
+      el("stats").hidden = false;
+      el("statUf").textContent = ufAmpla ? "Todas (tabela)" : el("siglaUf").value;
+      el("statTotal").textContent = String(total);
+      el("statFiltrados").textContent = String(fatia.length);
+      el("statPagina").textContent = String(pagina);
+      el("statPaginas").textContent = String(totalPag);
+
+      el("pager").hidden = totalPag <= 1;
+      el("pagerMeta").innerHTML =
+        totalPag > 1
+          ? `Mostrando <strong>${ini + 1}</strong>–<strong>${Math.min(ini + fatia.length, total)}</strong> de <strong>${total}</strong>`
+          : "";
+      el("first").disabled = pagina <= 1;
+      el("prev").disabled = pagina <= 1;
+      el("next").disabled = pagina >= totalPag;
+      el("last").disabled = pagina >= totalPag;
+    }
+
+    function refiltrarERender() {
+      filtradas = ordenarPorVotos(aplicarFiltrosLista(rowsBrutos));
+      pagina = 1;
+      renderTabela();
+    }
+
+    async function carregar() {
+      if (!window.TSE2022DF) {
+        el("content").innerHTML = '<p class="error">Script TSE2022DF não carregou (tse-votos-2022.js).</p>';
+        return;
+      }
+      const ufSel = el("siglaUf").value.trim().toUpperCase();
+      el("content").innerHTML =
+        `<div class="loading"><div class="spinner"></div>Carregando JSON do TSE…<br/>
+        <span class="muted" style="font-size:0.85rem">${ufSel ? "UF " + escapeHtml(ufSel) : "Todas as UFs (27 arquivos)"}</span></div>`;
+      el("pager").hidden = true;
+      el("stats").hidden = true;
+
+      try {
+        if (ufSel) {
+          cacheRef = await TSE2022DF.ensureUfs([ufSel.toLowerCase()]);
+        } else {
+          cacheRef = await TSE2022DF.loadFull();
+        }
+        rowsBrutos = coletarLinhas(cacheRef, ufSel || null);
+        refiltrarERender();
+      } catch (e) {
+        console.error(e);
+        const msg = e && e.message ? e.message : String(e);
+        el("content").innerHTML =
+          `<p class="error">Não foi possível carregar os dados do TSE. ${escapeHtml(msg)}</p>
+          <p class="note">Se estiver em <span class="mono">file://</span>, use um servidor local (ex.: <span class="mono">npm start</span>).</p>`;
+      }
+    }
+
+    function irPagina(p) {
+      const porPag = Math.max(5, parseInt(el("porPagina").value, 10) || 50);
+      const totalPag = Math.max(1, Math.ceil(filtradas.length / porPag));
+      pagina = Math.min(Math.max(1, p), totalPag);
+      renderTabela();
+    }
+
+    preencherUfs();
+
+    el("btnCarregar").addEventListener("click", () => {
+      carregar();
+    });
+    el("btnFiltrar").addEventListener("click", () => {
+      if (!rowsBrutos.length) {
+        carregar();
+        return;
+      }
+      refiltrarERender();
+    });
+    el("porPagina").addEventListener("change", () => {
+      pagina = 1;
+      if (filtradas.length) renderTabela();
+    });
+    el("first").addEventListener("click", () => irPagina(1));
+    el("prev").addEventListener("click", () => irPagina(pagina - 1));
+    el("next").addEventListener("click", () => irPagina(pagina + 1));
+    el("last").addEventListener("click", () => {
+      const porPag = Math.max(5, parseInt(el("porPagina").value, 10) || 50);
+      irPagina(Math.ceil(filtradas.length / porPag));
+    });
+
+    carregar();
+  </script>
+</body>
+</html>

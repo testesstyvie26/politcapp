@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transparência — Partidos e verbas | Politapp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --accent2: #5eead4;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.12), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    header { margin-bottom: 1.75rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 72ch; font-size: 0.95rem; }
+    header a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
+    .panel h3 { font-size: 0.95rem; margin: 1.1rem 0 0.5rem; color: var(--muted); font-weight: 600; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .grid-2 {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 960px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    input, select, textarea, button {
+      font: inherit;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      padding: 0.5rem 0.65rem;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      background: var(--accent);
+      color: #041018;
+      border: none;
+      align-self: flex-end;
+    }
+    button:hover { filter: brightness(1.06); }
+    button.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 1rem;
+    }
+    .toolbar label { min-width: 120px; }
+    .mono { font-family: ui-monospace, "JetBrains Mono", monospace; font-size: 0.82rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      background: rgba(94, 234, 212, 0.12);
+      color: #7ee0d0;
+    }
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 0.55rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(61, 139, 253, 0.06); }
+    .num { text-align: right; white-space: nowrap; }
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fecaca;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+    }
+    .alert.ok {
+      background: rgba(94, 234, 212, 0.1);
+      border-color: rgba(94, 234, 212, 0.3);
+      color: #a7f3d0;
+    }
+    .party-grid {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+    .party-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      border-left: 3px solid var(--accent2);
+    }
+    .party-card strong { font-size: 1rem; }
+    .party-card .links { margin-top: 0.5rem; font-size: 0.82rem; }
+    .party-card .links a { color: var(--accent); margin-right: 0.75rem; }
+    #detalheEmenda {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    #detalheEmenda[hidden] { display: none !important; }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <script src="js/api-config.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="transparencia.html" aria-current="page">Transparência</a>
+      <a href="midia-social.html">Mídia social</a>
+      <a href="tarefas.html">Tarefas</a>
+      <a href="login.html">Entrar</a>
+    </nav>
+
+    <header>
+      <h1>Partidos, verbas eleitorais e orçamento federal</h1>
+      <p>
+        Esta página organiza duas famílias de dados públicos: <strong>verbas eleitorais</strong> (Fundo Partidário, Fundo Eleitoral,
+        prestação de contas no <a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a>) e <strong>emendas parlamentares</strong>
+        divulgadas pelo <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+        (CGU), incluindo emendas de <strong>bancada estadual</strong>, próximas do conceito de articulação partidária por UF.
+        A <a href="https://portaldatransparencia.gov.br/api-de-dados" target="_blank" rel="noopener">API de dados</a> exige cadastro gratuito de e-mail para obter a chave.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>Como relacionar partidos a “verbas”</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Verba eleitoral (campanha e partidos)</h3>
+          <p class="note">
+            Repasses do Fundo Partidário e do Fundo Eleitoral, doações e despesas de campanha são regulados pela Justiça Eleitoral e publicados no
+            <a href="https://divulgacandcontas.tse.jus.br/divulga/#/" target="_blank" rel="noopener">DivulgaCandContas</a> e em
+            <a href="https://dadosabertos.tse.jus.br" target="_blank" rel="noopener">dados abertos do TSE</a>. Não confundir com empenhos do orçamento federal.
+          </p>
+        </div>
+        <div>
+          <h3>Emendas e bancadas (orçamento da União)</h3>
+          <p class="note">
+            No Portal, <strong>emenda de bancada</strong> é de autoria da bancada estadual no Congresso (interesse da UF). Já as
+            <strong>emendas individuais</strong> têm como autor deputado ou senador — dá para associar o parlamentar ao <strong>partido da época</strong>
+            via bases da Câmara/Senado ou TSE. O quadro abaixo sugere siglas frequentes no RJ para cruzar mentalmente com mandatos e com o TSE.
+          </p>
+        </div>
+      </div>
+      <h3>Siglas no RJ (referência para cruzamento)</h3>
+      <p class="note">Links são buscas genéricas nos portais oficiais; refine por ano e cargo.</p>
+      <div class="party-grid" id="partyGrid"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Consultar emendas via API do Portal</h2>
+      <p class="note">
+        Em desenvolvimento local, use <span class="mono">npm start</span> e abra esta página em
+        <span class="mono">http://localhost:8080/transparencia.html</span> para o proxy evitar bloqueio CORS do navegador.
+        Guarde a chave no navegador (somente neste aparelho).
+      </p>
+      <div id="msgApi"></div>
+      <div class="toolbar">
+        <label>
+          Chave API (header chave-api-dados)
+          <input type="password" id="inpChave" autocomplete="off" placeholder="Cole o token recebido por e-mail" style="min-width:280px" />
+        </label>
+        <label>
+          Ano (orçamento)
+          <input type="number" id="inpAno" value="2024" min="2000" max="2035" />
+        </label>
+        <label>
+          UF beneficiária
+          <select id="selUf">
+            <option value="">Todas</option>
+            <option value="33" selected>RJ (33)</option>
+            <option value="35">SP (35)</option>
+            <option value="31">MG (31)</option>
+            <option value="53">DF (53)</option>
+          </select>
+        </label>
+        <label>
+          Filtrar tipo (após resposta)
+          <select id="selTipo">
+            <option value="">Todos os tipos retornados</option>
+            <option value="bancada">Somente bancada</option>
+            <option value="individual">Somente individual</option>
+            <option value="comissao">Somente comissão</option>
+            <option value="relator">Somente relator</option>
+          </select>
+        </label>
+        <label>
+          Nome do autor (opcional)
+          <input type="search" id="inpNomeAutor" placeholder="Ex.: bancada, silva…" />
+        </label>
+        <button type="button" id="btnSalvarChave" class="secondary">Salvar chave localmente</button>
+        <button type="button" id="btnBuscar">Buscar página 1</button>
+      </div>
+      <p class="note muted" id="metaPagina"></p>
+      <div class="toolbar" style="margin-top:0">
+        <button type="button" id="btnPrev" class="secondary" disabled>Página anterior</button>
+        <button type="button" id="btnNext" class="secondary" disabled>Próxima página</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Tipo</th>
+              <th>Autor</th>
+              <th>Localidade</th>
+              <th>Função</th>
+              <th class="num">Empenhado</th>
+              <th class="num">Pago</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbodyEmendas"></tbody>
+        </table>
+      </div>
+      <div id="detalheEmenda" hidden></div>
+    </section>
+
+    <section class="panel">
+      <h2>Fontes</h2>
+      <ul class="note" style="margin:0;padding-left:1.2rem">
+        <li><a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a> — consultas e painéis CGU.</li>
+        <li><a href="https://portaldatransparencia.gov.br/api-de-dados" target="_blank" rel="noopener">API de dados</a> — cadastro e limites de uso.</li>
+        <li><a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">Emendas parlamentares</a> — visão agregada no portal.</li>
+        <li><a href="https://www.tse.jus.br/comunicacao/noticias/2024/Fevereiro/confira-os-valores-de-repasses-do-fundo-partidario-e-do-fundo-eleitoral" target="_blank" rel="noopener">TSE — fundos partidário e eleitoral</a> (notícias e valores de referência).</li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const LS_CHAVE = "politapp_portal_transparencia_chave";
+    const PARTIDOS_RJ = [
+      { sigla: "PL", nome: "Partido Liberal", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "PT", nome: "Partido dos Trabalhadores", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "PSD", nome: "Partido Social Democrático", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "MDB", nome: "Movimento Democrático Brasileiro", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "PP", nome: "Progressistas", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "PSB", nome: "Partido Socialista Brasileiro", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "Republicanos", nome: "Republicanos", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "PSOL", nome: "Partido Socialismo e Liberdade", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "PDT", nome: "Partido Democrático Trabalhista", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+      { sigla: "UNIÃO", nome: "União Brasil", tse: "https://divulgacandcontas.tse.jus.br/divulga/#/" },
+    ];
+
+    function brl(n) {
+      if (n == null || Number.isNaN(Number(n))) return "—";
+      return Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(s) {
+      return String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+    }
+
+    function apiBase() {
+      const proto = window.location.protocol;
+      if (proto === "file:") return "https://api.portaldatransparencia.gov.br/api-de-dados";
+      return `${window.location.origin}/api/portaldatransparencia`;
+    }
+
+    function renderPartyGrid() {
+      const el = document.getElementById("partyGrid");
+      el.innerHTML = PARTIDOS_RJ.map(
+        (p) => `<article class="party-card">
+        <strong>${escapeHtml(p.sigla)}</strong> <span class="muted">— ${escapeHtml(p.nome)}</span>
+        <div class="links">
+          <span class="badge">Verba eleitoral / contas</span><br />
+          <a href="${escapeHtml(p.tse)}" target="_blank" rel="noopener">DivulgaCandContas →</a>
+          <a href="https://dadosabertos.tse.jus.br" target="_blank" rel="noopener">Dados abertos TSE →</a>
+        </div>
+        <p class="note" style="margin:0.5rem 0 0">Ligação com emendas: via deputados/senadores filiados (autores individuais) ou contexto da bancada do RJ.</p>
+      </article>`
+      ).join("");
+    }
+
+    let paginaAtual = 1;
+    let ultimaLista = [];
+
+    function normalizarLista(json) {
+      if (Array.isArray(json)) return json;
+      if (json && Array.isArray(json.dados)) return json.dados;
+      if (json && Array.isArray(json.emendas)) return json.emendas;
+      return null;
+    }
+
+    function filtrarTipo(rows) {
+      const t = document.getElementById("selTipo").value;
+      if (!t) return rows;
+      return rows.filter((r) => String(r.tipoEmenda || "").toLowerCase() === t);
+    }
+
+    function mostrarMsg(html, ok) {
+      const box = document.getElementById("msgApi");
+      box.className = ok ? "alert ok" : "alert";
+      box.innerHTML = html;
+    }
+
+    function limparMsg() {
+      const box = document.getElementById("msgApi");
+      box.className = "";
+      box.innerHTML = "";
+    }
+
+    async function buscar(pagina) {
+      const chave = document.getElementById("inpChave").value.trim();
+      const ano = document.getElementById("inpAno").value;
+      const uf = document.getElementById("selUf").value;
+      const nomeAutor = document.getElementById("inpNomeAutor").value.trim();
+      const tbody = document.getElementById("tbodyEmendas");
+      const det = document.getElementById("detalheEmenda");
+      det.hidden = true;
+      det.innerHTML = "";
+
+      if (!chave) {
+        mostrarMsg("Informe a chave da API (cadastro em <a href=\"https://portaldatransparencia.gov.br/api-de-dados/cadastrar-email\" target=\"_blank\" rel=\"noopener\">portaldatransparencia.gov.br</a>).", false);
+        return;
+      }
+
+      const base = apiBase();
+      const q = new URLSearchParams({
+        ano,
+        pagina: String(pagina),
+        ...(uf ? { codigoUF: uf } : {}),
+        ...(nomeAutor ? { nomeAutor } : {}),
+      });
+      const url = `${base}/emendas?${q}`;
+
+      limparMsg();
+      tbody.innerHTML = `<tr><td colspan="8" class="muted">Carregando…</td></tr>`;
+
+      try {
+        const headers = { Accept: "application/json", "chave-api-dados": chave };
+        const r = await fetch(url, { headers });
+        const data = await r.json();
+
+        if (!r.ok) {
+          const err = data.erro || data["Erro na API"] || JSON.stringify(data);
+          mostrarMsg(`Erro ${r.status}: ${escapeHtml(err)}`, false);
+          tbody.innerHTML = "";
+          return;
+        }
+
+        const lista = normalizarLista(data);
+        if (!lista) {
+          mostrarMsg("Resposta inesperada da API (não foi possível ler a lista de emendas).", false);
+          tbody.innerHTML = "";
+          return;
+        }
+
+        ultimaLista = lista;
+        paginaAtual = pagina;
+        const filtrada = filtrarTipo(lista);
+        document.getElementById("metaPagina").textContent =
+          `Página ${pagina} · ${filtrada.length} linha(s) após filtro de tipo (lote bruto: ${lista.length}).`;
+
+        if (!filtrada.length) {
+          tbody.innerHTML = `<tr><td colspan="8" class="muted">Nenhuma emenda neste lote com o filtro de tipo escolhido.</td></tr>`;
+        } else {
+          tbody.innerHTML = filtrada
+            .map((row) => {
+              const codRaw = row.codigoEmenda != null ? String(row.codigoEmenda) : "";
+              const codCell = codRaw ? escapeHtml(codRaw) : "—";
+              return `<tr>
+              <td class="mono">${codCell}</td>
+              <td>${escapeHtml(row.tipoEmenda || "—")}</td>
+              <td>${escapeHtml(row.nomeAutor || "—")}</td>
+              <td>${escapeHtml(row.localidadeDoGasto || "—")}</td>
+              <td>${escapeHtml(row.nomeFuncao || row.codigoFuncao || "—")}</td>
+              <td class="num">${escapeHtml(brl(row.valorEmpenhado))}</td>
+              <td class="num">${escapeHtml(brl(row.valorPago))}</td>
+              <td><button type="button" class="secondary btn-detalhe" data-cod="${escapeAttr(codRaw)}">Detalhe</button></td>
+            </tr>`;
+            })
+            .join("");
+        }
+
+        document.getElementById("btnPrev").disabled = pagina <= 1;
+        document.getElementById("btnNext").disabled = lista.length === 0;
+
+        if (window.location.protocol === "file:") {
+          mostrarMsg(
+            "Você abriu o arquivo pelo disco (<span class=\"mono\">file://</span>). Se o navegador bloquear a API por CORS, sirva o site com <span class=\"mono\">npm start</span> e use <span class=\"mono\">http://localhost:8080/transparencia.html</span>.",
+            true
+          );
+        } else {
+          mostrarMsg("Consulta concluída. Respeite o limite de requisições por minuto da CGU.", true);
+        }
+      } catch (e) {
+        console.error(e);
+        mostrarMsg(
+          "Falha na requisição. Se for CORS, use o servidor local (<span class=\"mono\">npm start</span>) para ativar o proxy em <span class=\"mono\">/api/portaldatransparencia/emendas</span>.",
+          false
+        );
+        tbody.innerHTML = "";
+      }
+    }
+
+    async function detalhar(codigo) {
+      const chave = document.getElementById("inpChave").value.trim();
+      if (!chave || !codigo) return;
+      const base = apiBase();
+      const url = `${base}/emendas/${encodeURIComponent(codigo)}`;
+      const box = document.getElementById("detalheEmenda");
+      box.hidden = false;
+      box.innerHTML = "<p class=\"muted\">Carregando detalhe…</p>";
+      try {
+        const r = await fetch(url, { headers: { Accept: "application/json", "chave-api-dados": chave } });
+        const j = await r.json();
+        if (!r.ok) {
+          box.innerHTML = `<p class="alert">${escapeHtml(j.erro || j["Erro na API"] || r.status)}</p>`;
+          return;
+        }
+        box.innerHTML = `
+        <h3 style="margin:0 0 0.5rem;font-size:1rem">Emenda ${escapeHtml(j.codigoEmenda || codigo)}</h3>
+        <p style="margin:0.25rem 0"><strong>Autor:</strong> ${escapeHtml(j.nomeAutor || "—")} · <strong>Tipo:</strong> ${escapeHtml(j.tipoEmenda || "—")}</p>
+        <p style="margin:0.25rem 0"><strong>Órgão executor:</strong> ${escapeHtml(j.orgaoExecutor || "—")}</p>
+        <p style="margin:0.25rem 0"><strong>Programa:</strong> ${escapeHtml(j.programaGovernamental || "—")}</p>
+        <p style="margin:0.25rem 0"><strong>Ação:</strong> ${escapeHtml(j.acao || "—")}</p>
+        <p style="margin:0.25rem 0"><strong>Localidade:</strong> ${escapeHtml(j.localidadeDoGasto || "—")}</p>
+        <p style="margin:0.5rem 0 0"><strong>Valores:</strong> empenhado ${escapeHtml(brl(j.valorEmpenhado))} · liquidado ${escapeHtml(brl(j.valorLiquidado))} · pago ${escapeHtml(brl(j.valorPago))}</p>
+        <p class="note" style="margin:0.75rem 0 0">Painel completo no portal: <a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">Emendas parlamentares →</a></p>`;
+      } catch (e) {
+        box.innerHTML = `<p class="alert">Erro ao carregar detalhe.</p>`;
+      }
+    }
+
+    document.getElementById("btnSalvarChave").addEventListener("click", () => {
+      const v = document.getElementById("inpChave").value.trim();
+      if (v) localStorage.setItem(LS_CHAVE, v);
+    });
+
+    document.getElementById("btnBuscar").addEventListener("click", () => {
+      paginaAtual = 1;
+      buscar(1);
+    });
+
+    document.getElementById("btnPrev").addEventListener("click", () => {
+      if (paginaAtual > 1) buscar(paginaAtual - 1);
+    });
+
+    document.getElementById("btnNext").addEventListener("click", () => {
+      buscar(paginaAtual + 1);
+    });
+
+    document.getElementById("selTipo").addEventListener("change", () => {
+      if (!ultimaLista.length) return;
+      const tbody = document.getElementById("tbodyEmendas");
+      const filtrada = filtrarTipo(ultimaLista);
+      document.getElementById("metaPagina").textContent =
+        `Página ${paginaAtual} · ${filtrada.length} linha(s) após filtro de tipo (lote bruto: ${ultimaLista.length}).`;
+      if (!filtrada.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="muted">Nenhuma emenda neste lote com o filtro de tipo escolhido.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtrada
+        .map((row) => {
+          const codRaw = row.codigoEmenda != null ? String(row.codigoEmenda) : "";
+          const codCell = codRaw ? escapeHtml(codRaw) : "—";
+          return `<tr>
+            <td class="mono">${codCell}</td>
+            <td>${escapeHtml(row.tipoEmenda || "—")}</td>
+            <td>${escapeHtml(row.nomeAutor || "—")}</td>
+            <td>${escapeHtml(row.localidadeDoGasto || "—")}</td>
+            <td>${escapeHtml(row.nomeFuncao || row.codigoFuncao || "—")}</td>
+            <td class="num">${escapeHtml(brl(row.valorEmpenhado))}</td>
+            <td class="num">${escapeHtml(brl(row.valorPago))}</td>
+            <td><button type="button" class="secondary btn-detalhe" data-cod="${escapeAttr(codRaw)}">Detalhe</button></td>
+          </tr>`;
+        })
+        .join("");
+    });
+
+    document.getElementById("tbodyEmendas").addEventListener("click", (ev) => {
+      const btn = ev.target.closest(".btn-detalhe");
+      if (!btn) return;
+      detalhar(btn.getAttribute("data-cod"));
+    });
+
+    (function init() {
+      renderPartyGrid();
+      const saved = localStorage.getItem(LS_CHAVE);
+      if (saved) document.getElementById("inpChave").value = saved;
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,373 @@
+{
+  "periodo_label": "Eleições municipais no RJ — 2024 e 2025",
+  "eleicao": "Eleições municipais 2024 (ordinárias)",
+  "turnos": {
+    "primeiro": "2024-10-06",
+    "observacao_capital": "Em 2024, o cargo de prefeito da capital foi decidido em turno único (6/10). Outros municípios podem ter tido 2º turno em 27/10/2024."
+  },
+  "pleitos": [
+    {
+      "ano": 2024,
+      "titulo": "Municipais ordinárias — todo o estado",
+      "resumo": "Prefeito, vice e vereador nos 92 municípios. Primeiro turno em 6/10/2024; segundo turno (onde previsto) em 27/10/2024.",
+      "links": [
+        {
+          "label": "DivulgaCandContas (candidaturas e contas)",
+          "href": "https://divulgacandcontas.tse.jus.br/divulga/#/"
+        },
+        {
+          "label": "Resultados 2024 — dados abertos TSE",
+          "href": "https://dadosabertos.tse.jus.br/dataset/resultados-2024"
+        },
+        {
+          "label": "Eleições — portal TSE",
+          "href": "https://www.tse.jus.br/eleicoes"
+        },
+        {
+          "label": "Memória — Dados das Eleições (TRE-RJ)",
+          "href": "https://www.tre-rj.jus.br/institucional/memoria/dados-das-eleicoes"
+        },
+        {
+          "label": "Busca de dados históricos (TRE-RJ)",
+          "href": "https://apps.tre-rj.jus.br/site/eleicoes/dados_historicos_plone/busca_dados/index.jsp"
+        }
+      ]
+    },
+    {
+      "ano": 2025,
+      "titulo": "Eleição suplementar — Três Rios (RJ)",
+      "resumo": "Prefeito e vice-prefeito. Calendário TRE-RJ (ex.: Res. 1.371/2025); votação em 5/10/2025. Chapas e resultados: TRE-RJ, DivulgaCandContas e comunicados do TSE.",
+      "ibge_destaque": 3306008,
+      "badge_municipio": "Suplementar · 05/10/2025",
+      "links": [
+        {
+          "label": "Eleição suplementar 2025 — TRE-RJ (Três Rios)",
+          "href": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/eleicao-suplementar-de-tres-rios-2025"
+        },
+        {
+          "label": "Resultados — TRE-RJ (Três Rios)",
+          "href": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/resultados"
+        },
+        {
+          "label": "Calendário de eleições suplementares 2025 — TSE",
+          "href": "https://www.tse.jus.br/eleicoes/eleicoes-suplementares/calendarios/calendario-das-eleicoes-suplementares-2025"
+        },
+        {
+          "label": "DivulgaCandContas",
+          "href": "https://divulgacandcontas.tse.jus.br/divulga/#/"
+        }
+      ]
+    }
+  ],
+  "capital": {
+    "nome": "Rio de Janeiro",
+    "uf": "RJ",
+    "ibge": 3304557,
+    "vereadores_cadastro_referencia": 1028,
+    "mandato_prefeito_eleito": "Quem vence a eleição municipal exerce mandato de 4 anos: de 1º de janeiro de 2025 a 31 de dezembro de 2028 na capital (eleição 2024).",
+    "nota": "Votos do 1º turno conforme totalização TSE compilada na Wikipédia. Redes e biografias são referências públicas — confira DivulgaCandContas e TSE."
+  },
+  "prefeitos": [
+    {
+      "nome": "Alexandre Ramagem",
+      "partido": "PL",
+      "numero": 22,
+      "vice": { "nome": "Índia Armelau", "partido": "PL" },
+      "coligacao": "Coragem para Mudar (PL · MDB · Republicanos)",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 948631, "pct_validos": "30,81%" },
+      "mandato": "Não eleito prefeito neste pleito — sem mandato no executivo municipal.",
+      "detalhes": "Deputado federal pelo PL; carreira em segurança pública e gestão pública.",
+      "estrategia_divulgacao": "Mensagem central em segurança pública e gestão; forte uso de redes sociais e entrevistas; coligação ampla (PL, MDB, Republicanos) para ampliar horário eleitoral e presença em atos e comunidades.",
+      "agenda_eventos": [
+        { "titulo": "Mobilização em bairros e comunidades", "tipo": "Campanha de rua", "periodo": "ago.–out. 2024", "descricao": "Caminhadas, reuniões com lideranças e agendas abertas na capital, divulgadas em tempo real nas redes." },
+        { "titulo": "Debates e mídia", "tipo": "TV / rádio / digital", "periodo": "2024", "descricao": "Participação em debates e entrevistas quando convocado; reforço de peças e vídeos curtos na internet." }
+      ],
+      "redes": [
+        { "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Alexandre_Ramagem" },
+        { "label": "Câmara", "url": "https://www.camara.leg.br/deputados/220619" }
+      ]
+    },
+    {
+      "nome": "Carol Sponza",
+      "partido": "NOVO",
+      "numero": 30,
+      "vice": { "nome": "Alexandre Popó", "partido": "NOVO" },
+      "coligacao": "Sem coligação majoritária",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 20351, "pct_validos": "0,66%" },
+      "mandato": "Não eleita — sem mandato como prefeita.",
+      "detalhes": "Advogada; candidata do Novo à Prefeitura do Rio em 2024.",
+      "estrategia_divulgacao": "Campanha enxuta, com foco em redes sociais, lives e conteúdo sobre liberalismo econômico e inovação; pouco horário de TV em bloco próprio, ênfase em contato direto com eleitores.",
+      "agenda_eventos": [
+        { "titulo": "Encontros temáticos e panfletagem", "tipo": "Rua / porta a porta", "periodo": "set.–out. 2024", "descricao": "Microeventos em bairros e comércio, com materiais próprios da campanha." },
+        { "titulo": "Conteúdo digital", "tipo": "Redes / streaming", "periodo": "2024", "descricao": "Vídeos curtos, depoimentos e agenda publicada nas redes da candidata." }
+      ],
+      "redes": [{ "label": "DivulgaCand / TSE", "url": "https://divulgacandcontas.tse.jus.br/divulga/#/" }]
+    },
+    {
+      "nome": "Cyro Garcia",
+      "partido": "PSTU",
+      "numero": 16,
+      "vice": { "nome": "Paula Falcão", "partido": "PSTU" },
+      "coligacao": "Sem coligação majoritária",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 2453, "pct_validos": "0,08%" },
+      "mandato": "Não eleito — sem mandato como prefeito.",
+      "detalhes": "Dirigente sindical e ex-deputado federal; candidato do PSTU.",
+      "estrategia_divulgacao": "Campanha de base: panfletagem, carros de som em perímetros urbanos, atos com movimentos sociais e sindicatos; pouca mídia tradicional paga.",
+      "agenda_eventos": [
+        { "titulo": "Atos e caminhadas populares", "tipo": "Mobilização", "periodo": "2024", "descricao": "Presença em greves, manifestações e agendas solidárias alinhadas ao programa da legenda." },
+        { "titulo": "Debate público", "tipo": "Encontro / plenária", "periodo": "out. 2024", "descricao": "Participação em debates de candidatos quando incluído na programação." }
+      ],
+      "redes": [{ "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Cyro_Garcia" }]
+    },
+    {
+      "nome": "Eduardo Paes",
+      "partido": "PSD",
+      "numero": 55,
+      "vice": { "nome": "Eduardo Cavaliere", "partido": "PSD" },
+      "coligacao": "É o Rio Seguindo em Frente (PSD, federações e partidos aliados ao executivo)",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 1861856, "pct_validos": "60,47%" },
+      "mandato": "Eleito prefeito — mandato de 1º/01/2025 a 31/12/2028 (4 anos).",
+      "detalhes": "Reeleito em turno único em 2024; administrador público com longa trajetória na Prefeitura e no cenário político fluminense.",
+      "estrategia_divulgacao": "Campanha de reeleição com forte presença institucional e ampla coalizão (PSD e aliados): eventos grandes, inaugurações e obras como palanque, além de TV, rádio, outdoor e redes (incl. Instagram oficial).",
+      "agenda_eventos": [
+        { "titulo": "Agenda de governo e campanha integrada", "tipo": "Eventos / comícios", "periodo": "ago.–out. 2024", "descricao": "Visitas a equipamentos públicos, lançamentos de políticas e comícios com presença de lideranças da base." },
+        { "titulo": "Debates televisionados", "tipo": "TV", "periodo": "2024", "descricao": "Participação nos debates organizados pela imprensa na capital." },
+        { "titulo": "Conteúdo nas redes", "tipo": "Digital", "periodo": "2024", "descricao": "Vídeos diários, lives e respostas a adversários no ambiente online.", "url": "https://www.instagram.com/eduardopaes_" }
+      ],
+      "redes": [
+        { "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Eduardo_Paes" },
+        { "label": "Instagram", "url": "https://www.instagram.com/eduardopaes_" }
+      ]
+    },
+    {
+      "nome": "Henrique Simonard",
+      "partido": "PCO",
+      "numero": 29,
+      "vice": { "nome": "Caetano Albuquerque", "partido": "PCO" },
+      "coligacao": "Sem coligação majoritária",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 595, "pct_validos": "0,02%" },
+      "mandato": "Não eleito — sem mandato como prefeito.",
+      "detalhes": "Militante do PCO; candidato da legenda à Prefeitura.",
+      "estrategia_divulgacao": "Divulgação militante: panfletagem, intervenções públicas e material gráfico próprio; foco em eixos programáticos do PCO com baixo investimento em mídia paga.",
+      "agenda_eventos": [
+        { "titulo": "Panfletagem e mesas de rua", "tipo": "Campanha de base", "periodo": "2024", "descricao": "Ações em pontos de grande circulação e próximas a universidades e centros de trabalho." }
+      ],
+      "redes": [{ "label": "DivulgaCand / TSE", "url": "https://divulgacandcontas.tse.jus.br/divulga/#/" }]
+    },
+    {
+      "nome": "Juliete Pantoja",
+      "partido": "UP",
+      "numero": 80,
+      "vice": { "nome": "Vinícius Benevides", "partido": "UP" },
+      "coligacao": "Sem coligação majoritária",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 6828, "pct_validos": "0,22%" },
+      "mandato": "Não eleita — sem mandato como prefeita.",
+      "detalhes": "Educadora popular e dirigente da Unidade Popular (UP) no Rio.",
+      "estrategia_divulgacao": "Campanha territorial em periferias e espaços populares; comunicação via redes, carros de som e articulação com movimentos de moradia e juventude.",
+      "agenda_eventos": [
+        { "titulo": "Plenárias e rodas de conversa", "tipo": "Território", "periodo": "2024", "descricao": "Encontros em comunidades para apresentar propostas de UP e frentes aliadas." },
+        { "titulo": "Mobilizações de rua", "tipo": "Ato / caminhada", "periodo": "set.–out. 2024", "descricao": "Caminhadas com militância e material de campanha." }
+      ],
+      "redes": [{ "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Juliete_Pantoja" }]
+    },
+    {
+      "nome": "Marcelo Queiroz",
+      "partido": "PP",
+      "numero": 11,
+      "vice": { "nome": "Teresa Bergher", "partido": "PSDB" },
+      "coligacao": "O Rio Tem Opção (PP · Fed. PSDB Cidadania)",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 74996, "pct_validos": "2,44%" },
+      "mandato": "Não eleito prefeito — permanece no mandato de deputado federal (outro cargo).",
+      "detalhes": "Deputado federal pelo PP; ex-secretário municipal.",
+      "estrategia_divulgacao": "Articulação com PP e PSDB na coligação; mídia regional, entrevistas e agendas em bairros com lideranças locais; reforço de biografia técnica e parlamentar.",
+      "agenda_eventos": [
+        { "titulo": "Agendas com lideranças comunitárias", "tipo": "Reuniões / rua", "periodo": "2024", "descricao": "Visitas a associações e clubes de bairro na capital." },
+        { "titulo": "Debates e entrevistas", "tipo": "Imprensa", "periodo": "2024", "descricao": "Participação em debates e mesas na mídia fluminense." }
+      ],
+      "redes": [
+        { "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Marcelo_Queiroz" },
+        { "label": "Câmara", "url": "https://www.camara.leg.br/deputados/160161" }
+      ]
+    },
+    {
+      "nome": "Rodrigo Amorim",
+      "partido": "UNIÃO",
+      "numero": 44,
+      "vice": { "nome": "Fred Pacheco", "partido": "MOBILIZA" },
+      "coligacao": "Força para Mudar (UNIÃO · MOBILIZA)",
+      "situacao": "Inapto",
+      "resultado": { "votos": 34117, "pct_validos": "1,11%" },
+      "mandato": "Candidatura inapta — sem mandato como prefeito.",
+      "detalhes": "Deputado estadual; candidato do União Brasil com vice do Mobiliza.",
+      "estrategia_divulgacao": "Planejamento típico de campanha majoritária com União e Mobiliza: mídia, redes e atos de rua (referência de época — candidatura posteriormente indeferida/inapta conforme TSE).",
+      "agenda_eventos": [
+        { "titulo": "Agenda de campanha (referência)", "tipo": "Rua / mídia", "periodo": "2024", "descricao": "Conforme calendário eleitoral, com divulgação em redes e eventos até decisão judicial sobre a candidatura." }
+      ],
+      "redes": [{ "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Rodrigo_Amorim" }]
+    },
+    {
+      "nome": "Tarcísio Motta",
+      "partido": "PSOL",
+      "numero": 50,
+      "vice": { "nome": "Renata Souza", "partido": "PSOL" },
+      "coligacao": "O Rio Merece Mais (Fed. PSOL Rede · PCB)",
+      "situacao": "Concorrendo",
+      "resultado": { "votos": 129344, "pct_validos": "4,20%" },
+      "mandato": "Não eleito prefeito — permanece no mandato de deputado federal.",
+      "detalhes": "Deputado federal pelo PSOL; professor e ex-vereador do Rio.",
+      "estrategia_divulgacao": "Campanha da federação PSOL-REDE com PCB: ênfase em cultura, direitos humanos e periferia; debates, plenárias abertas, conteúdo digital e presença forte em universidades e fóruns progressistas.",
+      "agenda_eventos": [
+        { "titulo": "Plenárias e cultura de campanha", "tipo": "Encontro aberto", "periodo": "2024", "descricao": "Shows, sarau político e rodas de conversa com apoiadores." },
+        { "titulo": "Caminhadas e panfletagem", "tipo": "Rua", "periodo": "ago.–out. 2024", "descricao": "Agenda em várias regiões da capital com militância da federação." },
+        { "titulo": "Debates", "tipo": "TV / web", "periodo": "2024", "descricao": "Participação nos debates majoritários da capital." }
+      ],
+      "redes": [
+        { "label": "Wikipédia", "url": "https://pt.wikipedia.org/wiki/Tarc%C3%ADsio_Motta" },
+        { "label": "Câmara", "url": "https://www.camara.leg.br/deputados/178865" }
+      ]
+    }
+  ],
+  "suplementares_2025": [
+    {
+      "municipio": "Três Rios",
+    "uf": "RJ",
+    "ibge": 3306008,
+    "data_votacao": "2025-10-05",
+    "mandato_eleito": "Chapa vencedora na suplementar de 5/10/2025 exerce mandato de prefeito e vice até 31 de dezembro de 2028.",
+    "nota": "Candidaturas e resultado conforme TRE-RJ e TSE. Votos dos demais colocados: consulte boletins no TRE-RJ.",
+    "candidatos": [
+      {
+        "nome": "Anderson Bento de Medeiros",
+        "nome_urna": "Professor Anderson Muriçoca",
+        "partido": "PRD",
+        "numero": null,
+        "vice": { "nome": "Jozemar de Lima", "partido": "PRD" },
+        "coligacao": "Chapa PRD",
+        "situacao": "Concorreu",
+        "mandato": "Não eleito prefeito nesta suplementar.",
+        "detalhes": "Candidato do PRD; conhecido como professor Anderson Muriçoca.",
+        "estrategia_divulgacao": "Campanha municipal enxuta na suplementar: reforço da imagem de educador, visitas a bairros, panfletagem e peças locais (rádio comunitária, redes e WhatsApp de apoiadores).",
+        "agenda_eventos": [
+          { "titulo": "Caminhadas e reuniões em Três Rios", "tipo": "Rua", "periodo": "ago.–out. 2025", "descricao": "Agenda em escolas e praças com equipe reduzida típica de suplementar." },
+          { "titulo": "Comício ou ato de encerramento (referência)", "tipo": "Evento", "periodo": "pré-05/10/2025", "descricao": "Conforme calendário TRE-RJ — conferir registros de campanha no DivulgaCandContas." }
+        ],
+        "redes": [
+          { "label": "TRE-RJ (pleito)", "url": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/eleicao-suplementar-de-tres-rios-2025" }
+        ]
+      },
+      {
+        "nome": "Beatriz Retto Bogossian",
+        "nome_urna": "Bia Bogossian",
+        "partido": "PSD",
+        "numero": null,
+        "vice": { "nome": "Juliano Maia", "partido": "PSD" },
+        "coligacao": "Chapa PSD",
+        "situacao": "Concorreu",
+        "mandato": "Não eleita prefeita nesta suplementar.",
+        "detalhes": "Candidata do PSD à Prefeitura de Três Rios na suplementar.",
+        "estrategia_divulgacao": "Campanha com apoio da estrutura do PSD: materiais gráficos, carros de som, entrevistas na mídia local e articulação com lideranças políticas do médio Paraíba do Sul.",
+        "agenda_eventos": [
+          { "titulo": "Visitas e café com lideranças", "tipo": "Reunião", "periodo": "2025", "descricao": "Rodadas com setores comerciais e associações de bairro." },
+          { "titulo": "Adesivaço e porta a porta", "tipo": "Mobilização", "periodo": "set. 2025", "descricao": "Equipes volantes com material oficial da campanha." }
+        ],
+        "redes": [
+          { "label": "TRE-RJ (pleito)", "url": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/eleicao-suplementar-de-tres-rios-2025" }
+        ]
+      },
+      {
+        "nome": "Jonas Mascarenhas Macedo",
+        "nome_urna": "Jonas Dico",
+        "partido": "PODE",
+        "numero": null,
+        "vice": { "nome": "Arsonval Macedo Liliu", "partido": "MDB" },
+        "coligacao": "Três Rios Não Pode Parar (Podemos · MDB)",
+        "situacao": "Eleito",
+        "resultado": { "votos": 16182, "pct_validos": "40,19%" },
+        "mandato": "Eleito prefeito — mandato até 31/12/2028 (com vice pelo MDB na chapa vencedora).",
+        "detalhes": "Eleito na suplementar de 2025; coligação Podemos e MDB.",
+        "estrategia_divulgacao": "Coligação Podemos-MDB com foco em rua, comícios de médio porte, redes sociais e presença em programas de rádio locais; mensagem de mudança administrativa e diálogo com setores produtivos.",
+        "agenda_eventos": [
+          { "titulo": "Carreatas e caminhadas (Três Rios)", "tipo": "Rua", "periodo": "2025", "descricao": "Percursos em bairros centrais e periferia com apoiadores dos dois partidos." },
+          { "titulo": "Encontro de encerramento", "tipo": "Comício", "periodo": "pré-votação 05/10/2025", "descricao": "Evento de fechamento conforme praxe de campanha suplementar — detalhes nas prestações de contas." },
+          { "titulo": "Apuração e pronunciamento", "tipo": "Pós-eleição", "data": "2025-10-05", "descricao": "Acompanhamento da totalização e comunicação do resultado (TRE-RJ / TSE)." }
+        ],
+        "redes": [
+          { "label": "Resultados TRE-RJ", "url": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/resultados" },
+          { "label": "Notícia TSE", "url": "https://www.tse.jus.br/comunicacao/noticias/2025/Outubro/confira-os-resultados-das-eleicoes-no-parana-e-no-rio-de-janeiro-ocorridas-no-domingo-5" }
+        ]
+      },
+      {
+        "nome": "Jorge Luis de Almeida Junior",
+        "partido": "DC",
+        "numero": null,
+        "vice": { "nome": "Luis Fernando Coelho", "partido": "DC" },
+        "coligacao": "Chapa DC",
+        "situacao": "Concorreu",
+        "mandato": "Não eleito prefeito nesta suplementar.",
+        "detalhes": "Candidato do Democracia Cristã (DC).",
+        "estrategia_divulgacao": "Campanha com base em voluntários, panfletagem em igrejas e comunidades e pequenos comícios; ênfase em valores da legenda e propostas de gestão municipal.",
+        "agenda_eventos": [
+          { "titulo": "Reuniões com eleitores", "tipo": "Porta a porta", "periodo": "2025", "descricao": "Visitas domiciliares e distribuição de santinho." }
+        ],
+        "redes": [
+          { "label": "TRE-RJ (pleito)", "url": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/eleicao-suplementar-de-tres-rios-2025" }
+        ]
+      },
+      {
+        "nome": "Juarez de Souza Pereira",
+        "nome_urna": "Juarez da Saúde",
+        "partido": "SOLIDARIEDADE",
+        "numero": null,
+        "vice": { "nome": "Jacqueson Martins Lima", "partido": "NOVO" },
+        "coligacao": "Três Rios Merece Mais (Solidariedade · Novo)",
+        "situacao": "Concorreu",
+        "resultado": { "votos": 13855, "pct_validos": "34,41%" },
+        "mandato": "Não eleito prefeito nesta suplementar (2º lugar nas urnas).",
+        "detalhes": "Candidato do Solidariedade em coligação com o Novo; 2º mais votado conforme TSE.",
+        "estrategia_divulgacao": "Coligação Solidariedade-Novo com foco em saúde e gestão enxuta: carreatas, entrevistas, redes e articulação com servidores e usuários da saúde municipal (tema central do nome de urna).",
+        "agenda_eventos": [
+          { "titulo": "Visitas a unidades de saúde e bairros", "tipo": "Campanha temática", "periodo": "2025", "descricao": "Agenda pública ligada à pauta da saúde e mobilização de apoiadores." },
+          { "titulo": "Debate ou entrevistas locais", "tipo": "Mídia", "periodo": "2025", "descricao": "Participação em espaços de imprensa regional conforme convites." }
+        ],
+        "redes": [
+          { "label": "Resultados TRE-RJ", "url": "https://www.tre-rj.jus.br/eleicoes/eleicoes-plebiscitos-e-referendos/eleicoes-suplementares/2025/tres-rios/resultados" }
+        ]
+      }
+    ]
+    }
+  ],
+  "candidaturas_por_municipio": [
+    {
+      "ibge": 3306008,
+      "municipio": "Três Rios",
+      "prefeito_vice": {
+        "nota": "A eleição suplementar de 05/10/2025 decidiu apenas prefeito e vice-prefeito. Os mandatos de vereador vigentes são os da eleição ordinária de 2024; suplentes de vereador referem-se à mesma eleição proporcional de 2024."
+      },
+      "vereadores": {
+        "nota": "Candidaturas a vereador (titulares), números de urna, partidos/coligações, votos nominais e situação de registro: consulte o DivulgaCandContas (Eleições 2024, RJ, Três Rios) e os dados abertos de resultados 2024 do TSE. Lista completa não é reproduzida aqui.",
+        "amostra": []
+      },
+      "suplentes": {
+        "nota": "Suplentes de vereador figuram no resultado da eleição proporcional de 2024; a ordem de suplência e eventuais convocações constam da totalização oficial e da legislação aplicável. Ver arquivos do TSE e comunicados do TRE-RJ.",
+        "amostra": []
+      }
+    }
+  ],
+  "mandatarios_municipios": [],
+  "links": {
+    "divulgacandcontas": "https://divulgacandcontas.tse.jus.br/divulga/#/",
+    "dados_abertos_resultados_2024": "https://dadosabertos.tse.jus.br/dataset/resultados-2024",
+    "tse_eleicoes": "https://www.tse.jus.br/eleicoes",
+    "tse_calendario_suplementares_2025": "https://www.tse.jus.br/eleicoes/eleicoes-suplementares/calendarios/calendario-das-eleicoes-suplementares-2025",
+    "ibge_municipios_rj": "https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios?orderBy=nome",
+    "tre_rj_dados_eleicoes": "https://www.tre-rj.jus.br/institucional/memoria/dados-das-eleicoes",
+    "tre_rj_busca_dados_historicos": "https://apps.tre-rj.jus.br/site/eleicoes/dados_historicos_plone/busca_dados/index.jsp"
+  }
+}

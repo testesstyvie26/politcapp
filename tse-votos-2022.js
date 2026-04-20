@@ -1,6 +1,9 @@
 /**
  * Votação nominal — Deputado Federal — 1º turno 2022 (eleição TSE 546).
  * Fonte: https://resultados.tse.jus.br/oficial/ele2022/546/dados-simplificados/
+ *
+ * `ensureUfs` carrega só as UFs pedidas (ex.: RJ na abertura do index).
+ * `load` / `loadFull` mantêm o comportamento anterior: todas as UFs.
  */
 (function (global) {
   var TSE_UFS = [
@@ -11,6 +14,7 @@
 
   var _cache = null;
   var _loading = null;
+  var _loadedUfs = new Set();
 
   function normalizeName(s) {
     if (!s) return "";
@@ -34,54 +38,100 @@
     return i > 0 ? cc.slice(0, i).trim() : cc.trim();
   }
 
-  function loadTseDepFederal2022() {
-    if (_cache) return Promise.resolve(_cache);
-    if (_loading) return _loading;
+  function emptyCache() {
+    return { byKey: new Map(), bySqcand: new Map(), byUf: new Map(), all: [] };
+  }
 
-    _loading = Promise.all(
-      TSE_UFS.map(function (uf) {
-        var url = TSE_BASE + "/" + uf + "/" + uf + "-c0006-e000546-r.json";
-        return fetch(url).then(function (res) {
-          if (!res.ok) throw new Error("TSE " + uf.toUpperCase() + ": " + res.status);
-          return res.json();
-        });
-      })
-    ).then(function (arr) {
-      var byKey = new Map();
-      var bySqcand = new Map();
-      var byUf = new Map();
-      var all = [];
-
-      arr.forEach(function (data, idx) {
-        var uf = TSE_UFS[idx].toUpperCase();
-        var cands = data.cand || [];
-        cands.forEach(function (c) {
-          var row = {
-            uf: uf,
-            sqcand: String(c.sqcand),
-            n: c.n,
-            nm: c.nm,
-            cc: c.cc,
-            st: c.st,
-            dvt: c.dvt,
-            vap: parseVap(c.vap),
-            pvap: c.pvap,
-          };
-          all.push(row);
-          var k = uf + "|" + normalizeName(c.nm);
-          if (!byKey.has(k)) byKey.set(k, row);
-          bySqcand.set(row.sqcand, row);
-          if (!byUf.has(uf)) byUf.set(uf, []);
-          byUf.get(uf).push(row);
-        });
-      });
-
-      _cache = { byKey: byKey, bySqcand: bySqcand, byUf: byUf, all: all };
-      _loading = null;
-      return _cache;
+  function ingestJsonIntoCache(cache, ufLower, data) {
+    var uf = ufLower.toUpperCase();
+    var cands = data.cand || [];
+    cands.forEach(function (c) {
+      var row = {
+        uf: uf,
+        sqcand: String(c.sqcand),
+        n: c.n,
+        nm: c.nm,
+        cc: c.cc,
+        st: c.st,
+        dvt: c.dvt,
+        vap: parseVap(c.vap),
+        pvap: c.pvap,
+      };
+      cache.all.push(row);
+      var k = uf + "|" + normalizeName(c.nm);
+      if (!cache.byKey.has(k)) cache.byKey.set(k, row);
+      cache.bySqcand.set(row.sqcand, row);
+      if (!cache.byUf.has(uf)) cache.byUf.set(uf, []);
+      cache.byUf.get(uf).push(row);
     });
+  }
 
+  function fetchUfJson(ufLower) {
+    var u = String(ufLower).toLowerCase();
+    var url = TSE_BASE + "/" + u + "/" + u + "-c0006-e000546-r.json";
+    return fetch(url).then(function (res) {
+      if (!res.ok) throw new Error("TSE " + u.toUpperCase() + ": " + res.status);
+      return res.json();
+    });
+  }
+
+  function loadFull() {
+    if (_cache && _loadedUfs.size >= TSE_UFS.length) return Promise.resolve(_cache);
+    var missing = TSE_UFS.filter(function (u) {
+      return !_loadedUfs.has(u.toUpperCase());
+    });
+    if (!missing.length) return Promise.resolve(_cache);
+    if (!_cache) _cache = emptyCache();
+    if (_loading) return _loading.then(function () {
+      return loadFull();
+    });
+    _loading = Promise.all(missing.map(fetchUfJson))
+      .then(function (arr) {
+        missing.forEach(function (uf, idx) {
+          ingestJsonIntoCache(_cache, uf, arr[idx]);
+          _loadedUfs.add(uf.toUpperCase());
+        });
+        _loading = null;
+        return _cache;
+      })
+      .catch(function (e) {
+        _loading = null;
+        throw e;
+      });
     return _loading;
+  }
+
+  /** Carrega apenas UFs ainda não presentes no cache (ex.: ['rj']). */
+  function ensureUfs(ufsLowerArr) {
+    if (!ufsLowerArr || !ufsLowerArr.length) return loadFull();
+    var need = ufsLowerArr.filter(function (u) {
+      return u && !_loadedUfs.has(String(u).toUpperCase());
+    });
+    if (!need.length) return Promise.resolve(_cache);
+    if (!_cache) _cache = emptyCache();
+    if (_loading) {
+      return _loading.then(function () {
+        return ensureUfs(ufsLowerArr);
+      });
+    }
+    _loading = Promise.all(need.map(fetchUfJson))
+      .then(function (arr) {
+        need.forEach(function (uf, idx) {
+          ingestJsonIntoCache(_cache, uf, arr[idx]);
+          _loadedUfs.add(uf.toUpperCase());
+        });
+        _loading = null;
+        return _cache;
+      })
+      .catch(function (e) {
+        _loading = null;
+        throw e;
+      });
+    return _loading;
+  }
+
+  function loadTseDepFederal2022() {
+    return loadFull();
   }
 
   function lookupVote(cache, uf, names) {
@@ -104,6 +154,8 @@
 
   global.TSE2022DF = {
     load: loadTseDepFederal2022,
+    loadFull: loadFull,
+    ensureUfs: ensureUfs,
     lookupVote: lookupVote,
     normalizeName: normalizeName,
     siglaFromCc: siglaFromCc,

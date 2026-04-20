@@ -474,8 +474,11 @@
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html" aria-current="page">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
       <a href="executivo.html">Visão executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="transparencia.html">Transparência</a>
       <a href="midia-social.html">Mídia social</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
@@ -489,7 +492,8 @@
       <p>
         Lista paginada com base nos deputados em exercício na
         <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API v2 da Câmara</a>
-        (mandato / legislatura atual). Ajuste filtros e use a paginação para navegar.
+        (mandato / legislatura atual). A página abre com filtro <strong>RJ</strong> e votação TSE 2022 só para o Rio;
+        altere a UF ou limpe os filtros para ampliar. Use a paginação para navegar.
       </p>
     </header>
 
@@ -542,7 +546,7 @@
         <span>Partido: <strong id="statPartido">—</strong> · UF: <strong id="statUf">—</strong></span>
       </div>
       <p class="note">
-        <strong>Votos 2022</strong> (deputado federal, 1º turno) são carregados dos JSON oficiais do TSE (eleição 546). Suplentes extras aparecem abaixo quando há <strong>UF</strong> no filtro e a opção acima está marcada.
+        <strong>Votos 2022</strong> (deputado federal, 1º turno) vêm dos JSON oficiais do TSE (eleição 546). Na abertura, só o arquivo da <strong>UF selecionada</strong> (RJ) é baixado; sem filtro de UF, todos os estados. Suplentes extras aparecem quando há <strong>UF</strong> no filtro e a opção acima está marcada.
       </p>
     </section>
 
@@ -736,12 +740,23 @@
         while (true) {
           const i = next++;
           if (i >= urls.length) break;
-          results[i] = await fetchJson(urls[i]);
+          try {
+            results[i] = await fetchJson(urls[i]);
+          } catch (e) {
+            console.warn("Falha ao carregar", urls[i], e);
+            results[i] = null;
+          }
         }
       }
       const n = Math.max(1, Math.min(concurrency, urls.length));
       await Promise.all(Array.from({ length: n }, () => worker()));
       return results;
+    }
+
+    /** Respostas da API v2 da Câmara encapsulam o recurso em `.dados`. */
+    function unwrapCamaraDados(pack) {
+      if (!pack || typeof pack !== "object") return {};
+      return pack.dados != null ? pack.dados : pack;
     }
 
     function formatContact(email) {
@@ -948,21 +963,34 @@
     }
 
     async function loadPage(url) {
+      const ufTse = el("siglaUf").value.trim().toUpperCase();
+      const tseHint = ufTse
+        ? `Primeira vez nesta UF: também baixamos o JSON de votação 2022 do TSE só para <strong>${escapeHtml(ufTse)}</strong>.`
+        : `Primeira carga sem UF: baixamos os JSONs de votação 2022 do TSE (27 UFs).`;
       el("content").innerHTML =
-        '<div class="loading"><div class="spinner"></div>Buscando…<br/><span class="muted" style="font-size:0.85rem">Se for a primeira carga, também baixamos votação 2022 do TSE (27 UFs).</span></div>';
+        '<div class="loading"><div class="spinner"></div>Buscando…<br/><span class="muted" style="font-size:0.85rem">' +
+        tseHint +
+        "</span></div>";
       el("pager").hidden = true;
       el("painelSuplentes").hidden = true;
       el("painelSuplentes").innerHTML = "";
 
       try {
-        let tseCache = null;
-        if (window.TSE2022DF) {
-          try {
-            tseCache = await TSE2022DF.load();
-          } catch (te) {
-            console.warn(te);
-          }
-        }
+        const tseLoadPromise =
+          window.TSE2022DF != null
+            ? (ufTse
+                ? TSE2022DF.ensureUfs([ufTse.toLowerCase()])
+                : TSE2022DF.loadFull()
+              ).catch((te) => {
+                console.warn(te);
+                return null;
+              })
+            : Promise.resolve(null);
+        const tseTimeoutMs = 18_000;
+        const tseWithCap = Promise.race([
+          tseLoadPromise,
+          new Promise((r) => setTimeout(() => r(null), tseTimeoutMs)),
+        ]);
 
         const data = await fetchJson(url);
         const lista = data.dados || [];
@@ -979,9 +1007,10 @@
         const pageSize = parseInt(el("itens").value, 10) || 20;
 
         const detailUrls = lista.map((item) => `${API}/${item.id}`);
-        const details = await fetchJsonConcurrent(detailUrls, 5);
+        const [details, tseCache] = await Promise.all([fetchJsonConcurrent(detailUrls, 5), tseWithCap]);
+
         const rows = lista.map((item, i) => {
-          const det = details[i] || {};
+          const det = unwrapCamaraDados(details[i]);
           const u = det.ultimoStatus || {};
           const site = (det.urlWebsite || "").trim();
           const redes = [...new Set([...extractRedesUrls(det.redeSocial), ...(site ? [site] : [])])];
@@ -1097,6 +1126,9 @@
     });
 
     refreshUfSelect();
+    if ([...el("siglaUf").options].some((o) => o.value === "RJ")) {
+      el("siglaUf").value = "RJ";
+    }
     loadPage(initialUrl());
   </script>
 </body>
