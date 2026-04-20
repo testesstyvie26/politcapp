@@ -168,6 +168,55 @@
     .format-card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--text); }
     .checklist { padding-left: 1.15rem; margin: 0; color: var(--muted); font-size: 0.9rem; }
     .checklist li { margin-bottom: 0.45rem; }
+
+    .post-sample {
+      margin-top: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.22);
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .post-sample .ps-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ec5ff;
+      margin-bottom: 0.45rem;
+    }
+    .post-sample p { margin: 0 0 0.45rem; color: var(--muted); }
+    .post-sample p:last-child { margin-bottom: 0; }
+    .post-sample strong { color: var(--text); }
+    .post-sample .ps-quote {
+      display: block;
+      margin: 0.35rem 0 0;
+      padding: 0.5rem 0.65rem;
+      border-left: 3px solid var(--accent);
+      background: rgba(61, 139, 253, 0.08);
+      color: var(--text);
+      font-style: italic;
+    }
+    .exemplos-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    .exemplo-bloco h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .exemplo-bloco .meta {
+      font-size: 0.75rem;
+      color: #9ec5ff;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
   </style>
 </head>
 <body>
@@ -206,6 +255,7 @@
     <div class="tabs" role="tablist" aria-label="Seções mídia social">
       <button type="button" role="tab" id="tab-termo" aria-selected="true" aria-controls="panel-termo">Termômetros temáticos</button>
       <button type="button" role="tab" id="tab-formatos" aria-selected="false" aria-controls="panel-formatos">Formatos e plataformas</button>
+      <button type="button" role="tab" id="tab-exemplos" aria-selected="false" aria-controls="panel-exemplos">Exemplos de postagens</button>
       <button type="button" role="tab" id="tab-check" aria-selected="false" aria-controls="panel-check">Ética e legislação</button>
     </div>
 
@@ -220,42 +270,115 @@
 
     <section class="panel tab-panel" role="tabpanel" id="panel-formatos" aria-labelledby="tab-formatos" hidden>
       <h2>Formatos que conversam com a agenda quente</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Padrões que costumam <strong>reter atenção</strong> em 2025–2026: gancho nos primeiros 2 segundos, texto na tela (muita gente assiste sem som),
+        “salvar depois”, carrossel com último slide de fonte, e vídeos com <strong>uma ideia por post</strong> (não discurso inteiro).
+      </p>
       <div class="format-grid">
         <article class="format-card">
           <h3>Tema em alta no noticiário</h3>
-          <p class="note" style="margin:0 0 0.5rem">Quando o termômetro sobe por crise ou anúncio governamental.</p>
+          <p class="note" style="margin:0 0 0.5rem">Picos quando há crise, CPI, anúncio ou dado forte do IBGE.</p>
           <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
-            <li>Vídeo curto com <strong>contexto em 3 frases</strong> + o que muda para o cidadão.</li>
-            <li>Carrossel com <strong>fonte na última tela</strong> (link ou órgão).</li>
-            <li>Evite sensacionalismo; priorize serviço público e clareza.</li>
+            <li><strong>Face-cam + print da manchete</strong> no fundo (greenscreen): “O que isso muda pra você?”</li>
+            <li>Carrossel <strong>5 slides máximo</strong>: contexto → dado → impacto no bolso/serviço → o que acompanhar → fonte.</li>
+            <li>Evite clickbait falso; o título da última tela deve bater com o conteúdo.</li>
           </ul>
         </article>
         <article class="format-card">
-          <h3>Tema estrutural (sempre relevante, pouco “hype”)</h3>
-          <p class="note" style="margin:0 0 0.5rem">Saúde básica, transporte, educação infantil, saneamento.</p>
+          <h3>Conteúdo evergreen (sempre útil)</h3>
+          <p class="note" style="margin:0 0 0.5rem">Performa em busca e compartilhamentos tardios: tutoriais e direitos.</p>
           <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
-            <li>Histórias de <strong>antes / depois</strong> ou “um dia na vida” em serviço público.</li>
-            <li>Pergunta aberta: “O que falta no seu bairro?” + resumo de respostas depois.</li>
-            <li>Ritmo semanal estável constrói confiança mais que picos de viralização.</li>
+            <li><strong>“3 coisas que…”</strong> ou <strong>“Erro comum ao…”</strong> (listas curtas).</li>
+            <li>Antes/depois de obra ou fila com <strong>data no canto</strong> da imagem.</li>
+            <li>Enquete + post de fechamento no dia seguinte com o que as pessoas pediram.</li>
           </ul>
         </article>
         <article class="format-card">
-          <h3>Redes em que o debate é mais acalorado</h3>
-          <p class="note" style="margin:0 0 0.5rem">Comentários rápidos e compartilhamento.</p>
+          <h3>Debate acelerado (X / comentários)</h3>
+          <p class="note" style="margin:0 0 0.5rem">Threads e respostas em vídeo viram prova social.</p>
           <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
-            <li><strong>Resposta a comentário</strong> em vídeo: humaniza e mostra posição.</li>
-            <li>Threads com numeração: problema → dado → proposta → como acompanhar.</li>
-            <li>Moderação: regras claras; não alimente ofensas ou desinformação.</li>
+            <li>Thread <strong>numerada</strong> (1/5…): tese → dado → contraponto honesto → proposta → link.</li>
+            <li><strong>Stitch/dueto</strong> só com trechos legítimos e contexto; cite a fonte original.</li>
+            <li>Fixar regra nos comentários: sem ofensa pessoal, debate sobre ideia.</li>
           </ul>
         </article>
         <article class="format-card">
-          <h3>WhatsApp e grupos de bairro</h3>
-          <p class="note" style="margin:0 0 0.5rem">Termômetro costuma refletir demandas muito locais.</p>
+          <h3>WhatsApp e comunidades</h3>
+          <p class="note" style="margin:0 0 0.5rem">Áudio e imagem simples costumam mais que links longos.</p>
           <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
-            <li>Cards leves com <strong>1 fato + 1 compromisso verificável</strong>.</li>
-            <li>Horários de envio que respeitem a rotina (evite madrugada).</li>
-            <li>Peça permissão e contexto ao reutilizar relatos de moradores.</li>
+            <li>Imagem com <strong>no máximo 4 linhas</strong> + um link curto ou “responda com seu bairro”.</li>
+            <li>Áudio de 45–60 s com tom de conversa, não de comício.</li>
+            <li>Evite encaminhamento em cadeia sem checagem; marque “segundo fulano de tal” só se for verdade.</li>
           </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-exemplos" aria-labelledby="tab-exemplos" hidden>
+      <h2>Modelos de post no estilo do que costuma viralizar</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Textos <strong>fictícios</strong> para você adaptar (bairro, cargo, números e fontes reais). Estrutura inspirada em ganchos comuns em Reels, TikTok, Threads e carrosséis de perfis de política e educação cívica no Brasil.
+      </p>
+      <div class="exemplos-grid">
+        <article class="exemplo-bloco">
+          <div class="meta">Reels / TikTok · voz + legenda na tela</div>
+          <h3>“POV: você precisa do SUS amanhã”</h3>
+          <div class="post-sample">
+            <div class="ps-label">0–2 s (gancho na tela)</div>
+            <span class="ps-quote">POV: acordou mal e não sabe por onde começar no SUS.</span>
+            <p><strong>2–12 s:</strong> “Primeiro: busque a UBS do seu território — é porta de entrada. Segundo: leve documento com foto e CPF. Terceiro: se for urgência grave, vá ao pronto-socorro, mas saiba que nem tudo é emergência.”</p>
+            <p><strong>12–22 s:</strong> “Se te mandaram voltar: pergunta em que posto fica a regulação e anota o protocolo.”</p>
+            <p><strong>Fechamento + CTA:</strong> “Salva pra lembrar. Fonte: orientação do Ministério da Saúde sobre atenção primária — confere no site antes de repassar.”</p>
+          </div>
+        </article>
+        <article class="exemplo-bloco">
+          <div class="meta">Carrossel · 5 slides</div>
+          <h3>“Inflação subiu: o que muda no seu bolso?”</h3>
+          <div class="post-sample">
+            <p><strong>Slide 1:</strong> Título grande — “3 efeitos práticos quando o custo de vida sobe” + sua cidade/UF.</p>
+            <p><strong>Slide 2:</strong> “Aluguel e financiamento: pressão nos juros e no orçamento familiar.” (ícone casa)</p>
+            <p><strong>Slide 3:</strong> “Cesta básica e transporte: onde as famílias mais sentem no mês.”</p>
+            <p><strong>Slide 4:</strong> “O que o poder público pode fazer na sua esfera” — 2 linhas realistas, sem promessa mágica.</p>
+            <p><strong>Slide 5:</strong> “Fontes: IBGE IPCA [mês/ano] · Banco Central” + seu site ou link da matéria oficial.</p>
+          </div>
+        </article>
+        <article class="exemplo-bloco">
+          <div class="meta">Thread · X</div>
+          <h3>Segurança sem sensacionalismo</h3>
+          <div class="post-sample">
+            <p><strong>1/5</strong> Ontem rolou debate forte sobre segurança aqui em [cidade]. Quero separar três coisas que às vezes misturam no mesmo post 🧵</p>
+            <p><strong>2/5</strong> <strong>Prevenção social</strong> — escola no contraturno, iluminação, emprego. Efeito é médio prazo, mas muda o jogo.</p>
+            <p><strong>3/5</strong> <strong>Polícia e justiça</strong> — resposta a crime e investigação. Dados de [fonte estadual/federal], não achismo.</p>
+            <p><strong>4/5</strong> Se alguém te mandar vídeo de suposta facção sem contexto: não compartilha. Desinformação coloca gente inocente em risco.</p>
+            <p><strong>5/5</strong> Proposta: [uma linha]. Como acompanhar: [órgão + canal oficial].</p>
+          </div>
+        </article>
+        <article class="exemplo-bloco">
+          <div class="meta">Stories · sequência 3 telas</div>
+          <h3>Obra ou promessa na cidade</h3>
+          <div class="post-sample">
+            <p><strong>Tela 1 (foto ampla):</strong> sticker “ANTES” + data no canto.</p>
+            <p><strong>Tela 2 (mesmo ângulo):</strong> sticker “HOJE” + o que mudou em uma frase.</p>
+            <p><strong>Tela 3:</strong> caixa de pergunta “O que ainda falta aí?” + link para portal da transparência da prefeitura/estado.</p>
+          </div>
+        </article>
+        <article class="exemplo-bloco">
+          <div class="meta">Legenda Instagram / vídeo longo</div>
+          <h3>Educação — direito do estudante</h3>
+          <div class="post-sample">
+            <span class="ps-quote">Três direitos do estudante da rede pública que vale mandar no grupo da escola 👇</span>
+            <p>1) Transporte escolar quando a lei prever no seu caso.<br>2) Merenda e cantinho seguro para denúncia de violência.<br>3) Conselho escolar aberto pra pais ouvidos.</p>
+            <p>Se algo não tá sendo cumprido, o caminho é protocolo na secretaria + conselho tutelar quando for caso de violência. Compartilha com quem precisa.</p>
+            <p><strong>Hashtags (use poucas e relevantes):</strong> #educação #direitodocidadão #[cidade] (evite lista gigante).</p>
+          </div>
+        </article>
+        <article class="exemplo-bloco">
+          <div class="meta">WhatsApp · card simples</div>
+          <h3>Reunião ou plantão</h3>
+          <div class="post-sample">
+            <span class="ps-quote">📍 [Bairro] — quinta, 19h, [local público].<br>Vamos ouvir demandas de saúde e transporte. Entrada gratuita.<br>Confirma no reply se leva 1 minuto pra falar de [tema].</span>
+            <p class="note" style="margin-top:0.5rem">Sem promessa de benefício em troca de voto; texto só de convocação e escuta.</p>
+          </div>
         </article>
       </div>
     </section>
@@ -283,11 +406,16 @@
         rotulo: "Agenda geralmente quente",
         sinais: "Filas, epidemias sazonais, medicamentos, atenção primária, greves ou pauta de investimento.",
         ideias: [
-          "Vídeo explicando um direito do usuário do SUS (com linguagem simples).",
-          "Depoimento de profissional ou paciente (com autorização) + política pública relacionada.",
-          "Série “pergunte ao especialista” com respostas gravadas de 30 s.",
+          "Série “mito vs. realidade” com print de site do SUS ou Ministério (1 mito por vídeo).",
+          "B-roll de UBS + narração: “o que você tem direito antes de ir ao pronto-socorro”.",
+          "Stitch com notícia de fila: você explica o fluxo correto em 20 s, sem culpar paciente.",
         ],
-        tags: ["Reels", "Stories", "Carrossel educativo"],
+        tags: ["Reels", "Stitch", "Carrossel “3 mitos”"],
+        exemplo: {
+          gancho: "Ninguém te conta: às vezes a UBS resolve sem você ir parar 8h na emergência.",
+          meio: "Mostre no mapa onde fica a unidade mais próxima. Explique triagem e horário de busca ativa, se houver na cidade.",
+          fechamento: "Comenta seu bairro. Fonte: página da secretaria municipal ou estadual de saúde.",
+        },
       },
       {
         titulo: "Segurança pública",
@@ -295,11 +423,16 @@
         rotulo: "Alto engajamento emocional",
         sinais: "Notícias de violência, operações, debates sobre polícia e prevenção, medo urbano.",
         ideias: [
-          "Separar prevenção, justiça e reintegração em posts distintos para não misturar tudo num slogan.",
-          "Mapa mental: causas estruturais vs. ações imediatas (tom respeitoso, sem estigmatizar territórios).",
-          "Destaque programas com evidência ou orçamento público verificável.",
+          "Vídeo “duas verdades e 1 mito” com texto na tela — mito sempre desmontado com dado ou especialista.",
+          "Mapa de calor só com dados oficiais; nunca com rumores de bairro.",
+          "Live com especialista anunciada com 24h de antecedência (padrão que retém lembrete).",
         ],
-        tags: ["Thread", "Live com especialista", "Texto + gráfico"],
+        tags: ["Thread 1/6", "Live Q&A", "Texto + dado oficial"],
+        exemplo: {
+          gancho: "Três perguntas antes de compartilhar vídeo de ‘operação’ no Zap.",
+          meio: "1) Tem data e local verificáveis? 2) A polícia ou imprensa local confirmou? 3) Esse vídeo não expõe menor ou inocente?",
+          fechamento: "Desinformação sobre segurança mata. Link do canal oficial da SSP [UF].",
+        },
       },
       {
         titulo: "Economia, emprego e preços",
@@ -307,11 +440,16 @@
         rotulo: "Muito sensível em períodos de crise",
         sinais: "Inflação, juros, salário mínimo, auxílios, fechamento de empresas locais.",
         ideias: [
-          "“O que significa para a sua região?” ao comentar dado nacional (IBGE, BC).",
-          "Pequenos comerciantes: micro vídeos de impacto de política tributária ou crédito.",
-          "Evite certezas sobre mercado; cite fonte e data do indicador.",
+          "Gráfico simples (Canva) com uma linha do IPCA ou juros — narração em tom de professor, não de trader.",
+          "“Quanto sobra no salário mínimo?” com cesta hipotética — cite preços médios da região se tiver pesquisa.",
+          "Depoimento de comerciante com 1 número (aluguel, energia), não com político no centro.",
         ],
-        tags: ["Card dado", "Vídeo explicador", "Enquete"],
+        tags: ["Gráfico + voz", "Carrossel dado", "Enquete + resultado"],
+        exemplo: {
+          gancho: "O dado saiu hoje — mas o que ele muda na sua mesa?",
+          meio: "Escolha um único indicador (ex.: IPCA de alimentação). Explique em 4 frases. Mostre data exata do IBGE na tela.",
+          fechamento: "Salva o gráfico. Próximo post: o que o município pode fazer com tributo local (sem prometer % mágico).",
+        },
       },
       {
         titulo: "Educação",
@@ -319,11 +457,16 @@
         rotulo: "Recorrente, picos em reformas e greves",
         sinais: "Merenda, transporte escolar, ENEM, alfabetização, carreira docente.",
         ideias: [
-          "Tour por escola pública (autorização da secretaria) mostrando demandas reais.",
-          "Checklist “direitos do estudante” em carrossel.",
-          "Convite a conselhos escolares e pais de alunos para lives curtas.",
+          "Trend de “um dia com…” versão professor(a) ou estudante (autorização por escrito).",
+          "Carrossel “5 passos para cobrar merenda” com prints de modelo de ofício.",
+          "Resposta a comentário hostil com tom calmo + link do FNDE ou secretaria.",
         ],
-        tags: ["Carrossel", "Live", "Depoimento"],
+        tags: ["Trend adaptado", "Carrossel passo a passo", "Reply calmo"],
+        exemplo: {
+          gancho: "5 slides: direitos que valem ouvir no grupo dos pais.",
+          meio: "Cada slide 1 direito + 1 ícone. Último slide: telefone da ouvidoria da educação e modelo de e-mail.",
+          fechamento: "Marca um pai ou mãe que precise. #educação #[sua cidade]",
+        },
       },
       {
         titulo: "Clima, desastres e meio ambiente",
@@ -331,11 +474,16 @@
         rotulo: "Sobe após eventos extremos",
         sinais: "Enchentes, queimadas, licenciamento, água e saneamento, energia.",
         ideias: [
-          "Antes do evento: post de preparo e canais oficiais de alerta.",
-          "Depois: foco em reconstrução, accountability e participação social.",
-          "Evitar greenwashing: cite órgão e projeto, não só imagem de natureza.",
+          "Checklist de mochila / documentos antes da chuva forte (formato que viraliza em alerta).",
+          "Antes/depois de área de preservação com data — combate a fake de ‘sempre foi assim’.",
+          "Parceria com ONG: ela fala 80%, você só contextualiza política pública.",
         ],
-        tags: ["Stories úteis", "Mapa ou infográfico", "Parceria ONG local"],
+        tags: ["Checklist Stories", "Antes/depois", "Dueto com especialista"],
+        exemplo: {
+          gancho: "Se chover forte nas próximas 48h, salva isso.",
+          meio: "Lista: documentos em saco plástico, medicamentos, contato da defesa civil [número oficial], ponto de apoio mais próximo.",
+          fechamento: "Não compartilha áudio sem fonte. Só alerta do INMET/Cemaden/prefeitura.",
+        },
       },
       {
         titulo: "Infraestrutura e mobilidade",
@@ -343,11 +491,16 @@
         rotulo: "Forte apelo local",
         sinais: "Obras paradas, transporte coletivo, estradas, internet, energia.",
         ideias: [
-          "Linha do tempo de obra ou promessa com datas públicas.",
-          "“Um dia no ônibus” ou relato de deslocamento intermunicipal.",
-          "Comparar investimento per capita ou por região (fonte técnica).",
+          "Time-lapse curto de trajeto de ônibus com timer no canto (padrão ‘rotina brutal’ que engaja).",
+          "Print de licitação no portal com seta para prazo — ensina o cidadão a fiscalizar.",
+          "Série “obra prometida”: só usa documento público com data.",
         ],
-        tags: ["Vídeo de rua", "Linha do tempo", "Antes/depois"],
+        tags: ["Time-lapse", "Print portal", "Série documentada"],
+        exemplo: {
+          gancho: "45 minutos no mesmo trecho — sem cortar o vídeo. Só legendas.",
+          meio: "Mostre ponto de partida e chegada. Uma frase no meio: quantas linhas passam e onde a prefeitura prometeu intervenção.",
+          fechamento: "Comenta: qual linha você pegaria? Próximo post: o que o edital diz.",
+        },
       },
       {
         titulo: "Transparência, orçamento e participação",
@@ -355,11 +508,16 @@
         rotulo: "Cresce em escândalos e eleições",
         sinais: "Auditorias, emendas, consórcios, compras públicas, conselhos municipais.",
         ideias: [
-          "Tutorial: como acessar portal da transparência da sua esfera.",
-          "Destaque instrumentos de participação (audiência, orçamento participativo).",
-          "Linguagem acessível para relatório do TCMU, CGU ou equivalente estadual.",
+          "Tela gravada: ‘como acho empenho no portal’ em 60 s (tutorial performa bem no YouTube Shorts).",
+          "Post “pegadinha boa”: mostra valor de um item em notícia vs. valor no diário oficial.",
+          "Convite para audiência com print do edital — formato de evento gera lembrete.",
         ],
-        tags: ["Tutorial", "PDF resumido", "Live com contador ou ONG"],
+        tags: ["Screen record", "Comparativo oficial", "Evento"],
+        exemplo: {
+          gancho: "Abre o portal comigo — em 1 minuto você acha quanto foi pago em [serviço genérico].",
+          meio: "Grave a tela. Circule o valor e a data. Não acuse; mostre o dado e pergunta ‘está de acordo com o contrato?’",
+          fechamento: "Link do portal nos stories. Quem achar outro achado, manda DM (com print).",
+        },
       },
       {
         titulo: "Direitos humanos e igualdade",
@@ -367,11 +525,16 @@
         rotulo: "Pauta contínua, sensível a violações",
         sinais: "Racismo, machismo, LGBTfobia, pessoas com deficiência, povos originários.",
         ideias: [
-          "Centrar vozes do grupo afetado (convidados, não “falação sobre”).",
-          "Políticas com recorte orçamentário e meta mensurável.",
-          "Moderar comentários com critérios públicos.",
+          "Vídeo com convidado(a) da comunidade: você só faz pergunta e fecha com CTA de serviço público.",
+          "Carrossel com disque-denúncia e Lei Maria da Penha / racismo — último slide sempre serviço, não selfie.",
+          "Textão curto com trigger warning no topo (padrão que respeita a audiência).",
         ],
-        tags: ["Entrevista", "Série educativa", "Recursos de apoio"],
+        tags: ["Entrevista centrada", "Carrossel recursos", "TW no topo"],
+        exemplo: {
+          gancho: "[Aviso: violência] Hoje não é sobre mim — é sobre o que o Estado deve garantir.",
+          meio: "3 bullets com políticas concretas (casa da mulher, ouvidoria, cotas). Link OAB, Defensoria, MP.",
+          fechamento: "Se você está em risco, ligue 180. Comentários desativados se o tema for sensível.",
+        },
       },
     ];
 
@@ -401,6 +564,16 @@
           <ul>
             ${t.ideias.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}
           </ul>
+          ${
+            t.exemplo
+              ? `<div class="post-sample">
+            <div class="ps-label">Exemplo no estilo de postagens que costumam performar</div>
+            <span class="ps-quote">${escapeHtml(t.exemplo.gancho)}</span>
+            <p><strong>Desenvolvimento:</strong> ${escapeHtml(t.exemplo.meio)}</p>
+            <p><strong>Fechamento / CTA:</strong> ${escapeHtml(t.exemplo.fechamento)}</p>
+          </div>`
+              : ""
+          }
           <div class="tag-row">${t.tags.map((g) => `<span class="tag">${escapeHtml(g)}</span>`).join("")}</div>
         </article>`
       ).join("");
