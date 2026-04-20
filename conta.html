@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minha conta | Politapp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.18), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 560px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    header h1 { font-size: 1.5rem; margin: 0 0 0.5rem; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem 1.4rem;
+      box-shadow: var(--shadow);
+    }
+    .panel dl { margin: 0; display: grid; gap: 0.35rem 1rem; }
+    .panel dt { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .panel dd { margin: 0 0 0.75rem; font-size: 1rem; }
+    button {
+      font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      padding: 0.65rem 1.15rem; border-radius: 8px; border: 1px solid var(--border);
+      cursor: pointer; background: var(--surface2); color: var(--text); margin-top: 0.5rem;
+    }
+    button.primary { background: var(--accent); color: #041018; border: none; }
+    .note { color: var(--muted); font-size: 0.88rem; margin-top: 1rem; }
+    .error { color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="login.html">Entrar</a>
+    </nav>
+    <header>
+      <h1>Minha conta</h1>
+    </header>
+    <section class="panel" id="panel">
+      <p id="loading">Carregando…</p>
+      <div id="content" hidden>
+        <dl>
+          <dt>E-mail</dt>
+          <dd id="email">—</dd>
+          <dt>Nome</dt>
+          <dd id="name">—</dd>
+          <dt>Cadastro</dt>
+          <dd id="created">—</dd>
+        </dl>
+        <button type="button" class="primary" id="logout">Sair</button>
+        <p class="note"><a href="index.html">Voltar à lista de candidatos</a></p>
+      </div>
+      <p id="denied" class="error" hidden>Você precisa <a href="login.html">entrar</a> primeiro.</p>
+    </section>
+  </div>
+  <script src="js/api-config.js"></script>
+  <script>
+    (async () => {
+      const loading = document.getElementById("loading");
+      const content = document.getElementById("content");
+      const denied = document.getElementById("denied");
+      try {
+        const res = await fetch(politappApiUrl("/api/me"), { credentials: "include" });
+        if (!res.ok) {
+          loading.hidden = true;
+          denied.hidden = false;
+          return;
+        }
+        const { user } = await res.json();
+        loading.hidden = true;
+        content.hidden = false;
+        document.getElementById("email").textContent = user.email;
+        document.getElementById("name").textContent = user.name || "—";
+        document.getElementById("created").textContent = user.created_at
+          ? new Date(user.created_at).toLocaleString("pt-BR")
+          : "—";
+      } catch {
+        loading.hidden = true;
+        denied.hidden = false;
+      }
+    })();
+    document.getElementById("logout").addEventListener("click", async () => {
+      await fetch(politappApiUrl("/api/logout"), { method: "POST", credentials: "include" });
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
