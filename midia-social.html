@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mídia social — Termômetros e conteúdo | Politapp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+      --heat-low: #2ec4b6;
+      --heat-mid: #f4a261;
+      --heat-high: #e07a5f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.14), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    header { margin-bottom: 1.5rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 72ch; font-size: 0.95rem; }
+    header a, .panel a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
+    .panel h3 { font-size: 0.95rem; margin: 1rem 0 0.5rem; color: var(--muted); font-weight: 600; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.25rem;
+      background: var(--surface2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .tabs button {
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+    }
+    .tabs button:hover { color: var(--text); }
+    .tabs button[aria-selected="true"] {
+      background: var(--accent);
+      color: #041018;
+    }
+
+    .tab-panel[hidden] { display: none !important; }
+
+    .termo-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    .termo-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .termo-card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .termo-meta {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9ec5ff;
+      margin-bottom: 0.5rem;
+    }
+    .termo-bar {
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      margin-bottom: 0.65rem;
+    }
+    .termo-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--heat-low), var(--heat-mid) 55%, var(--heat-high));
+      transition: width 0.35s ease;
+    }
+    .termo-card ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .termo-card ul li { margin-bottom: 0.4rem; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+    .tag {
+      font-size: 0.68rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      background: rgba(61, 139, 253, 0.12);
+      color: #9ec5ff;
+    }
+
+    .src-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 0;
+      font-size: 0.88rem;
+    }
+    .src-list li { margin-bottom: 0.45rem; }
+    .format-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+    .format-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .format-card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--text); }
+    .checklist { padding-left: 1.15rem; margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .checklist li { margin-bottom: 0.45rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="midia-social.html" aria-current="page">Mídia social</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+
+    <header>
+      <h1>Mídia social e agenda pública</h1>
+      <p>
+        Dicas e <strong>sugestões de conteúdo</strong> alinhadas a <strong>termômetros de assuntos públicos</strong>: leitura da temperatura
+        dos temas no debate democrático (mídia, buscas, Congresso, dados abertos). Os níveis abaixo são
+        <strong>ilustrativos</strong> — calibre sempre com fontes em tempo real e com a realidade do seu distrito.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>Onde medir o “calor” dos temas</h2>
+      <p class="note" style="margin-bottom:0.75rem">
+        Use combinação de fontes; nenhuma sozinha substitui pesquisa de opinião ou escuta territorial.
+      </p>
+      <ul class="src-list">
+        <li><a href="https://trends.google.com/trends/?geo=BR" target="_blank" rel="noopener">Google Trends (Brasil)</a> — interesse em termos ao longo do tempo e por sub-região.</li>
+        <li><a href="https://www12.senado.leg.br/noticias" target="_blank" rel="noopener">Agência Senado</a> e pautas em tramitação — o que o Congresso coloca em destaque.</li>
+        <li><a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API Dados Abertos da Câmara</a> — proposições, frentes, discursos (para cruzar com narrativa local).</li>
+        <li><a href="https://www.ibge.gov.br/" target="_blank" rel="noopener">IBGE</a> e órgãos setoriais — indicadores que “viram manchete” (emprego, inflação, educação, saúde).</li>
+        <li>Ouvidorias e canais oficiais de órgãos públicos — demandas recorrentes da população.</li>
+      </ul>
+    </section>
+
+    <div class="tabs" role="tablist" aria-label="Seções mídia social">
+      <button type="button" role="tab" id="tab-termo" aria-selected="true" aria-controls="panel-termo">Termômetros temáticos</button>
+      <button type="button" role="tab" id="tab-formatos" aria-selected="false" aria-controls="panel-formatos">Formatos e plataformas</button>
+      <button type="button" role="tab" id="tab-check" aria-selected="false" aria-controls="panel-check">Ética e legislação</button>
+    </div>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-termo" aria-labelledby="tab-termo">
+      <h2>Termômetros ilustrativos e ideias de post</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Porcentagem = “intensidade de presença na agenda pública” <strong>exemplo</strong> (não é pesquisa eleitoral).
+        Ajuste conforme Trends, noticiário local e relatórios oficiais na sua semana de conteúdo.
+      </p>
+      <div class="termo-grid" id="termoCards"></div>
+    </section>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-formatos" aria-labelledby="tab-formatos" hidden>
+      <h2>Formatos que conversam com a agenda quente</h2>
+      <div class="format-grid">
+        <article class="format-card">
+          <h3>Tema em alta no noticiário</h3>
+          <p class="note" style="margin:0 0 0.5rem">Quando o termômetro sobe por crise ou anúncio governamental.</p>
+          <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
+            <li>Vídeo curto com <strong>contexto em 3 frases</strong> + o que muda para o cidadão.</li>
+            <li>Carrossel com <strong>fonte na última tela</strong> (link ou órgão).</li>
+            <li>Evite sensacionalismo; priorize serviço público e clareza.</li>
+          </ul>
+        </article>
+        <article class="format-card">
+          <h3>Tema estrutural (sempre relevante, pouco “hype”)</h3>
+          <p class="note" style="margin:0 0 0.5rem">Saúde básica, transporte, educação infantil, saneamento.</p>
+          <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
+            <li>Histórias de <strong>antes / depois</strong> ou “um dia na vida” em serviço público.</li>
+            <li>Pergunta aberta: “O que falta no seu bairro?” + resumo de respostas depois.</li>
+            <li>Ritmo semanal estável constrói confiança mais que picos de viralização.</li>
+          </ul>
+        </article>
+        <article class="format-card">
+          <h3>Redes em que o debate é mais acalorado</h3>
+          <p class="note" style="margin:0 0 0.5rem">Comentários rápidos e compartilhamento.</p>
+          <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
+            <li><strong>Resposta a comentário</strong> em vídeo: humaniza e mostra posição.</li>
+            <li>Threads com numeração: problema → dado → proposta → como acompanhar.</li>
+            <li>Moderação: regras claras; não alimente ofensas ou desinformação.</li>
+          </ul>
+        </article>
+        <article class="format-card">
+          <h3>WhatsApp e grupos de bairro</h3>
+          <p class="note" style="margin:0 0 0.5rem">Termômetro costuma refletir demandas muito locais.</p>
+          <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
+            <li>Cards leves com <strong>1 fato + 1 compromisso verificável</strong>.</li>
+            <li>Horários de envio que respeitem a rotina (evite madrugada).</li>
+            <li>Peça permissão e contexto ao reutilizar relatos de moradores.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-check" aria-labelledby="tab-check" hidden>
+      <h2>Checklist rápido</h2>
+      <ul class="checklist">
+        <li>Conferir fatos em fontes primárias antes de publicar dados ou acusações.</li>
+        <li>Respeitar <strong>legislação eleitoral</strong> e normas da plataforma (impulsionamento, desinformação, uso de imagens).</li>
+        <li>Não prometer obras ou benefícios vinculados a voto; cuidado com tom de “troca de favores”.</li>
+        <li>Consentimento e dignidade: crianças, pessoas em situação de vulnerabilidade e dados pessoais.</li>
+        <li>Arquivar prints ou links de postagens relevantes para prestação de contas e transparência.</li>
+      </ul>
+      <p class="note" style="margin-top:1rem">
+        Em dúvida sobre propaganda eleitoral, consulte o <a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a> e assessoria jurídica qualificada.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    const TERMOMETROS = [
+      {
+        titulo: "Saúde e SUS",
+        nivel: 88,
+        rotulo: "Agenda geralmente quente",
+        sinais: "Filas, epidemias sazonais, medicamentos, atenção primária, greves ou pauta de investimento.",
+        ideias: [
+          "Vídeo explicando um direito do usuário do SUS (com linguagem simples).",
+          "Depoimento de profissional ou paciente (com autorização) + política pública relacionada.",
+          "Série “pergunte ao especialista” com respostas gravadas de 30 s.",
+        ],
+        tags: ["Reels", "Stories", "Carrossel educativo"],
+      },
+      {
+        titulo: "Segurança pública",
+        nivel: 82,
+        rotulo: "Alto engajamento emocional",
+        sinais: "Notícias de violência, operações, debates sobre polícia e prevenção, medo urbano.",
+        ideias: [
+          "Separar prevenção, justiça e reintegração em posts distintos para não misturar tudo num slogan.",
+          "Mapa mental: causas estruturais vs. ações imediatas (tom respeitoso, sem estigmatizar territórios).",
+          "Destaque programas com evidência ou orçamento público verificável.",
+        ],
+        tags: ["Thread", "Live com especialista", "Texto + gráfico"],
+      },
+      {
+        titulo: "Economia, emprego e preços",
+        nivel: 79,
+        rotulo: "Muito sensível em períodos de crise",
+        sinais: "Inflação, juros, salário mínimo, auxílios, fechamento de empresas locais.",
+        ideias: [
+          "“O que significa para a sua região?” ao comentar dado nacional (IBGE, BC).",
+          "Pequenos comerciantes: micro vídeos de impacto de política tributária ou crédito.",
+          "Evite certezas sobre mercado; cite fonte e data do indicador.",
+        ],
+        tags: ["Card dado", "Vídeo explicador", "Enquete"],
+      },
+      {
+        titulo: "Educação",
+        nivel: 74,
+        rotulo: "Recorrente, picos em reformas e greves",
+        sinais: "Merenda, transporte escolar, ENEM, alfabetização, carreira docente.",
+        ideias: [
+          "Tour por escola pública (autorização da secretaria) mostrando demandas reais.",
+          "Checklist “direitos do estudante” em carrossel.",
+          "Convite a conselhos escolares e pais de alunos para lives curtas.",
+        ],
+        tags: ["Carrossel", "Live", "Depoimento"],
+      },
+      {
+        titulo: "Clima, desastres e meio ambiente",
+        nivel: 71,
+        rotulo: "Sobe após eventos extremos",
+        sinais: "Enchentes, queimadas, licenciamento, água e saneamento, energia.",
+        ideias: [
+          "Antes do evento: post de preparo e canais oficiais de alerta.",
+          "Depois: foco em reconstrução, accountability e participação social.",
+          "Evitar greenwashing: cite órgão e projeto, não só imagem de natureza.",
+        ],
+        tags: ["Stories úteis", "Mapa ou infográfico", "Parceria ONG local"],
+      },
+      {
+        titulo: "Infraestrutura e mobilidade",
+        nivel: 68,
+        rotulo: "Forte apelo local",
+        sinais: "Obras paradas, transporte coletivo, estradas, internet, energia.",
+        ideias: [
+          "Linha do tempo de obra ou promessa com datas públicas.",
+          "“Um dia no ônibus” ou relato de deslocamento intermunicipal.",
+          "Comparar investimento per capita ou por região (fonte técnica).",
+        ],
+        tags: ["Vídeo de rua", "Linha do tempo", "Antes/depois"],
+      },
+      {
+        titulo: "Transparência, orçamento e participação",
+        nivel: 63,
+        rotulo: "Cresce em escândalos e eleições",
+        sinais: "Auditorias, emendas, consórcios, compras públicas, conselhos municipais.",
+        ideias: [
+          "Tutorial: como acessar portal da transparência da sua esfera.",
+          "Destaque instrumentos de participação (audiência, orçamento participativo).",
+          "Linguagem acessível para relatório do TCMU, CGU ou equivalente estadual.",
+        ],
+        tags: ["Tutorial", "PDF resumido", "Live com contador ou ONG"],
+      },
+      {
+        titulo: "Direitos humanos e igualdade",
+        nivel: 70,
+        rotulo: "Pauta contínua, sensível a violações",
+        sinais: "Racismo, machismo, LGBTfobia, pessoas com deficiência, povos originários.",
+        ideias: [
+          "Centrar vozes do grupo afetado (convidados, não “falação sobre”).",
+          "Políticas com recorte orçamentário e meta mensurável.",
+          "Moderar comentários com critérios públicos.",
+        ],
+        tags: ["Entrevista", "Série educativa", "Recursos de apoio"],
+      },
+    ];
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderTermometros() {
+      const root = document.getElementById("termoCards");
+      root.innerHTML = TERMOMETROS.map(
+        (t) => `
+        <article class="termo-card">
+          <h3>
+            ${escapeHtml(t.titulo)}
+            <span class="termo-meta">${escapeHtml(String(t.nivel))}%</span>
+          </h3>
+          <div class="termo-meta">${escapeHtml(t.rotulo)}</div>
+          <div class="termo-bar" role="img" aria-label="Intensidade ilustrativa ${t.nivel} por cento">
+            <div class="termo-fill" style="width:${t.nivel}%"></div>
+          </div>
+          <p class="note" style="margin:0 0 0.5rem"><strong>Sinais no debate:</strong> ${escapeHtml(t.sinais)}</p>
+          <p class="note" style="margin:0 0 0.35rem"><strong>Sugestões de conteúdo:</strong></p>
+          <ul>
+            ${t.ideias.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}
+          </ul>
+          <div class="tag-row">${t.tags.map((g) => `<span class="tag">${escapeHtml(g)}</span>`).join("")}</div>
+        </article>`
+      ).join("");
+    }
+
+    function setupTabs() {
+      const tabs = document.querySelectorAll('[role="tab"]');
+      const panels = document.querySelectorAll('[role="tabpanel"]');
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.getAttribute("aria-controls");
+          tabs.forEach((t) => t.setAttribute("aria-selected", t === tab ? "true" : "false"));
+          panels.forEach((p) => {
+            p.hidden = p.id !== id;
+          });
+        });
+      });
+    }
+
+    renderTermometros();
+    setupTabs();
+  </script>
+</body>
+</html>
