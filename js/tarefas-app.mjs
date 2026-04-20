@@ -17,6 +17,8 @@ const cloudBar = document.getElementById("cloudBar");
 const selUnidade = document.getElementById("selUnidade");
 const elGrupoBadge = document.getElementById("grupoBadge");
 const modeBanner = document.getElementById("modeBanner");
+const anuncioAlert = document.getElementById("anuncioAlert");
+const anuncioAlertText = document.getElementById("anuncioAlertText");
 
 function todayISODate() {
   const d = new Date();
@@ -117,9 +119,27 @@ async function importLocalDiaryOnce(supabase, unidadeId, userId) {
   }
 }
 
+async function loadAnuncioTarefas(supabase) {
+  if (!anuncioAlert || !anuncioAlertText) return;
+  const { data, error } = await supabase.from("anuncio_tarefas").select("mensagem").eq("id", 1).maybeSingle();
+  if (error) {
+    console.warn("[politapp] anuncio_tarefas:", error.message);
+    anuncioAlert.hidden = true;
+    return;
+  }
+  const m = (data?.mensagem ?? "").trim();
+  if (m) {
+    anuncioAlertText.textContent = m;
+    anuncioAlert.hidden = false;
+  } else {
+    anuncioAlert.hidden = true;
+  }
+}
+
 function initModoCloud(supabase, session, profile) {
   if (modeBanner) modeBanner.hidden = true;
   if (cloudBar) cloudBar.hidden = false;
+  loadAnuncioTarefas(supabase);
   if (elGrupoBadge) elGrupoBadge.textContent = grupoLabel(profile.grupo);
   if (elHeaderP) {
     elHeaderP.innerHTML =
