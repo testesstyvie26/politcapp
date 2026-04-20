@@ -14,8 +14,17 @@
     host === "[::1]" ||
     /^192\.168\./.test(host || "");
 
-  /** Ex.: "https://api.seudominio.com" ou "https://seudominio.com" se o Node responder na raiz. */
-  var productionApi = "https://politcapp.com.br";
+  /**
+   * URL HTTPS do server.js (Express + MySQL), em host separado do site estático.
+   *
+   * politcapp.com.br no GitHub Pages só entrega HTML/CSS/JS: não existe POST /api/login nesse domínio
+   * (o navegador recebe 404/405). Não use a mesma URL do site como productionApi, a menos que um
+   * proxy (nginx, Cloudflare) encaminhe /api para o Node na mesma origem.
+   *
+   * Depois de publicar o backend (Render, Railway, Fly.io, VPS…), coloque aqui a URL base, ex.:
+   * "https://politcapp-api.onrender.com"
+   */
+  var productionApi = "";
 
   window.POLITAPP_API = isLocal ? "" : productionApi;
 

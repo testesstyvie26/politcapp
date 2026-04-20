@@ -557,6 +557,15 @@
 
     form.addEventListener("submit", (e) => e.preventDefault());
 
+    function apiUnreachableMsg() {
+      return (
+        "O backend de login (Node + MySQL, server.js) não respondeu em JSON. " +
+        "Se o site está no GitHub Pages, publique o server.js em outro host HTTPS, " +
+        "defina productionApi em js/api-config.js e no servidor ALLOWED_ORIGINS=https://politcapp.com.br " +
+        "e SESSION_CROSS_SITE=true (veja .env.example)."
+      );
+    }
+
     async function auth(path) {
       showError("");
       const email = $("email").value.trim();
@@ -572,9 +581,22 @@
             path === "/api/register" ? { email, password, name: name || null } : { email, password }
           ),
         });
-        const data = await res.json().catch(() => ({}));
+        const raw = await res.text();
+        const ct = (res.headers.get("content-type") || "").toLowerCase();
+        let data = null;
+        if (raw && ct.indexOf("application/json") !== -1) {
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            data = null;
+          }
+        }
+        if (!res.ok && data == null) {
+          showError(apiUnreachableMsg());
+          return;
+        }
         if (!res.ok) {
-          showError(data.error || res.statusText);
+          showError((data && data.error) || res.statusText);
           return;
         }
         const next = politappSafeNext(new URLSearchParams(location.search).get("next"));
