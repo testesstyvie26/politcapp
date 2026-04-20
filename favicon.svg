@@ -1,13 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Gestão">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1c2433"/>
-      <stop offset="100%" stop-color="#0c0f14"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
-  <!-- Indicadores / gestão -->
-  <rect x="5" y="19" width="5" height="8" rx="1" fill="#3d8bfd"/>
-  <rect x="13" y="14" width="5" height="13" rx="1" fill="#5ca3ff"/>
-  <rect x="21" y="9" width="5" height="18" rx="1" fill="#3d8bfd"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#0c0f14"/>
+  <path d="M5 26h22" stroke="#3d4f66" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <rect x="6" y="18" width="6" height="7" rx="1.5" fill="#3d8bfd"/>
+  <rect x="13" y="12" width="6" height="13" rx="1.5" fill="#5ca3ff"/>
+  <rect x="20" y="7" width="6" height="18" rx="1.5" fill="#3d8bfd"/>
 </svg>
