@@ -35,7 +35,11 @@ DECLARE
   n_perfis int;
 BEGIN
   SELECT COUNT(*) INTO n_perfis FROM public.profiles;
-  SELECT u.id INTO uid_unidade FROM public.unidades u ORDER BY u.nome ASC LIMIT 1;
+  SELECT COALESCE(
+    (SELECT id FROM public.unidades WHERE id = '0b96b56e-076c-44a4-b83f-1f73a4a7e46a'::uuid),
+    (SELECT id FROM public.unidades WHERE slug = 'gestao-central'),
+    (SELECT u.id FROM public.unidades u ORDER BY u.nome ASC LIMIT 1)
+  ) INTO uid_unidade;
   INSERT INTO public.profiles (id, grupo, unidade_id, conta_status, email)
   VALUES (
     NEW.id,
