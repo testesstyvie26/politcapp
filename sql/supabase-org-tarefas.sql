@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   grupo text NOT NULL DEFAULT 'operacoes'
     CHECK (grupo IN ('admin', 'gestao', 'operacoes')),
   unidade_id uuid REFERENCES public.unidades (id) ON DELETE SET NULL,
+  email text,
+  conta_status text NOT NULL DEFAULT 'pendente'
+    CHECK (conta_status IN ('pendente', 'aprovado', 'rejeitado')),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -63,10 +66,18 @@ SET search_path = public
 AS $$
 DECLARE
   uid_unidade uuid;
+  n_perfis int;
 BEGIN
+  SELECT COUNT(*) INTO n_perfis FROM public.profiles;
   SELECT u.id INTO uid_unidade FROM public.unidades u ORDER BY u.nome ASC LIMIT 1;
-  INSERT INTO public.profiles (id, grupo, unidade_id)
-  VALUES (NEW.id, 'operacoes', uid_unidade);
+  INSERT INTO public.profiles (id, grupo, unidade_id, conta_status, email)
+  VALUES (
+    NEW.id,
+    'operacoes',
+    uid_unidade,
+    CASE WHEN n_perfis = 0 THEN 'aprovado' ELSE 'pendente' END,
+    COALESCE(NEW.email, '')
+  );
   RETURN NEW;
 END;
 $$;
@@ -77,15 +88,32 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- 6) RLS
+CREATE OR REPLACE FUNCTION public.current_user_can_use_app()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT COALESCE(
+    (
+      SELECT (p.grupo = 'admin' OR p.conta_status = 'aprovado')
+      FROM public.profiles p
+      WHERE p.id = auth.uid()
+    ),
+    false
+  );
+$$;
+
 ALTER TABLE public.unidades ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tarefas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notas_unidade_dia ENABLE ROW LEVEL SECURITY;
 
--- Unidades: leitura para autenticados
+-- Unidades: só contas aprovadas (ou admin)
 DROP POLICY IF EXISTS "unidades_select_auth" ON public.unidades;
 CREATE POLICY "unidades_select_auth" ON public.unidades
-  FOR SELECT TO authenticated USING (true);
+  FOR SELECT TO authenticated USING (public.current_user_can_use_app());
 
 -- Perfis: próprio registro ou admin
 DROP POLICY IF EXISTS "profiles_select" ON public.profiles;
@@ -102,12 +130,13 @@ CREATE POLICY "profiles_update_admin" ON public.profiles
   USING (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.grupo = 'admin'))
   WITH CHECK (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.grupo = 'admin'));
 
--- Tarefas: mesma unidade do perfil ou admin
+-- Tarefas: mesma unidade do perfil ou admin + conta aprovada
 DROP POLICY IF EXISTS "tarefas_select" ON public.tarefas;
 CREATE POLICY "tarefas_select" ON public.tarefas
   FOR SELECT TO authenticated
   USING (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = tarefas.unidade_id)
@@ -118,7 +147,8 @@ DROP POLICY IF EXISTS "tarefas_insert" ON public.tarefas;
 CREATE POLICY "tarefas_insert" ON public.tarefas
   FOR INSERT TO authenticated
   WITH CHECK (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = tarefas.unidade_id)
@@ -129,14 +159,16 @@ DROP POLICY IF EXISTS "tarefas_update" ON public.tarefas;
 CREATE POLICY "tarefas_update" ON public.tarefas
   FOR UPDATE TO authenticated
   USING (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = tarefas.unidade_id)
     )
   )
   WITH CHECK (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = tarefas.unidade_id)
@@ -147,7 +179,8 @@ DROP POLICY IF EXISTS "tarefas_delete" ON public.tarefas;
 CREATE POLICY "tarefas_delete" ON public.tarefas
   FOR DELETE TO authenticated
   USING (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = tarefas.unidade_id)
@@ -159,7 +192,8 @@ DROP POLICY IF EXISTS "notas_select" ON public.notas_unidade_dia;
 CREATE POLICY "notas_select" ON public.notas_unidade_dia
   FOR SELECT TO authenticated
   USING (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = notas_unidade_dia.unidade_id)
@@ -173,7 +207,8 @@ DROP POLICY IF EXISTS "notas_update" ON public.notas_unidade_dia;
 CREATE POLICY "notas_insert" ON public.notas_unidade_dia
   FOR INSERT TO authenticated
   WITH CHECK (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = notas_unidade_dia.unidade_id)
@@ -183,14 +218,16 @@ CREATE POLICY "notas_insert" ON public.notas_unidade_dia
 CREATE POLICY "notas_update" ON public.notas_unidade_dia
   FOR UPDATE TO authenticated
   USING (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = notas_unidade_dia.unidade_id)
     )
   )
   WITH CHECK (
-    EXISTS (
+    public.current_user_can_use_app()
+    AND EXISTS (
       SELECT 1 FROM public.profiles p
       WHERE p.id = auth.uid()
       AND (p.grupo = 'admin' OR p.unidade_id = notas_unidade_dia.unidade_id)

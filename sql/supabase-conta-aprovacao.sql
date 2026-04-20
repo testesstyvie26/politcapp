@@ -32,10 +32,18 @@ SET search_path = public
 AS $$
 DECLARE
   uid_unidade uuid;
+  n_perfis int;
 BEGIN
+  SELECT COUNT(*) INTO n_perfis FROM public.profiles;
   SELECT u.id INTO uid_unidade FROM public.unidades u ORDER BY u.nome ASC LIMIT 1;
   INSERT INTO public.profiles (id, grupo, unidade_id, conta_status, email)
-  VALUES (NEW.id, 'operacoes', uid_unidade, 'pendente', COALESCE(NEW.email, ''));
+  VALUES (
+    NEW.id,
+    'operacoes',
+    uid_unidade,
+    CASE WHEN n_perfis = 0 THEN 'aprovado' ELSE 'pendente' END,
+    COALESCE(NEW.email, '')
+  );
   RETURN NEW;
 END;
 $$;

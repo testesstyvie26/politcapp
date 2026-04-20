@@ -1,8 +1,10 @@
-import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
+import { getSupabase } from "./auth-client.mjs";
 import { politappAuthReady } from "./auth-guard.mjs";
 import { loadProfile, listUnidadesForSelect, grupoLabel } from "./org-api.mjs";
 
+/** Legado: diário só no navegador; migrado uma vez para o Supabase. */
 const STORAGE_KEY = "politapp.diary.v1";
+const MIGRATED_KEY = "politapp.diary.migrated.v1";
 
 const elDia = document.getElementById("dia");
 const elLista = document.getElementById("lista");
@@ -24,162 +26,96 @@ function todayISODate() {
   return `${y}-${m}-${day}`;
 }
 
-function uid() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-/* ---------- Modo local (localStorage) ---------- */
-
-function loadAll() {
+/**
+ * Importa dados antigos do localStorage (mesma chave do modo removido) para a unidade atual.
+ * Roda no máximo uma vez por navegador.
+ */
+async function importLocalDiaryOnce(supabase, unidadeId, userId) {
+  if (localStorage.getItem(MIGRATED_KEY)) return;
+  let all;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
+    all = raw ? JSON.parse(raw) : null;
   } catch {
-    return {};
+    localStorage.setItem(MIGRATED_KEY, "1");
+    return;
   }
-}
-
-function saveAll(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function initModoLocal(opts = {}) {
-  if (!opts.skipBanner && modeBanner) {
-    modeBanner.hidden = false;
-    modeBanner.textContent =
-      "Modo offline: dados só neste navegador. Entre com sua conta e execute o SQL no Supabase para sincronizar por unidade.";
-  }
-  if (cloudBar) cloudBar.hidden = true;
-  if (elHeaderP) {
-    elHeaderP.innerHTML =
-      "Checklist com concluído e bloco de notas por data. Os dados ficam salvos apenas neste navegador (localStorage).";
+  if (!all || typeof all !== "object") {
+    localStorage.setItem(MIGRATED_KEY, "1");
+    return;
   }
 
-  elDia.value = todayISODate();
+  let hadFailure = false;
 
-  function getDay() {
-    return elDia.value || todayISODate();
-  }
+  for (const [dataDia, day] of Object.entries(all)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dataDia)) continue;
+    const tasks = day?.tasks;
+    const notes = typeof day?.notes === "string" ? day.notes : "";
 
-  function dayData() {
-    const all = loadAll();
-    const key = getDay();
-    if (!all[key]) all[key] = { tasks: [], notes: "" };
-    if (!Array.isArray(all[key].tasks)) all[key].tasks = [];
-    if (typeof all[key].notes !== "string") all[key].notes = "";
-    return { all, key, day: all[key] };
-  }
-
-  function persistDay(dayObj) {
-    const { all, key } = dayData();
-    all[key] = dayObj;
-    saveAll(all);
-  }
-
-  function updateProgress(tasks) {
-    const total = tasks.length;
-    const done = tasks.filter((t) => t.done).length;
-    elProgress.innerHTML = `<strong>${done}</strong> / ${total} concluída${total === 1 ? "" : "s"}`;
-  }
-
-  function render() {
-    const { day } = dayData();
-    elLista.innerHTML = "";
-    elNotas.value = day.notes;
-    updateProgress(day.tasks);
-
-    if (!day.tasks.length) {
-      elVazia.hidden = false;
-      return;
+    const { count, error: cErr } = await supabase
+      .from("tarefas")
+      .select("id", { count: "exact", head: true })
+      .eq("unidade_id", unidadeId)
+      .eq("data_dia", dataDia);
+    if (cErr) {
+      console.error(cErr);
+      hadFailure = true;
+      break;
     }
-    elVazia.hidden = true;
 
-    day.tasks.forEach((t) => {
-      const li = document.createElement("li");
-      li.className = "task-item" + (t.done ? " done" : "");
-      li.dataset.id = t.id;
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!t.done;
-      cb.setAttribute("aria-label", t.done ? "Marcar como pendente" : "Marcar como concluída");
-      cb.addEventListener("change", () => {
-        t.done = cb.checked;
-        persistDay(day);
-        li.classList.toggle("done", t.done);
-        updateProgress(day.tasks);
-      });
-
-      const span = document.createElement("span");
-      span.className = "task-text";
-      span.textContent = t.text;
-
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "task-del";
-      del.setAttribute("aria-label", "Remover tarefa");
-      del.innerHTML = "&times;";
-      del.addEventListener("click", () => {
-        day.tasks = day.tasks.filter((x) => x.id !== t.id);
-        persistDay(day);
-        render();
-      });
-
-      li.appendChild(cb);
-      li.appendChild(span);
-      li.appendChild(del);
-      elLista.appendChild(li);
-    });
-  }
-
-  function addTask() {
-    const text = elNova.value.trim();
-    if (!text) return;
-    const { all, key, day } = dayData();
-    day.tasks.push({ id: uid(), text, done: false });
-    all[key] = day;
-    saveAll(all);
-    elNova.value = "";
-    elNova.focus();
-    render();
-  }
-
-  document.getElementById("btnAdd").addEventListener("click", addTask);
-  elNova.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTask();
+    if (Array.isArray(tasks) && tasks.length && (count ?? 0) === 0) {
+      let ord = 0;
+      for (const t of tasks) {
+        const texto = typeof t.text === "string" ? t.text.trim() : "";
+        if (!texto) continue;
+        const { error: insErr } = await supabase.from("tarefas").insert({
+          unidade_id: unidadeId,
+          data_dia: dataDia,
+          texto,
+          concluida: !!t.done,
+          ordem: ord++,
+          created_by: userId,
+        });
+        if (insErr) {
+          console.error(insErr);
+          hadFailure = true;
+          break;
+        }
+      }
+      if (hadFailure) break;
     }
-  });
 
-  elDia.addEventListener("change", () => render());
+    if (notes.trim()) {
+      const { data: existing } = await supabase
+        .from("notas_unidade_dia")
+        .select("corpo")
+        .eq("unidade_id", unidadeId)
+        .eq("data_dia", dataDia)
+        .maybeSingle();
+      if (!existing?.corpo?.trim()) {
+        const { error: nErr } = await supabase.from("notas_unidade_dia").upsert(
+          {
+            unidade_id: unidadeId,
+            data_dia: dataDia,
+            corpo: notes,
+            updated_by: userId,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "unidade_id,data_dia" }
+        );
+        if (nErr) {
+          console.error(nErr);
+          hadFailure = true;
+          break;
+        }
+      }
+    }
+  }
 
-  elNotas.addEventListener("change", () => {
-    const { all, key, day } = dayData();
-    day.notes = elNotas.value;
-    all[key] = day;
-    saveAll(all);
-  });
-
-  elNotas.addEventListener("blur", () => elNotas.dispatchEvent(new Event("change")));
-
-  document.getElementById("tab-t").addEventListener("click", () => {
-    document.getElementById("tab-t").setAttribute("aria-selected", "true");
-    document.getElementById("tab-n").setAttribute("aria-selected", "false");
-    document.getElementById("panel-t").hidden = false;
-    document.getElementById("panel-n").hidden = true;
-  });
-  document.getElementById("tab-n").addEventListener("click", () => {
-    document.getElementById("tab-n").setAttribute("aria-selected", "true");
-    document.getElementById("tab-t").setAttribute("aria-selected", "false");
-    document.getElementById("panel-n").hidden = false;
-    document.getElementById("panel-t").hidden = true;
-  });
-
-  render();
+  if (!hadFailure) {
+    localStorage.setItem(MIGRATED_KEY, "1");
+  }
 }
-
-/* ---------- Modo Supabase ---------- */
 
 function initModoCloud(supabase, session, profile) {
   if (modeBanner) modeBanner.hidden = true;
@@ -187,7 +123,7 @@ function initModoCloud(supabase, session, profile) {
   if (elGrupoBadge) elGrupoBadge.textContent = grupoLabel(profile.grupo);
   if (elHeaderP) {
     elHeaderP.innerHTML =
-      "Tarefas e anotações por <strong>unidade</strong> e data, sincronizadas no Supabase (visíveis para o time da mesma unidade).";
+      "Tarefas e anotações por <strong>unidade</strong> e data, guardadas no Supabase (visíveis para o time da mesma unidade).";
   }
 
   let unidadeId = null;
@@ -396,46 +332,35 @@ function initModoCloud(supabase, session, profile) {
     document.getElementById("panel-t").hidden = true;
   });
 
-  fillUnidades().then(() => loadNotasAndRenderTasks());
+  fillUnidades().then(async () => {
+    if (unidadeId) {
+      await importLocalDiaryOnce(supabase, unidadeId, session.user.id);
+    }
+    loadNotasAndRenderTasks();
+  });
 }
 
-/* ---------- Entrada ---------- */
-
 (async function main() {
+  let ready;
   try {
-    await politappAuthReady;
+    ready = await politappAuthReady;
   } catch {
     return;
   }
 
-  if (!isAuthConfigured()) {
-    initModoLocal();
-    return;
-  }
-
   const supabase = getSupabase();
-  if (!supabase) {
-    initModoLocal();
-    return;
-  }
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session?.user) {
-    initModoLocal();
+  const { session } = ready;
+  if (!supabase || !session?.user) {
     return;
   }
 
   const { data: profile, error: pErr } = await loadProfile(supabase, session.user.id);
 
   if (pErr || !profile) {
-    initModoLocal({ skipBanner: true });
     if (modeBanner) {
       modeBanner.hidden = false;
       modeBanner.innerHTML =
-        "Perfil não encontrado no banco. Execute o script <code>sql/supabase-org-tarefas.sql</code> no Supabase (SQL Editor) e faça login de novo. Modo local ativo.";
+        "Não foi possível carregar seu perfil. Confira o script <code>sql/supabase-org-tarefas.sql</code> no Supabase (SQL Editor).";
     }
     return;
   }
