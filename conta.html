@@ -55,6 +55,31 @@
     button.primary { background: var(--accent); color: #041018; border: none; }
     .note { color: var(--muted); font-size: 0.88rem; margin-top: 1rem; }
     .error { color: #f87171; }
+
+    .site-credit {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.55;
+    }
+
+    .site-credit a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .site-credit a:hover {
+      text-decoration: underline;
+    }
+
+    .site-credit-role {
+      font-weight: 400;
+      opacity: 0.92;
+    }
   </style>
 </head>
 <body>
@@ -63,6 +88,7 @@
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
+      <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
     </nav>
     <header>
@@ -84,6 +110,16 @@
       </div>
       <p id="denied" class="error" hidden>Você precisa <a href="login.html">entrar</a> primeiro.</p>
     </section>
+
+    <footer class="site-credit" role="contentinfo">
+      <p>
+        Criado por
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
+        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+    </footer>
   </div>
   <script src="js/api-config.js"></script>
   <script>

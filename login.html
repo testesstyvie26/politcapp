@@ -406,11 +406,29 @@
       color: #9ec5ff;
     }
 
-    .foot-note {
-      margin-top: 1.5rem;
+    .site-credit {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
       text-align: center;
-      font-size: 0.75rem;
-      color: rgba(148, 160, 184, 0.65);
+      line-height: 1.55;
+    }
+
+    .site-credit a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .site-credit a:hover {
+      text-decoration: underline;
+    }
+
+    .site-credit-role {
+      font-weight: 400;
+      opacity: 0.92;
     }
   </style>
 </head>
@@ -424,6 +442,7 @@
         <a href="executivo.html">Executivo</a>
         <a href="insights-rj.html">Insights RJ</a>
         <a href="midia-social.html">Mídia social</a>
+        <a href="tarefas.html">Tarefas</a>
         <a href="login.html" aria-current="page">Entrar</a>
       </nav>
     </header>
@@ -488,7 +507,20 @@
       </section>
     </main>
 
-    <p class="foot-note">Politapp — apoio a análises políticas com dados abertos. Cumpra a legislação eleitoral vigente.</p>
+    <footer class="site-credit" role="contentinfo">
+      <p>
+        <strong>Politapp</strong> — apoio a análises políticas com dados abertos. Cumpra a legislação eleitoral vigente.
+      </p>
+      <p style="margin-top: 0.65rem">
+        Criado por
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
+        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        ·
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Portfólio</a>
+      </p>
+    </footer>
   </div>
 
   <script src="js/api-config.js"></script>

@@ -110,6 +110,31 @@
     .popup-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem; }
     .popup-meso { font-size: 0.75rem; color: #9ec5ff; margin-bottom: 0.5rem; }
     .leaflet-container a.leaflet-popup-close-button { color: #e8ecf2; }
+
+    .site-credit {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.55;
+    }
+
+    .site-credit a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .site-credit a:hover {
+      text-decoration: underline;
+    }
+
+    .site-credit-role {
+      font-weight: 400;
+      opacity: 0.92;
+    }
   </style>
 </head>
 <body>
@@ -121,6 +146,7 @@
       <a href="executivo.html">Visão executiva</a>
       <a href="insights-rj.html" aria-current="page">Insights RJ</a>
       <a href="midia-social.html">Mídia social</a>
+      <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
@@ -190,6 +216,16 @@
       </p>
       <div class="cards-meso" id="cardsMeso"></div>
     </section>
+
+    <footer class="site-credit" role="contentinfo">
+      <p>
+        Criado por
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
+        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+    </footer>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
