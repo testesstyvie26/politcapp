@@ -28,3 +28,7 @@ CREATE POLICY "anuncio_tarefas_update" ON public.anuncio_tarefas
   FOR UPDATE TO authenticated
   USING (public.current_user_is_admin())
   WITH CHECK (public.current_user_is_admin());
+
+-- API PostgREST: sem isto o cliente pode não ler/escrever mesmo com RLS correto
+GRANT SELECT ON public.anuncio_tarefas TO authenticated;
+GRANT INSERT, UPDATE ON public.anuncio_tarefas TO authenticated;

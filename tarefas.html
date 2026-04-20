@@ -164,7 +164,7 @@
     /* Post-it lateral (admin) — mensagem do anúncio */
     .anuncio-alert.anuncio-alert--postit {
       position: fixed;
-      z-index: 40;
+      z-index: 200;
       top: max(5rem, env(safe-area-inset-top, 0px));
       right: max(1rem, env(safe-area-inset-right, 0px));
       width: min(17.5rem, calc(100vw - 2rem));
@@ -203,6 +203,15 @@
       word-break: break-word;
       font-weight: 500;
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .anuncio-alert.anuncio-alert--postit.anuncio-alert--erro {
+      background: linear-gradient(165deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%);
+      border-color: rgba(185, 28, 28, 0.4);
+      color: #450a0a;
+    }
+    .anuncio-alert.anuncio-alert--postit.anuncio-alert--erro .anuncio-alert__text {
+      text-shadow: none;
+      font-size: 0.82rem;
     }
     @media (max-width: 960px) {
       .anuncio-alert.anuncio-alert--postit {

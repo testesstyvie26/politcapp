@@ -119,20 +119,40 @@ async function importLocalDiaryOnce(supabase, unidadeId, userId) {
   }
 }
 
+function setAnuncioVisible(show) {
+  if (!anuncioAlert) return;
+  if (show) {
+    anuncioAlert.removeAttribute("hidden");
+  } else {
+    anuncioAlert.setAttribute("hidden", "");
+  }
+}
+
 async function loadAnuncioTarefas(supabase) {
   if (!anuncioAlert || !anuncioAlertText) return;
-  const { data, error } = await supabase.from("anuncio_tarefas").select("mensagem").eq("id", 1).maybeSingle();
+  anuncioAlert.classList.remove("anuncio-alert--erro");
+
+  const { data, error } = await supabase
+    .from("anuncio_tarefas")
+    .select("mensagem")
+    .eq("id", 1)
+    .maybeSingle();
+
   if (error) {
-    console.warn("[politapp] anuncio_tarefas:", error.message);
-    anuncioAlert.hidden = true;
+    console.warn("[politapp] anuncio_tarefas:", error.code, error.message);
+    anuncioAlertText.textContent =
+      "Não foi possível carregar o aviso. Confirme no Supabase: tabela anuncio_tarefas, políticas RLS e execute sql/supabase-anuncio-tarefas-grants.sql se necessário.";
+    anuncioAlert.classList.add("anuncio-alert--erro");
+    setAnuncioVisible(true);
     return;
   }
+
   const m = (data?.mensagem ?? "").trim();
   if (m) {
     anuncioAlertText.textContent = m;
-    anuncioAlert.hidden = false;
+    setAnuncioVisible(true);
   } else {
-    anuncioAlert.hidden = true;
+    setAnuncioVisible(false);
   }
 }
 
@@ -140,6 +160,11 @@ function initModoCloud(supabase, session, profile) {
   if (modeBanner) modeBanner.hidden = true;
   if (cloudBar) cloudBar.hidden = false;
   loadAnuncioTarefas(supabase);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      loadAnuncioTarefas(supabase);
+    }
+  });
   if (elGrupoBadge) elGrupoBadge.textContent = grupoLabel(profile.grupo);
   if (elHeaderP) {
     elHeaderP.innerHTML =

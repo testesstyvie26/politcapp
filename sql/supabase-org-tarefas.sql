@@ -289,6 +289,9 @@ CREATE POLICY "anuncio_tarefas_update" ON public.anuncio_tarefas
   USING (public.current_user_is_admin())
   WITH CHECK (public.current_user_is_admin());
 
+GRANT SELECT ON public.anuncio_tarefas TO authenticated;
+GRANT INSERT, UPDATE ON public.anuncio_tarefas TO authenticated;
+
 -- Promover um usuário a admin (substitua o UUID):
 -- UPDATE public.profiles SET grupo = 'admin' WHERE id = 'UUID_DO_USUARIO';
 
