@@ -23,6 +23,14 @@ function currentPageFile() {
   return parts.length ? parts[parts.length - 1] : "index.html";
 }
 
+function isAguardePage() {
+  return location.pathname.toLowerCase().includes("aguarde-aprovacao.html");
+}
+
+function isRecusadaPage() {
+  return location.pathname.toLowerCase().includes("conta-recusada.html");
+}
+
 (function injectHideStyle() {
   const s = document.createElement("style");
   s.setAttribute("data-politapp", "auth-guard");
@@ -56,9 +64,8 @@ function currentPageFile() {
 
     await supabase.auth.refreshSession().catch(() => {});
 
-    const page = currentPageFile();
-    const onAguarde = page === "aguarde-aprovacao.html";
-    const onRecusada = page === "conta-recusada.html";
+    const onAguarde = isAguardePage();
+    const onRecusada = isRecusadaPage();
 
     const { data: profile, error: profileErr } = await supabase
       .from("profiles")

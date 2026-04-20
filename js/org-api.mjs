@@ -20,10 +20,14 @@ export function contaStatusLabel(codigo) {
   return CONTA_STATUS_LABEL[codigo] || codigo || "—";
 }
 
-/** Valor bruto do DB (trim + minúsculas) para comparações. */
+/** Valor bruto do DB (trim + minúsculas) para comparações. Aceita sinónimos em inglês. */
 export function normalizeContaStatus(value) {
   if (value == null) return "";
-  return String(value).trim().toLowerCase();
+  const s = String(value).trim().toLowerCase();
+  if (s === "approved") return "aprovado";
+  if (s === "pending") return "pendente";
+  if (s === "rejected" || s === "denied") return "rejeitado";
+  return s;
 }
 
 /** Regra do auth-guard: admin ou conta aprovada. */
