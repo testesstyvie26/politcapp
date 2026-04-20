@@ -3,6 +3,7 @@
  * Exporta politappAuthReady → resolve com { session, profile }.
  */
 import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
+import { profileAllowsAppAccess, isContaRejeitada } from "./org-api.mjs";
 
 let resolveReady;
 let rejectReady;
@@ -53,30 +54,43 @@ function currentPageFile() {
       return;
     }
 
+    await supabase.auth.refreshSession().catch(() => {});
+
     const page = currentPageFile();
     const onAguarde = page === "aguarde-aprovacao.html";
     const onRecusada = page === "conta-recusada.html";
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileErr } = await supabase
       .from("profiles")
       .select("conta_status, grupo")
       .eq("id", session.user.id)
       .maybeSingle();
+
+    if (profileErr) {
+      console.error("[politapp] Erro ao ler profiles:", profileErr.message);
+    }
+
+    if (profileAllowsAppAccess(profile) && onAguarde) {
+      window.location.replace(new URL("index.html", location.href).href);
+      return;
+    }
+
+    if (profileAllowsAppAccess(profile) && onRecusada) {
+      window.location.replace(new URL("index.html", location.href).href);
+      return;
+    }
 
     if (!profile && !onAguarde) {
       window.location.replace(new URL("aguarde-aprovacao.html", location.href).href);
       return;
     }
 
-    const st = profile?.conta_status;
-    const isAdmin = profile?.grupo === "admin";
-
-    if (st === "rejeitado" && !onRecusada) {
+    if (isContaRejeitada(profile) && !onRecusada) {
       window.location.replace(new URL("conta-recusada.html", location.href).href);
       return;
     }
 
-    if (st === "pendente" && !isAdmin && !onAguarde) {
+    if (!profileAllowsAppAccess(profile) && !onAguarde && !onRecusada) {
       window.location.replace(new URL("aguarde-aprovacao.html", location.href).href);
       return;
     }

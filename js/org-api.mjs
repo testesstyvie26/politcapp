@@ -20,6 +20,23 @@ export function contaStatusLabel(codigo) {
   return CONTA_STATUS_LABEL[codigo] || codigo || "—";
 }
 
+/** Valor bruto do DB (trim + minúsculas) para comparações. */
+export function normalizeContaStatus(value) {
+  if (value == null) return "";
+  return String(value).trim().toLowerCase();
+}
+
+/** Regra do auth-guard: admin ou conta aprovada. */
+export function profileAllowsAppAccess(profile) {
+  if (!profile) return false;
+  if (profile.grupo === "admin") return true;
+  return normalizeContaStatus(profile.conta_status) === "aprovado";
+}
+
+export function isContaRejeitada(profile) {
+  return normalizeContaStatus(profile?.conta_status) === "rejeitado";
+}
+
 export async function loadProfile(supabase, userId) {
   return supabase
     .from("profiles")
