@@ -1,0 +1,65 @@
+# Template de deploy do backend (Node + .env a partir de secrets).
+# 1) Repositório → Settings → Secrets and variables → Actions → New repository secret
+#    Nomes sugeridos: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET,
+#    DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
+# 2) Ajuste o job "deploy" abaixo (SSH, rsync, API Render/Railway, etc.).
+# 3) Dispare manualmente: Actions → Deploy backend → Run workflow
+#
+# Nunca commite .env com valores reais; use apenas secrets no Actions.
+name: Deploy backend
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      # Exemplo: gerar .env só no runner (não vai para o git). Remova ou adapte ao seu provedor.
+      - name: Gerar .env para deploy
+        run: |
+          {
+            echo "NODE_ENV=production"
+            echo "PORT=8080"
+            echo "SESSION_CROSS_SITE=true"
+            echo "TRUST_PROXY=1"
+            echo "ALLOW_REGISTER=false"
+            echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}"
+            echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}"
+            echo "GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}"
+            echo "FRONTEND_BASE_URL=${FRONTEND_BASE_URL}"
+            echo "SESSION_SECRET=${SESSION_SECRET}"
+            echo "DB_HOST=${DB_HOST}"
+            echo "DB_PORT=${DB_PORT:-3306}"
+            echo "DB_USER=${DB_USER}"
+            echo "DB_PASSWORD=${DB_PASSWORD}"
+            echo "DB_NAME=${DB_NAME}"
+            echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
+          } > .env
+        env:
+          GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+
+      # Substitua pelo seu deploy (ex.: copiar para VPS, imagem Docker, etc.)
+      - name: Passo de deploy
+        run: |
+          echo "Configure aqui o deploy (SSH, docker push, render deploy hook, etc.)."
+          echo "Arquivo .env foi gerado neste job (não commitado)."

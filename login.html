@@ -358,6 +358,62 @@
       display: none !important;
     }
 
+    .oauth-row {
+      margin-bottom: 1rem;
+    }
+
+    .oauth-row[hidden] {
+      display: none !important;
+    }
+
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1f1f1f;
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-google:hover {
+      background: #f8f9fa;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .oauth-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1rem 0 1.1rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .oauth-divider::before,
+    .oauth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .oauth-divider[hidden] {
+      display: none !important;
+    }
+
     .toggle-reg {
       font-size: 0.82rem;
       color: var(--accent);
@@ -478,6 +534,18 @@
         <h2 id="login-form-title">Acesso à plataforma</h2>
         <p class="sub">Entre com sua conta para continuar.</p>
         <p id="err" class="error" hidden></p>
+        <div id="googleLoginRow" class="oauth-row" hidden>
+          <a id="googleLink" class="btn-google" href="#">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continuar com Google
+          </a>
+        </div>
+        <div id="oauthDivider" class="oauth-divider" hidden><span>ou e-mail</span></div>
         <form id="form">
           <label>
             E-mail
@@ -503,9 +571,8 @@
         <details class="dev-hint">
           <summary>Notas técnicas (deploy / API)</summary>
           <p style="margin: 0.75rem 0 0">
-            <strong>GitHub Pages</strong> só entrega HTML estático: configure <code>productionApi</code> em <code>js/api-config.js</code> e CORS no backend.
-            Local: <code>npm start</code> e <code>productionApi</code> vazio. Banco: <code>sql/auth-schema.sql</code> · CLI:
-            <code>npm run create-user -- email senha</code>
+            <strong>GitHub Pages</strong>: <code>productionApi</code> em <code>js/api-config.js</code> apontando para o Node. Google OAuth: <code>GOOGLE_*</code> e <code>FRONTEND_BASE_URL</code> no <code>.env</code>.
+            Local: <code>npm start</code>. Banco: <code>sql/auth-schema.sql</code> ou <code>sql/auth-google-migration.sql</code> se a tabela já existia. CLI: <code>npm run create-user -- email senha</code>
           </p>
         </details>
       </section>
@@ -546,9 +613,32 @@
     const form = $("form");
     const regFields = $("regFields");
 
+    const googleErrMap = {
+      google_denied: "Login com Google cancelado.",
+      google_state: "Sessão inválida ou expirada. Tente novamente.",
+      google_token: "Falha ao validar o token do Google.",
+      google_profile: "Não foi possível ler o perfil do Google.",
+      google_server: "Erro no servidor ao finalizar o login com Google.",
+      google_config: "Google OAuth não está configurado no servidor.",
+    };
+
     function showError(msg) {
       err.textContent = msg || "";
       err.hidden = !msg;
+    }
+
+    (function showGoogleErrorFromQuery() {
+      const code = new URLSearchParams(location.search).get("error");
+      if (code && googleErrMap[code]) showError(googleErrMap[code]);
+    })();
+
+    function canReachBackend() {
+      if (location.protocol === "file:") return false;
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") return true;
+      if (window.POLITAPP_API && String(window.POLITAPP_API).trim()) return true;
+      // Site em produção com API na mesma origem (URLs relativas /api/...)
+      if (location.hostname === "politcapp.com.br") return true;
+      return false;
     }
 
     $("toggleReg").addEventListener("click", () => {
@@ -558,11 +648,36 @@
     form.addEventListener("submit", (e) => e.preventDefault());
 
     function apiUnreachableMsg() {
+      if (location.hostname === "politcapp.com.br" || (window.POLITAPP_API && String(window.POLITAPP_API).indexOf("politcapp.com.br") !== -1)) {
+        return (
+          "O domínio politcapp.com.br no GitHub Pages não executa a API Node: POST /api/login não existe aí. " +
+          "Hospede o server.js (Render, Railway, VPS…) e em js/api-config.js defina productionApi com a URL HTTPS desse backend; " +
+          "no servidor, ALLOWED_ORIGINS=https://politcapp.com.br e SESSION_CROSS_SITE=true."
+        );
+      }
       return (
-        "O backend de login (Node + MySQL, server.js) não respondeu em JSON. " +
-        "Se o site está no GitHub Pages, publique o server.js em outro host HTTPS, " +
-        "defina productionApi em js/api-config.js e no servidor ALLOWED_ORIGINS=https://politcapp.com.br " +
-        "e SESSION_CROSS_SITE=true (veja .env.example)."
+        "O backend (Node + MySQL) não devolveu JSON. Verifique se o server.js está no ar, CORS e js/api-config.js (productionApi)."
+      );
+    }
+
+    function fetchFailedMsg(requestUrl) {
+      const h = location.hostname;
+      const isLocal = h === "localhost" || h === "127.0.0.1";
+      if (isLocal) {
+        return (
+          "Sem conexão com a API em " +
+          requestUrl +
+          ". Na pasta do projeto rode `npm start` e abra esta página em http://localhost:8080/login.html (mesma porta do .env PORT)."
+        );
+      }
+      if (h === "politcapp.com.br") {
+        return (
+          "Não foi possível contactar o servidor de login (rede, CORS ou API indisponível). " +
+          "O site estático em politcapp.com.br não inclui o Node: publique server.js em outro host e aponte productionApi em js/api-config.js para essa URL HTTPS."
+        );
+      }
+      return (
+        "Não foi possível contactar o servidor de login. Confira productionApi em js/api-config.js, se a API está no ar e CORS (ALLOWED_ORIGINS)."
       );
     }
 
@@ -602,9 +717,7 @@
         const next = politappSafeNext(new URLSearchParams(location.search).get("next"));
         window.location.href = next || "index.html";
       } catch {
-        showError(
-          "Não foi possível falar com o servidor. Rode `npm start` e abra esta página via http://localhost:8080/login.html"
-        );
+        showError(fetchFailedMsg(url));
       }
     }
 
@@ -614,11 +727,37 @@
       auth("/api/register");
     });
 
+    (async function setupGoogleButton() {
+      const row = document.getElementById("googleLoginRow");
+      const div = document.getElementById("oauthDivider");
+      const link = document.getElementById("googleLink");
+      if (!canReachBackend()) return;
+      const next = politappSafeNext(new URLSearchParams(location.search).get("next"));
+      link.href =
+        politappApiUrl("/api/auth/google") + "?next=" + encodeURIComponent(next || "");
+      row.hidden = false;
+      div.hidden = false;
+      try {
+        const r = await fetch(politappApiUrl("/api/auth/providers"));
+        if (r.ok) {
+          const data = await r.json();
+          if (data && data.google === false) {
+            link.title =
+              "No servidor, defina GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET e GOOGLE_CALLBACK_URL no .env e reinicie o Node.";
+            link.style.opacity = "0.75";
+          }
+        }
+      } catch (_) {
+        /* API pode não expor /api/auth/providers (ex.: proxy); o link /api/auth/google ainda pode funcionar */
+      }
+    })();
+
     if (
       location.hostname &&
       location.hostname !== "localhost" &&
       location.hostname !== "127.0.0.1" &&
-      !(window.POLITAPP_API && String(window.POLITAPP_API).trim())
+      !(window.POLITAPP_API && String(window.POLITAPP_API).trim()) &&
+      !new URLSearchParams(location.search).get("error")
     ) {
       showError(
         "Defina a URL da API em js/api-config.js (productionApi) para o login funcionar no GitHub Pages."

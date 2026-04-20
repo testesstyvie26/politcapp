@@ -4,6 +4,7 @@
  * Abra http://localhost:8080/login.html (não use file://).
  */
 require("dotenv").config();
+const crypto = require("crypto");
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
@@ -19,6 +20,12 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
   .filter(Boolean);
 
 const SESSION_CROSS_SITE = String(process.env.SESSION_CROSS_SITE || "false").toLowerCase() === "true";
+
+const googleOAuthEnabled = !!(
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  process.env.GOOGLE_CALLBACK_URL
+);
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || "172.31.30.133",
@@ -70,6 +77,135 @@ function isValidEmail(s) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
+function safeNextForOAuth(raw) {
+  if (raw == null || raw === "") return "";
+  try {
+    const d = decodeURIComponent(String(raw).trim());
+    if (/^[a-z][a-z0-9+.-]*:/i.test(d)) return "";
+    if (d.slice(0, 2) === "//") return "";
+    if (d.toLowerCase().indexOf("javascript:") === 0) return "";
+    const path = d.startsWith("/") ? d : "/" + d;
+    if (path.indexOf("..") !== -1) return "";
+    return path;
+  } catch {
+    return "";
+  }
+}
+
+function frontendBaseUrl() {
+  const explicit = String(process.env.FRONTEND_BASE_URL || "")
+    .trim()
+    .replace(/\/$/, "");
+  if (explicit) return explicit;
+  if (ALLOWED_ORIGINS.length) return ALLOWED_ORIGINS[0].replace(/\/$/, "");
+  return `http://localhost:${PORT}`;
+}
+
+async function upsertGoogleUser(googleSub, email, name) {
+  const [byG] = await pool.execute("SELECT id, email FROM users WHERE google_sub = ? LIMIT 1", [googleSub]);
+  if (byG.length) return { id: byG[0].id, email: byG[0].email };
+  const [byE] = await pool.execute("SELECT id, email FROM users WHERE email = ? LIMIT 1", [email]);
+  if (byE.length) {
+    await pool.execute("UPDATE users SET google_sub = ?, name = COALESCE(?, name) WHERE id = ?", [
+      googleSub,
+      name,
+      byE[0].id,
+    ]);
+    return { id: byE[0].id, email: byE[0].email };
+  }
+  const [r] = await pool.execute(
+    "INSERT INTO users (email, google_sub, password_hash, name) VALUES (?, ?, NULL, ?)",
+    [email, googleSub, name]
+  );
+  return { id: r.insertId, email };
+}
+
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, service: "politapp-api" });
+});
+
+app.get("/api/auth/providers", (_req, res) => {
+  res.json({ google: googleOAuthEnabled });
+});
+
+app.get("/api/auth/google", (req, res) => {
+  if (!googleOAuthEnabled) {
+    return res.status(404).json({ error: "Google OAuth não configurado no servidor." });
+  }
+  const state = crypto.randomBytes(24).toString("hex");
+  req.session.googleOAuthState = state;
+  const n = safeNextForOAuth(req.query.next);
+  req.session.oauthNext = n || "/index.html";
+  req.session.save((err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Não foi possível iniciar sessão." });
+    }
+    const p = new URLSearchParams({
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+      response_type: "code",
+      scope: "openid email profile",
+      state,
+    });
+    res.redirect(302, "https://accounts.google.com/o/oauth2/v2/auth?" + p.toString());
+  });
+});
+
+app.get("/api/auth/google/callback", async (req, res) => {
+  const base = frontendBaseUrl();
+  if (!googleOAuthEnabled) {
+    return res.redirect(302, base + "/login.html?error=google_config");
+  }
+  const { code, state, error } = req.query;
+  if (error === "access_denied") {
+    return res.redirect(302, base + "/login.html?error=google_denied");
+  }
+  if (!code || !state || state !== req.session.googleOAuthState) {
+    return res.redirect(302, base + "/login.html?error=google_state");
+  }
+  const nextPath = req.session.oauthNext || "/index.html";
+  req.session.googleOAuthState = null;
+  req.session.oauthNext = null;
+  try {
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code: String(code),
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+        grant_type: "authorization_code",
+      }),
+    });
+    const tokens = await tokenRes.json();
+    if (!tokenRes.ok) {
+      console.error("google token:", tokens);
+      return res.redirect(302, base + "/login.html?error=google_token");
+    }
+    const userRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    const profile = await userRes.json();
+    if (!profile.email || !profile.sub) {
+      return res.redirect(302, base + "/login.html?error=google_profile");
+    }
+    const email = String(profile.email).trim().toLowerCase();
+    const name = profile.name ? String(profile.name).slice(0, 120) : null;
+    const user = await upsertGoogleUser(String(profile.sub), email, name);
+    req.session.userId = user.id;
+    req.session.userEmail = user.email;
+  } catch (e) {
+    console.error(e);
+    return res.redirect(302, base + "/login.html?error=google_server");
+  }
+  req.session.save((err) => {
+    if (err) console.error(err);
+    res.redirect(302, base + nextPath);
+  });
+});
+
 app.post("/api/register", async (req, res) => {
   if (!ALLOW_REGISTER) {
     return res.status(403).json({ error: "Cadastro desativado." });
@@ -109,6 +245,9 @@ app.post("/api/login", async (req, res) => {
     );
     if (!rows.length) {
       return res.status(401).json({ error: "E-mail ou senha incorretos." });
+    }
+    if (!rows[0].password_hash) {
+      return res.status(401).json({ error: "Esta conta usa login com Google." });
     }
     const ok = await bcrypt.compare(password, rows[0].password_hash);
     if (!ok) return res.status(401).json({ error: "E-mail ou senha incorretos." });
@@ -241,4 +380,5 @@ app.listen(PORT, () => {
   console.log(`CORS: ${ALLOWED_ORIGINS.length ? ALLOWED_ORIGINS.join(", ") : "(dev: qualquer origem)"}`);
   console.log(`Sessão cross-site: ${SESSION_CROSS_SITE ? "sim (GitHub Pages + HTTPS)" : "não"}`);
   console.log(`Cadastro via API: ${ALLOW_REGISTER ? "ligado" : "desligado"} (ALLOW_REGISTER)`);
+  console.log(`Google OAuth: ${googleOAuthEnabled ? "ligado" : "desligado"}`);
 });

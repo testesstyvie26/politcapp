@@ -21,10 +21,9 @@
    * (o navegador recebe 404/405). Não use a mesma URL do site como productionApi, a menos que um
    * proxy (nginx, Cloudflare) encaminhe /api para o Node na mesma origem.
    *
-   * Depois de publicar o backend (Render, Railway, Fly.io, VPS…), coloque aqui a URL base, ex.:
-   * "https://politcapp-api.onrender.com"
+   * Produção: base onde o Express expõe /api (mesmo domínio com proxy ou host dedicado).
    */
-  var productionApi = "";
+  var productionApi = "https://politcapp.com.br";
 
   window.POLITAPP_API = isLocal ? "" : productionApi;
 
