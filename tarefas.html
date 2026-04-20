@@ -161,23 +161,62 @@
     .site-credit a { color: var(--accent); text-decoration: none; font-weight: 600; }
     .site-credit a:hover { text-decoration: underline; }
     .site-credit-role { font-weight: 400; opacity: 0.92; }
-    .anuncio-alert {
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      padding: 1rem 1.15rem; margin-bottom: 1.25rem; border-radius: var(--radius);
-      border: 1px solid rgba(251, 191, 36, 0.45);
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.14), rgba(245, 158, 11, 0.08));
-      color: #fde68a;
-      font-size: 0.92rem; line-height: 1.5;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    /* Post-it lateral (admin) — mensagem do anúncio */
+    .anuncio-alert.anuncio-alert--postit {
+      position: fixed;
+      z-index: 40;
+      top: max(5rem, env(safe-area-inset-top, 0px));
+      right: max(1rem, env(safe-area-inset-right, 0px));
+      width: min(17.5rem, calc(100vw - 2rem));
+      max-height: min(70vh, 28rem);
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin: 0;
+      padding: 1.6rem 1.15rem 1.15rem;
+      border-radius: 2px;
+      border: 1px solid rgba(180, 140, 70, 0.45);
+      background: linear-gradient(165deg, #fffbeb 0%, #fef3c7 38%, #fde68a 100%);
+      color: #1c1917;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      box-shadow:
+        4px 6px 22px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      transform: rotate(-1.5deg);
+      transform-origin: top right;
     }
-    .anuncio-alert::before {
-      content: "!";
-      flex-shrink: 0; width: 1.65rem; height: 1.65rem;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 8px; font-weight: 800; font-size: 0.95rem;
-      background: rgba(251, 191, 36, 0.25); color: #fbbf24;
+    .anuncio-alert__pin {
+      position: absolute;
+      top: -0.35rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0.95rem;
+      height: 0.95rem;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #fca5a5, #b91c1c 55%, #7f1d1d);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
     }
-    .anuncio-alert__text { margin: 0; white-space: pre-wrap; word-break: break-word; color: var(--text); }
+    .anuncio-alert__text {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-weight: 500;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    @media (max-width: 960px) {
+      .anuncio-alert.anuncio-alert--postit {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        max-width: 22rem;
+        max-height: none;
+        margin: 0 0 1.25rem auto;
+        transform: rotate(-0.8deg);
+        transform-origin: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -205,7 +244,14 @@
 
     <p id="modeBanner" class="mode-banner" hidden></p>
 
-    <div id="anuncioAlert" class="anuncio-alert" role="alert" hidden>
+    <div
+      id="anuncioAlert"
+      class="anuncio-alert anuncio-alert--postit"
+      role="alert"
+      hidden
+      aria-label="Aviso da equipa"
+    >
+      <span class="anuncio-alert__pin" aria-hidden="true"></span>
       <p class="anuncio-alert__text" id="anuncioAlertText"></p>
     </div>
 
