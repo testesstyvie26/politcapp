@@ -2,7 +2,7 @@
  * Copia data/tse-prefeitos-ordinarias-rj-2024-by-ibge.json para o bloco
  * #pref-tse-embedded-data em prefeituras-rj.html (uso em file://).
  *
- * Rode após: node scripts/build-tse-prefeitos-rj-2024.js
+ * Rode após: node scripts/build-tse-prefeitos-rj-2024.js (inclui redes sociais TSE)
  */
 const fs = require("fs");
 const path = require("path");

@@ -113,6 +113,15 @@
       font-size: 0.86rem;
     }
     .alert { padding: 0.75rem; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fecaca; }
+    td.soc-cell { font-size: 0.8rem; min-width: 9rem; max-width: 18rem; }
+    td.soc-cell a {
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-block;
+      margin-right: 0.35rem;
+      margin-bottom: 0.15rem;
+    }
+    td.soc-cell a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -142,7 +151,9 @@
         <span class="mono">consulta_cand</span> do
         <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2024" target="_blank" rel="noopener">Portal de Dados Abertos do TSE</a>.
         A lista inclui <strong>todos</strong> os registos de vereador (cargo 13): candidatos titulares, suplentes e demais participantes, conforme
-        <span class="mono">DS_SIT_TOT_TURNO</span>. Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
+        <span class="mono">DS_SIT_TOT_TURNO</span>. Votos (1º turno), redes declaradas e contactos WhatsApp provenientes dos ficheiros
+        <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE, quando existirem.
+        Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
         Atualize os dados com <span class="mono">npm run build:vereadores-rj</span>.
       </p>
     </header>
@@ -154,8 +165,8 @@
       <div id="msgErro" hidden class="alert"></div>
       <div class="filters">
         <label>
-          Buscar (nome de urna, nome ou partido)
-          <input type="search" id="inpBusca" placeholder="Ex.: maria, PSOL, 12345…" autocomplete="off" />
+          Buscar (nome, partido, votos ou texto em links)
+          <input type="search" id="inpBusca" placeholder="Ex.: maria, PSOL, 12345, instagram…" autocomplete="off" />
         </label>
         <label>
           Partido
@@ -197,6 +208,9 @@
               <th>Partido</th>
               <th>Grupo</th>
               <th>Resultado (pleito)</th>
+              <th class="num">Votos</th>
+              <th>Mídias sociais</th>
+              <th>WhatsApp</th>
               <th class="mono">SQ</th>
             </tr>
           </thead>
@@ -281,6 +295,31 @@
         .replace(/"/g, "&quot;");
     }
 
+    function fmtIntPt(n) {
+      if (n == null || n === "") return "—";
+      const x = Number(n);
+      if (!Number.isFinite(x)) return "—";
+      return x.toLocaleString("pt-BR");
+    }
+
+    /** @param {{ label?: string, url?: string }[] | undefined} arr */
+    function linksHtml(arr) {
+      if (!arr || !arr.length) return '<span class="muted">—</span>';
+      return arr
+        .filter((x) => x && x.url)
+        .map((x) => {
+          const lab = escapeHtml(x.label || "Link");
+          const u = escapeHtml(String(x.url));
+          return `<a href="${u}" target="_blank" rel="noopener noreferrer">${lab}</a>`;
+        })
+        .join('<span class="muted"> · </span>');
+    }
+
+    function textoLinks(r) {
+      const a = [...(r.midiasSociais || []), ...(r.whatsapp || [])];
+      return a.map((x) => `${x.label || ""} ${x.url || ""}`).join(" ");
+    }
+
     function norm(s) {
       return String(s || "")
         .toLowerCase()
@@ -299,7 +338,19 @@
         if (papelFiltro && papelFromRow(r) !== papelFiltro) return false;
         if (!q) return true;
         const pap = papelFromRow(r);
-        const hay = [r.municipio, r.nomeUrna, r.nomeCompleto, r.partido, r.numero, r.partidoNome, r.dsSitTotTurno, PAPEL_LABEL[pap]]
+        const hay = [
+          r.municipio,
+          r.nomeUrna,
+          r.nomeCompleto,
+          r.partido,
+          r.numero,
+          r.partidoNome,
+          r.dsSitTotTurno,
+          PAPEL_LABEL[pap],
+          r.votos != null ? String(r.votos) : "",
+          fmtIntPt(r.votos),
+          textoLinks(r),
+        ]
           .filter(Boolean)
           .map(norm)
           .join(" ");
@@ -342,6 +393,9 @@
           const pap = papelFromRow(r);
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
+          const vot = fmtIntPt(r.votos);
+          const mid = linksHtml(r.midiasSociais);
+          const wz = linksHtml(r.whatsapp);
           const ueCode = codigoUeRow(r);
           const ue = ueCode
             ? `<span class="muted mono" style="display:block;font-size:0.75rem;margin-top:0.15rem">UE ${escapeHtml(ueCode)}</span>`
@@ -353,6 +407,9 @@
             <td><strong>${escapeHtml(r.partido || "—")}</strong>${r.partidoNome ? `<span class="muted" style="display:block;font-size:0.78rem">${escapeHtml(r.partidoNome)}</span>` : ""}</td>
             <td>${escapeHtml(lbl)}</td>
             <td>${res}</td>
+            <td class="num mono">${vot}</td>
+            <td class="soc-cell">${mid}</td>
+            <td class="soc-cell">${wz}</td>
             <td class="mono">${sq}</td>
           </tr>`;
         })
@@ -401,7 +458,7 @@
           lista.length !== raw.length
             ? ` · visíveis agora: ${lista.length} (${ccF.eleito} el., ${ccF.suplente} supl., ${ccF.participante} demais)`
             : "";
-        meta.textContent = `Fonte: TSE consulta_cand · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${tail}.`;
+        meta.textContent = `Fonte: TSE (consulta_cand, votacao_munzona, rede_social) · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${tail}.`;
       }
     }
 

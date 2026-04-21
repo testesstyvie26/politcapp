@@ -8,6 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const AdmZip = require("adm-zip");
 
 const ROOT = path.join(__dirname, "..");
 const OUT_JSON = path.join(ROOT, "data", "tse-prefeitos-ordinarias-rj-2024-by-ibge.json");
@@ -17,6 +18,9 @@ const ZIP_URL = "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/co
 const VOT_ZIP_URL =
   "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2024.zip";
 const VOT_CSV_NAME = "votacao_candidato_munzona_2024_RJ.csv";
+const REDE_ZIP_URL =
+  "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/rede_social_candidato_2024.zip";
+const REDE_CSV_NAME = "rede_social_candidato_2024_RJ.csv";
 
 const IBGE_MUN_RJ =
   "https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios";
@@ -84,6 +88,75 @@ async function ensureCsv() {
   });
   if (!fs.existsSync(target)) throw new Error("CSV não encontrado após extração");
   return target;
+}
+
+async function ensureRedeSocialRjCsv() {
+  const rootCsv = path.join(ROOT, REDE_CSV_NAME);
+  if (fs.existsSync(rootCsv)) return rootCsv;
+  const target = path.join(TMP_DIR, REDE_CSV_NAME);
+  if (fs.existsSync(target)) return target;
+  fs.mkdirSync(TMP_DIR, { recursive: true });
+  process.stderr.write("Baixando " + REDE_ZIP_URL + " (redes sociais, ~20 MB) …\n");
+  const res = await fetch(REDE_ZIP_URL);
+  if (!res.ok) throw new Error("ZIP redes sociais TSE " + res.status);
+  const zip = new AdmZip(Buffer.from(await res.arrayBuffer()));
+  const entry = zip
+    .getEntries()
+    .find(
+      (e) =>
+        !e.isDirectory && new RegExp(`^${REDE_CSV_NAME}$`, "i").test((e.entryName || "").split("/").pop() || "")
+    );
+  if (!entry) throw new Error("rede_social_candidato_2024_RJ.csv não encontrado no zip");
+  fs.writeFileSync(target, entry.getData());
+  return target;
+}
+
+function labelRedeFromUrl(url) {
+  const s = String(url || "").trim();
+  if (!s) return "Link";
+  try {
+    const u = new URL(s);
+    const h = u.hostname.replace(/^www\./, "");
+    if (h.includes("instagram")) return "Instagram";
+    if (h.includes("facebook.") || h === "fb.me") return "Facebook";
+    if (h.includes("twitter.") || h === "x.com") return "X (Twitter)";
+    if (h.includes("tiktok")) return "TikTok";
+    if (h.includes("youtube.") || h === "youtu.be") return "YouTube";
+    if (h.includes("linkedin")) return "LinkedIn";
+    if (h.includes("threads.net")) return "Threads";
+    return h.split(".")[0] || "Site";
+  } catch {
+    return "Rede social";
+  }
+}
+
+/**
+ * Índice DS_URL (rede social declarada) por SQ_CANDIDATO — ficheiro só RJ.
+ */
+function redeSocialPorSqCandidato(csvPath) {
+  const raw = fs.readFileSync(csvPath, "latin1");
+  const lines = raw.split(/\r?\n/).filter((l) => l.length);
+  if (lines.length < 2) return new Map();
+  const head = parseCsvLine(lines[0]);
+  const ix = (n) => head.indexOf(n);
+  const iSq = ix("SQ_CANDIDATO");
+  const iUrl = ix("DS_URL");
+  if (iSq < 0 || iUrl < 0) {
+    throw new Error("rede_social CSV: SQ_CANDIDATO ou DS_URL ausentes");
+  }
+  const map = new Map();
+  for (let li = 1; li < lines.length; li++) {
+    const cols = parseCsvLine(lines[li]);
+    if (cols.length <= Math.max(iSq, iUrl)) continue;
+    const sq = limpa(cols[iSq]);
+    const url = limpa(cols[iUrl]);
+    if (!sq || !url || !/^https?:\/\//i.test(url)) continue;
+    const label = labelRedeFromUrl(url);
+    const arr = map.get(sq) || [];
+    if (!arr.some((x) => x.url === url)) arr.push({ label, url });
+    map.set(sq, arr);
+  }
+  return map;
 }
 
 async function ensureVotacaoMunzonaRjCsv() {
@@ -224,6 +297,15 @@ function main() {
     const votPath = await ensureVotacaoMunzonaRjCsv();
     const { porSq: votosPorSq, totalPorUe: totPrefPorUe } = votosPrefeitoPorSqUe(votPath);
 
+    let redePorSq = new Map();
+    try {
+      const redePath = await ensureRedeSocialRjCsv();
+      redePorSq = redeSocialPorSqCandidato(redePath);
+      process.stderr.write(`Redes sociais (TSE): ${redePorSq.size} candidatos com URL …\n`);
+    } catch (e) {
+      process.stderr.write(`Aviso: redes sociais não carregadas (${e.message})\n`);
+    }
+
     /** @type {Record<string, unknown>} */
     const byIbge = {};
     const naoCasados = new Set();
@@ -244,7 +326,19 @@ function main() {
       const totUe = totPrefPorUe.get(String(pr.sg_ue)) || 0;
       const pct =
         vts != null && totUe > 0 ? pctValidosLocale(vts, totUe) : undefined;
+      const midiasTse = sqKey ? redePorSq.get(sqKey) || [] : [];
+      const linksPortal = [
+        {
+          label: "Candidatos 2024 — dados abertos TSE",
+          url: "https://dadosabertos.tse.jus.br/dataset/candidatos-2024",
+        },
+        {
+          label: "Resultados 2024 — votação nominal (TSE)",
+          url: "https://dadosabertos.tse.jus.br/dataset/resultados-2024",
+        },
+      ];
       const row = {
+        sq_candidato: sqKey || undefined,
         nome: pr.nome,
         nome_urna: pr.nome_urna || undefined,
         partido: pr.partido || "—",
@@ -254,6 +348,7 @@ function main() {
         vice: vice && vice.nome ? { nome: vice.nome, partido: vice.partido || "—" } : undefined,
         detalhes,
         mandato: "",
+        midias_sociais: midiasTse,
         resultado:
           vts != null
             ? {
@@ -263,18 +358,9 @@ function main() {
                   "Votos nominais no 1º turno (soma por zona), arquivo «Votação nominal por município e zona» — resultados 2024 (TSE). Municípios com 2º turno para prefeito: percentual refere-se à soma dos votos de prefeito no 1º turno naquele município.",
               }
             : undefined,
-        redes: [
-          {
-            label: "Candidatos 2024 — dados abertos TSE",
-            url: "https://dadosabertos.tse.jus.br/dataset/candidatos-2024",
-          },
-          {
-            label: "Resultados 2024 — votação nominal (TSE)",
-            url: "https://dadosabertos.tse.jus.br/dataset/resultados-2024",
-          },
-        ],
+        redes: [...midiasTse, ...linksPortal],
         fonte_tse:
-          "consulta_cand_2024_RJ.csv e votacao_candidato_munzona_2024_RJ.csv (TSE, ordinárias 06/10/2024, 1º turno)",
+          "consulta_cand_2024_RJ.csv, votacao_candidato_munzona_2024_RJ.csv e rede_social_candidato_2024_RJ.csv (TSE, ordinárias 06/10/2024, 1º turno)",
       };
       if (!byIbge[k]) byIbge[k] = [];
       byIbge[k].push(row);
@@ -283,7 +369,7 @@ function main() {
     const meta = {
       gerado_em: new Date().toISOString(),
       fonte:
-        "TSE — consulta_cand_2024 + votacao_candidato_munzona_2024 (RJ), votos 1º turno por zona",
+        "TSE — consulta_cand_2024 + votacao_candidato_munzona_2024 + rede_social_candidato_2024 (RJ), votos 1º turno e URLs declaradas",
       eleicao: "Eleições municipais ordinárias 2024 — RJ",
       ibges: Object.keys(byIbge).length,
     };
