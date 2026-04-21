@@ -208,9 +208,10 @@
     <section class="panel">
       <h2>Consultar emendas via API do Portal</h2>
       <p class="note">
-        As consultas usam diretamente a API oficial (<span class="mono">api.portaldatransparencia.gov.br</span>). Se o navegador bloquear por CORS,
-        use o <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a> ou outra ferramenta autorizada.
-        Guarde a chave no navegador (somente neste aparelho) ou defina <span class="mono">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span> em <span class="mono">js/portal-transparencia-config.js</span> (fallback quando o campo estiver vazio).
+        A API oficial é <span class="mono">api.portaldatransparencia.gov.br</span>. O navegador costuma bloquear (<strong>CORS</strong>); nesta pasta basta rodar
+        <span class="mono">npm run dev:portal-proxy</span> e manter o terminal aberto: em <span class="mono">localhost</span>, <span class="mono">127.0.0.1</span> ou <span class="mono">file://</span> as buscas passam pelo proxy em
+        <span class="mono">127.0.0.1:8787</span> (origem ajustável em <span class="mono">portal-transparencia-config.js</span>).
+        Chave: campo abaixo, <span class="mono">localStorage</span> ou <span class="mono">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span> no mesmo arquivo.
       </p>
       <div id="msgApi"></div>
       <div class="toolbar">
@@ -357,7 +358,20 @@
     }
 
     function apiBase() {
-      return "https://api.portaldatransparencia.gov.br/api-de-dados";
+      const direct = "https://api.portaldatransparencia.gov.br/api-de-dados";
+      if (window.POLITAPP_PORTAL_FORCE_DIRECT === true) return direct;
+
+      const h = window.location.hostname;
+      const fileProtocol = window.location.protocol === "file:";
+      const useProxy =
+        h === "localhost" || h === "127.0.0.1" || (h === "" && fileProtocol);
+
+      if (!useProxy) return direct;
+
+      const origin =
+        (typeof window.POLITAPP_PORTAL_PROXY_ORIGIN === "string" && window.POLITAPP_PORTAL_PROXY_ORIGIN.trim()) ||
+        "http://127.0.0.1:8787";
+      return `${origin.replace(/\/$/, "")}/api-de-dados`;
     }
 
     function renderPartyGrid() {
@@ -494,7 +508,7 @@
       } catch (e) {
         console.error(e);
         mostrarMsg(
-          "Falha na requisição (rede ou bloqueio CORS no navegador). Consulte os dados no <a href=\"https://portaldatransparencia.gov.br/emendas\" target=\"_blank\" rel=\"noopener\">portal oficial</a>.",
+          "Falha na requisição. Em <span class=\"mono\">localhost</span>/<span class=\"mono\">file://</span> rode <span class=\"mono\">npm run dev:portal-proxy</span> (terminal aberto). Senão, consulte o <a href=\"https://portaldatransparencia.gov.br/emendas\" target=\"_blank\" rel=\"noopener\">portal oficial</a>.",
           false
         );
         tbody.innerHTML = "";
