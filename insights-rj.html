@@ -360,6 +360,16 @@
       <div class="viagem-pois" id="viagemEventos"></div>
     </section>
 
+    <section class="panel" id="painelEventosMes" aria-labelledby="eventosMesAtualHeading">
+      <h2 id="eventosMesAtualHeading">Eventos do mês atual</h2>
+      <p class="note" style="margin-bottom:1rem">
+        <span id="eventosMesAtualPeriodo"></span>
+        Eventos ilustrativos (corridas, beneficentes, caminhadas e festivais) cuja data ou intervalo <strong>cruza o mês corrente</strong> no seu navegador.
+        Confirme sempre em sites oficiais e prefeituras.
+      </p>
+      <div class="viagem-pois" id="eventosMesAtualGrid"></div>
+    </section>
+
     <section class="panel">
       <h2>Boas práticas rápidas (qualquer região)</h2>
       <div class="grid-2">
@@ -592,6 +602,51 @@
       const f = ev.fim ? parseISODate(ev.fim) : i;
       if (!f) return null;
       return { inicio: i, fim: f };
+    }
+
+    /** Eventos da base EVENTOS_RJ que interceptam o mês/ano corrente (relógio do dispositivo). */
+    function buildEventosMesAtual() {
+      const grid = document.getElementById("eventosMesAtualGrid");
+      const periodoEl = document.getElementById("eventosMesAtualPeriodo");
+      if (!grid) return;
+
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth();
+      const monthStart = new Date(y, m, 1);
+      const monthEnd = new Date(y, m + 1, 0);
+      const labelMes = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+      if (periodoEl) {
+        periodoEl.textContent =
+          `Calendário: ${labelMes.charAt(0).toUpperCase() + labelMes.slice(1)}. `;
+      }
+
+      const list = EVENTOS_RJ.filter((ev) => {
+        const per = eventoPeriodo(ev);
+        if (!per) return false;
+        return rangesOverlap(monthStart, monthEnd, per.inicio, per.fim);
+      }).sort((a, b) => a.inicio.localeCompare(b.inicio) || a.nome.localeCompare(b.nome, "pt-BR"));
+
+      grid.innerHTML = "";
+      if (list.length === 0) {
+        grid.innerHTML =
+          `<p class="note" style="margin:0">Nenhum evento ilustrativo na base para este mês. Use a seção de viagens com período personalizado para ver outros meses.</p>`;
+        return;
+      }
+
+      for (const ev of list) {
+        const cor = TIPO_EVENTO_COLORS[ev.tipo] || "#94a3b8";
+        const quando = ev.fim && ev.fim !== ev.inicio ? `${ev.inicio} → ${ev.fim}` : ev.inicio;
+        const card = document.createElement("article");
+        card.className = "viagem-poi-card evento";
+        card.style.borderLeftColor = cor;
+        card.innerHTML = `
+          <div class="dist" style="color:${cor}">${escapeHtml(ev.tipo)} · ${escapeHtml(quando)}</div>
+          <strong>${escapeHtml(ev.nome)}</strong> — ${escapeHtml(ev.cidade)}
+          <p class="note" style="margin:0.35rem 0 0">${escapeHtml(ev.meso)} · ${escapeHtml(ev.dica)}</p>
+        `;
+        grid.appendChild(card);
+      }
     }
 
     function escapeHtml(s) {
@@ -1119,6 +1174,7 @@
     async function main() {
       buildCards();
       buildLegend();
+      buildEventosMesAtual();
       initComercioMap();
 
       const statusEl = document.getElementById("mapStatus");
