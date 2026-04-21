@@ -136,6 +136,74 @@
       font-weight: 400;
       opacity: 0.92;
     }
+
+    #mapComercio { height: 440px; width: 100%; background: var(--surface2); }
+    @media (max-width: 640px) { #mapComercio { height: 340px; } }
+    .comercio-filtros { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem; }
+    .comercio-lista {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      margin-top: 1rem;
+    }
+    .comercio-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.88rem;
+    }
+    .comercio-item h4 { margin: 0 0 0.35rem; font-size: 0.92rem; font-weight: 600; }
+    .comercio-item .meta { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+    .comercio-item p { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
+    .marker-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.85);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+    .leaflet-div-icon.comercio-marker-wrap {
+      background: transparent;
+      border: none;
+    }
+
+    #mapViagem { height: 420px; width: 100%; background: var(--surface2); }
+    @media (max-width: 640px) { #mapViagem { height: 320px; } }
+    .viagem-toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem;
+    }
+    .viagem-toolbar label { min-width: 200px; }
+    .btn-viagem {
+      font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      padding: 0.55rem 1.15rem; border-radius: 8px; border: none;
+      background: var(--accent); color: #fff; cursor: pointer;
+    }
+    .btn-viagem:hover { filter: brightness(1.08); }
+    .btn-viagem:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
+    .viagem-resumo {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .viagem-resumo strong { color: var(--text); }
+    .viagem-resumo .muted { color: var(--muted); font-size: 0.82rem; margin-top: 0.35rem; }
+    .viagem-pois {
+      margin-top: 1rem;
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+    .viagem-poi-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.82rem;
+    }
+    .viagem-poi-card .dist { font-size: 0.72rem; color: #9ec5ff; margin-bottom: 0.25rem; }
+    input[type="range"] { width: 100%; max-width: 220px; }
   </style>
 </head>
 <body>
@@ -162,7 +230,9 @@
       <p>
         Referência para <strong>conteúdo regionalizado</strong>: eixos de necessidades frequentemente debatidas por
         <strong>mesorregião do IBGE</strong>, com sugestões de formato e tom. O mapa usa a malha oficial de municípios do RJ;
-        combine sempre com pesquisa local, dados setoriais e legislação eleitoral.
+        abaixo há também uma <strong>visão de comércios e polos de visita</strong> (feiras, mercados, centros urbanos) para agenda de rua,
+        e um <strong>simulador de viagem entre municípios</strong> com tempo de percurso e pontos de interesse próximos à rota.
+        Combine sempre com pesquisa local, dados setoriais e legislação eleitoral.
       </p>
     </header>
 
@@ -191,6 +261,75 @@
       </div>
       <div class="legend" id="legendaMeso" aria-hidden="true"></div>
       <p id="mapStatus" class="note" style="margin-top:0.75rem">Carregando mapa…</p>
+    </section>
+
+    <section class="panel">
+      <h2>Comércio e pontos de interesse para visitas</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Referência de <strong>locais com forte presença de comércio, feiras e associações</strong>, úteis para
+        <strong>agenda de rua, escuta com lojistas e produtores</strong> e conteúdo de campanha regionalizado.
+        Coordenadas são aproximadas (centro do equipamento ou polo); confirme endereço e horário antes da visita.
+      </p>
+      <div class="comercio-filtros">
+        <label>
+          Tipo
+          <select id="filtroTipoComercio">
+            <option value="">Todos</option>
+          </select>
+        </label>
+        <label>
+          Mesorregião
+          <select id="filtroMesoComercio">
+            <option value="">Todas</option>
+          </select>
+        </label>
+      </div>
+      <div class="map-wrap">
+        <div id="mapComercio" role="application" aria-label="Mapa de pontos de comércio e visitas"></div>
+      </div>
+      <div class="legend" id="legendaComercio" style="margin-top:0.75rem" aria-hidden="true"></div>
+      <p id="comercioStatus" class="note" style="margin-top:0.75rem"></p>
+      <div class="comercio-lista" id="listaComercio"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Viagens entre municípios — tempo de trajeto e pontos na rota</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Escolha <strong>origem</strong> e <strong>destino</strong> (centróides dos polígonos municipais IBGE). A rota segue malha viária estimada
+        (<a href="http://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / OpenStreetMap). O tempo depende de trânsito e condições reais;
+        use como <strong>ordem de grandeza</strong> para planejamento. Pontos de comércio listados na página são destacados quando ficam até a distância
+        escolhida da geometria da rota.
+      </p>
+      <div class="viagem-toolbar">
+        <label>
+          Origem
+          <select id="viagemOrigem">
+            <option value="">— Município —</option>
+          </select>
+        </label>
+        <label>
+          Destino
+          <select id="viagemDestino">
+            <option value="">— Município —</option>
+          </select>
+        </label>
+        <label>
+          POIs comércio até (km da rota)
+          <input type="range" id="viagemBufferKm" min="8" max="80" value="28" />
+          <span id="viagemBufferLabel" class="note" style="display:block;margin-top:0.25rem">28 km</span>
+        </label>
+        <button type="button" class="btn-viagem" id="btnCalcularViagem">Calcular rota</button>
+      </div>
+      <div class="viagem-resumo" id="viagemResumo" hidden>
+        <div id="viagemResumoLinha"></div>
+        <p class="muted" id="viagemResumoExtra"></p>
+      </div>
+      <div class="map-wrap">
+        <div id="mapViagem" role="application" aria-label="Mapa de rota entre municípios"></div>
+      </div>
+      <p id="viagemStatus" class="note" style="margin-top:0.75rem">Selecione origem e destino e calcule a rota.</p>
+      <h3 style="margin-top:1.25rem;font-size:0.95rem;color:var(--muted)">Pontos de interesse (comércio) próximos à rota</h3>
+      <div class="viagem-pois" id="viagemPois"></div>
     </section>
 
     <section class="panel">
@@ -235,6 +374,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
   <script>
     const IBGE_MALHA_RJ =
       "https://servicodados.ibge.gov.br/api/v3/malhas/estados/33?intrarregiao=municipio&qualidade=intermediaria&formato=application/vnd.geo+json";
@@ -297,11 +437,308 @@
       },
     };
 
+    /** Pontos de comércio / visitas (coordenadas aproximadas). */
+    const TIPO_COMERCIO_COLORS = {
+      "Feira ou mercado municipal": "#f4a261",
+      "Polo comercial popular": "#e07a5f",
+      "Centro urbano e comércio de rua": "#3d8bfd",
+      "Turismo e comércio": "#9b86bd",
+      "Associação e rede de negócios": "#81b29a",
+    };
+
+    const POIS_COMERCIO = [
+      { nome: "Saara (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9045, lng: -43.1845, dica: "Alto fluxo, pequenos lojistas; boa janela para escuta sobre custos e logística urbana." },
+      { nome: "Mercado Municipal de Madureira", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8732, lng: -43.3378, dica: "Referência de abastecimento e trabalho informal; priorize horários de menor tumulto e diálogo com permissionários." },
+      { nome: "Centro Luiz Gonzaga (Feira de São Cristóvão)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9015, lng: -43.2309, dica: "Cultura nordestina e economia criativa; visitas pedem alinhamento com a gestão do espaço e fornecedores." },
+      { nome: "Mercado São Pedro", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8835, lng: -43.1062, dica: "Tradicional para peixes e banca; útil para agenda com produtores e consumidores da Baía." },
+      { nome: "Mercado de Campo Grande", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9035, lng: -43.5568, dica: "Polo de bairro denso; bom para temas de transporte e serviços periféricos." },
+      { nome: "Centro de Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7856, lng: -43.3117, dica: "Eixo histórico da Baixada; combine com entidades locais e rotas de ônibus." },
+      { nome: "Centro de Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7592, lng: -43.4513, dica: "Alto volume comercial; útil para fechar narrativa metropolitana sem ficar só na capital." },
+      { nome: "Mercado Municipal de Campos", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Feira ou mercado municipal", lat: -21.7583, lng: -41.3338, dica: "Ponto de encontro de interior; pauta rural-urbana e cadeias que abastecem a região." },
+      { nome: "Centro comercial de Macaé", cidade: "Macaé", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.3708, lng: -41.7768, dica: "Economia ligada ao setor de energia; contraste entre serviços e comércio local." },
+      { nome: "Rua Teresa e entorno", cidade: "Petrópolis", meso: "Centro Fluminense", tipo: "Turismo e comércio", lat: -22.5125, lng: -43.1735, dica: "Comércio turístico e histórico; atenção a logística em fins de semana e eventos." },
+      { nome: "Centro de Nova Friburgo", cidade: "Nova Friburgo", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.2818, lng: -42.531, dica: "Tecido comercial pós-reconstrução; bom para escuta com pequenos lojistas e cooperativas." },
+      { nome: "Centro de Volta Redonda", cidade: "Volta Redonda", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.5231, lng: -44.0939, dica: "Polo metalúrgico próximo; comércio de rua reflete ciclo econômico local." },
+      { nome: "Centro de Angra dos Reis", cidade: "Angra dos Reis", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -23.0065, lng: -44.3181, dica: "Sazonalidade turística; combine pauta de moradia e trabalho fora da alta temporada." },
+      { nome: "Centro de Itaperuna", cidade: "Itaperuna", meso: "Noroeste Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.205, lng: -41.8878, dica: "Polo regional do Noroeste; feiras e comércio conectam agricultura familiar à cidade." },
+      { nome: "Centro de Resende", cidade: "Resende", meso: "Sul Fluminense", tipo: "Associação e rede de negócios", lat: -22.4688, lng: -44.4469, dica: "Proximidade a polo industrial; ACIs e sindicatos costumam concentrar demandas de PMEs." },
+      { nome: "Orla e centro de Arraial do Cabo", cidade: "Arraial do Cabo", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.9664, lng: -42.0278, dica: "Pesca artesanal e turismo; visitas sensíveis ao calendário de mar e ocupação de praia." },
+    ];
+
     function escapeHtml(s) {
       if (s == null) return "";
       const d = document.createElement("div");
       d.textContent = s;
       return d.innerHTML;
+    }
+
+    function haversineKm(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const toRad = (d) => (d * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function formatDuration(seconds) {
+      if (seconds < 60) return `${Math.round(seconds)} s`;
+      const m = Math.floor(seconds / 60);
+      if (m < 60) return `${m} min`;
+      const h = Math.floor(m / 60);
+      const min = m % 60;
+      return min ? `${h} h ${min} min` : `${h} h`;
+    }
+
+    /** Centróide por código IBGE do município (malha IBGE). */
+    function computeCentroids(geo) {
+      const out = new Map();
+      if (!geo || !geo.features || typeof turf === "undefined") return out;
+      for (const f of geo.features) {
+        const id = String(f.properties.codarea);
+        try {
+          const c = turf.centroid(f);
+          const [lng, lat] = c.geometry.coordinates;
+          out.set(id, { lat, lng });
+        } catch (_) {
+          /* ignora geometria inválida */
+        }
+      }
+      return out;
+    }
+
+    function initViagemPlanner(centroids, byId) {
+      const statusInit = document.getElementById("viagemStatus");
+      if (!centroids || centroids.size === 0) {
+        statusInit.innerHTML =
+          `<span class="error">Centróides municipais indisponíveis (malha IBGE ou biblioteca Turf). Recarregue a página.</span>`;
+        return;
+      }
+
+      const mapV = L.map("mapViagem", { scrollWheelZoom: true }).setView([-22.35, -42.75], 7.5);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; OSM &copy; CARTO',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(mapV);
+
+      const routeLayer = L.layerGroup().addTo(mapV);
+      const poiLayer = L.layerGroup().addTo(mapV);
+      const endLayer = L.layerGroup().addTo(mapV);
+
+      const selO = document.getElementById("viagemOrigem");
+      const selD = document.getElementById("viagemDestino");
+      const btn = document.getElementById("btnCalcularViagem");
+      const statusEl = document.getElementById("viagemStatus");
+      const resumo = document.getElementById("viagemResumo");
+      const resumoLinha = document.getElementById("viagemResumoLinha");
+      const resumoExtra = document.getElementById("viagemResumoExtra");
+      const poisRoot = document.getElementById("viagemPois");
+      const rangeBuf = document.getElementById("viagemBufferKm");
+      const rangeLabel = document.getElementById("viagemBufferLabel");
+
+      const munList = [...byId.entries()]
+        .map(([id, v]) => ({ id, nome: v.nome }))
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+
+      for (const { id, nome } of munList) {
+        if (!centroids.has(id)) continue;
+        const o1 = document.createElement("option");
+        o1.value = id;
+        o1.textContent = nome;
+        selO.appendChild(o1);
+        const o2 = document.createElement("option");
+        o2.value = id;
+        o2.textContent = nome;
+        selD.appendChild(o2);
+      }
+
+      function updateRangeLabel() {
+        rangeLabel.textContent = `${rangeBuf.value} km`;
+      }
+      rangeBuf.addEventListener("input", updateRangeLabel);
+      updateRangeLabel();
+
+      function clearRouteLayers() {
+        routeLayer.clearLayers();
+        poiLayer.clearLayers();
+        endLayer.clearLayers();
+        poisRoot.innerHTML = "";
+      }
+
+      function popupPoiRota(p, distKm) {
+        const cor = TIPO_COMERCIO_COLORS[p.tipo] || "#888";
+        return `
+          <div class="popup-title">${escapeHtml(p.nome)}</div>
+          <div class="popup-meso">~${distKm.toFixed(1)} km da rota · ${escapeHtml(p.cidade)}</div>
+          <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
+          <p style="margin:0.45rem 0 0">${escapeHtml(p.dica)}</p>
+        `;
+      }
+
+      btn.addEventListener("click", async () => {
+        const oId = selO.value;
+        const dId = selD.value;
+        const bufKm = Number(rangeBuf.value) || 28;
+
+        if (!oId || !dId) {
+          statusEl.innerHTML = `<span class="error">Selecione origem e destino.</span>`;
+          return;
+        }
+        if (oId === dId) {
+          statusEl.innerHTML = `<span class="error">Origem e destino devem ser municípios diferentes.</span>`;
+          return;
+        }
+
+        const c1 = centroids.get(oId);
+        const c2 = centroids.get(dId);
+        const nomeO = byId.get(oId)?.nome ?? oId;
+        const nomeD = byId.get(dId)?.nome ?? dId;
+
+        if (!c1 || !c2) {
+          statusEl.innerHTML = `<span class="error">Coordenadas do município indisponíveis.</span>`;
+          return;
+        }
+
+        btn.disabled = true;
+        statusEl.textContent = "Calculando rota…";
+        clearRouteLayers();
+        resumo.hidden = true;
+
+        const lineStraight = [
+          [c1.lat, c1.lng],
+          [c2.lat, c2.lng],
+        ];
+        const distLinhaReta = haversineKm(c1.lat, c1.lng, c2.lat, c2.lng);
+
+        L.circleMarker([c1.lat, c1.lng], {
+          radius: 9,
+          color: "#22c55e",
+          weight: 2,
+          fillColor: "#22c55e",
+          fillOpacity: 0.95,
+        })
+          .bindPopup(`<strong>Origem</strong><br>${escapeHtml(nomeO)}`)
+          .addTo(endLayer);
+        L.circleMarker([c2.lat, c2.lng], {
+          radius: 9,
+          color: "#f87171",
+          weight: 2,
+          fillColor: "#f87171",
+          fillOpacity: 0.95,
+        })
+          .bindPopup(`<strong>Destino</strong><br>${escapeHtml(nomeD)}`)
+          .addTo(endLayer);
+
+        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${c1.lng},${c1.lat};${c2.lng},${c2.lat}?overview=full&geometries=geojson`;
+
+        let coordsLonLat = null;
+        let durationSec = null;
+        let distanceM = null;
+        let usouRotaViaria = false;
+
+        try {
+          const resp = await fetch(osrmUrl);
+          const data = await resp.json();
+          if (data.code === "Ok" && data.routes && data.routes[0]) {
+            const route = data.routes[0];
+            durationSec = route.duration;
+            distanceM = route.distance;
+            coordsLonLat = route.geometry.coordinates;
+            usouRotaViaria = true;
+            const latlngs = coordsLonLat.map(([lon, lat]) => [lat, lon]);
+            L.polyline(latlngs, { color: "#3d8bfd", weight: 5, opacity: 0.88, lineJoin: "round" }).addTo(routeLayer);
+            mapV.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });
+          } else {
+            throw new Error(data.message || "Sem rota viária");
+          }
+        } catch (err) {
+          console.warn(err);
+          L.polyline(lineStraight, {
+            color: "#64748b",
+            weight: 3,
+            dashArray: "10 8",
+            opacity: 0.85,
+          }).addTo(routeLayer);
+          mapV.fitBounds(L.latLngBounds(lineStraight), { padding: [48, 48] });
+          durationSec = (distLinhaReta / 55) * 3600;
+          distanceM = distLinhaReta * 1000;
+          coordsLonLat = [
+            [c1.lng, c1.lat],
+            [c2.lng, c2.lat],
+          ];
+          resumoExtra.textContent =
+            "Rota viária online indisponível (rede, limite do serviço ou trecho sem resultado). Linha reta entre centróides IBGE; tempo estimado a ~55 km/h (não considera pedágio, ferry nem trânsito).";
+        }
+
+        const line = turf.lineString(coordsLonLat);
+        const comDistancia = POIS_COMERCIO.map((p) => {
+          const pt = turf.point([p.lng, p.lat]);
+          let dist;
+          try {
+            dist = turf.pointToLineDistance(pt, line, { units: "kilometers" });
+          } catch (_) {
+            dist = Infinity;
+          }
+          return { p, dist };
+        })
+          .filter((x) => x.dist <= bufKm)
+          .sort((a, b) => a.dist - b.dist);
+
+        for (const { p, dist } of comDistancia) {
+          const col = TIPO_COMERCIO_COLORS[p.tipo] || "#94a3b8";
+          const ic = L.divIcon({
+            className: "comercio-marker-wrap",
+            html: `<div class="marker-dot" style="background:${col};box-shadow:0 0 0 2px rgba(61,139,253,0.5)"></div>`,
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+          });
+          L.marker([p.lat, p.lng], { icon: ic })
+            .bindPopup(popupPoiRota(p, dist), { maxWidth: 300 })
+            .addTo(poiLayer);
+        }
+
+        resumoLinha.innerHTML = `
+          <strong>${escapeHtml(nomeO)}</strong> → <strong>${escapeHtml(nomeD)}</strong><br />
+          Distância ${usouRotaViaria ? "pelas vias (estimada)" : "aproximada (linha reta)"}: <strong>${(distanceM / 1000).toFixed(1)} km</strong>
+          · Tempo de percurso (estimado): <strong>${formatDuration(durationSec)}</strong>
+          ${usouRotaViaria ? "" : " · <span class='note'>(aproximação)</span>"}
+        `;
+        const extraPois = `${comDistancia.length} ponto(s) de comércio até ${bufKm} km da geometria da rota.`;
+        if (usouRotaViaria) {
+          resumoExtra.textContent = `Linha reta entre centróides: ${distLinhaReta.toFixed(1)} km. ${extraPois}`;
+        } else {
+          resumoExtra.textContent = `${resumoExtra.textContent} ${extraPois}`;
+        }
+        resumo.hidden = false;
+
+        poisRoot.innerHTML = "";
+        if (comDistancia.length === 0) {
+          poisRoot.innerHTML =
+            `<p class="note" style="grid-column:1/-1;margin:0">Nenhum ponto cadastrado dentro de ${bufKm} km da rota. Aumente o raio ou escolha outro par de municípios.</p>`;
+        } else {
+          for (const { p, dist } of comDistancia) {
+            const card = document.createElement("article");
+            card.className = "viagem-poi-card";
+            card.innerHTML = `
+              <div class="dist">~${dist.toFixed(1)} km da rota · ${escapeHtml(p.tipo)}</div>
+              <strong>${escapeHtml(p.nome)}</strong> — ${escapeHtml(p.cidade)}
+              <p class="note" style="margin:0.35rem 0 0">${escapeHtml(p.dica)}</p>
+            `;
+            poisRoot.appendChild(card);
+          }
+        }
+
+        statusEl.textContent = usouRotaViaria
+          ? "Rota calculada. Marcadores verde/vermelho: origem e destino; outros: pontos de comércio próximos à rota."
+          : "Linha reta exibida. Verifique aviso acima sobre disponibilidade da rota viária.";
+
+        btn.disabled = false;
+      });
+
+      setTimeout(() => mapV.invalidateSize(), 300);
     }
 
     function buildCards() {
@@ -343,9 +780,135 @@
         .join("");
     }
 
+    function initComercioMap() {
+      const statusEl = document.getElementById("comercioStatus");
+      const tipos = [...new Set(POIS_COMERCIO.map((p) => p.tipo))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+      const mesos = [...new Set(POIS_COMERCIO.map((p) => p.meso))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+      const selTipo = document.getElementById("filtroTipoComercio");
+      const selMeso = document.getElementById("filtroMesoComercio");
+      for (const t of tipos) {
+        const o = document.createElement("option");
+        o.value = t;
+        o.textContent = t;
+        selTipo.appendChild(o);
+      }
+      for (const m of mesos) {
+        const o = document.createElement("option");
+        o.value = m;
+        o.textContent = m;
+        selMeso.appendChild(o);
+      }
+
+      const leg = document.getElementById("legendaComercio");
+      leg.innerHTML = Object.entries(TIPO_COMERCIO_COLORS)
+        .map(([nome, c]) => `<span><span class="swatch" style="background:${c}"></span>${escapeHtml(nome)}</span>`)
+        .join("");
+
+      const mapC = L.map("mapComercio", { scrollWheelZoom: true }).setView([-22.35, -42.75], 7.5);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(mapC);
+
+      const markerByIndex = [];
+      const markersLayer = L.layerGroup().addTo(mapC);
+
+      function popupComercio(p) {
+        const cor = TIPO_COMERCIO_COLORS[p.tipo] || "#888";
+        return `
+          <div class="popup-title">${escapeHtml(p.nome)}</div>
+          <div class="popup-meso">${escapeHtml(p.cidade)} · ${escapeHtml(p.meso)}</div>
+          <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
+          <p style="margin:0.5rem 0 0"><strong>Visita:</strong> ${escapeHtml(p.dica)}</p>
+        `;
+      }
+
+      function matchesFilter(p) {
+        const t = selTipo.value;
+        const m = selMeso.value;
+        return (!t || p.tipo === t) && (!m || p.meso === m);
+      }
+
+      function refreshMarkers() {
+        markersLayer.clearLayers();
+        markerByIndex.length = 0;
+        const visible = [];
+        POIS_COMERCIO.forEach((p, idx) => {
+          const color = TIPO_COMERCIO_COLORS[p.tipo] || "#888";
+          const icon = L.divIcon({
+            className: "comercio-marker-wrap",
+            html: `<div class="marker-dot" style="background:${color}"></div>`,
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+          });
+          const mk = L.marker([p.lat, p.lng], { icon });
+          mk.bindPopup(popupComercio(p), { maxWidth: 300 });
+          if (matchesFilter(p)) {
+            mk.addTo(markersLayer);
+            visible.push(mk);
+          }
+          markerByIndex[idx] = mk;
+        });
+        if (visible.length) {
+          mapC.fitBounds(L.featureGroup(visible).getBounds(), { padding: [36, 36], maxZoom: 10 });
+        }
+      }
+
+      function buildLista() {
+        const root = document.getElementById("listaComercio");
+        root.innerHTML = "";
+        POIS_COMERCIO.forEach((p, idx) => {
+          if (!matchesFilter(p)) return;
+          const art = document.createElement("article");
+          art.className = "comercio-item";
+          art.tabIndex = 0;
+          art.style.cursor = "pointer";
+          art.innerHTML = `
+            <div class="meta">${escapeHtml(p.cidade)} · ${escapeHtml(p.tipo)}</div>
+            <h4>${escapeHtml(p.nome)}</h4>
+            <p>${escapeHtml(p.dica)}</p>
+          `;
+          const open = () => {
+            const mk = markerByIndex[idx];
+            if (mk && markersLayer.hasLayer(mk)) {
+              mapC.setView([p.lat, p.lng], Math.max(mapC.getZoom(), 11), { animate: true });
+              mk.openPopup();
+            } else {
+              mapC.setView([p.lat, p.lng], 12);
+            }
+          };
+          art.addEventListener("click", open);
+          art.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              open();
+            }
+          });
+          root.appendChild(art);
+        });
+      }
+
+      function applyFilters() {
+        refreshMarkers();
+        buildLista();
+        const n = POIS_COMERCIO.filter(matchesFilter).length;
+        statusEl.textContent =
+          n === POIS_COMERCIO.length
+            ? `${n} pontos no mapa. Clique nos marcadores ou na lista para centralizar.`
+            : `${n} ponto(s) com os filtros atuais.`;
+      }
+
+      selTipo.addEventListener("change", applyFilters);
+      selMeso.addEventListener("change", applyFilters);
+
+      applyFilters();
+    }
+
     async function main() {
       buildCards();
       buildLegend();
+      initComercioMap();
 
       const statusEl = document.getElementById("mapStatus");
       const map = L.map("map", { scrollWheelZoom: true }).setView([-22.35, -42.75], 7.5);
@@ -358,6 +921,8 @@
       const munRes = await fetch(IBGE_MUN_RJ);
       if (!munRes.ok) {
         statusEl.innerHTML = `<span class="error">Não foi possível carregar municípios (IBGE).</span>`;
+        document.getElementById("viagemStatus").innerHTML =
+          `<span class="error">Municípios não carregados — planejador de viagem indisponível.</span>`;
         return;
       }
       const municipios = await munRes.json();
@@ -373,9 +938,14 @@
       const geoRes = await fetch(IBGE_MALHA_RJ);
       if (!geoRes.ok) {
         statusEl.innerHTML = `<span class="error">Malha IBGE indisponível (${geoRes.status}).</span>`;
+        document.getElementById("viagemStatus").innerHTML =
+          `<span class="error">Malha IBGE indisponível — planejador de viagem sem centróides.</span>`;
         return;
       }
       const geo = await geoRes.json();
+
+      const centroids = computeCentroids(geo);
+      initViagemPlanner(centroids, byId);
 
       let filtroMeso = "";
       const layers = [];
