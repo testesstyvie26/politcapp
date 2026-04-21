@@ -456,8 +456,8 @@
     </section>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js'"></script>
   <script>
     const JSON_URL = "data/vereadores-rj-rio-2024.json";
     const PAGE = { num: 1, size: 50 };
@@ -741,15 +741,62 @@
         .join("\n");
     }
 
+    function getJsPDFConstructor() {
+      const w = window;
+      if (w.jspdf && typeof w.jspdf.jsPDF === "function") return w.jspdf.jsPDF;
+      if (typeof w.jsPDF === "function") return w.jsPDF;
+      return null;
+    }
+
+    function ensureJspdfAutotablePlugin(JsPDF) {
+      if (!JsPDF || !JsPDF.API) return false;
+      if (typeof JsPDF.API.autoTable === "function") return true;
+      const ap = window.applyPlugin;
+      if (typeof ap === "function") {
+        try {
+          ap(JsPDF);
+        } catch (e) {
+          console.warn("jsPDF-AutoTable applyPlugin:", e);
+        }
+      }
+      return typeof JsPDF.API.autoTable === "function";
+    }
+
+    function savePdfDocument(doc, filename) {
+      try {
+        doc.save(filename);
+      } catch (e) {
+        try {
+          const blob = doc.output("blob");
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          a.rel = "noopener";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (e2) {
+          throw e2;
+        }
+      }
+    }
+
     function exportarCaxiasPDF() {
-      const wj = window.jspdf;
-      if (!wj || !wj.jsPDF) {
+      const JsPDF = getJsPDFConstructor();
+      if (!JsPDF) {
         window.alert(
           "Não foi possível carregar a biblioteca jsPDF. Verifique a ligação à internet e recarregue a página.",
         );
         return;
       }
-      const { jsPDF } = wj;
+      if (!ensureJspdfAutotablePlugin(JsPDF)) {
+        window.alert(
+          "O plugin jsPDF-AutoTable não foi aplicado. Recarregue a página. Se o problema continuar, confirme que o script jspdf.plugin.autotable carrega antes de exportar (consola: erros 404 / bloqueio de rede).",
+        );
+        return;
+      }
       const lista = sortPorVotosCrescente(filtrar());
       if (!lista.length) {
         window.alert("Não há registos para exportar com os filtros atuais.");
@@ -758,9 +805,9 @@
       const btn = document.getElementById("btnExportPdf");
       btn.disabled = true;
       try {
-        const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+        const doc = new JsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
         if (typeof doc.autoTable !== "function") {
-          window.alert("O plugin autotable do jsPDF não carregou. Tente recarregar a página.");
+          window.alert("autoTable indisponível na instância do jsPDF. Recarregue a página.");
           return;
         }
         const pageW = doc.internal.pageSize.getWidth();
@@ -823,24 +870,27 @@
           body,
           startY: y0 + 4,
           margin: { left: margin, right: margin },
+          tableWidth: "auto",
           styles: { fontSize: 6.5, cellPadding: 1.8, overflow: "linebreak", lineColor: [220, 224, 232], lineWidth: 0.2 },
           headStyles: { fillColor: [20, 28, 40], textColor: [240, 240, 245], fontStyle: "bold" },
           columnStyles: {
-            0: { halign: "center", cellWidth: 30 },
-            1: { cellWidth: 95 },
-            2: { cellWidth: 70 },
-            3: { cellWidth: 58 },
-            4: { cellWidth: 78 },
-            5: { halign: "right", cellWidth: 44 },
-            6: { cellWidth: 64 },
-            7: { cellWidth: 100 },
-            8: { cellWidth: 130 },
-            9: { cellWidth: 52 },
+            0: { halign: "center", cellWidth: 28 },
+            1: { cellWidth: 88 },
+            2: { cellWidth: 64 },
+            3: { cellWidth: 52 },
+            4: { cellWidth: 72 },
+            5: { halign: "right", cellWidth: 40 },
+            6: { cellWidth: 58 },
+            7: { cellWidth: 90 },
+            8: { cellWidth: 115 },
+            9: { cellWidth: 48 },
           },
           didDrawPage: (data) => {
+            const n = data && data.pageNumber;
+            const page = n != null ? n : doc.internal.getNumberOfPages();
             doc.setFontSize(7);
             doc.setTextColor(120, 120, 128);
-            doc.text("Pág. " + data.pageNumber, pageW - margin, pageH - 16, { align: "right" });
+            doc.text("Pág. " + page, pageW - margin, pageH - 16, { align: "right" });
           },
         });
 
@@ -853,7 +903,7 @@
           "-" +
           String(now.getDate()).padStart(2, "0") +
           ".pdf";
-        doc.save(fn);
+        savePdfDocument(doc, fn);
       } catch (e) {
         console.error(e);
         window.alert("Erro ao gerar o PDF. " + (e && e.message ? e.message : String(e)));
