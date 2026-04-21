@@ -158,6 +158,60 @@
       border-top: 1px solid var(--border);
     }
 
+    .plano-acao {
+      margin-top: 1.75rem;
+      padding-top: 1.35rem;
+      border-top: 1px solid var(--border);
+    }
+    .plano-acao > h3 {
+      margin: 0 0 0.45rem;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .plano-acao > .plano-lead {
+      margin: 0 0 1rem;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 72ch;
+    }
+    .pa-table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin: 0;
+    }
+    .pa-table {
+      width: 100%;
+      min-width: 520px;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .pa-table th,
+    .pa-table td {
+      padding: 0.6rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    .pa-table thead th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pa-table tbody tr:last-child td { border-bottom: none; }
+    .pa-table tbody tr:hover td { background: rgba(61, 139, 253, 0.05); }
+    .pa-table td:first-child {
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .pa-table .mono { font-size: 0.78rem; }
+
     .ficha dl {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -516,6 +570,76 @@
           </ul>
         </div>
       </div>
+
+      <div class="plano-acao">
+        <h3>Plano de ação — metas para insights, engajamento e alcance eleitoral</h3>
+        <p class="plano-lead">
+          Matriz sugerida para a <strong>equipa de campanha</strong> ajustar números à realidade (orçamento, calendário eleitoral e quociente local).
+          Baseline = valores registados antes de iniciar o ciclo de melhoria; reveja semanalmente na reunião de pauta digital + territorial.
+        </p>
+        <div class="pa-table-wrap" role="region" aria-label="Tabela do plano de ação">
+          <table class="pa-table">
+            <thead>
+              <tr>
+                <th scope="col">Eixo</th>
+                <th scope="col">Ação-chave</th>
+                <th scope="col">Meta mensurável</th>
+                <th scope="col">Indicador / prova</th>
+                <th scope="col">Horizonte</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Insights &amp; perfil</td>
+                <td>Auditar bio, foto, destaques e link (WhatsApp ou site) com mensagem clara «educação · Caxias».</td>
+                <td>Registar baseline (seguidores, alcance médio por post) e melhorar taxa de <strong>cliques no link</strong> em ≥15% face ao baseline.</td>
+                <td><span class="mono">Meta Business Suite</span> ou exportações semanais; captura de ecrã da bio.</td>
+                <td>Primeiras <strong>2 semanas</strong></td>
+              </tr>
+              <tr>
+                <td>Alcance orgânico</td>
+                <td>Publicar <strong>Reels</strong> com tema educação / território (escola, reunião, entrevista curta).</td>
+                <td>Mínimo <strong>2 Reels/semana</strong> em período de campanha ativa; meta de saves+partilhas combinados acima da média dos 3 Reels anteriores.</td>
+                <td>Relatório nativo «Conteúdos» (saves, alcance, novos seguidores atribuídos).</td>
+                <td><strong>8–12 semanas</strong> (ajustar à data do pleito)</td>
+              </tr>
+              <tr>
+                <td>Engajamento</td>
+                <td>Stories com enquetes, perguntas e CTA para conversa (DM ou WhatsApp).</td>
+                <td><strong>4 dias/semana</strong> com pelo menos 3 slides úteis; taxa de resposta a comentários &lt;24h em posts fixos.</td>
+                <td>Lista de verificação na equipa; métricas de interação nos Insights do post.</td>
+                <td>Mantido durante <strong>campanha</strong></td>
+              </tr>
+              <tr>
+                <td>Ponte digital → voto</td>
+                <td>Links com <span class="mono">UTM</span> (<span class="mono">utm_source=instagram</span>) para WhatsApp ou landing de propostas.</td>
+                <td>Identificar <strong>≥1 contacto qualificado</strong> por 100 cliques no link (ajustar meta à equipa); reduzir abandono na primeira mensagem.</td>
+                <td>Planilha de origem do contacto + rotas <span class="mono">wa.me</span>; revisão quinzenal.</td>
+                <td><strong>Trimestre</strong> ou janela eleitoral</td>
+              </tr>
+              <tr>
+                <td>Território + redes</td>
+                <td>Cada agenda presencial (bairro/escola) gera 1 Reel + 2 Stories no mesmo dia.</td>
+                <td>Mínimo <strong>6 agendas/mês</strong> com conteúdo publicado no próprio dia; eleitor vê prova de presência.</td>
+                <td>Calendário partilhado + grelha de conteúdos cruzada com lista de presença.</td>
+                <td><strong>Mensal</strong> até ao pleito</td>
+              </tr>
+              <tr>
+                <td>Votos (meta global)</td>
+                <td>Correlacionar picos de alcance com esforço de rua e reforço da mensagem «Professor» na urna.</td>
+                <td>Definir <strong>meta numérica de votos</strong> com o diretório (função do quociente partidário e vagas), não só meta de redes.</td>
+                <td>Simulações de quociente, pesquisas internas de lista e resultado TSE comparativo (eleição seguinte).</td>
+                <td>Definir em <strong>reunião de campanha</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="plano-lead" style="margin-top:1rem;margin-bottom:0;font-size:0.8rem">
+          Cumpra sempre a <strong>legislação eleitoral</strong> aplicável a propaganda, impulsionamentos e registo de contas de campanha.
+          Metas numéricas são exemplos — calibres consoante o tamanho da equipa e a fase do calendário.
+        </p>
+      </div>
+
       <p class="insi-foot">
         Referência pública do perfil:
         <a href="https://www.instagram.com/prof.heitorqueiroz/" target="_blank" rel="noopener noreferrer">instagram.com/prof.heitorqueiroz</a>.
