@@ -209,9 +209,9 @@
       <h2>Consultar emendas via API do Portal</h2>
       <p class="note">
         A API oficial é <span class="mono">api.portaldatransparencia.gov.br</span>; no navegador costuma dar <strong>CORS</strong>.
-        <strong>Produção</strong> (<span class="mono">politcapp.com.br</span>, GitHub Pages, etc.): configure <span class="mono">POLITAPP_PORTAL_API_BASE</span> em <span class="mono">portal-transparencia-config.js</span> com a URL do Worker
-        (<span class="mono">workers/portal-transparencia-proxy.js</span> na Cloudflare).
-        <strong>Local:</strong> <span class="mono">npm run dev</span> e <span class="mono">http://127.0.0.1:8787/transparencia.html</span>, ou <span class="mono">npm run dev:portal-proxy</span> com Live Server / <span class="mono">file://</span>.
+        Em <span class="mono">politcapp.com.br</span> a base do proxy é o próprio site (<span class="mono">/api-de-dados</span>); no Cloudflare publique
+        <span class="mono">workers/portal-transparencia-proxy.js</span> na rota <span class="mono">/api-de-dados*</span> desse domínio. Outros hosts: ajuste <span class="mono">POLITAPP_PORTAL_API_BASE</span> no mesmo arquivo de config.
+        <strong>Local:</strong> <span class="mono">npm run dev</span> e <span class="mono">http://127.0.0.1:8787/transparencia.html</span>, ou <span class="mono">npm run dev:portal-proxy</span>.
         Chave: campo abaixo, <span class="mono">localStorage</span> ou <span class="mono">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span>.
       </p>
       <div id="msgPortalProxyAviso" class="note" hidden style="margin:0 0 0.75rem"></div>

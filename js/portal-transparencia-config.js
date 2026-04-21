@@ -1,17 +1,17 @@
 /**
  * API de dados do Portal da Transparência — cadastro: portaldatransparencia.gov.br/api-de-dados
  *
- * Produção (https://politcapp.com.br, GitHub Pages, etc.): o navegador bloqueia a API oficial (CORS).
- * Faça deploy do Worker em workers/portal-transparencia-proxy.js e preencha POLITAPP_PORTAL_API_BASE abaixo.
+ * Produção em politcapp.com.br: a base do proxy assume automaticamente o próprio site
+ * (https://politcapp.com.br/api-de-dados) — no Cloudflare, publique o Worker na rota /api-de-dados/* desse domínio.
+ * Outros hosts: faça deploy do Worker (workers/) e defina POLITAPP_PORTAL_API_BASE abaixo se necessário.
  *
  * Local: npm run dev → http://127.0.0.1:8787/transparencia.html
  */
 window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE = "";
 
 /**
- * URL base até /api-de-dados do seu proxy (Cloudflare Worker). Obrigatório em produção.
- * Ex.: "https://politapp-portal-transparencia-proxy.seu-subdominio.workers.dev/api-de-dados"
- * Deixe "" só para desenvolvimento local (ou a página usa a API direta e tende a falhar fora do CGU).
+ * Base até /api-de-dados. Em politcapp.com.br fica vazio no arquivo: o script abaixo usa location.origin.
+ * Em outro domínio, use a URL do Worker, ex.: "https://….workers.dev/api-de-dados"
  */
 window.POLITAPP_PORTAL_API_BASE = "";
 
@@ -23,3 +23,14 @@ window.POLITAPP_PORTAL_PROXY_ORIGIN = "";
 
 /** true = sempre URL direta da API (quase sempre quebra por CORS fora do servidor da CGU). */
 window.POLITAPP_PORTAL_FORCE_DIRECT = false;
+
+(function politappPortalApiBaseDefault() {
+  var manual = window.POLITAPP_PORTAL_API_BASE;
+  if (typeof manual === "string" && manual.trim() !== "") return;
+  try {
+    var h = window.location.hostname;
+    if (h === "politcapp.com.br" || h === "www.politcapp.com.br") {
+      window.POLITAPP_PORTAL_API_BASE = window.location.origin + "/api-de-dados";
+    }
+  } catch (e) {}
+})();
