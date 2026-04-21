@@ -121,6 +121,17 @@
       margin-top: 0.75rem;
       font-size: 0.86rem;
     }
+    .toolbar-pdf { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.9rem; }
+    .btn-pdf {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.5rem 0.85rem; font: inherit; font-weight: 600; font-size: 0.88rem;
+      cursor: pointer; border-radius: 8px; border: 1px solid var(--border);
+      background: linear-gradient(155deg, rgba(28, 36, 51, 0.95), rgba(18, 24, 36, 0.98));
+      color: var(--text);
+    }
+    .btn-pdf:hover { border-color: rgba(61, 139, 253, 0.45); color: var(--accent); }
+    .btn-pdf:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-pdf svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
     .alert { padding: 0.75rem; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fecaca; }
     td.soc-cell {
       font-size: 0.8rem;
@@ -355,9 +366,10 @@
         <strong>votos do menor para o maior</strong> (1.º turno). Os mesmos campos e fonte que a
         <a href="vereadores-rj.html">lista geral (Rio e Caxias)</a> — ficheiro
         <span class="mono">vereadores-rj-rio-2024.json</span> —
-        <span class="mono">consulta_cand</span>,
+        <span class="mono">consulta_cand</span> (incl. DDD/celular TSE, campo <span class="mono">telefone</span> no JSON),
         <span class="mono">votacao_candidato_munzona</span>,
-        <span class="mono">rede_social_candidato</span> e WhatsApp quando existirem.
+        <span class="mono">rede_social_candidato</span> e WhatsApp. Colunas <strong>Telefone</strong> e <strong>WhatsApp</strong>:
+        número a partir do TSE ou inferido de <span class="mono">wa.me</span> / envio; link principal de conversa (sem grupo/canal, quando há alternativa).
         Atualize com <span class="mono">npm run build:vereadores-rj</span>.
         <a href="vereadores-rj-mapa-votos.html">Mapa de votos (zona e seção)</a>.
       </p>
@@ -378,6 +390,13 @@
 
     <section class="panel">
       <h2>Lista</h2>
+      <div class="toolbar-pdf" role="group" aria-label="Exportar PDF">
+        <button type="button" class="btn-pdf" id="btnExportPdf" title="Gera um PDF A4 paisagem com a lista filtrada (todos os registos, não só a página actual)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>
+          Exportar PDF
+        </button>
+        <span class="muted" style="font-size:0.8rem;max-width:32ch">Inclui telefone, link WhatsApp e redes. Usa o mesmo filtro da tabela; exporta a lista completa, não só a página.</span>
+      </div>
       <p class="note" id="metaLista">Carregando…</p>
       <p class="note" id="hintFiltroVazio" hidden style="margin-top:0.35rem;color:#f0c975;font-size:0.86rem"></p>
       <div id="msgErro" hidden class="alert"></div>
@@ -418,6 +437,8 @@
               <th>Grupo</th>
               <th>Resultado (pleito)</th>
               <th class="num">Votos <span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">↑ menor → maior</span></th>
+              <th>Telefone</th>
+              <th>WhatsApp</th>
               <th>Redes e contactos</th>
               <th class="mono">SQ</th>
             </tr>
@@ -435,6 +456,8 @@
     </section>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin="anonymous"></script>
   <script>
     const JSON_URL = "data/vereadores-rj-rio-2024.json";
     const PAGE = { num: 1, size: 50 };
@@ -571,6 +594,75 @@
       return a.map((x) => `${x.label || ""} ${x.url || ""}`).join(" ");
     }
 
+    function isWhatsAppGrupoOuCanal(url) {
+      return /chat\.whatsapp\.com|whatsapp\.com\/channel|whatsapp\.com\/c\//i.test(String(url || ""));
+    }
+
+    function urlWhatsappPreferida(r) {
+      const list = r.whatsapp || [];
+      for (const x of list) {
+        const u = x && x.url;
+        if (u && /^https?:\/\//i.test(String(u).trim()) && !isWhatsAppGrupoOuCanal(u)) return String(u).trim();
+      }
+      for (const x of list) {
+        const u = x && x.url;
+        if (u && /^https?:\/\//i.test(String(u).trim())) return String(u).trim();
+      }
+      return null;
+    }
+
+    function extrairDigitosDeUrlWhatsapp(u) {
+      if (!u) return null;
+      const s = String(u);
+      const m1 = s.match(/[?&]phone=\+?(\d{10,15})/i);
+      if (m1) return m1[1].replace(/\D/g, "");
+      const m2 = s.match(/wa\.me\/\+?(\d{10,15})/i);
+      if (m2) return m2[1].replace(/\D/g, "");
+      return null;
+    }
+
+    function formatarDigitosNacionais(d) {
+      let x = String(d).replace(/\D/g, "");
+      if (x.startsWith("55") && x.length > 4) x = x.slice(2);
+      if (x.length < 10) return null;
+      const ddd = x.slice(0, 2);
+      const n = x.slice(2);
+      if (n.length === 9) return `(${ddd}) ${n.slice(0, 5)}-${n.slice(5)}`;
+      if (n.length === 8) return `(${ddd}) ${n.slice(0, 4)}-${n.slice(4)}`;
+      return `(${ddd}) ${n}`;
+    }
+
+    function telefoneTexto(r) {
+      const t = r && r.telefone != null && String(r.telefone).trim();
+      if (t) return t;
+      const href = urlWhatsappPreferida(r);
+      if (!href) return "—";
+      const dig = extrairDigitosDeUrlWhatsapp(href);
+      if (dig) {
+        const f = formatarDigitosNacionais(dig);
+        if (f) return f;
+      }
+      return "—";
+    }
+
+    function whatsappLinkCelula(r) {
+      const href = urlWhatsappPreferida(r);
+      if (!href) return '<span class="muted">—</span>';
+      const uEsc = escapeHtml(href);
+      const svg = SOC_SVG.whatsapp;
+      return (
+        '<a class="soc-icon-btn soc-icon-btn--whatsapp" href="' +
+        uEsc +
+        '" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp — ' +
+        uEsc +
+        '" title="' +
+        uEsc +
+        '">' +
+        svg +
+        "</a>"
+      );
+    }
+
     function norm(s) {
       return String(s || "")
         .toLowerCase()
@@ -598,6 +690,8 @@
           PAPEL_LABEL[pap],
           r.votos != null ? String(r.votos) : "",
           fmtIntPt(r.votos),
+          r.telefone != null ? String(r.telefone) : "",
+          telefoneTexto(r),
           textoLinks(r),
         ]
           .filter(Boolean)
@@ -653,6 +747,9 @@
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
           const vot = fmtIntPt(r.votos);
+          const txtTel = telefoneTexto(r);
+          const telefoneCell =
+            txtTel === "—" ? '<span class="muted">—</span>' : '<span class="mono">' + escapeHtml(txtTel) + "</span>";
           const red = linksHtml(redesEContactos(r));
           return `<tr>
             <td class="num mono">${n}</td>
@@ -661,6 +758,8 @@
             <td>${escapeHtml(lbl)}</td>
             <td>${res}</td>
             <td class="num mono">${vot}</td>
+            <td>${telefoneCell}</td>
+            <td class="soc-cell">${whatsappLinkCelula(r)}</td>
             <td class="soc-cell">${red}</td>
             <td class="mono">${sq}</td>
           </tr>`;

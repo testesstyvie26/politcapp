@@ -343,6 +343,14 @@ function parseIntSafe(s) {
   return Number.isFinite(n) ? n : NaN;
 }
 
+/** Ex.: DDD 21 e cel 987654321 → (21) 98765-4321 */
+function exibirCelularBr(ddd, numSemDdd) {
+  const c = String(numSemDdd).replace(/\D/g, "");
+  if (c.length === 9) return `(${ddd}) ${c.slice(0, 5)}-${c.slice(5)}`;
+  if (c.length === 8) return `(${ddd}) ${c.slice(0, 4)}-${c.slice(4)}`;
+  return c ? `(${ddd}) ${c}` : "";
+}
+
 function mainSync(csvText) {
   const lines = csvText.split(/\r?\n/).filter((l) => l.length > 0);
   if (!lines.length) throw new Error("CSV vazio");
@@ -390,11 +398,13 @@ function mainSync(csvText) {
     const metaUe = METADATA_UE[sgUe] || {};
     /** wa.me a partir de DDD + celular declarados no TSE (se existirem colunas). */
     let _waUrlCelular;
+    let telefone;
     if (ixDddCel >= 0 && ixCel >= 0) {
       const ddd = String(pick(ixDddCel) || "").replace(/\D/g, "");
       const cel = String(pick(ixCel) || "").replace(/\D/g, "");
       if (ddd.length >= 2 && cel.length >= 8) {
         _waUrlCelular = `https://wa.me/55${ddd}${cel}`;
+        telefone = exibirCelularBr(ddd, cel) || undefined;
       }
     }
     rows.push({
@@ -411,6 +421,7 @@ function mainSync(csvText) {
       dsSitTotTurno: dsSitTotTurno || undefined,
       papelEleicao: papelEleicao(dsSitTotTurno),
       dsCargo: ixDsCargo >= 0 ? pick(ixDsCargo) : undefined,
+      ...(telefone ? { telefone } : {}),
       ...(_waUrlCelular ? { _waUrlCelular } : {}),
     });
   }
