@@ -1,0 +1,10 @@
+# Evita empacotar o monorepo inteiro como "assets" do Worker (erro "Asset too large" com node_modules/workerd).
+node_modules/
+.git/
+data/
+_tmp/
+*.csv
+*.zip
+*.log
+.env
+.env.*

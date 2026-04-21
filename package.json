@@ -5,6 +5,7 @@
   "scripts": {
     "build:tse-df": "node scripts/build-tse-df-json-from-csv.cjs",
     "dev": "node scripts/politapp-dev-server.cjs",
-    "dev:portal-proxy": "node scripts/portal-transparencia-proxy.cjs"
+    "dev:portal-proxy": "node scripts/portal-transparencia-proxy.cjs",
+    "deploy:worker": "npx wrangler deploy"
   }
 }
