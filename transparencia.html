@@ -370,8 +370,19 @@
     ];
 
     function brl(n) {
-      if (n == null || Number.isNaN(Number(n))) return "—";
-      return Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+      if (n == null || n === "" || Number.isNaN(Number(n))) return "—";
+      const x = Number(n);
+      if (Math.abs(x) < 1e-10) return "—";
+      return x.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+    }
+
+    /** Moeda da API (valor/restos) numericamente zero — não repetir R$ 0,00 na grade nem na linha extra. */
+    function moedaApiValorEhZero(key, v) {
+      if (v == null || v === "") return false;
+      if (!/valor|resto|empenh|liquid|pago|inscrit|cancel/i.test(key)) return false;
+      const n = Number(v);
+      if (Number.isNaN(n)) return false;
+      return Math.abs(n) < 1e-10;
     }
 
     function escapeHtml(s) {
@@ -397,6 +408,9 @@
       localidadeDoGasto: "Localidade do gasto",
       nomeFuncao: "Função",
       codigoFuncao: "Código da função",
+      nomeSubfuncao: "Subfunção",
+      codigoSubfuncao: "Código da subfunção",
+      numeroEmenda: "Número da emenda",
       orgaoExecutor: "Órgão executor",
       programaGovernamental: "Programa governamental",
       acao: "Ação orçamentária",
@@ -418,6 +432,9 @@
       "localidadeDoGasto",
       "nomeFuncao",
       "codigoFuncao",
+      "nomeSubfuncao",
+      "codigoSubfuncao",
+      "numeroEmenda",
       "orgaoExecutor",
       "programaGovernamental",
       "acao",
@@ -479,7 +496,9 @@
     ]);
 
     function htmlLinhaExtrasLista(row) {
-      const keys = Object.keys(row).filter((k) => !CHAVES_COLUNAS_PRINCIPAIS_EMENDA.has(k));
+      const keys = Object.keys(row)
+        .filter((k) => !CHAVES_COLUNAS_PRINCIPAIS_EMENDA.has(k))
+        .filter((k) => !moedaApiValorEhZero(k, row[k]));
       keys.sort((a, b) => a.localeCompare(b, "pt-BR"));
       if (!keys.length) return "";
       const parts = keys.map((k) => {
@@ -536,6 +555,8 @@
         .sort((a, b) => a.localeCompare(b, "pt-BR"))
         .forEach((k) => ordem.push(k));
 
+      const ordemVisivel = ordem.filter((k) => !moedaApiValorEhZero(k, j[k]));
+
       const titulo = escapeHtml(j.codigoEmenda || codFallback || "Emenda");
       const links =
         `<div class="det-emenda-links">` +
@@ -545,7 +566,7 @@
         ` · <a href="https://portaldatransparencia.gov.br/api-de-dados" target="_blank" rel="noopener">API de dados</a>` +
         `</div>`;
 
-      const linhas = ordem
+      const linhas = ordemVisivel
         .map((k) => {
           const lab = escapeHtml(rotuloCampoEmenda(k));
           const val = formatCampoEmendaParaHtml(k, j[k]);
