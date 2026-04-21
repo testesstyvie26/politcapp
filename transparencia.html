@@ -213,6 +213,20 @@
       overflow-x: auto;
     }
     .muted { color: var(--muted); }
+    a.tse-open-link {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-end;
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: var(--accent);
+      color: #041018;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    a.tse-open-link:hover { filter: brightness(1.06); }
   </style>
 </head>
 <body>
@@ -267,6 +281,40 @@
       <h3>Siglas no RJ (referência para cruzamento)</h3>
       <p class="note">Links são buscas genéricas nos portais oficiais; refine por ano e cargo.</p>
       <div class="party-grid" id="partyGrid"></div>
+    </section>
+
+    <section class="panel" id="painelTsePartidosRj" aria-labelledby="h2TsePartidosRj">
+      <h2 id="h2TsePartidosRj">TSE — dados de partidos no RJ (DivulgaCandContas)</h2>
+      <p class="note">
+        Rota oficial de <strong>partidos</strong> no pleito referenciado pelo id <span class="mono">2045202024</span>, UF <strong>RJ</strong>, cargo
+        <span class="mono">4</span> (convenção do hash no DivulgaCand). Abre a visão agregada de receitas/despesas por legenda no
+        <a href="https://divulgacandcontas.tse.jus.br" target="_blank" rel="noopener">DivulgaCandContas</a>.
+        O TSE em geral <strong>não permite</strong> incorporar essa página em <span class="mono">&lt;iframe&gt;</span>; use o campo abaixo para copiar ou o botão para abrir em nova aba.
+      </p>
+      <div class="toolbar" style="align-items: flex-end; flex-wrap: wrap">
+        <label style="flex: 1 1 20rem; min-width: min(100%, 36rem)">
+          URL direta (partidos / pleito 2045202024 / RJ / cargo 4)
+          <input
+            type="text"
+            readonly
+            class="mono"
+            id="inpTsePartidosRjUrl"
+            autocomplete="off"
+            spellcheck="false"
+            style="width: 100%; cursor: text"
+            value="https://divulgacandcontas.tse.jus.br/divulga/#/partidos/2045202024/RJ/4"
+          />
+        </label>
+        <button type="button" class="secondary" id="btnCopiarUrlTsePartidosRj">Copiar URL</button>
+        <a
+          class="tse-open-link"
+          id="linkAbrirTsePartidosRj"
+          href="https://divulgacandcontas.tse.jus.br/divulga/#/partidos/2045202024/RJ/4"
+          target="_blank"
+          rel="noopener"
+          >Abrir no TSE</a>
+      </div>
+      <p class="note muted" id="msgCopiarTsePartidosRj" aria-live="polite" style="margin: 0.6rem 0 0"></p>
     </section>
 
     <section class="panel">
@@ -1053,6 +1101,41 @@
       if (!btn) return;
       detalhar(btn.getAttribute("data-cod"));
     });
+
+    /** DivulgaCand — partidos RJ (id pleito / UF / cargo no hash #/partidos/...). Override: window.POLITAPP_TSE_DIVULGA_PARTIDOS_RJ_URL */
+    (function setupTseDivulgaPartidosRj() {
+      const fallback = "https://divulgacandcontas.tse.jus.br/divulga/#/partidos/2045202024/RJ/4";
+      const url =
+        typeof window.POLITAPP_TSE_DIVULGA_PARTIDOS_RJ_URL === "string" && window.POLITAPP_TSE_DIVULGA_PARTIDOS_RJ_URL.trim()
+          ? window.POLITAPP_TSE_DIVULGA_PARTIDOS_RJ_URL.trim()
+          : fallback;
+      const inp = document.getElementById("inpTsePartidosRjUrl");
+      const link = document.getElementById("linkAbrirTsePartidosRj");
+      const btn = document.getElementById("btnCopiarUrlTsePartidosRj");
+      const msg = document.getElementById("msgCopiarTsePartidosRj");
+      if (inp) inp.value = url;
+      if (link) link.href = url;
+      if (!btn) return;
+      btn.addEventListener("click", () => {
+        (async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            if (msg) {
+              msg.textContent = "URL copiada para a área de transferência.";
+              window.setTimeout(() => {
+                msg.textContent = "";
+              }, 2800);
+            }
+          } catch (_) {
+            if (inp) {
+              inp.focus();
+              inp.select();
+            }
+            if (msg) msg.textContent = "Selecione o texto do campo e use Ctrl+C (ou Cmd+C).";
+          }
+        })();
+      });
+    })();
 
     (function init() {
       corrigirChaveTrocadaComUrlDoProxy();
