@@ -153,7 +153,19 @@
 </head>
 <body>
   <script src="js/auth-config.js"></script>
-  <script src="js/portal-transparencia-config.js"></script>
+  <script src="js/portal-transparencia-config.js?v=2"></script>
+  <script>
+    (function () {
+      try {
+        if (window.POLITAPP_PORTAL_FORCE_DIRECT === true) return;
+        var h = location.hostname;
+        if (h !== "politcapp.com.br" && h !== "www.politcapp.com.br") return;
+        var c = window.POLITAPP_PORTAL_API_BASE;
+        if (typeof c === "string" && c.trim() !== "") return;
+        window.POLITAPP_PORTAL_API_BASE = location.origin + "/api-de-dados";
+      } catch (e) {}
+    })();
+  </script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
@@ -374,7 +386,22 @@
       return true;
     }
 
+    function isHostnamePolitcappProducao() {
+      const h = window.location.hostname;
+      return h === "politcapp.com.br" || h === "www.politcapp.com.br";
+    }
+
+    /** Garante base /api-de-dados no mesmo origin (cache antigo do config.js deixava a base vazia → CORS na CGU). */
+    function ensurePolitcappPortalApiBase() {
+      if (window.POLITAPP_PORTAL_FORCE_DIRECT === true) return;
+      const cur = typeof window.POLITAPP_PORTAL_API_BASE === "string" ? window.POLITAPP_PORTAL_API_BASE.trim() : "";
+      if (cur) return;
+      if (!isHostnamePolitcappProducao()) return;
+      window.POLITAPP_PORTAL_API_BASE = window.location.origin + "/api-de-dados";
+    }
+
     function apiBase() {
+      ensurePolitcappPortalApiBase();
       const direct = "https://api.portaldatransparencia.gov.br/api-de-dados";
       if (window.POLITAPP_PORTAL_FORCE_DIRECT === true) return direct;
 
@@ -469,6 +496,15 @@
 
       if (isSiteProducaoPublica()) {
         if (!custom) {
+          if (isHostnamePolitcappProducao()) {
+            const esperada = escapeHtml(window.location.origin + "/api-de-dados");
+            return (
+              `<strong>CORS na API da CGU</strong> — a base <span class="mono">${esperada}</span> não entrou (cache?). ` +
+              `Faça um <strong>recarregamento forçado</strong> (Ctrl+F5) e confirme <span class="mono">js/portal-transparencia-config.js</span>. ` +
+              `Em produção o Worker deve responder em <span class="mono">politcapp.com.br/api-de-dados/*</span> (Cloudflare).` +
+              detail
+            );
+          }
           return (
             `<strong>Site no ar (${escapeHtml(window.location.hostname)}):</strong> o navegador não chama a API da CGU direto (CORS). ` +
             `Defina <span class="mono">POLITAPP_PORTAL_API_BASE</span> em <span class="mono">js/portal-transparencia-config.js</span> com o Worker ` +
@@ -476,10 +512,18 @@
             detail
           );
         }
+        if (/failed to fetch/i.test(raw) && isHostnamePolitcappProducao()) {
+          return (
+            `<strong>Sem resposta do proxy em</strong> <span class="mono">${escapeHtml(custom)}</span>. No Cloudflare, associe o Worker à rota ` +
+            `<span class="mono">${escapeHtml(window.location.hostname)}/api-de-dados*</span> e confira SSL. Teste essa URL no navegador.` +
+            ` Alternativa: use a URL <span class="mono">*.workers.dev</span> em <span class="mono">POLITAPP_PORTAL_API_BASE</span>. ${official}.` +
+            detail
+          );
+        }
         return (
-          `<strong>Falha ao usar o proxy.</strong> Teste o Worker no navegador; em ` +
-          `<span class="mono">POLITAPP_PORTAL_API_BASE</span> use a URL do Worker + <span class="mono">/api-de-dados</span> ` +
-          `(ex.: <span class="mono">https://…workers.dev/api-de-dados</span>, sem barra extra no final). ${official}.` +
+          `<strong>Falha ao usar o proxy.</strong> Teste a URL do Worker no navegador; em ` +
+          `<span class="mono">POLITAPP_PORTAL_API_BASE</span> use … <span class="mono">/api-de-dados</span> ` +
+          `(ex.: <span class="mono">https://….workers.dev/api-de-dados</span>). ${official}.` +
           detail
         );
       }
@@ -696,6 +740,7 @@
     });
 
     (function init() {
+      ensurePolitcappPortalApiBase();
       renderPartyGrid();
       const saved = localStorage.getItem(LS_CHAVE);
       const cfg = chaveFromWindowConfig();

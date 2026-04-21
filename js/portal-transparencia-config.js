@@ -7,7 +7,7 @@
  *
  * Local: npm run dev → http://127.0.0.1:8787/transparencia.html
  */
-window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE = "";
+window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE = "69b06463c532863131b3c668dc6a555a";
 
 /**
  * Base até /api-de-dados. Em politcapp.com.br fica vazio no arquivo: o script abaixo usa location.origin.
