@@ -180,6 +180,13 @@
     const UE_CAX = "58335";
     const CENTER = { [UE_RIO]: [-22.91, -43.19], [UE_CAX]: [-22.787, -43.32] };
     const UE_MUN = { [UE_RIO]: "Rio de Janeiro", [UE_CAX]: "Duque de Caxias" };
+    /** minLon, minLat, maxLon, maxLat — apertar a área de pesquisa (Photon) por município. */
+    const PHOTON_BBOX = {
+      [UE_RIO]: [-43.88, -23.1, -43.02, -22.75],
+      [UE_CAX]: [-43.45, -22.95, -43.0, -22.55],
+    };
+    const GEO_CACHE_KEY = "politcapp-vereadores-sec-geo-v3";
+    const PHOTON_CONCURRENCY = 10;
     const ZOOM0 = 10;
 
     let secaoRenderGen = 0;
@@ -205,13 +212,63 @@
       return h;
     }
 
-    function querySecGeocode(x) {
+    function normStr(s) {
+      return String(s || "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    /** Chave única por local de votação (TSE: várias seções=mesma morada). */
+    function geocodeDedupKey(x) {
+      const e = normStr(x.endereco);
+      const l = normStr(x.local);
+      if (e && e !== "—" && e.length > 0) return String(x.ue) + "\t" + e.toLowerCase();
+      if (l && l !== "—" && l.length > 0) return String(x.ue) + "\tL:" + l.toLowerCase();
+      return String(x.ue) + "\t" + (x.z || 0) + "\t" + (x.s || 0);
+    }
+
+    function loadGeoCache() {
+      try {
+        const t = localStorage.getItem(GEO_CACHE_KEY);
+        if (!t) return /** @type {Record<string, { la: number, lo: number }>} */ ({});
+        const o = JSON.parse(t);
+        return typeof o === "object" && o != null ? o : {};
+      } catch {
+        return {};
+      }
+    }
+    function saveGeoCacheEntry(key, la, lo) {
+      const c = loadGeoCache();
+      c[key] = { la, lo, t: Date.now() };
+      try {
+        const keys = Object.keys(c);
+        if (keys.length > 1200) {
+          keys.sort((a, b) => (c[a].t || 0) - (c[b].t || 0));
+          for (let k = 0; k < keys.length - 1000; k++) delete c[keys[k]];
+        }
+        localStorage.setItem(GEO_CACHE_KEY, JSON.stringify(c));
+      } catch { /* private mode / quota */ }
+    }
+
+    /**
+     * Texto de pesquisa: endereço (via + n.º) antes do nome da escola — o TSE dá a via em endereco
+     * e pôr a escola primeiro desvia o Photon para o homónimo noutro estado.
+     */
+    function photonQueryCandidates(x) {
       const mun = UE_MUN[x.ue] || "Rio de Janeiro";
-      const p = [];
-      if (x.local && x.local !== "—") p.push(x.local);
-      if (x.endereco && x.endereco !== "—") p.push(x.endereco);
-      p.push(mun, "RJ", "Brasil");
-      return p.join(", ");
+      const e = normStr(x.endereco);
+      const l = normStr(x.local);
+      const tail = ", " + mun + ", RJ, Brasil";
+      const out = [];
+      if (e && e !== "—" && e.length > 1) {
+        out.push(e + tail);
+        if (l && l !== "—" && l.length > 0) out.push(e + ", " + l + tail);
+      } else if (l && l !== "—") {
+        out.push(l + tail);
+      } else {
+        out.push(mun + ", RJ, Brasil");
+      }
+      return [...new Set(out)];
     }
 
     /** Micro-desvio estável (várias secções no mesmo edifício). */
@@ -224,18 +281,58 @@
       return [lat + dLat, lon + dLon];
     }
 
-    async function photonGeocodeOnce(q) {
-      if (!q || q.length < 8) return null;
-      const url = "https://photon.komoot.io/api/?limit=1&q=" + encodeURIComponent(q);
-      const res = await fetch(url);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const f = data.features && data.features[0];
-      if (!f || !f.geometry || f.geometry.type !== "Point" || !Array.isArray(f.geometry.coordinates)) return null;
-      const lo = f.geometry.coordinates[0];
-      const la = f.geometry.coordinates[1];
-      if (!Number.isFinite(la) || !Number.isFinite(lo)) return null;
-      return [la, lo];
+    function inMunBbox(ue, la, lo) {
+      const b = PHOTON_BBOX[ue] || PHOTON_BBOX[UE_RIO];
+      return la >= b[1] && la <= b[3] && lo >= b[0] && lo <= b[2];
+    }
+
+    function photonUrl(q, opts) {
+      if (!q || q.length < 5) return null;
+      const u = new URL("https://photon.komoot.io/api/");
+      u.searchParams.set("q", q);
+      u.searchParams.set("limit", "1");
+      u.searchParams.set("lang", "pt");
+      if (opts.bbox && opts.bbox.length === 4) u.searchParams.set("bbox", opts.bbox.join(","));
+      if (Number.isFinite(opts.lat) && Number.isFinite(opts.lon)) {
+        u.searchParams.set("lat", String(opts.lat));
+        u.searchParams.set("lon", String(opts.lon));
+      }
+      return u.toString();
+    }
+
+    async function photonGeocodeFirstHit(queries, opts) {
+      let outsideBbox = null;
+      for (const q of queries) {
+        const u = photonUrl(q, opts);
+        if (!u) continue;
+        const res = await fetch(u);
+        if (!res.ok) continue;
+        const data = await res.json();
+        const f = data.features && data.features[0];
+        if (!f || !f.geometry || f.geometry.type !== "Point" || !Array.isArray(f.geometry.coordinates)) continue;
+        const lo = f.geometry.coordinates[0];
+        const la = f.geometry.coordinates[1];
+        if (!Number.isFinite(la) || !Number.isFinite(lo)) continue;
+        const pt = [la, lo];
+        if (inMunBbox(opts.ue, la, lo)) return pt;
+        if (!outsideBbox) outsideBbox = pt;
+      }
+      return outsideBbox;
+    }
+
+    async function runPoolItems(items, onEach) {
+      const n = items.length;
+      if (n === 0) return;
+      let next = 0;
+      async function worker() {
+        for (;;) {
+          const i = next++;
+          if (i >= n) break;
+          await onEach(items[i], i);
+        }
+      }
+      const wn = Math.min(PHOTON_CONCURRENCY, n);
+      await Promise.all(Array.from({ length: wn }, () => worker()));
     }
 
     /** Posição no mapa: esquemática, estável, não é coordenada do endereço. */
@@ -416,33 +513,69 @@
       layerMarkers.clearLayers();
       st.textContent = "A preparar pontos por morada…";
 
-      const queries = [...new Set(filtrado.map(querySecGeocode))].filter((q) => q.length > 12);
-      const coordByQ = new Map();
-      let i = 0;
-      for (const q of queries) {
-        if (gen !== secaoRenderGen) return;
-        st.textContent = "Geocodificação (Photon)… " + ++i + "/" + queries.length;
-        const sameQ = filtrado.filter((x) => querySecGeocode(x) === q);
-        const withCoord = sameQ.find(
+      const keyToRows = new Map();
+      for (const x of filtrado) {
+        const k = geocodeDedupKey(x);
+        if (!keyToRows.has(k)) keyToRows.set(k, []);
+        keyToRows.get(k).push(x);
+      }
+      const dedupKeys = [...keyToRows.keys()];
+      const geoCache = loadGeoCache();
+      const coordByKey = new Map();
+      const needFetch = [];
+
+      for (const key of dedupKeys) {
+        const rows = keyToRows.get(key) || [];
+        const withCoord = rows.find(
           (x) => Number.isFinite(Number(x.lat)) && Number.isFinite(Number(x.lon))
         );
-        let cell;
         if (withCoord) {
-          cell = { pt: [Number(withCoord.lat), Number(withCoord.lon)], src: "json" };
-        } else {
-          const pt = await photonGeocodeOnce(q);
-          cell = { pt: pt && Number.isFinite(pt[0]) ? pt : null, src: "photon" };
+          coordByKey.set(key, { pt: [Number(withCoord.lat), Number(withCoord.lon)], src: "json" });
+          continue;
         }
-        coordByQ.set(q, cell);
-        if (cell.src === "photon") await new Promise((r) => setTimeout(r, 380));
+        const c0 = geoCache[key];
+        if (c0 && Number.isFinite(c0.la) && Number.isFinite(c0.lo)) {
+          coordByKey.set(key, { pt: [c0.la, c0.lo], src: "cache" });
+          continue;
+        }
+        const x0 = rows[0];
+        needFetch.push({ key, ue: String(x0.ue), queries: photonQueryCandidates(x0) });
+      }
+
+      let fetchDone = 0;
+      const nFetch = needFetch.length;
+      if (nFetch) {
+        st.textContent = "Geocodificação (Photon)… 0/" + nFetch + " (em paralelo; 1.ª carga lenta, depois cache)";
+        await runPoolItems(needFetch, async (item) => {
+          if (gen !== secaoRenderGen) return;
+          const c = CENTER[item.ue] || CENTER[UE_RIO];
+          const bbox = PHOTON_BBOX[item.ue] || PHOTON_BBOX[UE_RIO];
+          const pt = await photonGeocodeFirstHit(item.queries, {
+            ue: item.ue,
+            bbox,
+            lat: c[0],
+            lon: c[1],
+          });
+          if (pt) {
+            coordByKey.set(item.key, { pt, src: "photon" });
+            saveGeoCacheEntry(item.key, pt[0], pt[1]);
+          } else {
+            coordByKey.set(item.key, { pt: null, src: "photon" });
+          }
+          fetchDone++;
+          if (gen === secaoRenderGen) {
+            st.textContent = "Geocodificação (Photon)… " + fetchDone + "/" + nFetch;
+          }
+        });
       }
       if (gen !== secaoRenderGen) return;
 
       let nEmb = 0;
+      let nCache = 0;
       let nPhoton = 0;
       let nFallback = 0;
       for (const x of filtrado) {
-        const q = querySecGeocode(x);
+        const key = geocodeDedupKey(x);
         let la;
         let lo;
         if (Number.isFinite(Number(x.lat)) && Number.isFinite(Number(x.lon))) {
@@ -451,13 +584,14 @@
           lo = jj[1];
           nEmb++;
         } else {
-          const cell = coordByQ.get(q);
+          const cell = coordByKey.get(key);
           const pt = cell && cell.pt;
           if (pt && Number.isFinite(pt[0]) && Number.isFinite(pt[1])) {
             const jj = jitterSec(pt[0], pt[1], x.ue, x.z, x.s);
             la = jj[0];
             lo = jj[1];
             if (cell.src === "json") nEmb++;
+            else if (cell.src === "cache") nCache++;
             else nPhoton++;
           } else {
             const sch = posEsquematica(x.ue, x.z, x.s);
@@ -483,7 +617,8 @@
       if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [28, 28], maxZoom: 14 });
       const bits = [];
       if (nEmb) bits.push(nEmb + " com coord. no JSON");
-      if (nPhoton) bits.push(nPhoton + " via Photon");
+      if (nCache) bits.push(nCache + " do cache (mesmo sítio)");
+      if (nPhoton) bits.push(nPhoton + " via Photon (1.ª visita / sem cache)");
       if (nFallback) bits.push(nFallback + " esquemático (morada não encontrada)");
       st.textContent =
         filtrado.length +
