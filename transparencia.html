@@ -316,6 +316,19 @@
       return String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
     }
 
+    /** Aceita o token puro ou o JSON do Postman/Insomnia: [{"key":"chave-api-dados","value":"..."}] */
+    function normalizeChavePortal(raw) {
+      const s = String(raw ?? "").trim();
+      if (!s.startsWith("[")) return s;
+      try {
+        const arr = JSON.parse(s);
+        if (!Array.isArray(arr)) return s;
+        const item = arr.find((x) => x && String(x.key).toLowerCase() === "chave-api-dados");
+        if (item && item.value != null) return String(item.value).trim();
+      } catch (_) {}
+      return s;
+    }
+
     function apiBase() {
       return "https://api.portaldatransparencia.gov.br/api-de-dados";
     }
@@ -364,7 +377,7 @@
     }
 
     async function buscar(pagina) {
-      const chave = document.getElementById("inpChave").value.trim();
+      const chave = normalizeChavePortal(document.getElementById("inpChave").value);
       const ano = document.getElementById("inpAno").value;
       const uf = document.getElementById("selUf").value;
       const nomeAutor = document.getElementById("inpNomeAutor").value.trim();
@@ -451,7 +464,7 @@
     }
 
     async function detalhar(codigo) {
-      const chave = document.getElementById("inpChave").value.trim();
+      const chave = normalizeChavePortal(document.getElementById("inpChave").value);
       if (!chave || !codigo) return;
       const base = apiBase();
       const url = `${base}/emendas/${encodeURIComponent(codigo)}`;
@@ -480,8 +493,17 @@
     }
 
     document.getElementById("btnSalvarChave").addEventListener("click", () => {
-      const v = document.getElementById("inpChave").value.trim();
-      if (v) localStorage.setItem(LS_CHAVE, v);
+      const v = normalizeChavePortal(document.getElementById("inpChave").value);
+      if (v) {
+        document.getElementById("inpChave").value = v;
+        localStorage.setItem(LS_CHAVE, v);
+      }
+    });
+
+    document.getElementById("inpChave").addEventListener("blur", () => {
+      const el = document.getElementById("inpChave");
+      const n = normalizeChavePortal(el.value);
+      if (n && n !== el.value) el.value = n;
     });
 
     document.getElementById("btnBuscar").addEventListener("click", () => {
@@ -534,7 +556,7 @@
     (function init() {
       renderPartyGrid();
       const saved = localStorage.getItem(LS_CHAVE);
-      if (saved) document.getElementById("inpChave").value = saved;
+      if (saved) document.getElementById("inpChave").value = normalizeChavePortal(saved);
     })();
   </script>
 </body>

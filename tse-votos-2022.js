@@ -4,6 +4,9 @@
  *
  * `ensureUfs` carrega só as UFs pedidas (ex.: RJ na abertura do index).
  * `load` / `loadFull` mantêm o comportamento anterior: todas as UFs.
+ *
+ * Espelho local (mesma origem, sem CORS): `data/tse-ele2022-df/{uf}/{uf}-c0006-e000546-r.json`
+ * (gerado com `node scripts/build-tse-df-json-from-csv.cjs`). Se faltar, tenta o TSE.
  */
 (function (global) {
   var TSE_UFS = [
@@ -68,11 +71,24 @@
 
   function fetchUfJson(ufLower) {
     var u = String(ufLower).toLowerCase();
-    var url = TSE_BASE + "/" + u + "/" + u + "-c0006-e000546-r.json";
-    return fetch(url).then(function (res) {
-      if (!res.ok) throw new Error("TSE " + u.toUpperCase() + ": " + res.status);
-      return res.json();
-    });
+    var file = u + "-c0006-e000546-r.json";
+    var localRel = "data/tse-ele2022-df/" + u + "/" + file;
+    var remoteUrl = TSE_BASE + "/" + u + "/" + file;
+    function loadJson(res, label) {
+      if (!res.ok) throw new Error(label + " " + u.toUpperCase() + ": " + res.status);
+      return res.json().catch(function () {
+        throw new Error(label + " " + u.toUpperCase() + ": resposta não é JSON");
+      });
+    }
+    return fetch(localRel)
+      .then(function (res) {
+        return loadJson(res, "local");
+      })
+      .catch(function () {
+        return fetch(remoteUrl).then(function (res) {
+          return loadJson(res, "TSE");
+        });
+      });
   }
 
   function loadFull() {

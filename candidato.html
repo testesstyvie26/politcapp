@@ -178,7 +178,7 @@
     </footer>
   </div>
 
-  <script src="tse-votos-2022.js?v=20250220"></script>
+  <script src="tse-votos-2022.js?v=20260420"></script>
   <script>
     const API = "https://dadosabertos.camara.leg.br/api/v2/deputados";
     const JSON_HDR = { Accept: "application/json" };
@@ -420,7 +420,7 @@
         let tv = null;
         try {
           if (window.TSE2022DF) {
-            const cache = await TSE2022DF.load();
+            const cache = await TSE2022DF.loadTseCacheForListing(uf);
             tv = TSE2022DF.lookupVote(cache, uf, [nome, nomeUrna, u.nome]);
           }
         } catch (e) {
@@ -497,7 +497,12 @@
         `;
       } catch (e) {
         console.error(e);
-        app.innerHTML = `<p class="error">Não foi possível carregar o deputado: ${escapeHtml(e.message)}</p>`;
+        const em = e && e.message != null ? String(e.message) : String(e);
+        const extra =
+          /fetch/i.test(em) && !/TSE/i.test(em)
+            ? " Verifique rede, extensões que bloqueiam APIs ou tente outro navegador."
+            : "";
+        app.innerHTML = `<p class="error">Não foi possível carregar o deputado: ${escapeHtml(em)}${escapeHtml(extra)}</p>`;
       }
     }
 

@@ -1,5 +1,8 @@
 {
   "name": "politapp",
   "private": true,
-  "description": "Site estático (HTML/CSS/JS). Sem servidor Node no repositório."
+  "description": "Site estático (HTML/CSS/JS). Sem servidor Node no repositório.",
+  "scripts": {
+    "build:tse-df": "node scripts/build-tse-df-json-from-csv.cjs"
+  }
 }
