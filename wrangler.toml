@@ -1,8 +1,7 @@
-# Deploy (na raiz do repositório): npx wrangler deploy
-# Cloudflare: "Root directory" do projeto = raiz do repo (não a pasta workers), para este ficheiro ser encontrado.
-#
-# Não use [assets] aqui — o site estático (HTML) é hospedado à parte (Pages/GitHub/etc.).
-# Só entra no Worker o ficheiro main (proxy da API do Portal da Transparência).
+# Deploy (na raiz): npx wrangler deploy
+# A URL do Worker aparece no fim do comando ou em: Cloudflare → Workers → politapp-portal-transparencia-proxy → Domains
+# Formato típico: https://politapp-portal-transparencia-proxy.<subconta-da-conta>.workers.dev
+# Não inventar "politcapp.workers.dev" — a subconta vem da tua conta Cloudflare, não do domínio do site.
 
 name = "politapp-portal-transparencia-proxy"
 main = "workers/portal-transparencia-proxy.js"

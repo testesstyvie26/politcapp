@@ -153,7 +153,7 @@
 </head>
 <body>
   <script src="js/auth-config.js"></script>
-  <script src="js/portal-transparencia-config.js?v=4"></script>
+  <script src="js/portal-transparencia-config.js?v=5"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
@@ -505,8 +505,15 @@
             detail
           );
         }
+        let extraWorkers = "";
+        if (/failed to fetch/i.test(raw) && /\.workers\.dev/i.test(custom)) {
+          extraWorkers =
+            ` Em <span class="mono">workers.dev</span> o hostname tem de ser o que a Cloudflare gerou (output de <span class="mono">npx wrangler deploy</span> ou Workers → Domains). ` +
+            `Neste repo o worker chama-se <span class="mono">politapp-portal-transparencia-proxy</span> — o texto <span class="mono">politcapp.workers.dev</span> só funciona se for mesmo a tua subconta; caso contrário o DNS falha e aparece <strong>Failed to fetch</strong>.`;
+        }
         return (
-          `<strong>Falha ao contactar o proxy</strong> (<span class="mono">${escapeHtml(custom)}</span>). Teste essa URL no browser. ${official}.` +
+          `<strong>Falha ao contactar o proxy</strong> (<span class="mono">${escapeHtml(custom)}</span>). Abre o mesmo URL no browser (deve devolver JSON ou erro JSON, não página em branco). ${official}.` +
+          extraWorkers +
           detail
         );
       }

@@ -9,10 +9,12 @@
  */
 export default {
   async fetch(request) {
+    const reqHdr = request.headers.get("Access-Control-Request-Headers");
     const cors = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Accept, chave-api-dados",
+      "Access-Control-Allow-Headers": reqHdr || "Accept, chave-api-dados, Content-Type",
+      "Access-Control-Max-Age": "86400",
     };
 
     if (request.method === "OPTIONS") {
@@ -49,7 +51,7 @@ export default {
     });
     out.headers.set("Access-Control-Allow-Origin", "*");
     out.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-    out.headers.set("Access-Control-Allow-Headers", "Accept, chave-api-dados");
+    out.headers.set("Access-Control-Allow-Headers", "Accept, chave-api-dados, Content-Type");
     return out;
   },
 };
