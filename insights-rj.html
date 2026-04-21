@@ -227,6 +227,7 @@
       min-width: 160px;
     }
     .filtro-baixada[hidden] { display: none !important; }
+    .filtro-necessidade-baixada[hidden] { display: none !important; }
   </style>
 </head>
 <body>
@@ -259,31 +260,41 @@
       </p>
     </header>
 
-    <section class="panel">
+    <section class="panel" id="mapaNecessidades">
       <h2>Mapa interativo — necessidades públicas por município</h2>
       <p class="note" style="margin-bottom:1rem">
-        Cores por mesorregião (nomes alinhados ao uso regional; no IBGE a Baixada fluminense consta como <strong>Baixadas Litorâneas</strong>).
-        Ao clicar em um município, veja o nome IBGE e os eixos temáticos.
-        Fontes espaciais: <a href="https://servicodados.ibge.gov.br/api/v3/malhas/estados/33" target="_blank" rel="noopener">IBGE — malhas municipais (UF 33)</a> e
-        <a href="https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios" target="_blank" rel="noopener">localidades</a>.
-        O conteúdo temático é <strong>sintético</strong> (não substitui indicadores oficiais como IDHM, SNIS, CNES, etc.).
+        Cada município recebe a cor da sua <strong>mesorregião de insights</strong> (mapeada a partir do IBGE; a Baixada fluminense corresponde a <strong>Baixadas Litorâneas</strong> no IBGE).
+        Com a mesorregião <strong>Baixada Fluminense</strong>, abra o filtro adicional para isolar um dos 12 municípios de referência.
+        Clique no mapa para ver o nome do município, o nome oficial da mesorregião IBGE e eixos temáticos.
+        Dados: <a href="https://servicodados.ibge.gov.br/api/v3/malhas/estados/33" target="_blank" rel="noopener">malhas UF 33</a> e
+        <a href="https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios" target="_blank" rel="noopener">municípios</a>.
+        Conteúdo <strong>ilustrativo</strong> para campanha (não substitui IDHM, SNIS, CNES, etc.).
       </p>
       <div class="map-toolbar">
         <label>
-          Filtrar mesorregião
-          <select id="filtroMeso">
+          Mesorregião (insights)
+          <select id="filtroMeso" aria-describedby="mapaNecessidadesHelp">
             <option value="">Todas</option>
           </select>
         </label>
+        <label id="labelFiltroMunNecessidade" class="filtro-necessidade-baixada" hidden>
+          Município (Baixada)
+          <select id="filtroMunNecessidade">
+            <option value="">Baixada inteira (12 municípios)</option>
+          </select>
+        </label>
         <label>
-          Buscar município
-          <input type="search" id="buscaMun" placeholder="Ex.: Niterói" autocomplete="off" />
+          Ir ao município
+          <input type="search" id="buscaMun" placeholder="Digite e pause (ex.: Duque)" autocomplete="off" aria-label="Buscar município no mapa" />
         </label>
       </div>
+      <p id="mapaNecessidadesHelp" class="note" style="margin:0 0 0.75rem">
+        Municípios fora do filtro aparecem esmaecidos. A busca centraliza o primeiro resultado correspondente.
+      </p>
       <div class="map-wrap">
-        <div id="map" role="application" aria-label="Mapa do Rio de Janeiro"></div>
+        <div id="map" role="application" aria-label="Mapa coroplético do estado do Rio de Janeiro por mesorregião de insights"></div>
       </div>
-      <div class="legend" id="legendaMeso" aria-hidden="true"></div>
+      <div class="legend" id="legendaMeso" role="list" aria-label="Legenda de cores por mesorregião"></div>
       <p id="mapStatus" class="note" style="margin-top:0.75rem">Carregando mapa…</p>
     </section>
 
@@ -1230,9 +1241,10 @@
     function buildLegend() {
       const leg = document.getElementById("legendaMeso");
       leg.innerHTML = Object.entries(MESO_INSIGHTS)
+        .sort(([a], [b]) => a.localeCompare(b, "pt-BR"))
         .map(
           ([nome, d]) =>
-            `<span><span class="swatch" style="background:${d.color}"></span>${escapeHtml(nome)}</span>`
+            `<span role="listitem"><span class="swatch" style="background:${d.color}"></span>${escapeHtml(nome)}</span>`
         )
         .join("");
     }
@@ -1430,14 +1442,47 @@
       initViagemPlanner(centroids, byId);
 
       let filtroMeso = "";
+      let filtroMunBaixada = "";
       const layers = [];
 
+      const selMunBaixada = document.getElementById("filtroMunNecessidade");
+      const labelMunBaixada = document.getElementById("labelFiltroMunNecessidade");
+      for (const nome of BAIXADA_MUNICIPIOS_REF) {
+        const o = document.createElement("option");
+        o.value = nome;
+        o.textContent = nome;
+        selMunBaixada.appendChild(o);
+      }
+
+      function syncFiltroMunNecessidadeUI() {
+        const mostrar = filtroMeso === "Baixada Fluminense";
+        labelMunBaixada.hidden = !mostrar;
+        if (!mostrar) {
+          filtroMunBaixada = "";
+          selMunBaixada.value = "";
+        }
+      }
+
+      function municipioEmDestaqueMapa(munId) {
+        const info = byId.get(String(munId));
+        if (!info) return false;
+        if (filtroMunBaixada) {
+          return info.mesoKey === "Baixada Fluminense" && info.nome === filtroMunBaixada;
+        }
+        if (filtroMeso) return info.mesoKey === filtroMeso;
+        return true;
+      }
+
+      function poligonoEsmaecido(munId) {
+        return !municipioEmDestaqueMapa(munId);
+      }
+
       function styleFeat(feature) {
-        const id = feature.properties.codarea;
-        const info = byId.get(String(id));
+        const id = String(feature.properties.codarea);
+        const info = byId.get(id);
         const mesoKey = info ? info.mesoKey : "Centro Fluminense";
         const def = MESO_INSIGHTS[mesoKey] || MESO_INSIGHTS["Centro Fluminense"];
-        const dim = filtroMeso && filtroMeso !== mesoKey;
+        const dim = poligonoEsmaecido(id);
         return {
           fillColor: def.color,
           weight: dim ? 0.5 : 1.2,
@@ -1473,7 +1518,7 @@
           const id = feature.properties.codarea;
           layer.bindPopup(popupHtml(id), { maxWidth: 320 });
           layer.on("mouseover", function () {
-            if (!filtroMeso || byId.get(String(id))?.mesoKey === filtroMeso) {
+            if (municipioEmDestaqueMapa(String(id))) {
               this.setStyle({ weight: 2, fillOpacity: 0.78 });
             }
           });
@@ -1487,28 +1532,63 @@
       gj.bringToFront();
       map.fitBounds(gj.getBounds(), { padding: [24, 24] });
 
-      document.getElementById("filtroMeso").addEventListener("change", (e) => {
-        filtroMeso = e.target.value;
+      function updateMapNecessidadesStatus() {
+        const partes = [];
+        if (filtroMeso) partes.push(`Região: ${filtroMeso}`);
+        if (filtroMunBaixada) partes.push(`Município: ${filtroMunBaixada}`);
+        const extra = partes.length ? ` ${partes.join(" · ")}.` : "";
+        statusEl.textContent =
+          `Mapa pronto. Clique nos municípios para eixos e dicas de publicação.${extra} Filtro esmaece o restante; busca leva ao primeiro nome que bater.`;
+      }
+
+      function refazerEstilosNecessidade() {
         gj.eachLayer((layer) => {
           gj.resetStyle(layer);
         });
+        updateMapNecessidadesStatus();
+      }
+
+      document.getElementById("filtroMeso").addEventListener("change", (e) => {
+        filtroMeso = e.target.value;
+        syncFiltroMunNecessidadeUI();
+        refazerEstilosNecessidade();
       });
 
-      document.getElementById("buscaMun").addEventListener("input", (e) => {
-        const q = e.target.value.trim().toLowerCase();
-        if (!q) return;
-        for (const { id, layer } of layers) {
-          const n = byId.get(id)?.nome;
-          if (n && n.toLowerCase().includes(q)) {
-            map.fitBounds(layer.getBounds(), { padding: [80, 80], maxZoom: 11 });
-            layer.openPopup();
-            break;
+      document.getElementById("filtroMunNecessidade").addEventListener("change", (e) => {
+        filtroMunBaixada = e.target.value;
+        refazerEstilosNecessidade();
+        if (filtroMunBaixada) {
+          for (const { id, layer } of layers) {
+            if (byId.get(id)?.nome === filtroMunBaixada) {
+              map.fitBounds(layer.getBounds(), { padding: [56, 56], maxZoom: 12 });
+              layer.openPopup();
+              break;
+            }
           }
+        } else if (filtroMeso === "Baixada Fluminense") {
+          map.fitBounds(gj.getBounds(), { padding: [28, 28] });
         }
       });
 
-      statusEl.textContent =
-        "Mapa pronto. Clique nos municípios para ver eixos e dicas. Use o filtro ou a busca para focar.";
+      let buscaMunTmr = null;
+      document.getElementById("buscaMun").addEventListener("input", (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        if (buscaMunTmr) clearTimeout(buscaMunTmr);
+        if (!q) return;
+        buscaMunTmr = setTimeout(() => {
+          for (const { id, layer } of layers) {
+            const n = byId.get(id)?.nome;
+            if (n && n.toLowerCase().includes(q)) {
+              map.fitBounds(layer.getBounds(), { padding: [80, 80], maxZoom: 11 });
+              layer.openPopup();
+              break;
+            }
+          }
+        }, 320);
+      });
+
+      syncFiltroMunNecessidadeUI();
+      updateMapNecessidadesStatus();
     }
 
     main().catch((err) => {
