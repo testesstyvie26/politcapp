@@ -204,6 +204,22 @@
     }
     .viagem-poi-card .dist { font-size: 0.72rem; color: #9ec5ff; margin-bottom: 0.25rem; }
     .viagem-poi-card.evento { border-left: 3px solid #f472b6; }
+    .evento-links {
+      margin: 0.5rem 0 0;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.65rem;
+      align-items: center;
+    }
+    .evento-links a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .evento-links a:hover { text-decoration: underline; }
+    .leaflet-popup-content .evento-links a { color: #9ec5ff; }
     input[type="range"] { width: 100%; max-width: 220px; }
     input[type="date"] {
       font-family: inherit; font-size: 0.9rem; padding: 0.5rem 0.65rem;
@@ -365,7 +381,7 @@
       <p class="note" style="margin-bottom:1rem">
         <span id="eventosMesAtualPeriodo"></span>
         Eventos ilustrativos (corridas, beneficentes, caminhadas e festivais) cuja data ou intervalo <strong>cruza o mês corrente</strong> no seu navegador.
-        Confirme sempre em sites oficiais e prefeituras.
+        Links <strong>oficiais</strong> e <strong>redes sociais</strong> vêm do cadastro (prefeitura / evento); quando não houver página específica do evento, usa-se o portal municipal.
       </p>
       <div class="viagem-pois" id="eventosMesAtualGrid"></div>
     </section>
