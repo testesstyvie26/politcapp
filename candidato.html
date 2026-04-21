@@ -329,7 +329,9 @@
 
       if (tseQ && !id) {
         try {
-          const cache = window.TSE2022DF ? await TSE2022DF.load() : null;
+          const cache = window.TSE2022DF
+            ? await TSE2022DF.loadTseCacheForListing(tseQ.uf)
+            : null;
           const tv = cache ? cache.bySqcand.get(String(tseQ.sqcand)) : null;
           const nome = tv ? tv.nm : "Candidato (TSE)";
           app.innerHTML = `
@@ -351,7 +353,11 @@
             </div>`;
         } catch (e) {
           console.error(e);
-          app.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+          const msg =
+            e && String(e.message || e).includes("fetch")
+              ? "Não foi possível obter os dados do TSE (rede ou bloqueio do navegador). Tente de novo ou abra a página em HTTPS; se persistir, o domínio resultados.tse.jus.br pode estar inacessível."
+              : String(e.message || e);
+          app.innerHTML = `<p class="error">${escapeHtml(msg)}</p>`;
         }
         return;
       }
