@@ -11,7 +11,7 @@
 window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE = "";
 
 /** Obrigatório em produção. Ex.: "https://xxxx.workers.dev/api-de-dados" */
-window.POLITAPP_PORTAL_API_BASE = "";
+window.POLITAPP_PORTAL_API_BASE = "69b06463c532863131b3c668dc6a555a";
 
 /** Porta(s) do politapp-dev-server (npm run dev). */
 window.POLITAPP_DEV_SAME_ORIGIN_PORTS = "8787";
