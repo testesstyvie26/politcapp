@@ -6,10 +6,12 @@
     "build:tse-prefeitos-rj": "node scripts/build-tse-prefeitos-rj-2024.js",
     "sync:pref-tse-embed": "node scripts/sync-pref-tse-embed.js",
     "build:vereadores-rj": "node scripts/build-vereadores-rj-json.cjs",
+    "build:vereadores-votos-zona": "node scripts/build-vereadores-votos-zona-rj.cjs",
+    "build:vereadores-secao-exemplo": "node scripts/build-secao-exemplo-candidato-rj.cjs",
     "build:tse-df": "node scripts/build-tse-df-json-from-csv.cjs",
     "build:tse-partidos-rj": "node scripts/build-tse-receitas-partidos-rj.cjs",
     "build:executivo-tse-rj": "node scripts/build-executivo-tse-rj.cjs",
-    "build:executivo-data": "npm run build:tse-partidos-rj && npm run build:vereadores-rj && npm run build:executivo-tse-rj",
+    "build:executivo-data": "npm run build:tse-partidos-rj && npm run build:vereadores-rj && npm run build:vereadores-votos-zona && npm run build:executivo-tse-rj",
     "dev": "node scripts/politapp-dev-server.cjs",
     "dev:portal-proxy": "node scripts/portal-transparencia-proxy.cjs",
     "deploy:worker": "npx wrangler deploy"

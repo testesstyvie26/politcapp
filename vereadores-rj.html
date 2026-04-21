@@ -57,6 +57,15 @@
     }
     .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
     .note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .vereador-sub {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.25rem;
+      margin: 0 0 1.5rem; padding: 0.55rem 0.9rem; border: 1px solid var(--border);
+      border-radius: 10px; background: #1a2230; font-size: 0.9rem;
+    }
+    .vereador-sub a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .vereador-sub a:hover { color: var(--accent); }
+    .vereador-sub a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+    .vereador-sub .sep { color: var(--border); user-select: none; }
     .filters {
       display: grid;
       gap: 1rem;
@@ -331,6 +340,11 @@
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
     </nav>
+    <nav class="vereador-sub" aria-label="Navegação — Vereadores RJ">
+      <a href="vereadores-rj.html" aria-current="page">Lista e filtros</a>
+      <span class="sep" aria-hidden="true">|</span>
+      <a href="vereadores-rj-mapa-votos.html">Mapa de votos (zona e seção)</a>
+    </nav>
 
     <header>
       <h1>Vereadores — Rio de Janeiro e Duque de Caxias</h1>
@@ -345,6 +359,7 @@
         <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE, quando existirem.
         Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
         Atualize os dados com <span class="mono">npm run build:vereadores-rj</span>.
+        <a href="vereadores-rj-mapa-votos.html">Mapa de votos por zona e (exemplo) por seção</a>.
       </p>
       <p class="header-estudo">
         <span class="header-estudo__label">Estudo de caso (análise estratégica, dados TSE)</span>

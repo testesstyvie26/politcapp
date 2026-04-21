@@ -289,7 +289,7 @@
         </label>
       </div>
       <p id="mapaNecessidadesHelp" class="note" style="margin:0 0 0.75rem">
-        Municípios fora do filtro aparecem esmaecidos. A busca centraliza o primeiro resultado correspondente.
+        Com <strong>Baixada Fluminense</strong>, o destaque (e a opção “Baixada inteira”) usam <strong>apenas os 12 municípios de referência</strong> abaixo — a meso IBGE «Baixadas Litorâneas» abrange cidades a mais, que aqui ficam esmaecidas. A busca centraliza o primeiro nome que bater.
       </p>
       <div class="map-wrap">
         <div id="map" role="application" aria-label="Mapa coroplético do estado do Rio de Janeiro por mesorregião de insights"></div>
@@ -1454,6 +1454,18 @@
         selMunBaixada.appendChild(o);
       }
 
+      /** Mesorregião IBGE «Baixadas Litorâneas» tem mais municípios; o mapa de campanha segue só estes 12. */
+      const baixadaRefMun = new Set(BAIXADA_MUNICIPIOS_REF);
+
+      function fitBoundsBaixadaRef() {
+        const feat = [];
+        for (const { id, layer } of layers) {
+          const n = byId.get(id)?.nome;
+          if (n && baixadaRefMun.has(n)) feat.push(layer);
+        }
+        if (feat.length) map.fitBounds(L.featureGroup(feat).getBounds(), { padding: [28, 28] });
+      }
+
       function syncFiltroMunNecessidadeUI() {
         const mostrar = filtroMeso === "Baixada Fluminense";
         labelMunBaixada.hidden = !mostrar;
@@ -1467,7 +1479,10 @@
         const info = byId.get(String(munId));
         if (!info) return false;
         if (filtroMunBaixada) {
-          return info.mesoKey === "Baixada Fluminense" && info.nome === filtroMunBaixada;
+          return info.nome === filtroMunBaixada;
+        }
+        if (filtroMeso === "Baixada Fluminense") {
+          return baixadaRefMun.has(info.nome);
         }
         if (filtroMeso) return info.mesoKey === filtroMeso;
         return true;
@@ -1552,6 +1567,9 @@
         filtroMeso = e.target.value;
         syncFiltroMunNecessidadeUI();
         refazerEstilosNecessidade();
+        if (filtroMeso === "Baixada Fluminense" && !filtroMunBaixada) {
+          fitBoundsBaixadaRef();
+        }
       });
 
       document.getElementById("filtroMunNecessidade").addEventListener("change", (e) => {
@@ -1566,7 +1584,7 @@
             }
           }
         } else if (filtroMeso === "Baixada Fluminense") {
-          map.fitBounds(gj.getBounds(), { padding: [28, 28] });
+          fitBoundsBaixadaRef();
         }
       });
 

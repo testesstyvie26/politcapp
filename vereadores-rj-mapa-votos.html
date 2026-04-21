@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mapa de votos (zona e seção) — Vereadores RJ 2024 | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.1), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 0.5rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    .vereador-sub {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.25rem;
+      margin: 0 0 1.5rem; padding: 0.55rem 0.9rem; border: 1px solid var(--border);
+      border-radius: 10px; background: var(--surface2); font-size: 0.9rem;
+    }
+    .vereador-sub a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .vereador-sub a:hover { color: var(--accent); }
+    .vereador-sub a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+    .vereador-sub .sep { color: var(--border); user-select: none; }
+    header { margin-bottom: 1.25rem; }
+    header h1 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 70ch; font-size: 0.95rem; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.02rem; margin: 0 0 0.75rem; font-weight: 600; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .map-toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: flex-end; margin-bottom: 0.75rem; }
+    .map-toolbar label, .row-tools label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    .map-toolbar input, .map-toolbar select, .row-tools input, .row-tools select, .row-tools .radio {
+      font: inherit; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text); padding: 0.5rem 0.6rem; min-width: 12rem; max-width: 100%;
+    }
+    .row-tools { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-bottom: 0.75rem; }
+    .row-tools .radio { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; border: none; padding: 0; }
+    .row-tools .radio label { text-transform: none; letter-spacing: 0; font-size: 0.85rem; font-weight: 500; flex-direction: row; align-items: center; gap: 0.35rem; color: var(--text); }
+    .map-wrap { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    #mapVotos { height: 460px; width: 100%; background: var(--surface2); }
+    @media (max-width: 640px) { #mapVotos { height: 360px; } }
+    .error { color: #f87171; }
+    .mono { font-family: ui-monospace, monospace; font-size: 0.8rem; }
+    .table-wrap { overflow: auto; max-height: 280px; border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th, td { text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
+    th { position: sticky; top: 0; background: var(--surface2); color: var(--muted); z-index: 1; }
+    tr:hover td { background: rgba(61, 139, 253, 0.07); }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="vereadores-rj.html">Vereadores RJ</a>
+      <a href="vereador-heitor-queiroz-2024.html">Análise Heitor Queiroz</a>
+      <a href="transparencia.html">Transparência</a>
+      <a href="midia-social.html">Mídia social</a>
+      <a href="tarefas.html">Tarefas</a>
+      <a href="login.html">Entrar</a>
+      <a href="conta.html">Conta</a>
+    </nav>
+    <nav class="vereador-sub" aria-label="Navegação — Vereadores RJ">
+      <a href="vereadores-rj.html">Lista e filtros</a>
+      <span class="sep" aria-hidden="true">|</span>
+      <a href="vereadores-rj-mapa-votos.html" aria-current="page">Mapa de votos (zona e seção)</a>
+    </nav>
+
+    <header>
+      <h1>Mapa de votos — eleições 2024 (vereador)</h1>
+      <p>
+        Visualização dos <strong>votos nominais</strong> (1.º turno) por <strong>zona eleitoral</strong> (agregado oficial TSE
+        <span class="mono">votacao_candidato_munzona</span>) e, em modo de demonstração, por <strong>seção eleitoral</strong>
+        (cada ponto = local de votação / apuração por seção, ficheiro <span class="mono">votacao_secao</span>).
+        A posição no mapa é <strong>esquemática</strong> (dispersão estável por zona ou zona+seção), não o GPS do edifício.
+        Rio de Janeiro (UE <span class="mono">60011</span>) e Duque de Caxias (UE <span class="mono">58335</span>).
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>Controlo do mapa</h2>
+      <p class="note" id="mapStatus">A carregar dados…</p>
+      <div class="map-toolbar">
+        <label>
+          Município
+          <select id="selUe">
+            <option value="">Ambos (ligeiro)</option>
+            <option value="60011">Rio de Janeiro</option>
+            <option value="58335">Duque de Caxias</option>
+          </select>
+        </label>
+        <label style="flex:1; min-width:14rem; max-width:32rem">
+          Candidato
+          <select id="selCand"></select>
+        </label>
+      </div>
+      <div class="row-tools">
+        <fieldset class="radio" aria-label="Nível de detalhe">
+          <span style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:var(--muted)">Nível</span>
+          <label><input type="radio" name="nivel" value="zona" checked /> Por zona (todos os candidatos)</label>
+          <label id="lblSec" style="opacity:0.5"><input type="radio" name="nivel" value="secao" id="radSec" disabled /> Por seção (ficheiro de exemplo; um SQ)</label>
+        </fieldset>
+      </div>
+      <p class="note" id="notaSec">No modo <strong>seção</strong>, o repositório inclui o detalhe para o <span class="mono">SQ_CANDIDATO</span> do ficheiro de exemplo (gerado com <span class="mono">npm run build:vereadores-secao-exemplo</span>).</p>
+      <div class="map-wrap">
+        <div id="mapVotos" role="application" aria-label="Mapa de calor de votos por zona ou seção"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Tabela (mesmos pontos do mapa)</h2>
+      <p class="note" id="tableMeta"></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr id="theadr"></tr>
+          </thead>
+          <tbody id="tbodyr"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    const CAND_URL = "data/vereadores-rj-rio-2024.json";
+    const ZONA_URL = "data/vereadores-votos-zona-2024-rj.json";
+    const SEC_EXEMPLO_URL = "data/vereadores-secao-exemplo-2024.json";
+
+    const UE_RIO = "60011";
+    const UE_CAX = "58335";
+    const CENTER = { [UE_RIO]: [-22.91, -43.19], [UE_CAX]: [-22.787, -43.32] };
+    const ZOOM0 = 10;
+
+    let map;
+    let layerMarkers;
+    let vereadores = [];
+    let bySqZona = null;
+    let secExemplo = null;
+    const candBySq = new Map();
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function hashSeed(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+      return h;
+    }
+
+    /** Posição no mapa: esquemática, estável, não é coordenada do endereço. */
+    function posEsquematica(ue, z, s) {
+      const c = CENTER[ue] || CENTER[UE_RIO];
+      const seed = s != null && s > 0 ? `${ue}|z${z}|s${s}` : `${ue}|z${z}`;
+      const h = hashSeed(seed);
+      const u1 = ((h % 1000) + 1000) % 1000 / 1000;
+      const u2 = (Math.imul(h, 1103515245) % 1000 + 1000) % 1000 / 1000;
+      const rZ = 0.08;
+      const rS = 0.028;
+      const r = s != null && s > 0 ? rS : rZ;
+      return [c[0] + (u1 - 0.5) * 2 * r, c[1] + (u2 - 0.5) * 2 * r * 0.95];
+    }
+
+    function corPorVotos(v, vmin, vmax) {
+      if (vmax <= vmin) return "#3d8bfd";
+      const t = (v - vmin) / (vmax - vmin);
+      const h = 230 - t * 170;
+      return "hsl(" + h + ", 72%, 52%)";
+    }
+
+    function raioPorVotos(v, vmin, vmax) {
+      if (vmax <= vmin) return 8;
+      const t = (v - vmin) / (vmax - vmin);
+      return 4 + t * 18;
+    }
+
+    function parseUrlSq() {
+      const q = new URLSearchParams(window.location.search).get("sq");
+      if (!q) return null;
+      const s = String(q).replace(/\D/g, "");
+      return s || null;
+    }
+
+    function fillCandSelect(ueFiltro) {
+      const sel = document.getElementById("selCand");
+      const arr = !ueFiltro
+        ? vereadores
+        : vereadores.filter((r) => String(r.sgUeTse).trim() === ueFiltro);
+      const sorted = arr.slice().sort((a, b) => (Number(b.votos) || 0) - (Number(a.votos) || 0) || (a.nomeUrna || "").localeCompare(b.nomeUrna || "", "pt-BR"));
+      const urlSq = parseUrlSq();
+      let chosen = null;
+      sel.innerHTML = sorted
+        .map((r) => {
+          const sq = String(r.sqCandidato || "");
+          if (!sq) return "";
+          const n = (r.nomeUrna || "—") + " · " + (r.partido || "—") + " · " + (r.votos != null ? r.votos.toLocaleString("pt-BR") + " votos" : "—");
+          return "<option value=\"" + escapeHtml(sq) + "\">" + escapeHtml(n) + "</option>";
+        })
+        .filter(Boolean)
+        .join("");
+      for (const r of sorted) {
+        if (r.sqCandidato && String(r.sqCandidato) === urlSq) {
+          chosen = String(r.sqCandidato);
+          break;
+        }
+      }
+      if (!chosen && secExemplo && secExemplo.sqCandidato) {
+        for (const r of sorted) {
+          if (String(r.sqCandidato) === String(secExemplo.sqCandidato)) {
+            chosen = String(r.sqCandidato);
+            break;
+          }
+        }
+      }
+      if (!chosen && sorted[0] && sorted[0].sqCandidato) chosen = String(sorted[0].sqCandidato);
+      if (chosen) sel.value = chosen;
+    }
+
+    function getSelSq() {
+      return document.getElementById("selCand").value;
+    }
+
+    function getNivel() {
+      return document.querySelector('input[name="nivel"]:checked')?.value || "zona";
+    }
+
+    function syncSecRadio() {
+      const sq = getSelSq();
+      const r = document.getElementById("radSec");
+      const lbl = document.getElementById("lblSec");
+      const exSq = secExemplo && String(secExemplo.sqCandidato);
+      const can = exSq && sq === exSq && Array.isArray(secExemplo.sec) && secExemplo.sec.length;
+      r.disabled = !can;
+      lbl.style.opacity = can ? "1" : "0.45";
+      if (!can && getNivel() === "secao") {
+        document.querySelector('input[name="nivel"][value="zona"]').checked = true;
+      }
+    }
+
+    function renderMapa() {
+      if (!map || !bySqZona) return;
+      const st = document.getElementById("mapStatus");
+      const sq = getSelSq();
+      const row = candBySq.get(sq);
+      const ueFiltro = document.getElementById("selUe").value;
+      const nivel = getNivel();
+      if (!row) {
+        st.innerHTML = "<span class='error'>Candidato inválido.</span>";
+        return;
+      }
+      if (nivel === "secao" && secExemplo && String(secExemplo.sqCandidato) === sq) {
+        renderSec(sq, row, ueFiltro, st);
+        return;
+      }
+      renderZona(sq, row, ueFiltro, st);
+    }
+
+    function renderZona(sq, row, ueFiltro, st) {
+      const list = (bySqZona.bySq && bySqZona.bySq[sq]) || [];
+      const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
+      let sum = 0;
+      for (const x of filtrado) sum += x.v;
+      const tAg = row.votos != null ? Number(row.votos) : null;
+      const vs = filtrado.map((x) => x.v);
+      const vmin = vs.length ? Math.min(...vs) : 0;
+      const vmax = vs.length ? Math.max(...vs) : 0;
+
+      layerMarkers.clearLayers();
+      for (const x of filtrado) {
+        const [la, lo] = posEsquematica(x.ue, x.z, null);
+        const m = L.circleMarker([la, lo], {
+          radius: raioPorVotos(x.v, vmin, vmax),
+          color: "rgba(255,255,255,0.35)",
+          weight: 1,
+          fillColor: corPorVotos(x.v, vmin, vmax),
+          fillOpacity: 0.75,
+        });
+        m.bindPopup(
+          "<strong>" + escapeHtml(row.nomeUrna || "") + "</strong><br/>UE " +
+            escapeHtml(x.ue) + " · Zona " + x.z + "<br/>" + x.v.toLocaleString("pt-BR") + " votos (zona)"
+        );
+        m.addTo(layerMarkers);
+      }
+      if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [32, 32], maxZoom: 12 });
+      else map.setView(CENTER[UE_RIO], ZOOM0);
+
+      st.textContent =
+        (filtrado.length
+          ? filtrado.length + " zona(s) com votos no mapa"
+          : "Nenhum ponto (verifique ficheiro de zona)") +
+        " · Soma nas zonas mostradas: " +
+        sum.toLocaleString("pt-BR") +
+        (tAg != null && Number.isFinite(tAg)
+          ? " — total geral (ficheiro candidatos): " + tAg.toLocaleString("pt-BR")
+          : "");
+
+      document.getElementById("theadr").innerHTML =
+        "<th>UE</th><th class='num'>Zona</th><th class='num'>Votos</th>";
+      document.getElementById("tbodyr").innerHTML = filtrado
+        .slice()
+        .sort((a, b) => a.ue.localeCompare(b.ue) || a.z - b.z)
+        .map(
+          (x) =>
+            "<tr><td class='mono'>" +
+            escapeHtml(x.ue) +
+            "</td><td class='num'>" +
+            x.z +
+            "</td><td class='num'>" +
+            x.v.toLocaleString("pt-BR") +
+            "</td></tr>"
+        )
+        .join("");
+      document.getElementById("tableMeta").textContent = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
+    }
+
+    function renderSec(sq, row, ueFiltro, st) {
+      const list = (secExemplo && secExemplo.sqCandidato === sq && secExemplo.sec) || [];
+      const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
+      let sum = 0;
+      for (const x of filtrado) sum += x.v;
+      const vs = filtrado.map((x) => x.v);
+      const vmin = vs.length ? Math.min(...vs) : 0;
+      const vmax = vs.length ? Math.max(...vs) : 0;
+      layerMarkers.clearLayers();
+      for (const x of filtrado) {
+        const [la, lo] = posEsquematica(x.ue, x.z, x.s);
+        const m = L.circleMarker([la, lo], {
+          radius: 3 + raioPorVotos(x.v, vmin, vmax) * 0.4,
+          color: "rgba(255,255,255,0.25)",
+          weight: 1,
+          fillColor: corPorVotos(x.v, vmin, vmax),
+          fillOpacity: 0.8,
+        });
+        m.bindPopup(
+          "<strong>" + escapeHtml(row.nomeUrna || "") + "</strong><br/>" +
+            "Zona " + x.z + " · Seção " + x.s + "<br/>" + x.v.toLocaleString("pt-BR") + " votos<br/><small class='muted'>" +
+            escapeHtml(x.local) + "<br/>" + escapeHtml(x.endereco) + "</small>"
+        );
+        m.addTo(layerMarkers);
+      }
+      if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [28, 28], maxZoom: 14 });
+      st.textContent =
+        filtrado.length +
+        " seção(ões) · soma: " + sum.toLocaleString("pt-BR") + " (exemplo TSE " + (secExemplo.sqCandidato || "") + ")";
+      document.getElementById("theadr").innerHTML =
+        "<th>UE</th><th class='num'>Zona</th><th class='num'>Seção</th><th>Local</th><th>Endereço (TSE)</th><th class='num'>Votos</th>";
+      document.getElementById("tbodyr").innerHTML = filtrado
+        .map(
+          (x) =>
+            "<tr><td class='mono'>" + escapeHtml(x.ue) + "</td><td class='num'>" + x.z + "</td><td class='num'>" + x.s +
+            "</td><td>" + escapeHtml(x.local) + "</td><td>" + escapeHtml(x.endereco) + "</td><td class='num'>" +
+            x.v.toLocaleString("pt-BR") + "</td></tr>"
+        )
+        .join("");
+      document.getElementById("tableMeta").textContent = "Modo seção (demonstração) · " + (secExemplo.geradoEm || "");
+    }
+
+    async function start() {
+      const st = document.getElementById("mapStatus");
+      st.textContent = "A carregar ficheiros…";
+      try {
+        const [r1, r2, r3] = await Promise.all([
+          fetch(new URL(CAND_URL, location.href), { cache: "no-store" }),
+          fetch(new URL(ZONA_URL, location.href), { cache: "no-store" }),
+          fetch(new URL(SEC_EXEMPLO_URL, location.href), { cache: "no-store" }),
+        ]);
+        if (!r1.ok) throw new Error("candidatos " + r1.status);
+        if (!r2.ok) throw new Error("votos por zona " + r2.status);
+        const d1 = await r1.json();
+        bySqZona = await r2.json();
+        if (r3.ok) secExemplo = await r3.json();
+        vereadores = d1.vereadores || [];
+        for (const r of vereadores) {
+          if (r.sqCandidato) candBySq.set(String(r.sqCandidato), r);
+        }
+      } catch (e) {
+        console.error(e);
+        st.innerHTML = "<span class='error'>Erro: " + escapeHtml(e.message) + " — execute <span class='mono'>npm run build:vereadores-votos-zona</span> e <span class='mono'>npm run build:vereadores-rj</span>.</span>";
+        return;
+      }
+      st.textContent = "A inicializar mapa…";
+      map = L.map("mapVotos", { scrollWheelZoom: true }).setView(CENTER[UE_RIO], ZOOM0);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(map);
+      layerMarkers = L.layerGroup().addTo(map);
+      fillCandSelect(document.getElementById("selUe").value);
+      syncSecRadio();
+      document.querySelectorAll('input[name="nivel"]').forEach((x) => x.addEventListener("change", () => renderMapa()));
+      document.getElementById("selUe").addEventListener("change", () => {
+        fillCandSelect(document.getElementById("selUe").value);
+        syncSecRadio();
+        renderMapa();
+      });
+      document.getElementById("selCand").addEventListener("change", () => {
+        syncSecRadio();
+        const q = new URLSearchParams(window.location.search);
+        q.set("sq", getSelSq());
+        history.replaceState(null, "", (q.toString() ? "?" + q.toString() : window.location.pathname));
+        renderMapa();
+      });
+      renderMapa();
+      st.textContent = "Mapa pronto. Escolha o município (opcional) e o candidato. Raio e cor respeitam a escala de votos nas zonas visíveis.";
+    }
+
+    start();
+  </script>
+</body>
+</html>
