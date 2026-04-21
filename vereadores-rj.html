@@ -64,8 +64,8 @@
       align-items: end;
       margin-bottom: 1rem;
     }
-    @media (min-width: 720px) {
-      .filters { grid-template-columns: 1fr 12rem 8rem; }
+    @media (min-width: 900px) {
+      .filters { grid-template-columns: 1fr 9rem 11rem 5.5rem; }
     }
     label {
       display: flex; flex-direction: column; gap: 0.35rem;
@@ -140,6 +140,8 @@
         (<abbr title="Unidade eleitoral TSE">UE</abbr> <span class="mono">60011</span>), segundo o arquivo
         <span class="mono">consulta_cand</span> do
         <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2024" target="_blank" rel="noopener">Portal de Dados Abertos do TSE</a>.
+        A coluna <strong>Resultado (pleito)</strong> reproduz o campo <span class="mono">DS_SIT_TOT_TURNO</span> (situação após o pleito).
+        Use o filtro <strong>Grupo</strong> para <em>eleitos</em> (ELEITO POR QP/MÉDIA), <em>suplentes</em> (SUPLENTE) e <em>demais participantes</em> (ex.: NÃO ELEITO, <span class="mono">#NULO</span>).
         Atualize a lista com <span class="mono">npm run build:vereadores-rj</span>.
       </p>
     </header>
@@ -157,6 +159,15 @@
           Partido
           <select id="selPartido"><option value="">Todos</option></select>
         </label>
+        <label>
+          Grupo
+          <select id="selPapel">
+            <option value="">Todos</option>
+            <option value="eleito">Eleitos</option>
+            <option value="suplente">Suplentes</option>
+            <option value="participante">Demais participantes</option>
+          </select>
+        </label>
         <label style="align-self: end">
           Por página
           <select id="selPageSize">
@@ -173,7 +184,8 @@
               <th>Nº</th>
               <th>Nome de urna</th>
               <th>Partido</th>
-              <th>Situação</th>
+              <th>Grupo</th>
+              <th>Resultado (pleito)</th>
               <th class="mono">SQ</th>
             </tr>
           </thead>
@@ -198,6 +210,20 @@
     let sgUeTse = "60011";
     let geradoEm = "";
 
+    const PAPEL_LABEL = {
+      eleito: "Eleito",
+      suplente: "Suplente",
+      participante: "Participante",
+    };
+
+    function papelFromRow(r) {
+      if (r && r.papelEleicao) return r.papelEleicao;
+      const s = String(r.dsSitTotTurno || "").trim();
+      if (s === "ELEITO POR QP" || s === "ELEITO POR MÉDIA") return "eleito";
+      if (s === "SUPLENTE") return "suplente";
+      return "participante";
+    }
+
     function escapeHtml(s) {
       return String(s ?? "")
         .replace(/&/g, "&amp;")
@@ -216,15 +242,26 @@
     function filtrar() {
       const q = norm(document.getElementById("inpBusca").value.trim());
       const p = document.getElementById("selPartido").value;
+      const papelFiltro = document.getElementById("selPapel").value;
       return raw.filter((r) => {
         if (p && r.partido !== p) return false;
+        if (papelFiltro && papelFromRow(r) !== papelFiltro) return false;
         if (!q) return true;
-        const hay = [r.nomeUrna, r.nomeCompleto, r.partido, r.numero, r.partidoNome]
+        const pap = papelFromRow(r);
+        const hay = [r.nomeUrna, r.nomeCompleto, r.partido, r.numero, r.partidoNome, r.dsSitTotTurno, PAPEL_LABEL[pap]]
           .filter(Boolean)
           .map(norm)
           .join(" ");
         return hay.includes(q) || hay.split(/\s+/).some((w) => w.startsWith(q)) || q.split(/\s+/).every((term) => hay.includes(term));
       });
+    }
+
+    function contagemPorPapel(rows) {
+      const c = { eleito: 0, suplente: 0, participante: 0 };
+      for (const row of rows) {
+        c[papelFromRow(row)]++;
+      }
+      return c;
     }
 
     function render() {
@@ -242,11 +279,15 @@
         .map((r) => {
           const n = r.numero != null ? escapeHtml(String(r.numero)) : "—";
           const sq = r.sqCandidato != null ? escapeHtml(String(r.sqCandidato)) : "—";
+          const pap = papelFromRow(r);
+          const lbl = PAPEL_LABEL[pap] || pap;
+          const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
           return `<tr>
             <td class="num mono">${n}</td>
             <td>${escapeHtml(r.nomeUrna || "—")}</td>
             <td><strong>${escapeHtml(r.partido || "—")}</strong>${r.partidoNome ? `<span class="muted" style="display:block;font-size:0.78rem">${escapeHtml(r.partidoNome)}</span>` : ""}</td>
-            <td>${escapeHtml(r.situacao || "—")}</td>
+            <td>${escapeHtml(lbl)}</td>
+            <td>${res}</td>
             <td class="mono">${sq}</td>
           </tr>`;
         })
@@ -263,7 +304,8 @@
       const meta = document.getElementById("metaLista");
       if (raw.length) {
         const ts = geradoEm ? ` · gerado em ${escapeHtml(geradoEm)}` : "";
-        meta.textContent = `Fonte: TSE consulta_cand · cargo vereador · UE ${escapeHtml(sgUeTse)} · ${raw.length} candidaturas${ts}.`;
+        const cc = contagemPorPapel(raw);
+        meta.textContent = `Fonte: TSE consulta_cand · UE ${sgUeTse} · ${raw.length} registos — eleitos: ${cc.eleito}, suplentes: ${cc.suplente}, demais participantes: ${cc.participante}${geradoEm ? ` · gerado em ${geradoEm}` : ""}.`;
       }
     }
 
@@ -299,6 +341,10 @@
       render();
     });
     document.getElementById("selPartido").addEventListener("change", () => {
+      PAGE.num = 1;
+      render();
+    });
+    document.getElementById("selPapel").addEventListener("change", () => {
       PAGE.num = 1;
       render();
     });

@@ -118,6 +118,15 @@ function mainSync(csvText) {
   const ixNmPartido = header.indexOf("NM_PARTIDO");
   const ixSq = header.indexOf("SQ_CANDIDATO");
   const ixDsSit = header.indexOf("DS_SITUACAO_CANDIDATURA");
+  const ixSitTot = header.indexOf("DS_SIT_TOT_TURNO");
+
+  /** Classificação derivada de DS_SIT_TOT_TURNO (após o pleito), para filtros na UI. */
+  function papelEleicao(dsSitTotTurno) {
+    const s = String(dsSitTotTurno || "").trim();
+    if (s === "ELEITO POR QP" || s === "ELEITO POR MÉDIA") return "eleito";
+    if (s === "SUPLENTE") return "suplente";
+    return "participante";
+  }
 
   const rows = [];
   for (let i = 1; i < lines.length; i++) {
@@ -134,6 +143,7 @@ function mainSync(csvText) {
     const pick = (ix) =>
       ix >= 0 && cols[ix] != null ? String(cols[ix]).replace(/^"|"$/g, "").trim() : "";
 
+    const dsSitTotTurno = ixSitTot >= 0 ? pick(ixSitTot) : "";
     rows.push({
       sqCandidato: pick(ixSq) || undefined,
       numero: pick(ixNr) || undefined,
@@ -143,13 +153,18 @@ function mainSync(csvText) {
       partido: pick(ixPartido) || "—",
       partidoNome: pick(ixNmPartido) || undefined,
       situacao: pick(ixDsSit) || undefined,
+      dsSitTotTurno: dsSitTotTurno || undefined,
+      papelEleicao: papelEleicao(dsSitTotTurno),
       dsCargo: ixDsCargo >= 0 ? pick(ixDsCargo) : undefined,
     });
   }
 
+  const ordPapel = { eleito: 0, suplente: 1, participante: 2 };
   rows.sort((a, b) => {
-    const pa = (a.partido || "").localeCompare(b.partido || "", "pt-BR");
+    const pa = ordPapel[a.papelEleicao] - ordPapel[b.papelEleicao];
     if (pa !== 0) return pa;
+    const pp = (a.partido || "").localeCompare(b.partido || "", "pt-BR");
+    if (pp !== 0) return pp;
     return (a.nomeUrna || "").localeCompare(b.nomeUrna || "", "pt-BR");
   });
 
@@ -176,7 +191,7 @@ async function main() {
 
   const payload = {
     fonte:
-      "TSE — consulta de candidatos (consulta_cand), UF RJ, SG_UE 60011 (capital), cargo 13 (vereador) — eleições municipais 2024.",
+      "TSE — consulta de candidatos (consulta_cand), UF RJ, SG_UE 60011 (capital), cargo 13 (vereador) — eleições municipais 2024. Campo DS_SIT_TOT_TURNO: eleitos (ELEITO POR QP/MÉDIA), suplentes (SUPLENTE) e demais participantes (ex.: NÃO ELEITO, #NULO).",
     uf: "RJ",
     municipio: "Rio de Janeiro",
     sgUeTse: SG_UE_RIO_CAPITAL,
