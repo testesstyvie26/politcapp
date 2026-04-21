@@ -203,7 +203,13 @@
       font-size: 0.82rem;
     }
     .viagem-poi-card .dist { font-size: 0.72rem; color: #9ec5ff; margin-bottom: 0.25rem; }
+    .viagem-poi-card.evento { border-left: 3px solid #f472b6; }
     input[type="range"] { width: 100%; max-width: 220px; }
+    input[type="date"] {
+      font-family: inherit; font-size: 0.9rem; padding: 0.5rem 0.65rem;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+      min-width: 160px;
+    }
   </style>
 </head>
 <body>
@@ -269,6 +275,8 @@
         Referência de <strong>locais com forte presença de comércio, feiras e associações</strong>, úteis para
         <strong>agenda de rua, escuta com lojistas e produtores</strong> e conteúdo de campanha regionalizado.
         Coordenadas são aproximadas (centro do equipamento ou polo); confirme endereço e horário antes da visita.
+        <strong>Corridas, caminhadas e eventos beneficentes</strong> por município estão na base ilustrativa da seção
+        <strong>Viagens entre municípios</strong> (filtro por período + proximidade à rota).
       </p>
       <div class="comercio-filtros">
         <label>
@@ -297,8 +305,9 @@
       <p class="note" style="margin-bottom:1rem">
         Escolha <strong>origem</strong> e <strong>destino</strong> (centróides dos polígonos municipais IBGE). A rota segue malha viária estimada
         (<a href="http://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / OpenStreetMap). O tempo depende de trânsito e condições reais;
-        use como <strong>ordem de grandeza</strong> para planejamento. Pontos de comércio listados na página são destacados quando ficam até a distância
-        escolhida da geometria da rota.
+        use como <strong>ordem de grandeza</strong> para planejamento. <strong>Comércio</strong> e <strong>eventos</strong> (corridas, beneficentes, culturais)
+        aparecem quando estão até o raio (km) da rota; <strong>eventos</strong> só entram se a <strong>data do evento</strong> cruzar o
+        <strong>período da viagem</strong> que você definir abaixo. Dados de eventos são <strong>ilustrativos</strong> — confirme em sites oficiais e prefeituras.
       </p>
       <div class="viagem-toolbar">
         <label>
@@ -314,7 +323,15 @@
           </select>
         </label>
         <label>
-          POIs comércio até (km da rota)
+          Período da viagem (início)
+          <input type="date" id="viagemDataInicio" />
+        </label>
+        <label>
+          Período da viagem (fim)
+          <input type="date" id="viagemDataFim" />
+        </label>
+        <label>
+          POIs até (km da rota)
           <input type="range" id="viagemBufferKm" min="8" max="80" value="28" />
           <span id="viagemBufferLabel" class="note" style="display:block;margin-top:0.25rem">28 km</span>
         </label>
@@ -327,9 +344,20 @@
       <div class="map-wrap">
         <div id="mapViagem" role="application" aria-label="Mapa de rota entre municípios"></div>
       </div>
-      <p id="viagemStatus" class="note" style="margin-top:0.75rem">Selecione origem e destino e calcule a rota.</p>
-      <h3 style="margin-top:1.25rem;font-size:0.95rem;color:var(--muted)">Pontos de interesse (comércio) próximos à rota</h3>
+      <div class="legend" style="margin-top:0.75rem;font-size:0.78rem" aria-hidden="true">
+        <span><span class="swatch" style="background:#3d8bfd"></span> Rota viária</span>
+        <span><span class="swatch" style="background:#64748b"></span> Linha reta (fallback)</span>
+        <span><span class="swatch" style="background:#22c55e"></span> Origem</span>
+        <span><span class="swatch" style="background:#f87171"></span> Destino</span>
+        <span><span class="swatch" style="background:#94a3b8"></span> Comércio (círculo)</span>
+        <span><span class="swatch" style="background:#f472b6"></span> Evento no período (losango)</span>
+      </div>
+      <p id="viagemStatus" class="note" style="margin-top:0.75rem">Selecione origem, destino, período da viagem e calcule a rota.</p>
+      <h3 style="margin-top:1.25rem;font-size:0.95rem;color:var(--muted)">Comércio e visitas próximos à rota</h3>
       <div class="viagem-pois" id="viagemPois"></div>
+      <h3 style="margin-top:1.35rem;font-size:0.95rem;color:var(--muted)">Eventos no período e próximos à rota</h3>
+      <p class="note" style="margin:0 0 0.65rem">Só entram eventos cuja data (ou intervalo) <strong>intercepta</strong> o período da viagem e que ficam dentro do mesmo raio (km) da geometria da rota.</p>
+      <div class="viagem-pois" id="viagemEventos"></div>
     </section>
 
     <section class="panel">
@@ -463,7 +491,108 @@
       { nome: "Centro de Itaperuna", cidade: "Itaperuna", meso: "Noroeste Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.205, lng: -41.8878, dica: "Polo regional do Noroeste; feiras e comércio conectam agricultura familiar à cidade." },
       { nome: "Centro de Resende", cidade: "Resende", meso: "Sul Fluminense", tipo: "Associação e rede de negócios", lat: -22.4688, lng: -44.4469, dica: "Proximidade a polo industrial; ACIs e sindicatos costumam concentrar demandas de PMEs." },
       { nome: "Orla e centro de Arraial do Cabo", cidade: "Arraial do Cabo", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.9664, lng: -42.0278, dica: "Pesca artesanal e turismo; visitas sensíveis ao calendário de mar e ocupação de praia." },
+      { nome: "Centro de São Gonçalo", cidade: "São Gonçalo", meso: "Metropolitana do Rio de Janeiro", tipo: "Centro urbano e comércio de rua", lat: -22.8268, lng: -43.0538, dica: "Segundo maior pólo comercial da RM; boa vitrine para pauta metropolitana além da capital." },
+      { nome: "Centro de Belford Roxo", cidade: "Belford Roxo", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.764, lng: -43.3992, dica: "Tecido comercial denso na Baixada; diálogo com comerciantes e transporte coletivo." },
+      { nome: "Centro de São João de Meriti", cidade: "São João de Meriti", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.8039, lng: -43.3729, dica: "Fluxo intenso; útil para temas de segurança urbana e serviços." },
+      { nome: "Praça da Bandeira (polo comercial)", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.416, lng: -42.9756, dica: "Região serrana; comércio e turismo; atenção a eventos e clima." },
+      { nome: "Centro de Cabo Frio", cidade: "Cabo Frio", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.8878, lng: -42.026, dica: "Litoral norte; sazonalidade forte; combine moradia local e turismo." },
+      { nome: "Centro de Barra Mansa", cidade: "Barra Mansa", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.548, lng: -44.1753, dica: "Polo do médio Paraíba; boa ponte com Volta Redonda e rodovias." },
+      { nome: "Centro de Três Rios", cidade: "Três Rios", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.1167, lng: -43.2092, dica: "Entroncamento rodoviário; comércio de passagem e interior." },
+      { nome: "Centro de Nilópolis", cidade: "Nilópolis", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.807, lng: -43.4139, dica: "Densidade urbana; escuta com lojistas de rua e associações." },
+      { nome: "Feira de São Pedro (Teresópolis)", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Feira ou mercado municipal", lat: -22.4112, lng: -42.9656, dica: "Produtos da serra; bom para narrativa de agricultura e turismo." },
+      { nome: "Centro de Magé", cidade: "Magé", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.6528, lng: -43.0408, dica: "Baía de Guanabara; ligação com Barcas e logística fluvial." },
+      { nome: "Centro de Queimados", cidade: "Queimados", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7161, lng: -43.5553, dica: "Corredor metropolitano; comércio popular e feiras de bairro." },
+      { nome: "Centro de Mesquita", cidade: "Mesquita", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7839, lng: -43.4297, dica: "Tecido comercial contínuo com vizinhos; boa rota para microcredito e serviços." },
+      { nome: "Centro de Barra do Piraí", cidade: "Barra do Piraí", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.4711, lng: -43.8261, dica: "Vale do Paraíba; polo regional de serviços e comércio." },
+      { nome: "Orla de Búzios", cidade: "Armação dos Búzios", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.7469, lng: -41.8817, dica: "Economia turística; sensibilidade a moradia e trabalho informal na alta temporada." },
+      { nome: "Centro de São Pedro da Aldeia", cidade: "São Pedro da Aldeia", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.8389, lng: -42.1028, dica: "Lagos region; eventos costumam puxar fluxo para o comércio local." },
+      { nome: "Centro de Miracema", cidade: "Miracema", meso: "Noroeste Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.4122, lng: -42.1967, dica: "Interior noroeste; feiras e comércio de proximidade." },
+      { nome: "Centro de Santo Antônio de Pádua", cidade: "Santo Antônio de Pádua", meso: "Noroeste Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.5386, lng: -42.1803, dica: "Polo regional; útil para agenda com interior e produtores." },
+      { nome: "Centro de Cantagalo", cidade: "Cantagalo", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.9811, lng: -42.3672, dica: "Cidade média serrana; comércio e caficultura na conversa." },
+      { nome: "Centro de São Fidélis", cidade: "São Fidélis", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.6819, lng: -41.7531, dica: "Vale do Café; rotas para Campos e interior." },
+      { nome: "Centro de Rio das Ostras", cidade: "Rio das Ostras", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.5269, lng: -41.945, dica: "Crescimento urbano e petróleo próximo; orla e comércio de bairro." },
     ];
+
+    /** Eventos ilustrativos (2026) — confirmar datas e locais em fontes oficiais. */
+    const TIPO_EVENTO_COLORS = {
+      "Corrida de rua": "#f472b6",
+      "Evento beneficente": "#a78bfa",
+      "Caminhada / mobilidade": "#38bdf8",
+      "Festival ou cultura": "#fbbf24",
+    };
+
+    /**
+     * inicio / fim: YYYY-MM-DD (fim opcional; um dia se omitido)
+     */
+    const EVENTOS_RJ = [
+      { nome: "Corrida Night Run Rio", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.9836, lng: -43.2048, inicio: "2026-04-18", fim: "2026-04-18", dica: "Percurso costeiro típico; checar fechamento de vias." },
+      { nome: "Caminhada pela Saúde — Zona Norte", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Caminhada / mobilidade", lat: -22.872, lng: -43.302, inicio: "2026-05-03", dica: "Concentração em largo de bairro; diálogo com ambulatórios." },
+      { nome: "Corrida de São Sebastião", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.9895, lng: -43.365, inicio: "2026-01-25", dica: "Tradicional em bairro; confirme trecho com a organização." },
+      { nome: "Feijoada Beneficente — Lar da Criança", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Evento beneficente", lat: -22.9108, lng: -43.2331, inicio: "2026-06-14", fim: "2026-06-14", dica: "Arrecadação e presença política discreta; respeitar regras eleitorais." },
+      { nome: "Corrida 10K Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8835, lng: -43.1034, inicio: "2026-04-26", dica: "Orla e ICMBio próximos; logística de estacionamento." },
+      { nome: "Arraiá Beneficente APAE Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Evento beneficente", lat: -22.885, lng: -43.098, inicio: "2026-06-28", fim: "2026-06-28", dica: "Festa junina; bom para parcerias com entidades." },
+      { nome: "Meia Maratona de São Gonçalo", cidade: "São Gonçalo", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8268, lng: -43.0538, inicio: "2026-03-15", dica: "Grande público; atenção a rotas alternativas." },
+      { nome: "Caminhada Ecológica da Baía", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Caminhada / mobilidade", lat: -22.891, lng: -43.124, inicio: "2026-09-20", dica: "Pauta ambiental; mídia espontânea em grupo." },
+      { nome: "Corrida da Integração — Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.7856, lng: -43.3117, inicio: "2026-05-10", dica: "Centro e avenidas; confirmar largada com PM." },
+      { nome: "Pedal Beneficente — Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixadas", tipo: "Evento beneficente", lat: -22.7592, lng: -43.4513, inicio: "2026-08-02", fim: "2026-08-02", dica: "Inscrições revertem a projetos sociais." },
+      { nome: "Corrida da Baixada Fluminense", cidade: "Belford Roxo", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.764, lng: -43.3992, inicio: "2026-07-12", dica: "Periferia densa; hidratação e segurança no percurso." },
+      { nome: "Festival de Inverno — Petrópolis", cidade: "Petrópolis", meso: "Centro Fluminense", tipo: "Festival ou cultura", lat: -22.5049, lng: -43.1789, inicio: "2026-07-18", fim: "2026-07-26", dica: "Vários dias; cultura e comércio; trânsito intenso." },
+      { nome: "Corrida Serra Teresópolis", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Corrida de rua", lat: -22.416, lng: -42.9756, inicio: "2026-04-12", dica: "Altitude; clima mais frio; confirme horário de largada." },
+      { nome: "Gala Beneficente Hospital Municipal", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Evento beneficente", lat: -22.418, lng: -42.972, inicio: "2026-05-30", dica: "Evento fechado; networking com lideranças locais." },
+      { nome: "Corrida de Friburgo", cidade: "Nova Friburgo", meso: "Centro Fluminense", tipo: "Corrida de rua", lat: -22.2818, lng: -42.531, inicio: "2026-10-05", dica: "Interior; logística BR-116." },
+      { nome: "Festival Gastronômico — Campos", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Festival ou cultura", lat: -21.7583, lng: -41.3338, inicio: "2026-09-05", fim: "2026-09-07", dica: "Fim de semana prolongado; hotéis cheios." },
+      { nome: "Corrida do Leite (beneficente)", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Evento beneficente", lat: -21.762, lng: -41.328, inicio: "2026-11-08", dica: "Parceria com laticínios e ONGs; confirmar ponto de encontro." },
+      { nome: "10K Macaé Run", cidade: "Macaé", meso: "Norte Fluminense", tipo: "Corrida de rua", lat: -22.3708, lng: -41.7768, inicio: "2026-06-07", dica: "Ventos litorâneos; manhã cedo recomendada." },
+      { nome: "Caminhada do Petróleo", cidade: "Macaé", meso: "Norte Fluminense", tipo: "Caminhada / mobilidade", lat: -22.375, lng: -41.78, inicio: "2026-09-12", dica: "Pauta de emprego e transição energética." },
+      { nome: "Corrida Volta Redonda", cidade: "Volta Redonda", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.5231, lng: -44.0939, inicio: "2026-04-05", dica: "Polo industrial ao fundo; atenção ao ar." },
+      { nome: "Feijoada Solidária Metalúrgicos", cidade: "Volta Redonda", meso: "Sul Fluminense", tipo: "Evento beneficente", lat: -22.52, lng: -44.09, inicio: "2026-03-22", fim: "2026-03-22", dica: "Fortes vínculos sindicais; pedir agenda ao sindicato." },
+      { nome: "Meia Maratona Angra", cidade: "Angra dos Reis", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -23.0065, lng: -44.3181, inicio: "2026-08-16", dica: "Calor e subidas; ferry pode afetar deslocamento." },
+      { nome: "Corrida do Farol — Arraial", cidade: "Arraial do Cabo", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.9664, lng: -42.0278, inicio: "2026-05-24", dica: "Turismo; impacto em comunidades — visite com sensibilidade." },
+      { nome: "Festival Cabo Frio Verão", cidade: "Cabo Frio", meso: "Sul Fluminense", tipo: "Festival ou cultura", lat: -22.8878, lng: -42.026, inicio: "2026-01-10", fim: "2026-01-25", dica: "Janela longa; várias atrações na orla." },
+      { nome: "Corrida Búzios", cidade: "Armação dos Búzios", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.7469, lng: -41.8817, inicio: "2026-10-18", dica: "Hotéis e trânsito de verão." },
+      { nome: "Caminhada pela Vida — Resende", cidade: "Resende", meso: "Sul Fluminense", tipo: "Caminhada / mobilidade", lat: -22.4688, lng: -44.4469, inicio: "2026-10-12", dica: "Outubro rosa; parceria com saúde." },
+      { nome: "Corrida Itaperuna Agro", cidade: "Itaperuna", meso: "Noroeste Fluminense", tipo: "Corrida de rua", lat: -21.205, lng: -41.8878, inicio: "2026-07-04", dica: "Interior; conecta produtores e cidade." },
+      { nome: "Arraiá Beneficente Rural", cidade: "Itaperuna", meso: "Noroeste Fluminense", tipo: "Evento beneficente", lat: -21.21, lng: -41.89, inicio: "2026-06-20", fim: "2026-06-21", dica: "Dois dias; música e comida típica." },
+      { nome: "Corrida Miracema", cidade: "Miracema", meso: "Noroeste Fluminense", tipo: "Corrida de rua", lat: -21.4122, lng: -42.1967, inicio: "2026-11-15", dica: "Pequena cidade; percurso urbano curto." },
+      { nome: "Festival Santo Antônio", cidade: "Santo Antônio de Pádua", meso: "Noroeste Fluminense", tipo: "Festival ou cultura", lat: -21.5386, lng: -42.1803, inicio: "2026-06-13", fim: "2026-06-15", dica: "Festa religiosa e cultural; multidões no centro." },
+      { nome: "Corrida São Fidélis", cidade: "São Fidélis", meso: "Norte Fluminense", tipo: "Corrida de rua", lat: -21.6819, lng: -41.7531, inicio: "2026-08-30", dica: "Rio Coffee Run — nome ilustrativo; confirmar inscrição." },
+      { nome: "Gincana Beneficente Escolas", cidade: "Barra Mansa", meso: "Sul Fluminense", tipo: "Evento beneficente", lat: -22.548, lng: -44.1753, inicio: "2026-09-01", fim: "2026-09-05", dica: "Semana inteira; foco em educação." },
+      { nome: "Corrida Três Rios", cidade: "Três Rios", meso: "Centro Fluminense", tipo: "Corrida de rua", lat: -22.1167, lng: -43.2092, inicio: "2026-05-17", dica: "Entroncamento BR-040; chegada de visitantes." },
+      { nome: "Caminhada Cantagalo", cidade: "Cantagalo", meso: "Centro Fluminense", tipo: "Caminhada / mobilidade", lat: -21.9811, lng: -42.3672, inicio: "2026-04-22", dica: "Dia do meio ambiente local; grupo menor." },
+      { nome: "Corrida Rio das Ostras", cidade: "Rio das Ostras", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.5269, lng: -41.945, inicio: "2026-12-06", dica: "Fim de ano; calendário escolar encerrando." },
+      { nome: "Festival Praia — São Pedro da Aldeia", cidade: "São Pedro da Aldeia", meso: "Sul Fluminense", tipo: "Festival ou cultura", lat: -22.8389, lng: -42.1028, inicio: "2026-02-14", fim: "2026-02-16", dica: "Carnaval prolongado; som alto em áreas próximas." },
+      { nome: "Corrida Madureira Roll", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8732, lng: -43.3378, inicio: "2026-11-22", dica: "Zona Norte; integração com mercado e BRT." },
+      { nome: "Pedal Queimados Solidário", cidade: "Queimados", meso: "Baixadas", tipo: "Evento beneficente", lat: -22.7161, lng: -43.5553, inicio: "2026-10-25", dica: "Bike e cesta básica; percurso curto urbano." },
+      { nome: "Corrida Mesquita em Movimento", cidade: "Mesquita", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.7839, lng: -43.4297, inicio: "2026-04-21", dica: "Percurso em avenida principal; confirme interdição." },
+      { nome: "Barra do Piraí Night Run", cidade: "Barra do Piraí", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.4711, lng: -43.8261, inicio: "2026-09-19", dica: "Noite; iluminação pública variável." },
+      { nome: "Festival Inverno — Nova Friburgo", cidade: "Nova Friburgo", meso: "Centro Fluminense", tipo: "Festival ou cultura", lat: -22.2818, lng: -42.531, inicio: "2026-07-10", fim: "2026-07-12", dica: "Frio; agasalhos para equipe de campanha." },
+      { nome: "Corrida Nilópolis", cidade: "Nilópolis", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.807, lng: -43.4139, inicio: "2026-06-01", dica: "Manhã de semana; trânsito escolar." },
+      { nome: "Magé Caminhada Azul", cidade: "Magé", meso: "Baixadas", tipo: "Caminhada / mobilidade", lat: -22.6528, lng: -43.0408, inicio: "2026-11-20", dica: "Novembro azul; saúde do homem." },
+      { nome: "São João de Meriti — Corrida Popular", cidade: "São João de Meriti", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.8039, lng: -43.3729, inicio: "2026-08-09", dica: "Calendário escolar de férias; famílias presentes." },
+    ];
+
+    function parseISODate(s) {
+      if (s == null || s === "") return null;
+      const p = String(s).split("-");
+      if (p.length !== 3) return null;
+      const y = Number(p[0]);
+      const m = Number(p[1]);
+      const d = Number(p[2]);
+      if (!y || !m || !d) return null;
+      return new Date(y, m - 1, d);
+    }
+
+    function rangesOverlap(aStart, aEnd, bStart, bEnd) {
+      return aStart.getTime() <= bEnd.getTime() && aEnd.getTime() >= bStart.getTime();
+    }
+
+    function eventoPeriodo(ev) {
+      const i = parseISODate(ev.inicio);
+      if (!i) return null;
+      const f = ev.fim ? parseISODate(ev.fim) : i;
+      if (!f) return null;
+      return { inicio: i, fim: f };
+    }
 
     function escapeHtml(s) {
       if (s == null) return "";
@@ -526,6 +655,7 @@
 
       const routeLayer = L.layerGroup().addTo(mapV);
       const poiLayer = L.layerGroup().addTo(mapV);
+      const eventLayer = L.layerGroup().addTo(mapV);
       const endLayer = L.layerGroup().addTo(mapV);
 
       const selO = document.getElementById("viagemOrigem");
@@ -536,8 +666,15 @@
       const resumoLinha = document.getElementById("viagemResumoLinha");
       const resumoExtra = document.getElementById("viagemResumoExtra");
       const poisRoot = document.getElementById("viagemPois");
+      const eventosRoot = document.getElementById("viagemEventos");
       const rangeBuf = document.getElementById("viagemBufferKm");
       const rangeLabel = document.getElementById("viagemBufferLabel");
+      const din = document.getElementById("viagemDataInicio");
+      const dfim = document.getElementById("viagemDataFim");
+      if (din && dfim && !din.value) {
+        din.value = "2026-04-01";
+        dfim.value = "2026-04-30";
+      }
 
       const munList = [...byId.entries()]
         .map(([id, v]) => ({ id, nome: v.nome }))
@@ -564,8 +701,10 @@
       function clearRouteLayers() {
         routeLayer.clearLayers();
         poiLayer.clearLayers();
+        eventLayer.clearLayers();
         endLayer.clearLayers();
         poisRoot.innerHTML = "";
+        if (eventosRoot) eventosRoot.innerHTML = "";
       }
 
       function popupPoiRota(p, distKm) {
@@ -578,10 +717,25 @@
         `;
       }
 
+      function popupEventoRota(ev, distKm) {
+        const cor = TIPO_EVENTO_COLORS[ev.tipo] || "#888";
+        const periodoTxt =
+          ev.fim && ev.fim !== ev.inicio ? `${ev.inicio} a ${ev.fim}` : ev.inicio;
+        return `
+          <div class="popup-title">${escapeHtml(ev.nome)}</div>
+          <div class="popup-meso">${escapeHtml(ev.cidade)} · ~${distKm.toFixed(1)} km da rota</div>
+          <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(ev.tipo)}</span></p>
+          <p style="margin:0.35rem 0 0"><strong>Período:</strong> ${escapeHtml(periodoTxt)}</p>
+          <p style="margin:0.45rem 0 0">${escapeHtml(ev.dica)}</p>
+        `;
+      }
+
       btn.addEventListener("click", async () => {
         const oId = selO.value;
         const dId = selD.value;
         const bufKm = Number(rangeBuf.value) || 28;
+        const tripStart = parseISODate(din.value);
+        const tripEnd = parseISODate(dfim.value);
 
         if (!oId || !dId) {
           statusEl.innerHTML = `<span class="error">Selecione origem e destino.</span>`;
@@ -589,6 +743,14 @@
         }
         if (oId === dId) {
           statusEl.innerHTML = `<span class="error">Origem e destino devem ser municípios diferentes.</span>`;
+          return;
+        }
+        if (!tripStart || !tripEnd) {
+          statusEl.innerHTML = `<span class="error">Informe o período da viagem (data início e fim).</span>`;
+          return;
+        }
+        if (tripEnd < tripStart) {
+          statusEl.innerHTML = `<span class="error">A data final deve ser igual ou posterior à inicial.</span>`;
           return;
         }
 
@@ -687,6 +849,22 @@
           .filter((x) => x.dist <= bufKm)
           .sort((a, b) => a.dist - b.dist);
 
+        const eventosComDist = EVENTOS_RJ.map((ev) => {
+          const per = eventoPeriodo(ev);
+          if (!per || !rangesOverlap(tripStart, tripEnd, per.inicio, per.fim)) return null;
+          const pt = turf.point([ev.lng, ev.lat]);
+          let dist;
+          try {
+            dist = turf.pointToLineDistance(pt, line, { units: "kilometers" });
+          } catch (_) {
+            dist = Infinity;
+          }
+          if (dist > bufKm) return null;
+          return { ev, dist };
+        })
+          .filter(Boolean)
+          .sort((a, b) => a.dist - b.dist);
+
         for (const { p, dist } of comDistancia) {
           const col = TIPO_COMERCIO_COLORS[p.tipo] || "#94a3b8";
           const ic = L.divIcon({
@@ -700,13 +878,26 @@
             .addTo(poiLayer);
         }
 
+        for (const { ev, dist } of eventosComDist) {
+          const col = TIPO_EVENTO_COLORS[ev.tipo] || "#e879f9";
+          const ic = L.divIcon({
+            className: "comercio-marker-wrap",
+            html: `<div style="width:11px;height:11px;background:${col};transform:rotate(45deg);border:2px solid rgba(255,255,255,0.9);box-shadow:0 1px 4px rgba(0,0,0,0.45)"></div>`,
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+          });
+          L.marker([ev.lat, ev.lng], { icon: ic })
+            .bindPopup(popupEventoRota(ev, dist), { maxWidth: 300 })
+            .addTo(eventLayer);
+        }
+
         resumoLinha.innerHTML = `
           <strong>${escapeHtml(nomeO)}</strong> → <strong>${escapeHtml(nomeD)}</strong><br />
           Distância ${usouRotaViaria ? "pelas vias (estimada)" : "aproximada (linha reta)"}: <strong>${(distanceM / 1000).toFixed(1)} km</strong>
           · Tempo de percurso (estimado): <strong>${formatDuration(durationSec)}</strong>
           ${usouRotaViaria ? "" : " · <span class='note'>(aproximação)</span>"}
         `;
-        const extraPois = `${comDistancia.length} ponto(s) de comércio até ${bufKm} km da geometria da rota.`;
+        const extraPois = `${comDistancia.length} ponto(s) de comércio e ${eventosComDist.length} evento(s) no período (${din.value} a ${dfim.value}) até ${bufKm} km da rota.`;
         if (usouRotaViaria) {
           resumoExtra.textContent = `Linha reta entre centróides: ${distLinhaReta.toFixed(1)} km. ${extraPois}`;
         } else {
@@ -717,7 +908,7 @@
         poisRoot.innerHTML = "";
         if (comDistancia.length === 0) {
           poisRoot.innerHTML =
-            `<p class="note" style="grid-column:1/-1;margin:0">Nenhum ponto cadastrado dentro de ${bufKm} km da rota. Aumente o raio ou escolha outro par de municípios.</p>`;
+            `<p class="note" style="grid-column:1/-1;margin:0">Nenhum ponto de comércio dentro de ${bufKm} km da rota. Aumente o raio ou escolha outro par de municípios.</p>`;
         } else {
           for (const { p, dist } of comDistancia) {
             const card = document.createElement("article");
@@ -731,8 +922,28 @@
           }
         }
 
+        if (eventosRoot) {
+          eventosRoot.innerHTML = "";
+          if (eventosComDist.length === 0) {
+            eventosRoot.innerHTML =
+              `<p class="note" style="grid-column:1/-1;margin:0">Nenhum evento no período selecionado dentro de ${bufKm} km da rota. Amplie datas ou o raio (km).</p>`;
+          } else {
+            for (const { ev, dist } of eventosComDist) {
+              const card = document.createElement("article");
+              card.className = "viagem-poi-card evento";
+              const quando = ev.fim && ev.fim !== ev.inicio ? `${ev.inicio} → ${ev.fim}` : ev.inicio;
+              card.innerHTML = `
+                <div class="dist">~${dist.toFixed(1)} km da rota · ${escapeHtml(ev.tipo)} · ${escapeHtml(quando)}</div>
+                <strong>${escapeHtml(ev.nome)}</strong> — ${escapeHtml(ev.cidade)}
+                <p class="note" style="margin:0.35rem 0 0">${escapeHtml(ev.dica)}</p>
+              `;
+              eventosRoot.appendChild(card);
+            }
+          }
+        }
+
         statusEl.textContent = usouRotaViaria
-          ? "Rota calculada. Marcadores verde/vermelho: origem e destino; outros: pontos de comércio próximos à rota."
+          ? "Rota calculada. Verde/vermelho: origem e destino; círculos: comércio; losangos: eventos no período."
           : "Linha reta exibida. Verifique aviso acima sobre disponibilidade da rota viária.";
 
         btn.disabled = false;
