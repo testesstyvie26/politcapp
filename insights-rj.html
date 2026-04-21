@@ -1351,9 +1351,10 @@
       const byId = new Map();
       const mesos = new Set();
       for (const m of municipios) {
-        const meso = m.microrregiao && m.microrregiao.mesorregiao ? m.microrregiao.mesorregiao.nome : "—";
-        mesos.add(meso);
-        byId.set(String(m.id), { nome: m.nome, meso });
+        const mesoIbge = m.microrregiao && m.microrregiao.mesorregiao ? m.microrregiao.mesorregiao.nome : "—";
+        const mesoKey = mesoInsightKey(mesoIbge);
+        mesos.add(mesoKey);
+        byId.set(String(m.id), { nome: m.nome, mesoIbge, mesoKey });
       }
       fillMesoSelect(mesos);
 
@@ -1375,9 +1376,9 @@
       function styleFeat(feature) {
         const id = feature.properties.codarea;
         const info = byId.get(String(id));
-        const meso = info && info.meso !== "—" ? info.meso : "Centro Fluminense";
-        const def = MESO_INSIGHTS[meso] || MESO_INSIGHTS["Centro Fluminense"];
-        const dim = filtroMeso && filtroMeso !== meso;
+        const mesoKey = info ? info.mesoKey : "Centro Fluminense";
+        const def = MESO_INSIGHTS[mesoKey] || MESO_INSIGHTS["Centro Fluminense"];
+        const dim = filtroMeso && filtroMeso !== mesoKey;
         return {
           fillColor: def.color,
           weight: dim ? 0.5 : 1.2,
@@ -1390,12 +1391,17 @@
       function popupHtml(id) {
         const info = byId.get(String(id));
         if (!info) return `<div class="popup-title">Código ${escapeHtml(id)}</div>`;
-        const meso = MESO_INSIGHTS[info.meso] ? info.meso : "Centro Fluminense";
-        const d = MESO_INSIGHTS[meso] || MESO_INSIGHTS["Centro Fluminense"];
+        const mesoKey = info.mesoKey || "Centro Fluminense";
+        const d = MESO_INSIGHTS[mesoKey] || MESO_INSIGHTS["Centro Fluminense"];
         const eixos = d.eixos.map((e) => `<li>${escapeHtml(e)}</li>`).join("");
+        const ibge =
+          info.mesoIbge && info.mesoIbge !== "—"
+            ? `<div class="popup-meso" style="margin-top:0.25rem;font-size:0.72rem;color:#8b95a8">IBGE: ${escapeHtml(info.mesoIbge)}</div>`
+            : "";
         return `
           <div class="popup-title">${escapeHtml(info.nome)}</div>
-          <div class="popup-meso">${escapeHtml(meso)} · prioridade ref. ${d.prioridade}/5</div>
+          <div class="popup-meso">${escapeHtml(mesoKey)} · prioridade ref. ${d.prioridade}/5</div>
+          ${ibge}
           <div><strong>Eixos:</strong><ul style="margin:0.25rem 0 0;padding-left:1.1rem">${eixos}</ul></div>
           <p style="margin:0.5rem 0 0"><strong>Necessidades:</strong> ${escapeHtml(d.necessidades)}</p>
           <p style="margin:0.35rem 0 0"><strong>Dica de post:</strong> ${escapeHtml(d.publicacoes)}</p>
@@ -1408,7 +1414,7 @@
           const id = feature.properties.codarea;
           layer.bindPopup(popupHtml(id), { maxWidth: 320 });
           layer.on("mouseover", function () {
-            if (!filtroMeso || byId.get(String(id))?.meso === filtroMeso) {
+            if (!filtroMeso || byId.get(String(id))?.mesoKey === filtroMeso) {
               this.setStyle({ weight: 2, fillOpacity: 0.78 });
             }
           });
