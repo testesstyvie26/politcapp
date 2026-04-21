@@ -116,8 +116,39 @@
     .hero .lede {
       color: var(--muted);
       margin: 0;
-      max-width: 42ch;
+      max-width: 46ch;
     }
+    .overview {
+      margin-top: 1.45rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      max-width: 54ch;
+    }
+    .overview .overview-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin: 0 0 0.55rem;
+    }
+    .overview .overview-lead {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0 0 0.85rem;
+      line-height: 1.55;
+    }
+    .overview .overview-lead strong { color: var(--text); font-weight: 600; }
+    .overview-list {
+      margin: 0;
+      padding: 0 0 0 1.15rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .overview-list li { margin-bottom: 0.55rem; }
+    .overview-list li::marker { color: var(--accent); }
+    .overview-list strong { color: var(--text); font-weight: 600; }
 
     .card-form {
       background: var(--surface);
@@ -255,6 +286,21 @@
         <p class="lede">
           As páginas do Politapp só são exibidas após o login. Novas contas podem ficar pendentes até um administrador aprovar. O primeiro acesso com Google cria o cadastro.
         </p>
+        <div class="overview" aria-label="Visão geral do Politapp">
+          <p class="overview-title">Visão geral do sistema</p>
+          <p class="overview-lead">
+            O Politapp organiza <strong>informação pública e fluxos de trabalho</strong> para oferecer
+            <strong>apoio inteligente a campanhas</strong> e à <strong>gestão pública</strong>: cruzar dados,
+            priorizar temas e acompanhar transparência com menos ruído e mais contexto — sempre com rigor
+            frente à legislação eleitoral e às fontes oficiais.
+          </p>
+          <ul class="overview-list">
+            <li><strong>Campanhas e equipes</strong> — listagens, recortes territoriais e materiais de leitura rápida para apoiar planeamento, discurso e monitorização de candidaturas.</li>
+            <li><strong>Gestão pública e accountability</strong> — painéis e rotas de transparência para acompanhar órgãos, despesas e compromissos com dados auditáveis.</li>
+            <li><strong>Inteligência assistida</strong> — priorização e síntese a partir de dados abertos (TSE, portais, bases integradas), sem substituir parecer jurídico nem pesquisa de campo.</li>
+            <li><strong>Tarefas e colaboração</strong> — fluxo de trabalho integrado para o que a equipe precisa acompanhar depois de entrar na plataforma.</li>
+          </ul>
+        </div>
       </section>
 
       <section class="card-form" aria-labelledby="auth-form-title">
@@ -307,7 +353,7 @@
 
     <footer class="site-credit">
       <p>
-        <strong>Politapp</strong> — dados públicos para análise. Cumpra a legislação eleitoral vigente.
+        <strong>Politapp</strong> — apoio inteligente para campanhas e gestão pública, com dados públicos para análise. Cumpra a legislação eleitoral vigente.
       </p>
     </footer>
   </div>

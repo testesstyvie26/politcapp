@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PROFESSOR HEITOR QUEIROZ — análise de campanha 2024 | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --ok: #34d399;
+      --caution: #fbbf24;
+      --risk: #f87171;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.12), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    header h1 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+    header .lede { color: var(--muted); margin: 0 0 1rem; max-width: 72ch; font-size: 0.96rem; }
+    .mono { font-family: ui-monospace, monospace; font-size: 0.88rem; }
+
+    .disclaimer {
+      font-size: 0.84rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .tabs button {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .tabs button:hover { color: var(--text); border-color: rgba(61, 139, 253, 0.4); }
+    .tabs button[aria-selected="true"] {
+      background: rgba(61, 139, 253, 0.18);
+      color: var(--accent);
+      border-color: rgba(61, 139, 253, 0.45);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.35rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { margin: 0 0 0.85rem; font-size: 1.05rem; font-weight: 600; }
+    .panel h3 { margin: 1.15rem 0 0.5rem; font-size: 0.92rem; font-weight: 600; color: var(--muted); }
+    .panel h3:first-child { margin-top: 0; }
+    .panel ul { margin: 0.35rem 0 0; padding-left: 1.2rem; }
+    .panel li { margin-bottom: 0.45rem; }
+    .panel p { margin: 0 0 0.65rem; }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .tag-ok { color: var(--ok); font-weight: 600; }
+    .tag-risk { color: var(--caution); font-weight: 600; }
+
+    .ficha dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.4rem 1.25rem;
+      margin: 0;
+      font-size: 0.92rem;
+    }
+    .ficha dt { color: var(--muted); margin: 0; }
+    .ficha dd { margin: 0; }
+
+    [hidden] { display: none !important; }
+    .loading { color: var(--muted); padding: 2rem; text-align: center; }
+    .error { color: var(--risk); padding: 1rem; }
+  </style>
+</head>
+<body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="vereadores-rj.html">Vereadores RJ</a>
+      <a href="vereador-heitor-queiroz-2024.html" aria-current="page">Heitor Queiroz — análise</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="transparencia.html">Transparência</a>
+    </nav>
+
+    <header>
+      <h1>PROFESSOR HEITOR QUEIROZ — eleições 2024</h1>
+      <p class="lede">
+        Página de <strong>acompanhamento e reflexão estratégica</strong> sobre o resultado da campanha a vereador em
+        Duque de Caxias, com base em dados públicos do TSE e sugestões gerais para futuras disputas.
+        Não substitui diagnóstico interno da campanha nem pesquisa qualitativa de campo.
+      </p>
+    </header>
+
+    <p class="disclaimer">
+      <strong>Nota:</strong> Os blocos «Pontos fortes», «Limitações» e «Próximas campanhas» são
+      <em>análise orientativa</em>, cruzando o perfil público do candidato com boas práticas comuns em campanhas municipais.
+      Os números oficiais (votos, situação no pleito) vêm do ficheiro gerado pelo projeto a partir do TSE.
+    </p>
+
+    <div class="tabs" role="tablist" aria-label="Secções da análise">
+      <button type="button" role="tab" id="tab-btn-ficha" aria-controls="panel-ficha" aria-selected="true">Ficha (TSE)</button>
+      <button type="button" role="tab" id="tab-btn-pos" aria-controls="panel-pos" aria-selected="false">Pontos fortes</button>
+      <button type="button" role="tab" id="tab-btn-neg" aria-controls="panel-neg" aria-selected="false">Limitações e riscos</button>
+      <button type="button" role="tab" id="tab-btn-dicas" aria-controls="panel-dicas" aria-selected="false">Dicas e melhorias</button>
+    </div>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-ficha" aria-labelledby="tab-btn-ficha">
+      <h2>Ficha resumida</h2>
+      <div id="fichaBox" class="ficha loading">A carregar dados do TSE…</div>
+    </section>
+
+    <section class="panel tab-panel" id="panel-pos" role="tabpanel" aria-labelledby="tab-btn-pos" hidden>
+      <h2>Pontos positivos da candidatura</h2>
+      <p class="muted">
+        Considerando o objetivo de ocupar mandato de vereador titular, o resultado misto (suplência) ainda permite reconhecer alguns ativos estratégicos visíveis de fora.
+      </p>
+      <ul>
+        <li><span class="tag-ok">Voto nominal consolidado</span> — mais de dois mil votos válidos indica alguma penetração além do núcleo íntimo, útil como base numérica para reorganizar territoriais futuros.</li>
+        <li><span class="tag-ok">Identidade de urna com «PROFESSOR»</span> — associa a candidatura a educação e credibilidade de ofício, tema relevante em municípios com demandas escolares intensas.</li>
+        <li><span class="tag-ok">Classificação como suplente</span> — na classificação do TSE, ficou na lista da legenda; em cenários de mudança de titulares na legislatura, a posição na lista passa a ter relevância institucional (sem garantia de exercício).</li>
+        <li><span class="tag-ok">Legenda com presença nacional (PL)</span> — potencial de alinhamento com narrativas e eventos de diretório, desde que adaptadas ao contexto local de Caxias.</li>
+      </ul>
+    </section>
+
+    <section class="panel tab-panel" id="panel-neg" role="tabpanel" aria-labelledby="tab-btn-neg" hidden>
+      <h2>Limitações e fatores ligados ao «não mandato» imediato</h2>
+      <p class="muted">
+        «Não sucesso» aqui significa <strong>não eleito vereador titular neste pleito</strong> (permanência como suplente). Fatores comuns em campanhas municipais competitivas:
+      </p>
+      <ul>
+        <li><span class="tag-risk">Corte para vaga imediata</span> — o total de votos pode ter ficado aquém do necessário para uma das vagas de vereador, num calendário em que o <em>quociente eleitoral partidário</em> e a ordem interna na legenda decidem quem ocupa cadeira.</li>
+        <li><span class="tag-risk">Alta fragmentação em grandes cidades</span> — Duque de Caxias concentra muitas candidaturas; o mesmo voto «bom» em outro contexto pode não bastar para destacar-se do meio do pelotão.</li>
+        <li><span class="tag-risk">Dependência exclusiva da legenda</span> — sem voto suficiente para sobra ou projeção individual forte, o candidato fica mais dependente da performance global do partido e da ordem na lista.</li>
+        <li><span class="tag-risk">Visibilidade digital incompleta (possível)</span> — se não houver redes declaradas ao TSE ou presença fraca em canais onde o eleitor pesquisa nomes, barreiras de reconhecimento na reta final permanecem altas.</li>
+      </ul>
+    </section>
+
+    <section class="panel tab-panel" id="panel-dicas" role="tabpanel" aria-labelledby="tab-btn-dicas" hidden>
+      <h2>Sugestões para uma nova campanha</h2>
+      <p class="muted">Priorize medir cada ponto (lista de contatos, comparecimento a reuniões, alcance de vídeos) antes de replicar mecanicamente.</p>
+
+      <h3>Território e organização</h3>
+      <ul>
+        <li>Mapear bairros e comunidades onde o voto foi relativamente melhor e repetir presença física com agenda fixa (feiras, escolas, associações de moradores).</li>
+        <li>Montar rede de coordenadores de rua com metas semanais de conversa e captação de telefone com consentimento (CRM simples ou planilha auditável).</li>
+      </ul>
+
+      <h3>Comunicação e narrativa</h3>
+      <ul>
+        <li>Converter a pauta «educação» em propostas mensuráveis (ex.: metas escolares, transporte escolar, merenda) com linguagem acessível em posts curtos e cartazes.</li>
+        <li>Garantir declaração completa de redes no TSE e manter bio e links atualizados para reduzir fricção quando o eleitor pesquisar o número de urna.</li>
+      </ul>
+
+      <h3>Articulação política</h3>
+      <ul>
+        <li>Alinhar com o diretório local cedo a posição na lista, metas mínimas de voto e eventual composição com lideranças comunitárias que não competem diretamente pelo mesmo eleitor.</li>
+        <li>Participar de debates e entrevistas locais, mesmo com audiência modesta — geram cortes para redes e reforço de seriedade.</li>
+      </ul>
+
+      <h3>Prestação de contas e confiança</h3>
+      <ul>
+        <li>Divulgar abertamente compromissos com transparência (ferramentas do TSE, ouvidoria simbólica de campanha) para diferenciar-se em meio a cinismo eleitoral.</li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const SQ = "190001956959";
+    const JSON_URL = "data/vereadores-rj-rio-2024.json";
+
+    const buttons = [
+      { id: "tab-btn-ficha", panel: "panel-ficha" },
+      { id: "tab-btn-pos", panel: "panel-pos" },
+      { id: "tab-btn-neg", panel: "panel-neg" },
+      { id: "tab-btn-dicas", panel: "panel-dicas" },
+    ];
+
+    function showTab(panelId) {
+      for (const { id, panel } of buttons) {
+        const btn = document.getElementById(id);
+        const el = document.getElementById(panel);
+        const on = panel === panelId;
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+        el.hidden = !on;
+      }
+    }
+
+    buttons.forEach(({ id, panel }) => {
+      document.getElementById(id).addEventListener("click", () => showTab(panel));
+    });
+
+    function fmtInt(n) {
+      if (n == null || n === "") return "—";
+      const x = Number(n);
+      return Number.isFinite(x) ? x.toLocaleString("pt-BR") : "—";
+    }
+
+    async function loadFicha() {
+      const box = document.getElementById("fichaBox");
+      try {
+        const r = await fetch(new URL(JSON_URL, window.location.href).toString(), { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const data = await r.json();
+        const list = data.vereadores || [];
+        const row = list.find((x) => String(x.sqCandidato) === SQ);
+        if (!row) {
+          box.className = "ficha error";
+          box.textContent =
+            "Registo não encontrado no JSON. Gere os dados com: npm run build:vereadores-rj";
+          return;
+        }
+        box.className = "ficha";
+        const redes = [...(row.midiasSociais || []), ...(row.whatsapp || [])];
+        const redesHtml =
+          redes.length > 0
+            ? redes
+                .map((x) => {
+                  const u = escapeHtml(String(x.url || ""));
+                  const lab = escapeHtml(x.label || "Link");
+                  return `<a href="${u}" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">${lab}</a>`;
+                })
+                .join(" · ")
+            : "<span class='muted'>Nenhuma URL declarada ao TSE neste extracto.</span>";
+
+        box.innerHTML = `
+          <dl>
+            <dt>Nome de urna</dt><dd>${escapeHtml(row.nomeUrna || "—")}</dd>
+            <dt>Nome completo</dt><dd>${escapeHtml(row.nomeCompleto || "—")}</dd>
+            <dt>Município / UE TSE</dt><dd>${escapeHtml(row.municipio || "—")} <span class="mono">(${escapeHtml(String(row.sgUeTse || ""))})</span></dd>
+            <dt>Partido</dt><dd>${escapeHtml(row.partido || "—")} — ${escapeHtml(row.partidoNome || "")}</dd>
+            <dt>Número</dt><dd class="mono">${escapeHtml(String(row.numero ?? "—"))}</dd>
+            <dt>Votos (1.º turno)</dt><dd><strong>${fmtInt(row.votos)}</strong></dd>
+            <dt>Resultado (pleito)</dt><dd>${escapeHtml(row.dsSitTotTurno || "—")} <span class="muted">(papel: ${escapeHtml(row.papelEleicao || "—")})</span></dd>
+            <dt>SQ candidato</dt><dd class="mono">${escapeHtml(String(row.sqCandidato || ""))}</dd>
+            <dt>Redes / WhatsApp (TSE)</dt><dd>${redesHtml}</dd>
+          </dl>
+          <p class="muted" style="margin-top:1rem;font-size:0.86rem">Fonte agregada no Politapp a partir dos ficheiros públicos do TSE (consulta_cand, votação mun-zona, rede social). Última geração do pacote: ${escapeHtml(data.geradoEm || "—")}.</p>
+        `;
+      } catch (e) {
+        console.error(e);
+        box.className = "ficha error";
+        box.textContent = "Não foi possível carregar " + JSON_URL + ". Execute na raiz: npm run build:vereadores-rj";
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    loadFicha();
+  </script>
+</body>
+</html>
