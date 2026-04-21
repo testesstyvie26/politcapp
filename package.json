@@ -6,6 +6,8 @@
     "build:vereadores-rj": "node scripts/build-vereadores-rj-json.cjs",
     "build:tse-df": "node scripts/build-tse-df-json-from-csv.cjs",
     "build:tse-partidos-rj": "node scripts/build-tse-receitas-partidos-rj.cjs",
+    "build:executivo-tse-rj": "node scripts/build-executivo-tse-rj.cjs",
+    "build:executivo-data": "npm run build:tse-partidos-rj && npm run build:vereadores-rj && npm run build:executivo-tse-rj",
     "dev": "node scripts/politapp-dev-server.cjs",
     "dev:portal-proxy": "node scripts/portal-transparencia-proxy.cjs",
     "deploy:worker": "npx wrangler deploy"

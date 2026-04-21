@@ -220,6 +220,24 @@
       max-width: 85ch;
     }
 
+    .tse-rj-block {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .tse-rj-block > h2.section-tse {
+      font-size: 1.12rem;
+      margin: 0 0 0.75rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .scroll-table-wrap {
+      max-height: 300px;
+      overflow: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
     .site-credit {
       margin-top: 2rem;
       padding-top: 1.25rem;
@@ -266,12 +284,14 @@
     </nav>
 
     <header>
-      <h1>Visão executiva — Câmara dos Deputados</h1>
+      <h1>Visão executiva — Câmara e campo eleitoral RJ</h1>
       <p class="lede">
-        Painel para <strong>análises e estudos de campanha</strong> a partir da
-        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API de Dados Abertos</a>:
-        composição da Câmara, dispersão partidária, peso estadual e frentes parlamentares na legislatura atual.
-        Combine estes recortes com dados eleitorais (TSE) e de prestação de contas para narrativas completas.
+        <strong>Federal:</strong> indicadores ao vivo via
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API da Câmara</a>
+        (bancada, UFs, frentes, HHI). <strong>RJ / TSE:</strong> bloco compilado com prestação de contas de
+        <em>órgãos partidários</em> no estado e candidaturas a vereador (Rio capital e Duque de Caxias), alinhado ao
+        <a href="https://divulgacandcontas.tse.jus.br/divulga/#/" target="_blank" rel="noopener">DivulgaCandContas</a>
+        e ao <a href="https://dadosabertos.tse.jus.br" target="_blank" rel="noopener">portal de dados abertos do TSE</a>.
       </p>
     </header>
 
@@ -285,9 +305,10 @@
     </div>
 
     <footer class="note-footer">
-      Fonte: API REST v2 da Câmara (<code>dadosabertos.camara.leg.br</code>). Indicadores derivados (HHI, fragmentação)
-      são calculados no navegador sobre a lista de deputados em exercício. Despesas de gabinete (cota parlamentar) e
-      proposições detalhadas possuem outros endpoints ou arquivos no mesmo ecossistema de dados abertos.
+      <strong>Câmara:</strong> API REST v2 (<code>dadosabertos.camara.leg.br</code>); HHI e N efetivo calculados no navegador sobre deputados em exercício.
+      <strong>TSE / RJ:</strong> ficheiro estático <code>data/executivo-tse-rj.json</code> (gerado com
+      <code>npm run build:executivo-tse-rj</code> após <code>build:tse-partidos-rj</code> e <code>build:vereadores-rj</code>),
+      consolidando receitas SPCE e candidaturas <code>consulta_cand</code>. Não substitui a consulta oficial no DivulgaCandContas.
     </footer>
 
     <footer class="site-credit" role="contentinfo">
@@ -308,6 +329,8 @@
 
     let chartPartidos = null;
     let chartUfs = null;
+    let chartReceitasTse = null;
+    const TSE_JSON = new URL("data/executivo-tse-rj.json", window.location.href).href;
 
     function linkHref(links, rel) {
       const x = (links || []).find((l) => l.rel === rel);
@@ -489,6 +512,7 @@
             <li><strong>Geografia:</strong> o corte por UF apoia planejamento de mídia, agenda e coalizões regionais; cruze com pesquisas e gastos por estado quando disponíveis.</li>
             <li><strong>Frentes:</strong> número e temas das frentes sinalizam eixos de articulação além da bancada partidária — úteis para mapear redes de apoio temático.</li>
             <li><strong>Fragmentação (HHI / N efetivo):</strong> resumem o quão “espalhado” está o plenário; quedas no HHI costumam indicar maior necessidade de negociação multipolar.</li>
+            <li><strong>TSE / RJ (abaixo):</strong> receitas SPCE e candidaturas vereador (Rio + Duque de Caxias) aparecem compiladas no JSON local — compare com a sua leitura no DivulgaCandContas antes de decisões.</li>
             <li><strong>Limites da API da Câmara:</strong> não substitui prestação de contas eleitoral, pesquisas ou despesas de campanha; integre com bases do TSE e outras fontes para estudos completos.</li>
           </ul>
         </div>`;
@@ -502,6 +526,128 @@
         .replace(/"/g, "&quot;");
     }
 
+    function fmtBRL(n) {
+      if (n == null || !Number.isFinite(Number(n))) return "—";
+      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(Number(n));
+    }
+
+    function renderTseRjPanel(d) {
+      const rec = d.receitasOrgaosPartidarios || {};
+      const resumo = rec.resumo || {};
+      const partidosRec = rec.porPartido || [];
+      const vr = d.vereadores2024Recorte || {};
+      const tot = vr.totais || {};
+      const porV = vr.porPartido || [];
+      const div = d.divulgacandContas || {};
+      const mun = (d.municipiosVereador || []).map((x) => `${x.nome} (UE ${x.sgUeTse})`).join(" · ");
+
+      const kpiRec = fmtBRL(resumo.receitaTotalEstado);
+      const rowsRec = partidosRec
+        .map(
+          (p) => `
+        <tr>
+          <td><strong>${escapeHtml(p.sigla)}</strong><span style="display:block;font-size:0.78rem;color:var(--muted)">${escapeHtml(p.nome || "")}</span></td>
+          <td class="num">${fmtBRL(p.receitaTotal)}</td>
+        </tr>`
+        )
+        .join("");
+
+      const rowsV = porV
+        .map(
+          (p) => `
+        <tr>
+          <td><strong>${escapeHtml(p.sigla)}</strong><span style="display:block;font-size:0.78rem;color:var(--muted)">${escapeHtml(p.nome || "")}</span></td>
+          <td class="num">${p.candidaturas}</td>
+          <td class="num">${p.eleitos}</td>
+          <td class="num">${p.suplentes}</td>
+          <td class="num">${p.participantes}</td>
+        </tr>`
+        )
+        .join("");
+
+      const fontes = (d.fontes || [])
+        .map(
+          (f) =>
+            `<li><strong>${escapeHtml(f.rotulo)}</strong> — <a href="${escapeHtml(f.dataset)}" target="_blank" rel="noopener">dataset</a>. ${escapeHtml(f.detalhe || "")}</li>`
+        )
+        .join("");
+
+      return `
+        <div class="tse-rj-block">
+          <h2 class="section-tse">RJ — TSE · DivulgaCandContas e órgãos partidários (${d.anoEleicao || "2024"})</h2>
+          <p class="panel-note" style="margin-bottom:1rem;max-width:92ch">
+            ${escapeHtml(div.descricao || "")}
+            Acesso rápido:
+            <a href="${escapeHtml(div.home)}" target="_blank" rel="noopener">DivulgaCandContas</a>
+            · <a href="${escapeHtml(div.partidosDiretorioRj2024)}" target="_blank" rel="noopener">Partidos · diretório RJ (2024)</a>.
+            Vereador: ${escapeHtml(mun || "—")}.
+            Compilado em <span class="meta">${escapeHtml(d.geradoEm || "")}</span>.
+          </p>
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">Receita total (órgãos · RJ)</div>
+              <div class="value" style="font-size:1.35rem">${kpiRec}</div>
+              <div class="hint">Soma VR_RECEITA por sigla (${resumo.partidosComLinha || "—"} partidos)</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Candidaturas vereador</div>
+              <div class="value">${tot.candidaturas ?? "—"}</div>
+              <div class="hint">Rio capital + Duque de Caxias, cargo 13</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Eleitos / supl. / demais</div>
+              <div class="value" style="font-size:1.2rem">${tot.eleitos ?? "—"} · ${tot.suplentes ?? "—"} · ${tot.participantes ?? "—"}</div>
+              <div class="hint">Conforme DS_SIT_TOT_TURNO (TSE)</div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <h2>Receitas por partido (ranking)</h2>
+              <div class="chart-box"><canvas id="cReceitasTse" aria-label="Receitas TSE RJ"></canvas></div>
+              <p class="panel-note">${escapeHtml(resumo.observacao || "")}</p>
+            </div>
+            <div class="panel">
+              <h2>Candidaturas a vereador por partido</h2>
+              <div class="scroll-table-wrap">
+                <table>
+                  <thead><tr><th>Partido</th><th class="num">Cand.</th><th class="num">Eleit.</th><th class="num">Supl.</th><th class="num">Demais</th></tr></thead>
+                  <tbody>${rowsV}</tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tables">
+            <div class="panel">
+              <h2>Receitas — detalhe por sigla</h2>
+              <div class="scroll-table-wrap" style="max-height:340px">
+                <table>
+                  <thead><tr><th>Partido</th><th class="num">Receita (RJ 2024)</th></tr></thead>
+                  <tbody>${rowsRec}</tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel exec-block">
+              <h2>Fontes no dados abertos</h2>
+              <ul>${fontes}</ul>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderTseRjErro(message) {
+      return `
+        <div class="tse-rj-block">
+          <h2 class="section-tse">RJ — TSE (ficheiro não disponível)</h2>
+          <p class="error">${escapeHtml(message || "Erro ao carregar dados TSE.")}</p>
+          <p class="panel-note">
+            Gere <code>data/executivo-tse-rj.json</code>:
+            <code>npm run build:tse-partidos-rj</code> ·
+            <code>npm run build:vereadores-rj</code> ·
+            <code>npm run build:executivo-tse-rj</code>
+          </p>
+        </div>`;
+    }
+
     function destroyCharts() {
       if (chartPartidos) {
         chartPartidos.destroy();
@@ -511,12 +657,16 @@
         chartUfs.destroy();
         chartUfs = null;
       }
+      if (chartReceitasTse) {
+        chartReceitasTse.destroy();
+        chartReceitasTse = null;
+      }
     }
 
     async function loadDashboard() {
       const main = document.getElementById("main");
       const meta = document.getElementById("fetchMeta");
-      main.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando deputados, legislatura e frentes…</div>';
+      main.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando deputados, legislatura, frentes e TSE/RJ…</div>';
       destroyCharts();
 
       const t0 = performance.now();
@@ -526,8 +676,21 @@
           fetchLegislatura(),
           countFrentesAtual(),
         ]);
+
+        let tseFetch = null;
+        let tseHtml = "";
+        try {
+          tseFetch = await fetchJson(TSE_JSON);
+          tseHtml = renderTseRjPanel(tseFetch);
+        } catch (te) {
+          console.warn(te);
+          tseHtml = renderTseRjErro(te.message || String(te));
+        }
+
         const ms = Math.round(performance.now() - t0);
-        meta.textContent = `Atualizado em ${new Date().toLocaleString("pt-BR")} · ${deps.length} registros · ${ms} ms`;
+        meta.textContent = `Atualizado em ${new Date().toLocaleString("pt-BR")} · Câmara: ${deps.length} deputados${
+          tseFetch ? " · TSE/RJ: JSON" : " · TSE/RJ: indisponível"
+        } · ${ms} ms`;
 
         const total = deps.length;
         if (total === 0) {
@@ -573,7 +736,8 @@
             </div>
           </div>` +
           renderTables(sortedP, sortedU, total) +
-          renderExecBlock();
+          renderExecBlock() +
+          tseHtml;
 
         const dCfg = chartDefaults();
         const topN = 15;
@@ -643,6 +807,61 @@
             },
           },
         });
+
+        const recTop = tseFetch && tseFetch.receitasOrgaosPartidarios ? tseFetch.receitasOrgaosPartidarios.porPartido || [] : [];
+        const ctxR = document.getElementById("cReceitasTse");
+        if (ctxR && recTop.length) {
+          const topR = recTop.slice(0, 15);
+          chartReceitasTse = new Chart(ctxR, {
+            type: "bar",
+            data: {
+              labels: topR.map((p) => p.sigla),
+              datasets: [
+                {
+                  label: "Receita (R$)",
+                  data: topR.map((p) => p.receitaTotal),
+                  backgroundColor: palette(topR.length).map((c) => c + "99"),
+                  borderColor: palette(topR.length),
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              indexAxis: "y",
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label(ctx) {
+                      const v = ctx.parsed.x;
+                      return fmtBRL(v);
+                    },
+                  },
+                },
+              },
+              scales: {
+                x: {
+                  grid: { color: dCfg.borderColor },
+                  ticks: {
+                    color: dCfg.color,
+                    font: dCfg.font,
+                    callback(v) {
+                      if (v >= 1e6) return (v / 1e6).toFixed(1) + " M";
+                      if (v >= 1e3) return (v / 1e3).toFixed(0) + " k";
+                      return v;
+                    },
+                  },
+                },
+                y: {
+                  grid: { display: false },
+                  ticks: { color: dCfg.color, font: dCfg.font },
+                },
+              },
+            },
+          });
+        }
       } catch (e) {
         console.error(e);
         meta.textContent = "";

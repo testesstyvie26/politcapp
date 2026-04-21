@@ -1,0 +1,435 @@
+{
+  "titulo": "RJ — TSE · órgãos partidários e campo municipal (visão executiva)",
+  "geradoEm": "2026-04-21T13:13:58.189Z",
+  "uf": "RJ",
+  "anoEleicao": 2024,
+  "divulgacandContas": {
+    "descricao": "DivulgaCandContas agrega candidaturas e prestação de contas de campanha; receitas por diretório em RJ (municipais 2024) costuma ser consultada em Partidos / UF.",
+    "home": "https://divulgacandcontas.tse.jus.br/divulga/#/",
+    "partidosDiretorioRj2024": "https://divulgacandcontas.tse.jus.br/divulga/#/partidos/2045202024/RJ/4"
+  },
+  "fontes": [
+    {
+      "id": "spce-receitas",
+      "rotulo": "SPCE — receitas órgãos partidários (CSV RJ)",
+      "detalhe": "TSE — Sistema de Prestação de Contas Eleitorais (SPCE). Arquivo: receitas_orgaos_partidarios_2024_RJ.csv (órgãos partidários, UF RJ, eleições municipais 2024).",
+      "dataset": "https://dadosabertos.tse.jus.br/dataset/prestacao-de-contas-eleitorais-orgaos-partidarios"
+    },
+    {
+      "id": "consulta-cand-vereador",
+      "rotulo": "consulta_cand — vereador, UEs Rio e Duque de Caxias",
+      "detalhe": "TSE — consulta de candidatos (consulta_cand), UF RJ, SG_UE 60011 (Rio capital) e 58335 (Duque de Caxias), cargo 13 (vereador) — eleições municipais 2024. Inclui eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).",
+      "dataset": "https://dadosabertos.tse.jus.br/dataset/candidatos-2024"
+    }
+  ],
+  "municipiosVereador": [
+    {
+      "nome": "Rio de Janeiro",
+      "sgUeTse": "60011",
+      "ibge": "3304557"
+    },
+    {
+      "nome": "Duque de Caxias",
+      "sgUeTse": "58335",
+      "ibge": "3301702"
+    }
+  ],
+  "receitasOrgaosPartidarios": {
+    "resumo": {
+      "partidosComLinha": 29,
+      "receitaTotalEstado": 61305556.61,
+      "moeda": "BRL",
+      "observacao": "Valores somam VR_RECEITA por SG_PARTIDO em todo o estado. Diferente do filtro por cargo no DivulgaCand (#/partidos/2045202024/RJ/4), aqui entram todas as receitas declaradas por diretórios municipais no RJ."
+    },
+    "porPartido": [
+      {
+        "sigla": "PRD",
+        "nome": "Partido Renovação Democrática",
+        "receitaTotal": 10578143.83
+      },
+      {
+        "sigla": "PT",
+        "nome": "Partido dos Trabalhadores",
+        "receitaTotal": 9623391.81
+      },
+      {
+        "sigla": "PDT",
+        "nome": "Partido Democrático Trabalhista",
+        "receitaTotal": 7987518.37
+      },
+      {
+        "sigla": "PSOL",
+        "nome": "Partido Socialismo e Liberdade",
+        "receitaTotal": 7252115.63
+      },
+      {
+        "sigla": "PODE",
+        "nome": "Podemos",
+        "receitaTotal": 5568834.07
+      },
+      {
+        "sigla": "SOLIDARIEDADE",
+        "nome": "Solidariedade",
+        "receitaTotal": 4967816.88
+      },
+      {
+        "sigla": "PSB",
+        "nome": "Partido Socialista Brasileiro",
+        "receitaTotal": 3505653.63
+      },
+      {
+        "sigla": "CIDADANIA",
+        "nome": "Cidadania",
+        "receitaTotal": 2785485.02
+      },
+      {
+        "sigla": "PSD",
+        "nome": "Partido Social Democrático",
+        "receitaTotal": 2245075.73
+      },
+      {
+        "sigla": "AGIR",
+        "nome": "AGIR",
+        "receitaTotal": 923056.4
+      },
+      {
+        "sigla": "UNIÃO",
+        "nome": "União Brasil",
+        "receitaTotal": 906023.84
+      },
+      {
+        "sigla": "PP",
+        "nome": "PROGRESSISTAS",
+        "receitaTotal": 814678.77
+      },
+      {
+        "sigla": "MDB",
+        "nome": "Movimento Democrático Brasileiro",
+        "receitaTotal": 791121.72
+      },
+      {
+        "sigla": "PV",
+        "nome": "Partido Verde",
+        "receitaTotal": 777378.61
+      },
+      {
+        "sigla": "MOBILIZA",
+        "nome": "Mobilização Nacional",
+        "receitaTotal": 658124.38
+      },
+      {
+        "sigla": "DC",
+        "nome": "Democracia Cristã",
+        "receitaTotal": 459501.52
+      },
+      {
+        "sigla": "PL",
+        "nome": "Partido Liberal",
+        "receitaTotal": 297498.25
+      },
+      {
+        "sigla": "NOVO",
+        "nome": "Partido Novo",
+        "receitaTotal": 273537.43
+      },
+      {
+        "sigla": "UP",
+        "nome": "Unidade Popular",
+        "receitaTotal": 254000
+      },
+      {
+        "sigla": "REDE",
+        "nome": "Rede Sustentabilidade",
+        "receitaTotal": 200900
+      },
+      {
+        "sigla": "REPUBLICANOS",
+        "nome": "REPUBLICANOS",
+        "receitaTotal": 138287.07
+      },
+      {
+        "sigla": "PSDB",
+        "nome": "Partido da Social Democracia Brasileira",
+        "receitaTotal": 115887.63
+      },
+      {
+        "sigla": "PMB",
+        "nome": "Partido da Mulher Brasileira",
+        "receitaTotal": 71275.44
+      },
+      {
+        "sigla": "AVANTE",
+        "nome": "AVANTE",
+        "receitaTotal": 66536.45
+      },
+      {
+        "sigla": "PRTB",
+        "nome": "Partido Renovador Trabalhista Brasileiro",
+        "receitaTotal": 18715.03
+      },
+      {
+        "sigla": "PCB",
+        "nome": "Partido Comunista Brasileiro",
+        "receitaTotal": 18400
+      },
+      {
+        "sigla": "PC do B",
+        "nome": "Partido Comunista do Brasil",
+        "receitaTotal": 6599.1
+      },
+      {
+        "sigla": "PCO",
+        "nome": "Partido da Causa Operária",
+        "receitaTotal": 0
+      },
+      {
+        "sigla": "PSTU",
+        "nome": "Partido Socialista dos Trabalhadores Unificado",
+        "receitaTotal": 0
+      }
+    ]
+  },
+  "vereadores2024Recorte": {
+    "escopo": "Candidaturas a vereador (cargo 13): capital Rio de Janeiro (UE 60011) e Duque de Caxias (UE 58335).",
+    "totais": {
+      "candidaturas": 1524,
+      "eleitos": 80,
+      "suplentes": 953,
+      "participantes": 491
+    },
+    "porPartido": [
+      {
+        "sigla": "SOLIDARIEDADE",
+        "nome": "SOLIDARIEDADE",
+        "candidaturas": 83,
+        "eleitos": 5,
+        "suplentes": 75,
+        "participantes": 3
+      },
+      {
+        "sigla": "DC",
+        "nome": "DEMOCRACIA CRISTÃ",
+        "candidaturas": 83,
+        "eleitos": 1,
+        "suplentes": 46,
+        "participantes": 36
+      },
+      {
+        "sigla": "PDT",
+        "nome": "PARTIDO DEMOCRÁTICO TRABALHISTA",
+        "candidaturas": 82,
+        "eleitos": 4,
+        "suplentes": 77,
+        "participantes": 1
+      },
+      {
+        "sigla": "PP",
+        "nome": "PROGRESSISTAS",
+        "candidaturas": 82,
+        "eleitos": 5,
+        "suplentes": 72,
+        "participantes": 5
+      },
+      {
+        "sigla": "MDB",
+        "nome": "MOVIMENTO DEMOCRÁTICO BRASILEIRO",
+        "candidaturas": 81,
+        "eleitos": 12,
+        "suplentes": 64,
+        "participantes": 5
+      },
+      {
+        "sigla": "PRD",
+        "nome": "PARTIDO RENOVAÇÃO DEMOCRÁTICA",
+        "candidaturas": 81,
+        "eleitos": 4,
+        "suplentes": 76,
+        "participantes": 1
+      },
+      {
+        "sigla": "AVANTE",
+        "nome": "AVANTE",
+        "candidaturas": 81,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 81
+      },
+      {
+        "sigla": "REPUBLICANOS",
+        "nome": "REPUBLICANOS",
+        "candidaturas": 80,
+        "eleitos": 5,
+        "suplentes": 71,
+        "participantes": 4
+      },
+      {
+        "sigla": "MOBILIZA",
+        "nome": "MOBILIZAÇÃO NACIONAL",
+        "candidaturas": 79,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 79
+      },
+      {
+        "sigla": "PL",
+        "nome": "PARTIDO LIBERAL",
+        "candidaturas": 78,
+        "eleitos": 10,
+        "suplentes": 67,
+        "participantes": 1
+      },
+      {
+        "sigla": "NOVO",
+        "nome": "PARTIDO NOVO",
+        "candidaturas": 78,
+        "eleitos": 1,
+        "suplentes": 51,
+        "participantes": 26
+      },
+      {
+        "sigla": "PMB",
+        "nome": "PARTIDO DA MULHER BRASILEIRA",
+        "candidaturas": 77,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 77
+      },
+      {
+        "sigla": "UNIÃO",
+        "nome": "UNIÃO BRASIL",
+        "candidaturas": 73,
+        "eleitos": 3,
+        "suplentes": 68,
+        "participantes": 2
+      },
+      {
+        "sigla": "PSB",
+        "nome": "PARTIDO SOCIALISTA BRASILEIRO",
+        "candidaturas": 68,
+        "eleitos": 1,
+        "suplentes": 47,
+        "participantes": 20
+      },
+      {
+        "sigla": "PT",
+        "nome": "PARTIDO DOS TRABALHADORES",
+        "candidaturas": 63,
+        "eleitos": 4,
+        "suplentes": 58,
+        "participantes": 1
+      },
+      {
+        "sigla": "PSDB",
+        "nome": "PARTIDO DA SOCIAL DEMOCRACIA BRASILEIRA",
+        "candidaturas": 59,
+        "eleitos": 1,
+        "suplentes": 30,
+        "participantes": 28
+      },
+      {
+        "sigla": "PODE",
+        "nome": "PODEMOS",
+        "candidaturas": 56,
+        "eleitos": 2,
+        "suplentes": 50,
+        "participantes": 4
+      },
+      {
+        "sigla": "PSD",
+        "nome": "PARTIDO SOCIAL DEMOCRÁTICO",
+        "candidaturas": 55,
+        "eleitos": 16,
+        "suplentes": 36,
+        "participantes": 3
+      },
+      {
+        "sigla": "AGIR",
+        "nome": "AGIR",
+        "candidaturas": 48,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 48
+      },
+      {
+        "sigla": "PSOL",
+        "nome": "PARTIDO SOCIALISMO E LIBERDADE",
+        "candidaturas": 46,
+        "eleitos": 4,
+        "suplentes": 26,
+        "participantes": 16
+      },
+      {
+        "sigla": "CIDADANIA",
+        "nome": "CIDADANIA",
+        "candidaturas": 24,
+        "eleitos": 0,
+        "suplentes": 21,
+        "participantes": 3
+      },
+      {
+        "sigla": "PRTB",
+        "nome": "PARTIDO RENOVADOR TRABALHISTA BRASILEIRO",
+        "candidaturas": 14,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 14
+      },
+      {
+        "sigla": "REDE",
+        "nome": "REDE SUSTENTABILIDADE",
+        "candidaturas": 14,
+        "eleitos": 0,
+        "suplentes": 3,
+        "participantes": 11
+      },
+      {
+        "sigla": "PV",
+        "nome": "PARTIDO VERDE",
+        "candidaturas": 9,
+        "eleitos": 2,
+        "suplentes": 7,
+        "participantes": 0
+      },
+      {
+        "sigla": "PC do B",
+        "nome": "PARTIDO COMUNISTA DO BRASIL",
+        "candidaturas": 8,
+        "eleitos": 0,
+        "suplentes": 8,
+        "participantes": 0
+      },
+      {
+        "sigla": "UP",
+        "nome": "UNIDADE POPULAR",
+        "candidaturas": 6,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 6
+      },
+      {
+        "sigla": "PCO",
+        "nome": "PARTIDO DA CAUSA OPERÁRIA",
+        "candidaturas": 6,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 6
+      },
+      {
+        "sigla": "PCB",
+        "nome": "PARTIDO COMUNISTA BRASILEIRO",
+        "candidaturas": 5,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 5
+      },
+      {
+        "sigla": "PSTU",
+        "nome": "PARTIDO SOCIALISTA DOS TRABALHADORES UNIFICADO",
+        "candidaturas": 5,
+        "eleitos": 0,
+        "suplentes": 0,
+        "participantes": 5
+      }
+    ]
+  }
+}
