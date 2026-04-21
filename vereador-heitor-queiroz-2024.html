@@ -208,6 +208,105 @@
     [hidden] { display: none !important; }
     .loading { color: var(--muted); padding: 2rem; text-align: center; }
     .error { color: var(--risk); padding: 1rem; }
+
+    .termo-panel h2 { margin-bottom: 0.35rem; }
+    .termo-note {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin: 0 0 1.1rem;
+      max-width: 68ch;
+      line-height: 1.5;
+    }
+    .termo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 1.5rem;
+      align-items: stretch;
+    }
+    @media (max-width: 600px) {
+      .termo-grid { grid-template-columns: 1fr; }
+    }
+    .termo-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .termo-card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .termo-card .sub {
+      margin: 0 0 0.85rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 32ch;
+    }
+    .termo-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .termo-tube {
+      width: 46px;
+      height: 188px;
+      border-radius: 24px 24px 10px 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 2px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.45);
+    }
+    .termo-fill {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--h, 0%);
+      min-height: 0;
+      border-radius: 0 0 8px 8px;
+      background: linear-gradient(to top, #2563eb 0%, #22c55e 22%, #eab308 52%, #f97316 78%, #dc2626 100%);
+      transition: height 1.1s cubic-bezier(0.33, 1, 0.68, 1);
+      animation: termo-shine 3s ease-in-out infinite;
+    }
+    @keyframes termo-shine {
+      0%, 100% { filter: brightness(1) saturate(1); }
+      50% { filter: brightness(1.08) saturate(1.05); }
+    }
+    .termo-pct {
+      font-family: ui-monospace, monospace;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .termo-pct span { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+    .termo-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin: 0.35rem 0 0;
+      line-height: 1.45;
+    }
+    .termo-foot {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .termo-fill { animation: none; transition: height 0.3s ease; }
+    }
   </style>
 </head>
 <body>
@@ -236,6 +335,17 @@
       <em>análise orientativa</em>, cruzando o perfil público do candidato com boas práticas comuns em campanhas municipais.
       Os números oficiais (votos, situação no pleito) vêm do ficheiro gerado pelo projeto a partir do TSE.
     </p>
+
+    <section class="panel termo-panel" aria-labelledby="termo-title">
+      <h2 id="termo-title">Termómetro de popularidade</h2>
+      <p class="termo-note">
+        Visualização a partir dos <strong>dados públicos agregados no Politapp</strong>: o indicador de mídias mede
+        <strong>diversidade e volume de canais declarados ao TSE</strong> (URLs em <span class="mono">rede_social_candidato</span>
+        e WhatsApp derivado de URL ou celular), <em>não</em> seguidores nem alcance em rede social.
+        O indicador de votos compara o desempenho nominal com o <strong>máximo entre vereadores da mesma UE</strong> no mesmo ficheiro.
+      </p>
+      <div id="termoBox" class="loading">A carregar métricas…</div>
+    </section>
 
     <div class="tabs" role="tablist" aria-label="Secções da análise">
       <button type="button" role="tab" id="tab-btn-ficha" aria-controls="panel-ficha" aria-selected="true">Ficha (TSE)</button>
@@ -329,14 +439,131 @@
       document.getElementById(id).addEventListener("click", () => showTab(panel));
     });
 
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
     function fmtInt(n) {
       if (n == null || n === "") return "—";
       const x = Number(n);
       return Number.isFinite(x) ? x.toLocaleString("pt-BR") : "—";
     }
 
+    /** Tipo lógico da URL (TSE não envia métricas de rede). */
+    function redeTipoFromUrl(rawUrl, label) {
+      const u = String(rawUrl || "").toLowerCase();
+      const l = String(label || "").toLowerCase();
+      if (/whatsapp\.|wa\.me|api\.whatsapp/i.test(u) || l.includes("whatsapp")) return "whatsapp";
+      if (/instagram\.|instagr\.am/i.test(u) || l.includes("instagram")) return "instagram";
+      if (/facebook\.|fb\.me|fb\.com/i.test(u) || l.includes("facebook")) return "facebook";
+      if (/twitter\.com|^x\.com/i.test(u) || l.includes("twitter")) return "x";
+      if (/tiktok\.com/i.test(u) || l.includes("tiktok")) return "tiktok";
+      if (/youtube\.com|youtu\.be/i.test(u) || l.includes("youtube")) return "youtube";
+      if (/linkedin\.com/i.test(u) || l.includes("linkedin")) return "linkedin";
+      return "outro";
+    }
+
+    function tipoRedeLegivel(cod) {
+      const map = {
+        whatsapp: "WhatsApp",
+        instagram: "Instagram",
+        facebook: "Facebook",
+        x: "X (Twitter)",
+        tiktok: "TikTok",
+        youtube: "YouTube",
+        linkedin: "LinkedIn",
+        outro: "Outro link",
+      };
+      return map[cod] || cod;
+    }
+
+    /**
+     * Índice 0–100 de «presença midiática declarada» (apenas declaração TSE, não popularidade real nas redes).
+     * @returns {{ pct: number, nLinks: number, nTipos: number, tipos: string[] }}
+     */
+    function indiceMidiaticoDeclarado(row) {
+      const midias = row.midiasSociais || [];
+      const wzs = row.whatsapp || [];
+      const todos = [...midias, ...wzs].filter((x) => x && /^https?:\/\//i.test(String(x.url || "").trim()));
+      if (!todos.length) {
+        return { pct: 0, nLinks: 0, nTipos: 0, tipos: [] };
+      }
+      const tipos = new Set();
+      for (const x of todos) tipos.add(redeTipoFromUrl(x.url, x.label));
+      const nTipos = tipos.size;
+      const nLinks = todos.length;
+      const bonusW = wzs.length > 0 ? 18 : 0;
+      const divPts = Math.min(42, nTipos * 11);
+      const volPts = Math.min(40, nLinks * 10);
+      const pct = Math.min(100, Math.round(divPts + volPts + bonusW));
+      return { pct, nLinks, nTipos, tipos: [...tipos].sort() };
+    }
+
+    function pctVotosNaUe(row, list) {
+      const ue = String(row.sgUeTse || "");
+      const v = Number(row.votos);
+      if (!ue || !Number.isFinite(v) || v < 0) return { pct: 0, max: 0, votos: v };
+      const vals = list
+        .filter((x) => String(x.sgUeTse || "") === ue && x.votos != null)
+        .map((x) => Number(x.votos))
+        .filter((n) => Number.isFinite(n) && n >= 0);
+      const max = vals.length ? Math.max(...vals) : 0;
+      const pct = max > 0 ? Math.min(100, Math.round((v / max) * 100)) : 0;
+      return { pct, max, votos: v };
+    }
+
+    function renderTermometro(row, list) {
+      const m = indiceMidiaticoDeclarado(row);
+      const v = pctVotosNaUe(row, list);
+      const labelMidi = escapeHtml(
+        m.nLinks === 0
+          ? "Sem URLs de rede no extracto atual."
+          : `${m.nLinks} URL · ${m.nTipos} tipo(s): ${m.tipos.map(tipoRedeLegivel).join(", ")}`
+      );
+      const labelVoto = escapeHtml(
+        v.max > 0
+          ? `${fmtInt(v.votos)} votos vs. ${fmtInt(v.max)} (máx. vereador nesta UE neste ficheiro)`
+          : "Sem dados de votação para comparar."
+      );
+      return `
+        <div class="termo-grid">
+          <div class="termo-card">
+            <h3>Mídias declaradas (TSE)</h3>
+            <p class="sub">Diversidade + volume de canais oficiais · não mede seguidores</p>
+            <div class="termo-visual" role="img" aria-label="Índice de declaração digital: ${m.pct} por cento">
+              <div class="termo-tube">
+                <div class="termo-fill" style="--h: 0%"></div>
+              </div>
+              <div class="termo-pct">${m.pct}<span>%</span></div>
+            </div>
+            <p class="termo-meta">${labelMidi}</p>
+          </div>
+          <div class="termo-card">
+            <h3>Eco eleitoral (votos)</h3>
+            <p class="sub">Votos nominais vs. maior voto de vereador na mesma unidade eleitoral</p>
+            <div class="termo-visual" role="img" aria-label="Índice relativo de votos: ${v.pct} por cento">
+              <div class="termo-tube">
+                <div class="termo-fill" style="--h: 0%"></div>
+              </div>
+              <div class="termo-pct">${v.pct}<span>%</span></div>
+            </div>
+            <p class="termo-meta">${labelVoto}</p>
+          </div>
+        </div>
+        <p class="termo-foot">
+          Os dois eixos são independentes: é possível ter pouco declarado ao TSE e muitos votos no território, ou o contrário.
+          <span class="muted">Valores recalculados ao carregar a página a partir de <span class="mono">vereadores-rj-rio-2024.json</span>.</span>
+        </p>
+      `;
+    }
+
     async function loadFicha() {
       const box = document.getElementById("fichaBox");
+      const termo = document.getElementById("termoBox");
       try {
         const r = await fetch(new URL(JSON_URL, window.location.href).toString(), { cache: "no-store" });
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -347,8 +574,20 @@
           box.className = "ficha error";
           box.textContent =
             "Registo não encontrado no JSON. Gere os dados com: npm run build:vereadores-rj";
+          termo.className = "error";
+          termo.textContent = "Não foi possível calcular o termómetro: candidato em falta no JSON.";
           return;
         }
+        termo.className = "";
+        termo.innerHTML = renderTermometro(row, list);
+        const mT = indiceMidiaticoDeclarado(row);
+        const vT = pctVotosNaUe(row, list);
+        const fills = termo.querySelectorAll(".termo-fill");
+        fills.forEach((el) => el.style.setProperty("--h", "0%"));
+        requestAnimationFrame(() => {
+          if (fills[0]) fills[0].style.setProperty("--h", mT.pct + "%");
+          if (fills[1]) fills[1].style.setProperty("--h", vT.pct + "%");
+        });
         box.className = "ficha";
         const redes = [...(row.midiasSociais || []), ...(row.whatsapp || [])];
         let redesHtml = "<span class='muted'>Nenhuma URL declarada ao TSE neste extracto.</span>";
@@ -387,15 +626,13 @@
         console.error(e);
         box.className = "ficha error";
         box.textContent = "Não foi possível carregar " + JSON_URL + ". Execute na raiz: npm run build:vereadores-rj";
+        if (termo) {
+          termo.className = "error";
+          termo.style.padding = "1rem";
+          termo.textContent =
+            "Termómetro indisponível: não foi possível ler " + JSON_URL + ". Execute na raiz: npm run build:vereadores-rj";
+        }
       }
-    }
-
-    function escapeHtml(s) {
-      return String(s ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
     }
 
     loadFicha();
