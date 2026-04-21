@@ -226,6 +226,7 @@
       border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
       min-width: 160px;
     }
+    .filtro-baixada[hidden] { display: none !important; }
   </style>
 </head>
 <body>
@@ -294,6 +295,8 @@
         Coordenadas são aproximadas (centro do equipamento ou polo); confirme endereço e horário antes da visita.
         <strong>Corridas, caminhadas e eventos beneficentes</strong> por município estão na base ilustrativa da seção
         <strong>Viagens entre municípios</strong> (filtro por período + proximidade à rota).
+        Com <strong>Baixada Fluminense</strong> na mesorregião, use o filtro de município para focar em:
+        Belford Roxo, Duque de Caxias, Guapimirim, Itaguaí, Japeri, Magé, Mesquita, Nilópolis, Nova Iguaçu, Paracambi, Queimados, São João de Meriti e Seropédica.
       </p>
       <div class="comercio-filtros">
         <label>
@@ -306,6 +309,12 @@
           Mesorregião
           <select id="filtroMesoComercio">
             <option value="">Todas</option>
+          </select>
+        </label>
+        <label id="labelFiltroCidadeBaixada" class="filtro-baixada" hidden>
+          Município (Baixada Fluminense)
+          <select id="filtroCidadeBaixada">
+            <option value="">Todos os municípios listados</option>
           </select>
         </label>
       </div>
@@ -522,6 +531,23 @@
       "Associação e rede de negócios": "#81b29a",
     };
 
+    /** Referência: municípios da Baixada Fluminense (IBGE: Baixadas Litorâneas) para filtro dedicado. */
+    const BAIXADA_MUNICIPIOS_REF = [
+      "Belford Roxo",
+      "Duque de Caxias",
+      "Guapimirim",
+      "Itaguaí",
+      "Japeri",
+      "Magé",
+      "Mesquita",
+      "Nilópolis",
+      "Nova Iguaçu",
+      "Paracambi",
+      "Queimados",
+      "São João de Meriti",
+      "Seropédica",
+    ];
+
     const POIS_COMERCIO = [
       { nome: "Saara (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9045, lng: -43.1845, dica: "Alto fluxo, pequenos lojistas; boa janela para escuta sobre custos e logística urbana." },
       { nome: "Mercado Municipal de Madureira", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8732, lng: -43.3378, dica: "Referência de abastecimento e trabalho informal; priorize horários de menor tumulto e diálogo com permissionários." },
@@ -551,6 +577,11 @@
       { nome: "Centro de Magé", cidade: "Magé", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.6528, lng: -43.0408, dica: "Baía de Guanabara; ligação com Barcas e logística fluvial." },
       { nome: "Centro de Queimados", cidade: "Queimados", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7161, lng: -43.5553, dica: "Corredor metropolitano; comércio popular e feiras de bairro." },
       { nome: "Centro de Mesquita", cidade: "Mesquita", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7839, lng: -43.4297, dica: "Tecido comercial contínuo com vizinhos; boa rota para microcredito e serviços." },
+      { nome: "Centro de Guapimirim", cidade: "Guapimirim", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.5169, lng: -42.9891, dica: "Serra da Baixada; comércio local e ligação com turismo/região serrana." },
+      { nome: "Centro de Itaguaí", cidade: "Itaguaí", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.8631, lng: -43.7753, dica: "Porto e indústria próximos; comércio de rua e logística rodoviária." },
+      { nome: "Centro de Japeri", cidade: "Japeri", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.6434, lng: -43.6533, dica: "Crescimento urbano; escuta com lojistas e transporte sobre trilhos." },
+      { nome: "Centro de Paracambi", cidade: "Paracambi", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.6084, lng: -43.7104, dica: "Interior da Baixada; comércio de proximidade e vínculos com Japeri." },
+      { nome: "Centro de Seropédica", cidade: "Seropédica", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7439, lng: -43.7131, dica: "UFRRJ próxima; comércio voltado a estudantes e moradia." },
       { nome: "Centro de Barra do Piraí", cidade: "Barra do Piraí", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.4711, lng: -43.8261, dica: "Vale do Paraíba; polo regional de serviços e comércio." },
       { nome: "Orla de Búzios", cidade: "Armação dos Búzios", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.7469, lng: -41.8817, dica: "Economia turística; sensibilidade a moradia e trabalho informal na alta temporada." },
       { nome: "Centro de São Pedro da Aldeia", cidade: "São Pedro da Aldeia", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.8389, lng: -42.1028, dica: "Lagos region; eventos costumam puxar fluxo para o comércio local." },
@@ -622,6 +653,11 @@
       "São Pedro da Aldeia": { oficial: "https://www.saopedrodaaldeia.rj.gov.br/", instagram: "https://www.instagram.com/prefeituraspaldeia/", facebook: "https://www.facebook.com/prefeiturasaopedrodaaldeia" },
       "Queimados": { oficial: "https://www.queimados.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradequeimados/", facebook: "https://www.facebook.com/prefeituradequeimados" },
       "Mesquita": { oficial: "https://www.mesquita.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturademesquita/", facebook: "https://www.facebook.com/prefeiturademesquita" },
+      "Guapimirim": { oficial: "https://www.guapimirim.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradeguapimirim/", facebook: "https://www.facebook.com/prefeituradeguapimirim" },
+      "Itaguaí": { oficial: "https://www.itaguai.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradeitaguai/", facebook: "https://www.facebook.com/prefeituradeitaguai" },
+      "Japeri": { oficial: "https://www.japeri.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradejaperi/", facebook: "https://www.facebook.com/prefeituradejaperi" },
+      "Paracambi": { oficial: "https://www.paracambi.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradeparacambi/", facebook: "https://www.facebook.com/prefeituradeparacambi" },
+      "Seropédica": { oficial: "https://www.seropedica.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradeseropedica/", facebook: "https://www.facebook.com/prefeituradeseropedica" },
       "Barra do Piraí": { oficial: "https://www.barradopirai.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturabarradopirai/", facebook: "https://www.facebook.com/prefeiturabarradopirai" },
       "Nilópolis": { oficial: "https://www.nilopolis.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradenilopolis/", facebook: "https://www.facebook.com/prefeituradenilopolis" },
       "Magé": { oficial: "https://www.mage.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturademage/", facebook: "https://www.facebook.com/prefeiturademage" },
@@ -1207,6 +1243,14 @@
       const mesos = [...new Set(POIS_COMERCIO.map((p) => p.meso))].sort((a, b) => a.localeCompare(b, "pt-BR"));
       const selTipo = document.getElementById("filtroTipoComercio");
       const selMeso = document.getElementById("filtroMesoComercio");
+      const selCityBaixada = document.getElementById("filtroCidadeBaixada");
+      const labelBaixada = document.getElementById("labelFiltroCidadeBaixada");
+      for (const nome of BAIXADA_MUNICIPIOS_REF) {
+        const o = document.createElement("option");
+        o.value = nome;
+        o.textContent = nome;
+        selCityBaixada.appendChild(o);
+      }
       for (const t of tipos) {
         const o = document.createElement("option");
         o.value = t;
@@ -1248,7 +1292,17 @@
       function matchesFilter(p) {
         const t = selTipo.value;
         const m = selMeso.value;
-        return (!t || p.tipo === t) && (!m || p.meso === m);
+        const bx = selCityBaixada.value;
+        if (t && p.tipo !== t) return false;
+        if (m && p.meso !== m) return false;
+        if (m === "Baixada Fluminense" && bx && p.cidade !== bx) return false;
+        return true;
+      }
+
+      function syncFiltroBaixadaUI() {
+        const show = selMeso.value === "Baixada Fluminense";
+        labelBaixada.hidden = !show;
+        if (!show) selCityBaixada.value = "";
       }
 
       function refreshMarkers() {
@@ -1321,8 +1375,13 @@
       }
 
       selTipo.addEventListener("change", applyFilters);
-      selMeso.addEventListener("change", applyFilters);
+      selMeso.addEventListener("change", () => {
+        syncFiltroBaixadaUI();
+        applyFilters();
+      });
+      selCityBaixada.addEventListener("change", applyFilters);
 
+      syncFiltroBaixadaUI();
       applyFilters();
     }
 
