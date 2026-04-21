@@ -150,6 +150,7 @@
     <section class="panel">
       <h2>Lista</h2>
       <p class="note" id="metaLista">Carregando…</p>
+      <p class="note" id="hintFiltroVazio" hidden style="margin-top:0.35rem;color:#f0c975;font-size:0.86rem"></p>
       <div id="msgErro" hidden class="alert"></div>
       <div class="filters">
         <label>
@@ -219,6 +220,11 @@
     let partidosOrdenados = [];
     let geradoEm = "";
 
+    const UE_RIO = "60011";
+    const UE_CAXIAS = "58335";
+    const IBGE_RIO = "3304557";
+    const IBGE_CAXIAS = "3301702";
+
     const PAPEL_LABEL = {
       eleito: "Eleito",
       suplente: "Suplente",
@@ -233,9 +239,38 @@
       return "participante";
     }
 
+    /** Código SG_UE TSE (5 dígitos) por linha; fallback IBGE/NM_UE para JSON antigo ou campo ausente. */
+    function codigoUeRow(r) {
+      if (!r) return "";
+      const s = r.sgUeTse != null && String(r.sgUeTse).trim() !== "" ? String(r.sgUeTse).trim() : "";
+      if (s) return s;
+      const ibge = String(r.ibgeMunicipio || r.ibge || "")
+        .replace(/\D/g, "")
+        .trim();
+      if (ibge === IBGE_CAXIAS) return UE_CAXIAS;
+      if (ibge === IBGE_RIO) return UE_RIO;
+      const m = norm(r.municipio || "");
+      if (m.includes("duque") && m.includes("caxias")) return UE_CAXIAS;
+      if (m.includes("rio de janeiro") && !m.includes("caxias")) return UE_RIO;
+      return "";
+    }
+
     function sgUeFromRow(r) {
-      if (r && r.sgUeTse) return String(r.sgUeTse).trim();
-      return "60011";
+      const c = codigoUeRow(r);
+      return c || UE_RIO;
+    }
+
+    function refreshPartidoOptions(ueFiltro) {
+      const pool = !ueFiltro ? raw : raw.filter((row) => codigoUeRow(row) === ueFiltro);
+      const set = new Set(pool.map((x) => x.partido).filter(Boolean));
+      partidosOrdenados = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
+      const sel = document.getElementById("selPartido");
+      const antes = sel.value;
+      sel.innerHTML =
+        '<option value="">Todos</option>' +
+        partidosOrdenados.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+      if (antes && partidosOrdenados.includes(antes)) sel.value = antes;
+      else sel.value = "";
     }
 
     function escapeHtml(s) {
@@ -260,7 +295,7 @@
       const papelFiltro = document.getElementById("selPapel").value;
       return raw.filter((r) => {
         if (p && r.partido !== p) return false;
-        if (munFiltro && sgUeFromRow(r) !== munFiltro) return false;
+        if (munFiltro && codigoUeRow(r) !== munFiltro) return false;
         if (papelFiltro && papelFromRow(r) !== papelFiltro) return false;
         if (!q) return true;
         const pap = papelFromRow(r);
@@ -307,8 +342,9 @@
           const pap = papelFromRow(r);
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
-          const ue = r.sgUeTse
-            ? `<span class="muted mono" style="display:block;font-size:0.75rem;margin-top:0.15rem">UE ${escapeHtml(String(r.sgUeTse))}</span>`
+          const ueCode = codigoUeRow(r);
+          const ue = ueCode
+            ? `<span class="muted mono" style="display:block;font-size:0.75rem;margin-top:0.15rem">UE ${escapeHtml(ueCode)}</span>`
             : "";
           return `<tr>
             <td>${escapeHtml(r.municipio || "—")}${ue}</td>
@@ -322,24 +358,50 @@
         })
         .join("");
 
+      const buscaAtiva = !!document.getElementById("inpBusca").value.trim();
+      const partidoAtivo = !!document.getElementById("selPartido").value;
+      const munAtivo = !!document.getElementById("selMunicipio").value;
+      const papelAtivo = !!document.getElementById("selPapel").value;
+
       document.getElementById("lblPagina").textContent =
         total === 0
           ? "Nenhum registo com os filtros atuais."
           : `Página ${PAGE.num} de ${pages} · ${total} registo(s) filtrado(s) · ${raw.length} no ficheiro`;
+
+      const hintEl = document.getElementById("hintFiltroVazio");
+      if (total === 0 && raw.length > 0) {
+        hintEl.hidden = false;
+        hintEl.textContent =
+          "Dica: ao mudar o município, a lista de partidos é atualizada para esse recorte. " +
+          "Se ainda estiver vazio, limpe a busca por texto ou escolha Grupo «Todos». " +
+          "O partido seleccionado anteriormente pode não existir no município escolhido.";
+        if (buscaAtiva || partidoAtivo || papelAtivo) {
+          hintEl.textContent +=
+            " (Há busca, partido ou grupo a restringir o resultado.)";
+        }
+      } else {
+        hintEl.hidden = true;
+        hintEl.textContent = "";
+      }
 
       document.getElementById("btnPrev").disabled = PAGE.num <= 1;
       document.getElementById("btnNext").disabled = PAGE.num >= pages || pages <= 1;
 
       const meta = document.getElementById("metaLista");
       if (raw.length) {
-        const cc = contagemPorPapel(raw);
+        const ccAll = contagemPorPapel(raw);
         const byMun = contagemPorMunicipio(raw);
         const munTxt = Object.keys(byMun)
           .sort((a, b) => a.localeCompare(b, "pt-BR"))
           .map((k) => `${k}: ${byMun[k]}`)
           .join(" · ");
         const tail = geradoEm ? ` · gerado em ${geradoEm}` : "";
-        meta.textContent = `Fonte: TSE consulta_cand · ${munTxt} · total ${raw.length} · eleitos: ${cc.eleito}, suplentes: ${cc.suplente}, demais participantes: ${cc.participante}${tail}.`;
+        const ccF = contagemPorPapel(lista);
+        const filtroExtra =
+          lista.length !== raw.length
+            ? ` · visíveis agora: ${lista.length} (${ccF.eleito} el., ${ccF.suplente} supl., ${ccF.participante} demais)`
+            : "";
+        meta.textContent = `Fonte: TSE consulta_cand · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${tail}.`;
       }
     }
 
@@ -369,8 +431,7 @@
         }
         const set = new Set(raw.map((x) => x.partido).filter(Boolean));
         partidosOrdenados = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
-        const sel = document.getElementById("selPartido");
-        sel.innerHTML = '<option value="">Todos</option>' + partidosOrdenados.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+        refreshPartidoOptions("");
         PAGE.num = 1;
         render();
       } catch (e) {
@@ -391,6 +452,9 @@
       render();
     });
     document.getElementById("selMunicipio").addEventListener("change", () => {
+      const ue = document.getElementById("selMunicipio").value;
+      refreshPartidoOptions(ue);
+      document.getElementById("selPapel").value = "";
       PAGE.num = 1;
       render();
     });
