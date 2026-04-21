@@ -548,7 +548,67 @@
     };
 
     /**
+     * Portais oficiais e redes das prefeituras (RJ). Cada evento pode sobrescrever com linkOficial, instagram, facebook, youtube.
+     */
+    const MUNICIPIO_LINKS_RJ = {
+      "Rio de Janeiro": {
+        oficial: "https://www.rio.rj.gov.br/",
+        instagram: "https://www.instagram.com/prefeitura_rio/",
+        facebook: "https://www.facebook.com/PrefeituraRio",
+        youtube: "https://www.youtube.com/@prefeiturario",
+      },
+      "Niterói": {
+        oficial: "https://www.niteroi.rj.gov.br/",
+        instagram: "https://www.instagram.com/prefeituraniteroi/",
+        facebook: "https://www.facebook.com/prefeituradeniteroi",
+      },
+      "São Gonçalo": {
+        oficial: "https://www.saogoncalo.rj.gov.br/",
+        instagram: "https://www.instagram.com/prefeiturasaogoncalo/",
+        facebook: "https://www.facebook.com/prefeiturasaogoncalo",
+      },
+      "Duque de Caxias": {
+        oficial: "https://www.duquedecaxias.rj.gov.br/",
+        instagram: "https://www.instagram.com/prefeituraduquedecaxias/",
+        facebook: "https://www.facebook.com/prefeituraduquedecaxias",
+      },
+      "Nova Iguaçu": {
+        oficial: "https://www.novaiguacu.rj.gov.br/",
+        instagram: "https://www.instagram.com/prefeituradenovaiguacu/",
+        facebook: "https://www.facebook.com/prefeituradenovaiguacu",
+      },
+      "Belford Roxo": { oficial: "https://www.belfordroxo.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradebelfordroxo/", facebook: "https://www.facebook.com/prefeituradebelfordroxo" },
+      "Petrópolis": { oficial: "https://www.petropolis.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturapetropolis/", facebook: "https://www.facebook.com/prefeiturapetropolis" },
+      "Teresópolis": { oficial: "https://www.teresopolis.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturateresopolis/", facebook: "https://www.facebook.com/prefeiturateresopolis" },
+      "Nova Friburgo": { oficial: "https://www.pmf.nf.gov.br/", instagram: "https://www.instagram.com/prefeituradefriburgo/", facebook: "https://www.facebook.com/prefeituradefriburgo" },
+      "Campos dos Goytacazes": { oficial: "https://www.campos.rj.gov.br/", instagram: "https://www.instagram.com/prefeituracampos/", facebook: "https://www.facebook.com/prefeituracampos" },
+      "Macaé": { oficial: "https://www.macae.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturademacae/", facebook: "https://www.facebook.com/prefeiturademacae" },
+      "Volta Redonda": { oficial: "https://www.voltaredonda.rj.gov.br/", instagram: "https://www.instagram.com/prefeituravolta/", facebook: "https://www.facebook.com/prefeituravoltaredonda" },
+      "Angra dos Reis": { oficial: "https://www.angra.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradeangra/", facebook: "https://www.facebook.com/prefeituradeangra" },
+      "Arraial do Cabo": { oficial: "https://www.arraildocabo.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturarraial/", facebook: "https://www.facebook.com/prefeiturarraialdocabo" },
+      "Cabo Frio": { oficial: "https://www.cabofrio.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradecabofrio/", facebook: "https://www.facebook.com/prefeituradecabofrio" },
+      "Armação dos Búzios": { oficial: "https://www.buzios.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradebuzios/", facebook: "https://www.facebook.com/prefeituradebuzios" },
+      "Resende": { oficial: "https://www.resende.rj.gov.br/", instagram: "https://www.instagram.com/prefeituraderesende/", facebook: "https://www.facebook.com/prefeituraderesende" },
+      "Itaperuna": { oficial: "https://www.itaperuna.rj.gov.br/", instagram: "https://www.instagram.com/prefeituraitaperuna/", facebook: "https://www.facebook.com/prefeituraitaperuna" },
+      "Miracema": { oficial: "https://www.miracema.rj.gov.br/", instagram: "https://www.instagram.com/prefeituramiracema/", facebook: "https://www.facebook.com/prefeituramiracema" },
+      "Santo Antônio de Pádua": { oficial: "https://www.santoantonioepadua.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradepadua/", facebook: "https://www.facebook.com/prefeituradepadua" },
+      "São Fidélis": { oficial: "https://www.saofidelis.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturasaofidelis/", facebook: "https://www.facebook.com/prefeiturasaofidelis" },
+      "Barra Mansa": { oficial: "https://www.barramansa.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturabarramansa/", facebook: "https://www.facebook.com/prefeiturabarramansa" },
+      "Três Rios": { oficial: "https://www.tresrios.rj.gov.br/", instagram: "https://www.instagram.com/prefeituratresrios/", facebook: "https://www.facebook.com/prefeituratresrios" },
+      "Cantagalo": { oficial: "https://www.cantagalo.rj.gov.br/", instagram: "https://www.instagram.com/prefeituracantagalo/", facebook: "https://www.facebook.com/prefeituracantagalo" },
+      "Rio das Ostras": { oficial: "https://www.riodasostras.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturariodasostras/", facebook: "https://www.facebook.com/prefeiturariodasostras" },
+      "São Pedro da Aldeia": { oficial: "https://www.saopedrodaaldeia.rj.gov.br/", instagram: "https://www.instagram.com/prefeituraspaldeia/", facebook: "https://www.facebook.com/prefeiturasaopedrodaaldeia" },
+      "Queimados": { oficial: "https://www.queimados.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradequeimados/", facebook: "https://www.facebook.com/prefeituradequeimados" },
+      "Mesquita": { oficial: "https://www.mesquita.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturademesquita/", facebook: "https://www.facebook.com/prefeiturademesquita" },
+      "Barra do Piraí": { oficial: "https://www.barradopirai.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturabarradopirai/", facebook: "https://www.facebook.com/prefeiturabarradopirai" },
+      "Nilópolis": { oficial: "https://www.nilopolis.rj.gov.br/", instagram: "https://www.instagram.com/prefeituradenilopolis/", facebook: "https://www.facebook.com/prefeituradenilopolis" },
+      "Magé": { oficial: "https://www.mage.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturademage/", facebook: "https://www.facebook.com/prefeiturademage" },
+      "São João de Meriti": { oficial: "https://www.saojoaodemeriti.rj.gov.br/", instagram: "https://www.instagram.com/prefeiturameriti/", facebook: "https://www.facebook.com/prefeiturameriti" },
+    };
+
+    /**
      * inicio / fim: YYYY-MM-DD (fim opcional; um dia se omitido)
+     * Opcional por evento: linkOficial, instagram, facebook, youtube (sobrescrevem o mapa municipal).
      */
     const EVENTOS_RJ = [
       { nome: "Corrida Night Run Rio", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.9836, lng: -43.2048, inicio: "2026-04-18", fim: "2026-04-18", dica: "Percurso costeiro típico; checar fechamento de vias." },
@@ -556,7 +616,7 @@
       { nome: "Corrida de São Sebastião", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.9895, lng: -43.365, inicio: "2026-01-25", dica: "Tradicional em bairro; confirme trecho com a organização." },
       { nome: "Feijoada Beneficente — Lar da Criança", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Evento beneficente", lat: -22.9108, lng: -43.2331, inicio: "2026-06-14", fim: "2026-06-14", dica: "Arrecadação e presença política discreta; respeitar regras eleitorais." },
       { nome: "Corrida 10K Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8835, lng: -43.1034, inicio: "2026-04-26", dica: "Orla e ICMBio próximos; logística de estacionamento." },
-      { nome: "Arraiá Beneficente APAE Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Evento beneficente", lat: -22.885, lng: -43.098, inicio: "2026-06-28", fim: "2026-06-28", dica: "Festa junina; bom para parcerias com entidades." },
+      { nome: "Arraiá Beneficente APAE Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Evento beneficente", lat: -22.885, lng: -43.098, inicio: "2026-06-28", fim: "2026-06-28", linkOficial: "https://www.apae.org.br/", dica: "Festa junina; bom para parcerias com entidades." },
       { nome: "Meia Maratona de São Gonçalo", cidade: "São Gonçalo", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8268, lng: -43.0538, inicio: "2026-03-15", dica: "Grande público; atenção a rotas alternativas." },
       { nome: "Caminhada Ecológica da Baía", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Caminhada / mobilidade", lat: -22.891, lng: -43.124, inicio: "2026-09-20", dica: "Pauta ambiental; mídia espontânea em grupo." },
       { nome: "Corrida da Integração — Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.7856, lng: -43.3117, inicio: "2026-05-10", dica: "Centro e avenidas; confirmar largada com PM." },
@@ -660,6 +720,7 @@
           <div class="dist" style="color:${cor}">${escapeHtml(ev.tipo)} · ${escapeHtml(quando)}</div>
           <strong>${escapeHtml(ev.nome)}</strong> — ${escapeHtml(ev.cidade)}
           <p class="note" style="margin:0.35rem 0 0">${escapeHtml(ev.meso)} · ${escapeHtml(ev.dica)}</p>
+          ${htmlEventoLinksBlock(ev)}
         `;
         grid.appendChild(card);
       }
@@ -670,6 +731,60 @@
       const d = document.createElement("div");
       d.textContent = s;
       return d.innerHTML;
+    }
+
+    function escapeAttr(s) {
+      if (s == null) return "";
+      return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+    }
+
+    function linksResolvidosEvento(ev) {
+      const m = MUNICIPIO_LINKS_RJ[ev.cidade] || {};
+      return {
+        siteEvento: ev.linkOficial || null,
+        prefeitura: m.oficial || null,
+        instagram: ev.instagram || m.instagram || null,
+        facebook: ev.facebook || m.facebook || null,
+        youtube: ev.youtube || m.youtube || null,
+      };
+    }
+
+    function htmlEventoLinksBlock(ev) {
+      const L = linksResolvidosEvento(ev);
+      const parts = [];
+      if (L.siteEvento && L.prefeitura && L.siteEvento === L.prefeitura) {
+        parts.push(
+          `<a href="${escapeAttr(L.prefeitura)}" target="_blank" rel="noopener noreferrer">Portal oficial</a>`
+        );
+      } else {
+        if (L.siteEvento) {
+          parts.push(
+            `<a href="${escapeAttr(L.siteEvento)}" target="_blank" rel="noopener noreferrer">Site do evento</a>`
+          );
+        }
+        if (L.prefeitura && L.prefeitura !== L.siteEvento) {
+          parts.push(
+            `<a href="${escapeAttr(L.prefeitura)}" target="_blank" rel="noopener noreferrer">Prefeitura</a>`
+          );
+        }
+      }
+      if (L.instagram) {
+        parts.push(
+          `<a href="${escapeAttr(L.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a>`
+        );
+      }
+      if (L.facebook) {
+        parts.push(
+          `<a href="${escapeAttr(L.facebook)}" target="_blank" rel="noopener noreferrer">Facebook</a>`
+        );
+      }
+      if (L.youtube) {
+        parts.push(
+          `<a href="${escapeAttr(L.youtube)}" target="_blank" rel="noopener noreferrer">YouTube</a>`
+        );
+      }
+      if (!parts.length) return "";
+      return `<div class="evento-links">${parts.join("")}</div>`;
     }
 
     function haversineKm(lat1, lng1, lat2, lng2) {
@@ -798,6 +913,7 @@
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(ev.tipo)}</span></p>
           <p style="margin:0.35rem 0 0"><strong>Período:</strong> ${escapeHtml(periodoTxt)}</p>
           <p style="margin:0.45rem 0 0">${escapeHtml(ev.dica)}</p>
+          ${htmlEventoLinksBlock(ev)}
         `;
       }
 
@@ -958,7 +1074,7 @@
             iconAnchor: [7, 7],
           });
           L.marker([ev.lat, ev.lng], { icon: ic })
-            .bindPopup(popupEventoRota(ev, dist), { maxWidth: 300 })
+            .bindPopup(popupEventoRota(ev, dist), { maxWidth: 340 })
             .addTo(eventLayer);
         }
 
@@ -1007,6 +1123,7 @@
                 <div class="dist">~${dist.toFixed(1)} km da rota · ${escapeHtml(ev.tipo)} · ${escapeHtml(quando)}</div>
                 <strong>${escapeHtml(ev.nome)}</strong> — ${escapeHtml(ev.cidade)}
                 <p class="note" style="margin:0.35rem 0 0">${escapeHtml(ev.dica)}</p>
+                ${htmlEventoLinksBlock(ev)}
               `;
               eventosRoot.appendChild(card);
             }
