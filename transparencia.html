@@ -153,6 +153,7 @@
 </head>
 <body>
   <script src="js/auth-config.js"></script>
+  <script src="js/portal-transparencia-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
@@ -209,7 +210,7 @@
       <p class="note">
         As consultas usam diretamente a API oficial (<span class="mono">api.portaldatransparencia.gov.br</span>). Se o navegador bloquear por CORS,
         use o <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a> ou outra ferramenta autorizada.
-        Guarde a chave no navegador (somente neste aparelho).
+        Guarde a chave no navegador (somente neste aparelho) ou defina <span class="mono">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span> em <span class="mono">js/portal-transparencia-config.js</span> (fallback quando o campo estiver vazio).
       </p>
       <div id="msgApi"></div>
       <div class="toolbar">
@@ -316,17 +317,43 @@
       return String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
     }
 
-    /** Aceita o token puro ou o JSON do Postman/Insomnia: [{"key":"chave-api-dados","value":"..."}] */
+    /**
+     * Token puro, Bearer, objeto Postman único ou array:
+     * [{"key":"chave-api-dados","value":"..."}]
+     */
     function normalizeChavePortal(raw) {
-      const s = String(raw ?? "").trim();
-      if (!s.startsWith("[")) return s;
-      try {
-        const arr = JSON.parse(s);
-        if (!Array.isArray(arr)) return s;
-        const item = arr.find((x) => x && String(x.key).toLowerCase() === "chave-api-dados");
-        if (item && item.value != null) return String(item.value).trim();
-      } catch (_) {}
+      let s = String(raw ?? "")
+        .replace(/^\uFEFF/, "")
+        .trim();
+      if (!s) return "";
+      const lower = s.toLowerCase();
+      if (lower.startsWith("bearer ")) s = s.slice(7).trim();
+      if (s.startsWith("{")) {
+        try {
+          const o = JSON.parse(s);
+          if (o && String(o.key).toLowerCase() === "chave-api-dados" && o.value != null) return String(o.value).trim();
+        } catch (_) {}
+        return s;
+      }
+      if (s.startsWith("[")) {
+        try {
+          const arr = JSON.parse(s);
+          if (!Array.isArray(arr)) return s;
+          const item = arr.find((x) => x && String(x.key).toLowerCase() === "chave-api-dados");
+          if (item && item.value != null) return String(item.value).trim();
+        } catch (_) {}
+      }
       return s;
+    }
+
+    function chaveFromWindowConfig() {
+      return typeof window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE === "string"
+        ? normalizeChavePortal(window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE)
+        : "";
+    }
+
+    function getChavePortal() {
+      return normalizeChavePortal(document.getElementById("inpChave").value) || chaveFromWindowConfig();
     }
 
     function apiBase() {
@@ -377,7 +404,7 @@
     }
 
     async function buscar(pagina) {
-      const chave = normalizeChavePortal(document.getElementById("inpChave").value);
+      const chave = getChavePortal();
       const ano = document.getElementById("inpAno").value;
       const uf = document.getElementById("selUf").value;
       const nomeAutor = document.getElementById("inpNomeAutor").value.trim();
@@ -406,11 +433,22 @@
       try {
         const headers = { Accept: "application/json", "chave-api-dados": chave };
         const r = await fetch(url, { headers });
-        const data = await r.json();
+        const text = await r.text();
+        let data = null;
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch (_) {
+            mostrarMsg(`Erro ${r.status}: resposta não é JSON. ${escapeHtml(text.slice(0, 320))}`, false);
+            tbody.innerHTML = "";
+            return;
+          }
+        }
 
         if (!r.ok) {
-          const err = data.erro || data["Erro na API"] || JSON.stringify(data);
-          mostrarMsg(`Erro ${r.status}: ${escapeHtml(err)}`, false);
+          const err =
+            (data && (data.erro || data["Erro na API"])) || (text && text.slice(0, 400)) || String(r.status);
+          mostrarMsg(`Erro ${r.status}: ${escapeHtml(typeof err === "string" ? err : JSON.stringify(err))}`, false);
           tbody.innerHTML = "";
           return;
         }
@@ -464,7 +502,7 @@
     }
 
     async function detalhar(codigo) {
-      const chave = normalizeChavePortal(document.getElementById("inpChave").value);
+      const chave = getChavePortal();
       if (!chave || !codigo) return;
       const base = apiBase();
       const url = `${base}/emendas/${encodeURIComponent(codigo)}`;
@@ -473,9 +511,18 @@
       box.innerHTML = "<p class=\"muted\">Carregando detalhe…</p>";
       try {
         const r = await fetch(url, { headers: { Accept: "application/json", "chave-api-dados": chave } });
-        const j = await r.json();
+        const text = await r.text();
+        let j = {};
+        if (text) {
+          try {
+            j = JSON.parse(text);
+          } catch (_) {
+            box.innerHTML = `<p class="alert">${escapeHtml(text.slice(0, 400))}</p>`;
+            return;
+          }
+        }
         if (!r.ok) {
-          box.innerHTML = `<p class="alert">${escapeHtml(j.erro || j["Erro na API"] || r.status)}</p>`;
+          box.innerHTML = `<p class="alert">${escapeHtml(j.erro || j["Erro na API"] || text?.slice(0, 300) || r.status)}</p>`;
           return;
         }
         box.innerHTML = `
@@ -493,7 +540,7 @@
     }
 
     document.getElementById("btnSalvarChave").addEventListener("click", () => {
-      const v = normalizeChavePortal(document.getElementById("inpChave").value);
+      let v = normalizeChavePortal(document.getElementById("inpChave").value) || chaveFromWindowConfig();
       if (v) {
         document.getElementById("inpChave").value = v;
         localStorage.setItem(LS_CHAVE, v);
@@ -556,7 +603,9 @@
     (function init() {
       renderPartyGrid();
       const saved = localStorage.getItem(LS_CHAVE);
+      const cfg = chaveFromWindowConfig();
       if (saved) document.getElementById("inpChave").value = normalizeChavePortal(saved);
+      else if (cfg) document.getElementById("inpChave").value = cfg;
     })();
   </script>
 </body>
