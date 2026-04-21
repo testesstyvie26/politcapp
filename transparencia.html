@@ -153,7 +153,7 @@
 </head>
 <body>
   <script src="js/auth-config.js"></script>
-  <script src="js/portal-transparencia-config.js?v=3"></script>
+  <script src="js/portal-transparencia-config.js?v=4"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
@@ -354,7 +354,21 @@
         : "";
     }
 
+    /** Se o token foi colado em POLITAPP_PORTAL_API_BASE em vez da chave (só hex, sem URL). */
+    function corrigirChaveTrocadaComUrlDoProxy() {
+      try {
+        const base = typeof window.POLITAPP_PORTAL_API_BASE === "string" ? window.POLITAPP_PORTAL_API_BASE.trim() : "";
+        const ch = typeof window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE === "string" ? window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE.trim() : "";
+        if (!base || base.includes("/") || base.includes(":")) return;
+        if (!/^[a-fA-F0-9]{24,64}$/.test(base)) return;
+        if (ch) return;
+        window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE = base;
+        window.POLITAPP_PORTAL_API_BASE = "";
+      } catch (e) {}
+    }
+
     function getChavePortal() {
+      corrigirChaveTrocadaComUrlDoProxy();
       return normalizeChavePortal(document.getElementById("inpChave").value) || chaveFromWindowConfig();
     }
 
@@ -524,7 +538,14 @@
       det.innerHTML = "";
 
       if (!chave) {
-        mostrarMsg("Informe a chave da API (cadastro em <a href=\"https://portaldatransparencia.gov.br/api-de-dados/cadastrar-email\" target=\"_blank\" rel=\"noopener\">portaldatransparencia.gov.br</a>).", false);
+        mostrarMsg(
+          "Informe o <strong>token</strong> (chave API) no campo acima e use <strong>Salvar chave localmente</strong>, ou defina " +
+          "<span class=\"mono\">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span> em <span class=\"mono\">js/portal-transparencia-config.js</span>. " +
+          "Cadastro gratuito: " +
+          "<a href=\"https://portaldatransparencia.gov.br/api-de-dados/cadastrar-email\" target=\"_blank\" rel=\"noopener\">portaldatransparencia.gov.br — cadastrar e-mail</a>. " +
+          "Não confundir com a <strong>URL do Worker</strong> (<span class=\"mono\">POLITAPP_PORTAL_API_BASE</span>).",
+          false
+        );
         return;
       }
 
@@ -718,6 +739,7 @@
     });
 
     (function init() {
+      corrigirChaveTrocadaComUrlDoProxy();
       renderPartyGrid();
       const saved = localStorage.getItem(LS_CHAVE);
       const cfg = chaveFromWindowConfig();
