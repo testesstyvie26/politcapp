@@ -2,7 +2,7 @@
  * Cloudflare Worker — proxy CORS para api.portaldatransparencia.gov.br
  *
  * Deploy (ex.): wrangler deploy
- * Depois defina em js/portal-transparencia-config.js:
+ * Depois em js/portal-transparencia-config.js (deploy em https://politcapp.com.br ou Pages):
  *   POLITAPP_PORTAL_API_BASE = "https://<seu-worker>.workers.dev/api-de-dados";
  *
  * A chave continua indo só no header do browser → Worker (não armazene no Worker).

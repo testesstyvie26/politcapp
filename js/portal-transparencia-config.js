@@ -1,16 +1,17 @@
 /**
  * API de dados do Portal da Transparência — cadastro: portaldatransparencia.gov.br/api-de-dados
  *
- * GitHub Pages: o navegador não pode chamar a API oficial (CORS). Use uma destas opções:
- *   1) Deploy do Worker em workers/portal-transparencia-proxy.js (Cloudflare) e preencha POLITAPP_PORTAL_API_BASE abaixo.
- *   2) Desenvolvimento local: npm run dev → http://127.0.0.1:8787/transparencia.html
+ * Produção (https://politcapp.com.br, GitHub Pages, etc.): o navegador bloqueia a API oficial (CORS).
+ * Faça deploy do Worker em workers/portal-transparencia-proxy.js e preencha POLITAPP_PORTAL_API_BASE abaixo.
+ *
+ * Local: npm run dev → http://127.0.0.1:8787/transparencia.html
  */
 window.POLITAPP_PORTAL_TRANSPARENCIA_CHAVE = "";
 
 /**
- * Produção (ex.: https://usuario.github.io/repositorio/): URL completa até /api-de-dados, apontando para seu proxy.
- * Ex.: "https://politapp-pt-proxy.seu-subdominio.workers.dev/api-de-dados"
- * Deixe "" para modo automático (localhost, file, ou API direta — em github.io a direta costuma falhar).
+ * URL base até /api-de-dados do seu proxy (Cloudflare Worker). Obrigatório em produção.
+ * Ex.: "https://politapp-portal-transparencia-proxy.seu-subdominio.workers.dev/api-de-dados"
+ * Deixe "" só para desenvolvimento local (ou a página usa a API direta e tende a falhar fora do CGU).
  */
 window.POLITAPP_PORTAL_API_BASE = "";
 
