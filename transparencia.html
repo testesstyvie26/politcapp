@@ -153,7 +153,7 @@
 </head>
 <body>
   <script src="js/auth-config.js"></script>
-  <script src="js/portal-transparencia-config.js?v=5"></script>
+  <script src="js/portal-transparencia-config.js?v=7"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
     <nav class="site-nav" aria-label="Navegação principal">
@@ -410,7 +410,11 @@
       const custom =
         typeof window.POLITAPP_PORTAL_API_BASE === "string" ? window.POLITAPP_PORTAL_API_BASE.trim() : "";
       if (custom) {
-        return custom.replace(/\/$/, "");
+        let c = custom.replace(/\/$/, "");
+        if (!c.endsWith("/api-de-dados")) {
+          c += "/api-de-dados";
+        }
+        return c;
       }
 
       const host = window.location.hostname;

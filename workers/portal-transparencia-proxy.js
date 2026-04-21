@@ -26,15 +26,14 @@ export default {
     }
 
     const url = new URL(request.url);
-    if (!url.pathname.startsWith("/api-de-dados")) {
-      return json(
-        404,
-        { erro: "Rota esperada: /api-de-dados/… (emenda do mesmo path da API oficial)" },
-        cors
-      );
+    // Se POLITAPP_PORTAL_API_BASE for só "https://….workers.dev" (sem /api-de-dados), o browser pede /emendas;
+    // se a rota no Cloudflare remover o prefixo, pathname pode vir só /emendas. Normalizamos como na API CGU.
+    let path = url.pathname || "/";
+    if (!path.startsWith("/api-de-dados")) {
+      path = "/api-de-dados" + (path === "/" ? "" : path);
     }
 
-    const upstream = "https://api.portaldatransparencia.gov.br" + url.pathname + url.search;
+    const upstream = "https://api.portaldatransparencia.gov.br" + path + url.search;
     const upstreamRes = await fetch(upstream, {
       method: "GET",
       headers: {
