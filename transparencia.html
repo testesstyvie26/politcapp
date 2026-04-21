@@ -108,7 +108,33 @@
     th, td { text-align: left; padding: 0.55rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
     th { background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(61, 139, 253, 0.06); }
+    #tbodyEmendas tr.emenda-main:hover td,
+    #tbodyEmendas tr.emenda-main:hover + tr.emenda-extras td,
+    #tbodyEmendas tr.emenda-extras:hover td {
+      background: rgba(61, 139, 253, 0.06);
+    }
+    tr.emenda-extras td {
+      background: rgba(0, 0, 0, 0.12);
+      padding-top: 0.35rem;
+      padding-bottom: 0.55rem;
+    }
+    .emenda-extras-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.85rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      align-items: baseline;
+    }
+    .emenda-extra-pair {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.2rem 0.35rem;
+      align-items: baseline;
+      max-width: 100%;
+    }
+    .emenda-extra-k { color: var(--muted); font-weight: 600; font-size: 0.72rem; }
+    .emenda-extra-v { color: var(--text); word-break: break-word; }
     .num { text-align: right; white-space: nowrap; }
     .alert {
       padding: 0.75rem 1rem;
@@ -302,8 +328,11 @@
               <th>Tipo</th>
               <th>Autor</th>
               <th>Localidade</th>
+              <th>Órgão</th>
+              <th>Programa</th>
               <th>Função</th>
               <th class="num">Empenhado</th>
+              <th class="num">Liquidado</th>
               <th class="num">Pago</th>
               <th></th>
             </tr>
@@ -432,6 +461,67 @@
         return escapeHtml(brl(n));
       }
       return escapeHtml(String(v));
+    }
+
+    const COLSPAN_TABELA_EMENDAS = 11;
+    const CHAVES_COLUNAS_PRINCIPAIS_EMENDA = new Set([
+      "codigoEmenda",
+      "tipoEmenda",
+      "nomeAutor",
+      "localidadeDoGasto",
+      "orgaoExecutor",
+      "programaGovernamental",
+      "nomeFuncao",
+      "codigoFuncao",
+      "valorEmpenhado",
+      "valorLiquidado",
+      "valorPago",
+    ]);
+
+    function htmlLinhaExtrasLista(row) {
+      const keys = Object.keys(row).filter((k) => !CHAVES_COLUNAS_PRINCIPAIS_EMENDA.has(k));
+      keys.sort((a, b) => a.localeCompare(b, "pt-BR"));
+      if (!keys.length) return "";
+      const parts = keys.map((k) => {
+        const lab = escapeHtml(rotuloCampoEmenda(k));
+        const val = formatCampoEmendaParaHtml(k, row[k]);
+        return `<span class="emenda-extra-pair"><span class="emenda-extra-k">${lab}:</span> <span class="emenda-extra-v">${val}</span></span>`;
+      });
+      return (
+        `<tr class="emenda-extras">` +
+        `<td colspan="${COLSPAN_TABELA_EMENDAS}"><div class="emenda-extras-wrap">${parts.join("")}</div></td>` +
+        `</tr>`
+      );
+    }
+
+    function htmlTbodyLinhasEmendasFiltrada(rows) {
+      return rows
+        .map((row) => {
+          const codRaw = row.codigoEmenda != null ? String(row.codigoEmenda) : "";
+          const codCell = codRaw ? escapeHtml(codRaw) : "—";
+          let funcao = "—";
+          if (row.nomeFuncao != null && String(row.nomeFuncao).trim() !== "") {
+            funcao = escapeHtml(String(row.nomeFuncao));
+          } else if (row.codigoFuncao != null && String(row.codigoFuncao).trim() !== "") {
+            funcao = escapeHtml(String(row.codigoFuncao));
+          }
+          const main =
+            `<tr class="emenda-main">` +
+            `<td class="mono">${codCell}</td>` +
+            `<td>${escapeHtml(row.tipoEmenda || "—")}</td>` +
+            `<td>${escapeHtml(row.nomeAutor || "—")}</td>` +
+            `<td>${escapeHtml(row.localidadeDoGasto || "—")}</td>` +
+            `<td>${escapeHtml(row.orgaoExecutor || "—")}</td>` +
+            `<td>${escapeHtml(row.programaGovernamental || "—")}</td>` +
+            `<td>${funcao}</td>` +
+            `<td class="num">${escapeHtml(brl(row.valorEmpenhado))}</td>` +
+            `<td class="num">${escapeHtml(brl(row.valorLiquidado))}</td>` +
+            `<td class="num">${escapeHtml(brl(row.valorPago))}</td>` +
+            `<td><button type="button" class="secondary btn-detalhe" data-cod="${escapeAttr(codRaw)}">Detalhe</button></td>` +
+            `</tr>`;
+          return main + htmlLinhaExtrasLista(row);
+        })
+        .join("");
     }
 
     function htmlDetalheEmendaPortal(j, codFallback) {
@@ -722,7 +812,7 @@
       const url = `${base}/emendas?${q}`;
 
       limparMsg();
-      tbody.innerHTML = `<tr><td colspan="8" class="muted">Carregando…</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${COLSPAN_TABELA_EMENDAS}" class="muted">Carregando…</td></tr>`;
 
       try {
         const headers = { Accept: "application/json", "chave-api-dados": chave };
@@ -766,24 +856,9 @@
           `Página ${pagina} · ${filtrada.length} linha(s) após filtro de tipo (lote bruto: ${lista.length}).`;
 
         if (!filtrada.length) {
-          tbody.innerHTML = `<tr><td colspan="8" class="muted">Nenhuma emenda neste lote com o filtro de tipo escolhido.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="${COLSPAN_TABELA_EMENDAS}" class="muted">Nenhuma emenda neste lote com o filtro de tipo escolhido.</td></tr>`;
         } else {
-          tbody.innerHTML = filtrada
-            .map((row) => {
-              const codRaw = row.codigoEmenda != null ? String(row.codigoEmenda) : "";
-              const codCell = codRaw ? escapeHtml(codRaw) : "—";
-              return `<tr>
-              <td class="mono">${codCell}</td>
-              <td>${escapeHtml(row.tipoEmenda || "—")}</td>
-              <td>${escapeHtml(row.nomeAutor || "—")}</td>
-              <td>${escapeHtml(row.localidadeDoGasto || "—")}</td>
-              <td>${escapeHtml(row.nomeFuncao || row.codigoFuncao || "—")}</td>
-              <td class="num">${escapeHtml(brl(row.valorEmpenhado))}</td>
-              <td class="num">${escapeHtml(brl(row.valorPago))}</td>
-              <td><button type="button" class="secondary btn-detalhe" data-cod="${escapeAttr(codRaw)}">Detalhe</button></td>
-            </tr>`;
-            })
-            .join("");
+          tbody.innerHTML = htmlTbodyLinhasEmendasFiltrada(filtrada);
         }
 
         document.getElementById("btnPrev").disabled = pagina <= 1;
@@ -829,7 +904,7 @@
           const core = escapeHtml(typeof baseMsg === "string" ? baseMsg : JSON.stringify(baseMsg));
           const link403 =
             r.status === 403
-              ? ` — <a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">Abrir consulta de emendas (CGU)</a>`
+              ? ` — <a href="https://portaldatransparencia.gov.br/emendas/consulta" target="_blank" rel="noopener">Consulta de emendas (CGU)</a>. Dados da listagem já aparecem na tabela (incluindo a linha de campos extras sob cada código).`
               : "";
           box.innerHTML = `<p class="alert">${core}${link403}</p>`;
           return;
@@ -875,25 +950,10 @@
       document.getElementById("metaPagina").textContent =
         `Página ${paginaAtual} · ${filtrada.length} linha(s) após filtro de tipo (lote bruto: ${ultimaLista.length}).`;
       if (!filtrada.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="muted">Nenhuma emenda neste lote com o filtro de tipo escolhido.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${COLSPAN_TABELA_EMENDAS}" class="muted">Nenhuma emenda neste lote com o filtro de tipo escolhido.</td></tr>`;
         return;
       }
-      tbody.innerHTML = filtrada
-        .map((row) => {
-          const codRaw = row.codigoEmenda != null ? String(row.codigoEmenda) : "";
-          const codCell = codRaw ? escapeHtml(codRaw) : "—";
-          return `<tr>
-            <td class="mono">${codCell}</td>
-            <td>${escapeHtml(row.tipoEmenda || "—")}</td>
-            <td>${escapeHtml(row.nomeAutor || "—")}</td>
-            <td>${escapeHtml(row.localidadeDoGasto || "—")}</td>
-            <td>${escapeHtml(row.nomeFuncao || row.codigoFuncao || "—")}</td>
-            <td class="num">${escapeHtml(brl(row.valorEmpenhado))}</td>
-            <td class="num">${escapeHtml(brl(row.valorPago))}</td>
-            <td><button type="button" class="secondary btn-detalhe" data-cod="${escapeAttr(codRaw)}">Detalhe</button></td>
-          </tr>`;
-        })
-        .join("");
+      tbody.innerHTML = htmlTbodyLinhasEmendasFiltrada(filtrada);
     });
 
     document.getElementById("tbodyEmendas").addEventListener("click", (ev) => {
