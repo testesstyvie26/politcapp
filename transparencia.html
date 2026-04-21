@@ -208,11 +208,12 @@
     <section class="panel">
       <h2>Consultar emendas via API do Portal</h2>
       <p class="note">
-        A API oficial é <span class="mono">api.portaldatransparencia.gov.br</span>. O navegador costuma bloquear (<strong>CORS</strong>); nesta pasta basta rodar
-        <span class="mono">npm run dev:portal-proxy</span> e manter o terminal aberto: em <span class="mono">localhost</span>, <span class="mono">127.0.0.1</span> ou <span class="mono">file://</span> as buscas passam pelo proxy em
-        <span class="mono">127.0.0.1:8787</span> (origem ajustável em <span class="mono">portal-transparencia-config.js</span>).
-        Chave: campo abaixo, <span class="mono">localStorage</span> ou <span class="mono">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span> no mesmo arquivo.
+        A API oficial é <span class="mono">api.portaldatransparencia.gov.br</span>; no navegador costuma dar <strong>CORS</strong>.
+        <strong>GitHub Pages:</strong> configure <span class="mono">POLITAPP_PORTAL_API_BASE</span> em <span class="mono">portal-transparencia-config.js</span> apontando para um proxy público (ex.: Worker em <span class="mono">workers/portal-transparencia-proxy.js</span>).
+        <strong>Local:</strong> <span class="mono">npm run dev</span> e <span class="mono">http://127.0.0.1:8787/transparencia.html</span>, ou <span class="mono">npm run dev:portal-proxy</span> com Live Server / <span class="mono">file://</span>.
+        Chave: campo abaixo, <span class="mono">localStorage</span> ou <span class="mono">POLITAPP_PORTAL_TRANSPARENCIA_CHAVE</span>.
       </p>
+      <div id="msgGhPages" class="note" hidden style="margin:0 0 0.75rem"></div>
       <div id="msgApi"></div>
       <div class="toolbar">
         <label>
@@ -357,14 +358,33 @@
       return normalizeChavePortal(document.getElementById("inpChave").value) || chaveFromWindowConfig();
     }
 
+    function isGitHubPagesHost() {
+      return window.location.hostname.endsWith(".github.io");
+    }
+
     function apiBase() {
       const direct = "https://api.portaldatransparencia.gov.br/api-de-dados";
       if (window.POLITAPP_PORTAL_FORCE_DIRECT === true) return direct;
 
-      const h = window.location.hostname;
+      const custom =
+        typeof window.POLITAPP_PORTAL_API_BASE === "string" ? window.POLITAPP_PORTAL_API_BASE.trim() : "";
+      if (custom) {
+        return custom.replace(/\/$/, "");
+      }
+
+      const host = window.location.hostname;
+      const sameHost = host === "localhost" || host === "127.0.0.1";
+      const port = window.location.port || "";
+      const devPorts = String(window.POLITAPP_DEV_SAME_ORIGIN_PORTS || "8787")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (sameHost && port && devPorts.includes(port)) {
+        return `${window.location.origin}/api-de-dados`;
+      }
+
       const fileProtocol = window.location.protocol === "file:";
-      const useProxy =
-        h === "localhost" || h === "127.0.0.1" || (h === "" && fileProtocol);
+      const useProxy = sameHost || (host === "" && fileProtocol);
 
       if (!useProxy) return direct;
 
@@ -508,7 +528,7 @@
       } catch (e) {
         console.error(e);
         mostrarMsg(
-          "Falha na requisição. Em <span class=\"mono\">localhost</span>/<span class=\"mono\">file://</span> rode <span class=\"mono\">npm run dev:portal-proxy</span> (terminal aberto). Senão, consulte o <a href=\"https://portaldatransparencia.gov.br/emendas\" target=\"_blank\" rel=\"noopener\">portal oficial</a>.",
+          "Falha na requisição. Rode <span class=\"mono\">npm run dev</span> e abra <span class=\"mono\">http://127.0.0.1:8787/transparencia.html</span>. Ou <span class=\"mono\">npm run dev:portal-proxy</span> (terminal aberto) se usar outro servidor/HTML em <span class=\"mono\">file://</span>. Consulte também o <a href=\"https://portaldatransparencia.gov.br/emendas\" target=\"_blank\" rel=\"noopener\">portal oficial</a>.",
           false
         );
         tbody.innerHTML = "";
@@ -620,6 +640,16 @@
       const cfg = chaveFromWindowConfig();
       if (saved) document.getElementById("inpChave").value = normalizeChavePortal(saved);
       else if (cfg) document.getElementById("inpChave").value = cfg;
+
+      const gh = document.getElementById("msgGhPages");
+      const customApi =
+        typeof window.POLITAPP_PORTAL_API_BASE === "string" && window.POLITAPP_PORTAL_API_BASE.trim();
+      if (isGitHubPagesHost() && !customApi && window.POLITAPP_PORTAL_FORCE_DIRECT !== true) {
+        gh.hidden = false;
+        gh.innerHTML =
+          "<strong>Site no GitHub Pages:</strong> buscas à API tendem a falhar até você definir " +
+          "<span class=\"mono\">POLITAPP_PORTAL_API_BASE</span> com a URL do seu proxy (veja <span class=\"mono\">workers/portal-transparencia-proxy.js</span>).";
+      }
     })();
   </script>
 </body>

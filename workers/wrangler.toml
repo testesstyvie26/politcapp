@@ -1,0 +1,6 @@
+# Deploy: cd workers && npx wrangler deploy
+# Depois: window.POLITAPP_PORTAL_API_BASE = "https://<nome>.<subdomain>.workers.dev/api-de-dados";
+
+name = "politapp-portal-transparencia-proxy"
+main = "portal-transparencia-proxy.js"
+compatibility_date = "2024-10-01"
