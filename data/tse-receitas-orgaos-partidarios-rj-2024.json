@@ -1,0 +1,154 @@
+{
+  "fonte": "TSE — Sistema de Prestação de Contas Eleitorais (SPCE). Arquivo: receitas_orgaos_partidarios_2024_RJ.csv (órgãos partidários, UF RJ, eleições municipais 2024).",
+  "uf": "RJ",
+  "anoEleicao": 2024,
+  "observacao": "Valores somam VR_RECEITA por SG_PARTIDO em todo o estado. Diferente do filtro por cargo no DivulgaCand (#/partidos/2045202024/RJ/4), aqui entram todas as receitas declaradas por diretórios municipais no RJ.",
+  "geradoEm": "2026-04-21T12:52:10.935Z",
+  "partidos": [
+    {
+      "sigla": "PRD",
+      "nome": "Partido Renovação Democrática",
+      "receitaTotal": 10578143.83
+    },
+    {
+      "sigla": "PT",
+      "nome": "Partido dos Trabalhadores",
+      "receitaTotal": 9623391.81
+    },
+    {
+      "sigla": "PDT",
+      "nome": "Partido Democrático Trabalhista",
+      "receitaTotal": 7987518.37
+    },
+    {
+      "sigla": "PSOL",
+      "nome": "Partido Socialismo e Liberdade",
+      "receitaTotal": 7252115.63
+    },
+    {
+      "sigla": "PODE",
+      "nome": "Podemos",
+      "receitaTotal": 5568834.07
+    },
+    {
+      "sigla": "SOLIDARIEDADE",
+      "nome": "Solidariedade",
+      "receitaTotal": 4967816.88
+    },
+    {
+      "sigla": "PSB",
+      "nome": "Partido Socialista Brasileiro",
+      "receitaTotal": 3505653.63
+    },
+    {
+      "sigla": "CIDADANIA",
+      "nome": "Cidadania",
+      "receitaTotal": 2785485.02
+    },
+    {
+      "sigla": "PSD",
+      "nome": "Partido Social Democrático",
+      "receitaTotal": 2245075.73
+    },
+    {
+      "sigla": "AGIR",
+      "nome": "AGIR",
+      "receitaTotal": 923056.4
+    },
+    {
+      "sigla": "UNIÃO",
+      "nome": "União Brasil",
+      "receitaTotal": 906023.84
+    },
+    {
+      "sigla": "PP",
+      "nome": "PROGRESSISTAS",
+      "receitaTotal": 814678.77
+    },
+    {
+      "sigla": "MDB",
+      "nome": "Movimento Democrático Brasileiro",
+      "receitaTotal": 791121.72
+    },
+    {
+      "sigla": "PV",
+      "nome": "Partido Verde",
+      "receitaTotal": 777378.61
+    },
+    {
+      "sigla": "MOBILIZA",
+      "nome": "Mobilização Nacional",
+      "receitaTotal": 658124.38
+    },
+    {
+      "sigla": "DC",
+      "nome": "Democracia Cristã",
+      "receitaTotal": 459501.52
+    },
+    {
+      "sigla": "PL",
+      "nome": "Partido Liberal",
+      "receitaTotal": 297498.25
+    },
+    {
+      "sigla": "NOVO",
+      "nome": "Partido Novo",
+      "receitaTotal": 273537.43
+    },
+    {
+      "sigla": "UP",
+      "nome": "Unidade Popular",
+      "receitaTotal": 254000
+    },
+    {
+      "sigla": "REDE",
+      "nome": "Rede Sustentabilidade",
+      "receitaTotal": 200900
+    },
+    {
+      "sigla": "REPUBLICANOS",
+      "nome": "REPUBLICANOS",
+      "receitaTotal": 138287.07
+    },
+    {
+      "sigla": "PSDB",
+      "nome": "Partido da Social Democracia Brasileira",
+      "receitaTotal": 115887.63
+    },
+    {
+      "sigla": "PMB",
+      "nome": "Partido da Mulher Brasileira",
+      "receitaTotal": 71275.44
+    },
+    {
+      "sigla": "AVANTE",
+      "nome": "AVANTE",
+      "receitaTotal": 66536.45
+    },
+    {
+      "sigla": "PRTB",
+      "nome": "Partido Renovador Trabalhista Brasileiro",
+      "receitaTotal": 18715.03
+    },
+    {
+      "sigla": "PCB",
+      "nome": "Partido Comunista Brasileiro",
+      "receitaTotal": 18400
+    },
+    {
+      "sigla": "PC do B",
+      "nome": "Partido Comunista do Brasil",
+      "receitaTotal": 6599.1
+    },
+    {
+      "sigla": "PCO",
+      "nome": "Partido da Causa Operária",
+      "receitaTotal": 0
+    },
+    {
+      "sigla": "PSTU",
+      "nome": "Partido Socialista dos Trabalhadores Unificado",
+      "receitaTotal": 0
+    }
+  ]
+}

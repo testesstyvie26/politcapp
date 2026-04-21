@@ -4,8 +4,13 @@
   "description": "Site estático (HTML/CSS/JS). Proxy opcional para API Portal da Transparência.",
   "scripts": {
     "build:tse-df": "node scripts/build-tse-df-json-from-csv.cjs",
+    "build:tse-partidos-rj": "node scripts/build-tse-receitas-partidos-rj.cjs",
     "dev": "node scripts/politapp-dev-server.cjs",
     "dev:portal-proxy": "node scripts/portal-transparencia-proxy.cjs",
     "deploy:worker": "npx wrangler deploy"
+  },
+  "devDependencies": {
+    "adm-zip": "^0.5.16",
+    "iconv-lite": "^0.6.3"
   }
 }

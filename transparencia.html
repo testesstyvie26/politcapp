@@ -227,6 +227,35 @@
       white-space: nowrap;
     }
     a.tse-open-link:hover { filter: brightness(1.06); }
+    .chart-tse-wrap {
+      position: relative;
+      width: 100%;
+      margin-top: 1rem;
+      min-height: 28rem;
+      max-height: min(75vh, 52rem);
+    }
+    .chart-tse-wrap canvas {
+      max-height: min(75vh, 52rem);
+    }
+    .chart-tse-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+    .chart-tse-actions label {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .chart-tse-actions input[type="range"] {
+      min-width: 140px;
+    }
   </style>
 </head>
 <body>
@@ -315,6 +344,36 @@
           >Abrir no TSE</a>
       </div>
       <p class="note muted" id="msgCopiarTsePartidosRj" aria-live="polite" style="margin: 0.6rem 0 0"></p>
+
+      <h3 style="margin: 1.25rem 0 0.5rem">Receitas por partido (RJ) — dados da prestação de contas</h3>
+      <p class="note" id="noteReceitasPartidosTse" style="margin-bottom: 0.5rem">
+        Agregação de <span class="mono">VR_RECEITA</span> por <span class="mono">SG_PARTIDO</span> no arquivo oficial
+        <strong>receitas_orgaos_partidarios_2024_RJ.csv</strong> (órgãos partidários, eleições municipais 2024). Gere de novo com
+        <span class="mono">npm run build:tse-partidos-rj</span> após atualizar o CSV do TSE.
+      </p>
+      <p class="note muted" id="msgReceitasPartidosChart" aria-live="polite"></p>
+      <div class="chart-tse-actions">
+        <label>
+          <input type="checkbox" id="chkReceitasTop15" checked />
+          Mostrar só os 15 maiores
+        </label>
+        <label>
+          Segundo gráfico (rosca): top
+          <input type="range" id="rngReceitasDoughnutTop" min="3" max="12" value="8" />
+          <span class="mono" id="lblReceitasDoughnutTop">8</span>
+        </label>
+        <button type="button" class="secondary" id="btnReceitasChartReload">Recarregar dados</button>
+      </div>
+      <div class="grid-2" style="margin-top: 1rem; align-items: start">
+        <div>
+          <p class="note muted" style="margin: 0 0 0.35rem; font-size: 0.78rem">Barras — total recebido (R$)</p>
+          <div class="chart-tse-wrap"><canvas id="chartReceitasPartidosBar" aria-label="Gráfico de barras"></canvas></div>
+        </div>
+        <div>
+          <p class="note muted" style="margin: 0 0 0.35rem; font-size: 0.78rem">Rosca — participação no total do recorte</p>
+          <div class="chart-tse-wrap" style="min-height: 22rem"><canvas id="chartReceitasPartidosDoughnut" aria-label="Gráfico rosca"></canvas></div>
+        </div>
+      </div>
     </section>
 
     <section class="panel">
@@ -1135,6 +1194,208 @@
           }
         })();
       });
+    })();
+
+    /** Gráficos de receitas por partido — dados de data/tse-receitas-orgaos-partidarios-rj-2024.json (build SPCE/TSE). */
+    (function setupGraficosReceitasPartidosTse() {
+      const JSON_PATH = "data/tse-receitas-orgaos-partidarios-rj-2024.json";
+      let payloadReceitas = null;
+      let chartBar = null;
+      let chartDoughnut = null;
+      let chartJsPromise = null;
+
+      function fmtBrlNum(n) {
+        return Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+      }
+
+      function corPalette(i) {
+        const h = (i * 47) % 360;
+        const l = 48 + ((i % 3) - 1) * 4;
+        return `hsl(${h} 58% ${l}%)`;
+      }
+
+      function ensureChartJs() {
+        if (typeof Chart !== "undefined") return Promise.resolve();
+        if (chartJsPromise) return chartJsPromise;
+        chartJsPromise = new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+          s.crossOrigin = "anonymous";
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error("Não foi possível carregar Chart.js (CDN)."));
+          document.head.appendChild(s);
+        });
+        return chartJsPromise;
+      }
+
+      async function fetchPayload() {
+        const url = new URL(JSON_PATH, window.location.href).toString();
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) throw new Error(`${r.status} ao ler ${JSON_PATH}`);
+        return r.json();
+      }
+
+      function destroyCharts() {
+        if (chartBar) {
+          chartBar.destroy();
+          chartBar = null;
+        }
+        if (chartDoughnut) {
+          chartDoughnut.destroy();
+          chartDoughnut = null;
+        }
+      }
+
+      function renderCharts() {
+        if (!payloadReceitas || !payloadReceitas.partidos || typeof Chart === "undefined") return;
+        const partidos = payloadReceitas.partidos;
+        const topOnly = document.getElementById("chkReceitasTop15");
+        const listBar = topOnly && topOnly.checked ? partidos.slice(0, 15) : [...partidos];
+        const labelsBar = listBar.map((p) => p.sigla);
+        const valuesBar = listBar.map((p) => p.receitaTotal);
+        const colorsBar = labelsBar.map((_, i) => corPalette(i));
+
+        const ctxB = document.getElementById("chartReceitasPartidosBar");
+        const ctxD = document.getElementById("chartReceitasPartidosDoughnut");
+        if (!ctxB || !ctxD) return;
+
+        destroyCharts();
+
+        chartBar = new Chart(ctxB.getContext("2d"), {
+          type: "bar",
+          data: {
+            labels: labelsBar,
+            datasets: [
+              {
+                label: "Receita (R$)",
+                data: valuesBar,
+                backgroundColor: colorsBar,
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label(ctx) {
+                    return fmtBrlNum(ctx.raw);
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  callback(v) {
+                    return Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const totalGeral = partidos.reduce((s, p) => s + p.receitaTotal, 0);
+        const k = Math.min(
+          Math.max(3, parseInt(document.getElementById("rngReceitasDoughnutTop").value, 10) || 8),
+          partidos.length
+        );
+        const topK = partidos.slice(0, k);
+        const somaTop = topK.reduce((s, p) => s + p.receitaTotal, 0);
+        const demais = Math.max(0, totalGeral - somaTop);
+        const labelsD = topK.map((p) => p.sigla);
+        const valuesD = topK.map((p) => p.receitaTotal);
+        if (demais > 0.01) {
+          labelsD.push("Demais");
+          valuesD.push(demais);
+        }
+        const colorsD = labelsD.map((_, i) => corPalette(i + 3));
+
+        chartDoughnut = new Chart(ctxD.getContext("2d"), {
+          type: "doughnut",
+          data: {
+            labels: labelsD,
+            datasets: [
+              {
+                data: valuesD,
+                backgroundColor: colorsD,
+                borderWidth: 1,
+                borderColor: "rgba(12,15,20,0.85)",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } },
+              tooltip: {
+                callbacks: {
+                  label(ctx) {
+                    const v = ctx.raw;
+                    const pct = totalGeral ? (v / totalGeral) * 100 : 0;
+                    return `${fmtBrlNum(v)} (${pct.toFixed(1)}% do total RJ)`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      async function loadAndRender() {
+        const msg = document.getElementById("msgReceitasPartidosChart");
+        const note = document.getElementById("noteReceitasPartidosTse");
+        if (msg) msg.textContent = "Carregando dados para os gráficos…";
+        try {
+          await ensureChartJs();
+          payloadReceitas = await fetchPayload();
+          if (note && payloadReceitas.observacao) {
+            note.innerHTML =
+              `Agregação de <span class="mono">VR_RECEITA</span> por <span class="mono">SG_PARTIDO</span> no arquivo oficial
+              <strong>receitas_orgaos_partidarios_2024_RJ.csv</strong> (órgãos partidários, eleições municipais 2024). Gere de novo com
+              <span class="mono">npm run build:tse-partidos-rj</span> após atualizar o CSV do TSE.
+              <span class="muted" style="display:block;margin-top:0.45rem">${escapeHtml(payloadReceitas.observacao)}</span>`;
+          }
+          if (payloadReceitas.geradoEm && msg) {
+            msg.textContent = `Dados carregados (${payloadReceitas.partidos?.length ?? 0} partidos). Build: ${payloadReceitas.geradoEm}.`;
+          } else if (msg) {
+            msg.textContent = "";
+          }
+          renderCharts();
+        } catch (e) {
+          console.error(e);
+          destroyCharts();
+          if (msg) {
+            msg.innerHTML =
+              `<span class="alert">Não foi possível carregar <span class="mono">${escapeHtml(JSON_PATH)}</span>: ${escapeHtml(String(e && e.message ? e.message : e))}. Rode <span class="mono">npm run build:tse-partidos-rj</span> na raiz do repositório e publique o JSON em <span class="mono">data/</span>.</span>`;
+          }
+        }
+      }
+
+      const rng = document.getElementById("rngReceitasDoughnutTop");
+      const lbl = document.getElementById("lblReceitasDoughnutTop");
+      if (rng && lbl) {
+        lbl.textContent = String(rng.value);
+        rng.addEventListener("input", () => {
+          lbl.textContent = String(rng.value);
+          if (payloadReceitas) renderCharts();
+        });
+      }
+
+      document.getElementById("btnReceitasChartReload")?.addEventListener("click", () => {
+        void loadAndRender();
+      });
+      document.getElementById("chkReceitasTop15")?.addEventListener("change", () => {
+        if (payloadReceitas) renderCharts();
+      });
+
+      void loadAndRender();
     })();
 
     (function init() {
