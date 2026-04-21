@@ -3,6 +3,7 @@
   "private": true,
   "description": "Site estático (HTML/CSS/JS). Proxy opcional para API Portal da Transparência.",
   "scripts": {
+    "build:vereadores-rj": "node scripts/build-vereadores-rj-json.cjs",
     "build:tse-df": "node scripts/build-tse-df-json-from-csv.cjs",
     "build:tse-partidos-rj": "node scripts/build-tse-receitas-partidos-rj.cjs",
     "dev": "node scripts/politapp-dev-server.cjs",

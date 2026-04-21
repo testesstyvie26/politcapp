@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vereadores — Rio de Janeiro 2024 | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.12), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    header { margin-bottom: 1.75rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.95rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 72ch; font-size: 0.95rem; }
+    header a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .filters {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+    @media (min-width: 720px) {
+      .filters { grid-template-columns: 1fr 12rem 8rem; }
+    }
+    label {
+      display: flex; flex-direction: column; gap: 0.35rem;
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    }
+    input, select, button {
+      font: inherit;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      padding: 0.5rem 0.65rem;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      background: var(--accent);
+      color: #041018;
+      border: none;
+      align-self: flex-end;
+    }
+    button:hover { filter: brightness(1.06); }
+    button.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); max-height: min(70vh, 52rem); overflow-y: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th {
+      position: sticky; top: 0;
+      background: var(--surface2);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      z-index: 1;
+    }
+    tr:hover td { background: rgba(61, 139, 253, 0.06); }
+    .num { text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .mono { font-family: ui-monospace, monospace; font-size: 0.8rem; }
+    .muted { color: var(--muted); }
+    .toolbar-foot {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      font-size: 0.86rem;
+    }
+    .alert { padding: 0.75rem; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fecaca; }
+  </style>
+</head>
+<body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="vereadores-rj.html" aria-current="page">Vereadores RJ</a>
+      <a href="transparencia.html">Transparência</a>
+      <a href="midia-social.html">Mídia social</a>
+      <a href="tarefas.html">Tarefas</a>
+      <a href="login.html">Entrar</a>
+      <a href="conta.html">Conta</a>
+    </nav>
+
+    <header>
+      <h1>Vereadores — Rio de Janeiro (capital)</h1>
+      <p>
+        Candidaturas a <strong>vereador</strong> nas eleições municipais de 2024 no município do Rio de Janeiro
+        (<abbr title="Unidade eleitoral TSE">UE</abbr> <span class="mono">60011</span>), segundo o arquivo
+        <span class="mono">consulta_cand</span> do
+        <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2024" target="_blank" rel="noopener">Portal de Dados Abertos do TSE</a>.
+        Atualize a lista com <span class="mono">npm run build:vereadores-rj</span>.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>Lista</h2>
+      <p class="note" id="metaLista">Carregando…</p>
+      <div id="msgErro" hidden class="alert"></div>
+      <div class="filters">
+        <label>
+          Buscar (nome de urna, nome ou partido)
+          <input type="search" id="inpBusca" placeholder="Ex.: maria, PSOL, 12345…" autocomplete="off" />
+        </label>
+        <label>
+          Partido
+          <select id="selPartido"><option value="">Todos</option></select>
+        </label>
+        <label style="align-self: end">
+          Por página
+          <select id="selPageSize">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nº</th>
+              <th>Nome de urna</th>
+              <th>Partido</th>
+              <th>Situação</th>
+              <th class="mono">SQ</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="toolbar-foot">
+        <span class="muted" id="lblPagina"></span>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+          <button type="button" class="secondary" id="btnPrev" disabled>Anterior</button>
+          <button type="button" class="secondary" id="btnNext" disabled>Próxima</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const JSON_URL = "data/vereadores-rj-rio-2024.json";
+    const PAGE = { num: 1, size: 50 };
+    let raw = [];
+    let partidosOrdenados = [];
+    let sgUeTse = "60011";
+    let geradoEm = "";
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function norm(s) {
+      return String(s || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{M}/gu, "");
+    }
+
+    function filtrar() {
+      const q = norm(document.getElementById("inpBusca").value.trim());
+      const p = document.getElementById("selPartido").value;
+      return raw.filter((r) => {
+        if (p && r.partido !== p) return false;
+        if (!q) return true;
+        const hay = [r.nomeUrna, r.nomeCompleto, r.partido, r.numero, r.partidoNome]
+          .filter(Boolean)
+          .map(norm)
+          .join(" ");
+        return hay.includes(q) || hay.split(/\s+/).some((w) => w.startsWith(q)) || q.split(/\s+/).every((term) => hay.includes(term));
+      });
+    }
+
+    function render() {
+      const tbody = document.getElementById("tbody");
+      const lista = filtrar();
+      PAGE.size = parseInt(document.getElementById("selPageSize").value, 10) || 50;
+      const total = lista.length;
+      const pages = Math.max(1, Math.ceil(total / PAGE.size));
+      if (PAGE.num > pages) PAGE.num = pages;
+      if (PAGE.num < 1) PAGE.num = 1;
+      const start = (PAGE.num - 1) * PAGE.size;
+      const slice = lista.slice(start, start + PAGE.size);
+
+      tbody.innerHTML = slice
+        .map((r) => {
+          const n = r.numero != null ? escapeHtml(String(r.numero)) : "—";
+          const sq = r.sqCandidato != null ? escapeHtml(String(r.sqCandidato)) : "—";
+          return `<tr>
+            <td class="num mono">${n}</td>
+            <td>${escapeHtml(r.nomeUrna || "—")}</td>
+            <td><strong>${escapeHtml(r.partido || "—")}</strong>${r.partidoNome ? `<span class="muted" style="display:block;font-size:0.78rem">${escapeHtml(r.partidoNome)}</span>` : ""}</td>
+            <td>${escapeHtml(r.situacao || "—")}</td>
+            <td class="mono">${sq}</td>
+          </tr>`;
+        })
+        .join("");
+
+      document.getElementById("lblPagina").textContent =
+        total === 0
+          ? "Nenhum registo com os filtros atuais."
+          : `Página ${PAGE.num} de ${pages} · ${total} registo(s) filtrado(s) · ${raw.length} no ficheiro`;
+
+      document.getElementById("btnPrev").disabled = PAGE.num <= 1;
+      document.getElementById("btnNext").disabled = PAGE.num >= pages || pages <= 1;
+
+      const meta = document.getElementById("metaLista");
+      if (raw.length) {
+        const ts = geradoEm ? ` · gerado em ${escapeHtml(geradoEm)}` : "";
+        meta.textContent = `Fonte: TSE consulta_cand · cargo vereador · UE ${escapeHtml(sgUeTse)} · ${raw.length} candidaturas${ts}.`;
+      }
+    }
+
+    async function load() {
+      const msg = document.getElementById("msgErro");
+      const meta = document.getElementById("metaLista");
+      msg.hidden = true;
+      meta.textContent = "A carregar…";
+      try {
+        const r = await fetch(new URL(JSON_URL, window.location.href).toString(), { cache: "no-store" });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        raw = data.vereadores || [];
+        sgUeTse = data.sgUeTse || "60011";
+        geradoEm = data.geradoEm || "";
+        const set = new Set(raw.map((x) => x.partido).filter(Boolean));
+        partidosOrdenados = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
+        const sel = document.getElementById("selPartido");
+        sel.innerHTML = '<option value="">Todos</option>' + partidosOrdenados.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+        PAGE.num = 1;
+        render();
+      } catch (e) {
+        console.error(e);
+        msg.hidden = false;
+        msg.textContent = `Não foi possível carregar ${JSON_URL}. Execute na raiz do projeto: npm run build:vereadores-rj`;
+        document.getElementById("tbody").innerHTML = "";
+        meta.textContent = "";
+      }
+    }
+
+    document.getElementById("inpBusca").addEventListener("input", () => {
+      PAGE.num = 1;
+      render();
+    });
+    document.getElementById("selPartido").addEventListener("change", () => {
+      PAGE.num = 1;
+      render();
+    });
+    document.getElementById("selPageSize").addEventListener("change", () => {
+      PAGE.num = 1;
+      render();
+    });
+    document.getElementById("btnPrev").addEventListener("click", () => {
+      PAGE.num--;
+      render();
+    });
+    document.getElementById("btnNext").addEventListener("click", () => {
+      PAGE.num++;
+      render();
+    });
+
+    load();
+  </script>
+</body>
+</html>
