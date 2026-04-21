@@ -261,7 +261,8 @@
     <section class="panel">
       <h2>Mapa interativo — necessidades públicas por município</h2>
       <p class="note" style="margin-bottom:1rem">
-        Cores por mesorregião. Ao clicar em um município, veja eixos temáticos e dicas de publicação.
+        Cores por mesorregião (nomes alinhados ao uso regional; no IBGE a Baixada fluminense consta como <strong>Baixadas Litorâneas</strong>).
+        Ao clicar em um município, veja o nome IBGE e os eixos temáticos.
         Fontes espaciais: <a href="https://servicodados.ibge.gov.br/api/v3/malhas/estados/33" target="_blank" rel="noopener">IBGE — malhas municipais (UF 33)</a> e
         <a href="https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios" target="_blank" rel="noopener">localidades</a>.
         O conteúdo temático é <strong>sintético</strong> (não substitui indicadores oficiais como IDHM, SNIS, CNES, etc.).
@@ -435,7 +436,7 @@
     const IBGE_MUN_RJ = "https://servicodados.ibge.gov.br/api/v1/localidades/estados/33/municipios";
 
     const MESO_INSIGHTS = {
-      "Baixadas": {
+      "Baixada Fluminense": {
         color: "#e07a5f",
         prioridade: 5,
         eixos: ["Saneamento e drenagem", "Saúde da família e urgência", "Mobilidade metropolitana", "Segurança e prevenção social"],
@@ -491,6 +492,27 @@
       },
     };
 
+    /**
+     * Nomes oficiais das mesorregiões IBGE (RJ) → chave em MESO_INSIGHTS.
+     * O IBGE usa «Baixadas Litorâneas» para a Baixada Fluminense; sem este mapa o código caía no fallback e “perdia” Duque de Caxias, Belford Roxo, etc.
+     */
+    const MESO_IBGE_PARA_INSIGHTS = {
+      "Baixadas Litorâneas": "Baixada Fluminense",
+      "Centro Fluminense": "Centro Fluminense",
+      "Metropolitana do Rio de Janeiro": "Metropolitana do Rio de Janeiro",
+      "Norte Fluminense": "Norte Fluminense",
+      "Noroeste Fluminense": "Noroeste Fluminense",
+      "Sul Fluminense": "Sul Fluminense",
+    };
+
+    function mesoInsightKey(nomeIbge) {
+      if (!nomeIbge || nomeIbge === "—") return "Centro Fluminense";
+      const mapped = MESO_IBGE_PARA_INSIGHTS[nomeIbge];
+      if (mapped && MESO_INSIGHTS[mapped]) return mapped;
+      if (MESO_INSIGHTS[nomeIbge]) return nomeIbge;
+      return "Centro Fluminense";
+    }
+
     /** Pontos de comércio / visitas (coordenadas aproximadas). */
     const TIPO_COMERCIO_COLORS = {
       "Feira ou mercado municipal": "#f4a261",
@@ -506,8 +528,8 @@
       { nome: "Centro Luiz Gonzaga (Feira de São Cristóvão)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9015, lng: -43.2309, dica: "Cultura nordestina e economia criativa; visitas pedem alinhamento com a gestão do espaço e fornecedores." },
       { nome: "Mercado São Pedro", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8835, lng: -43.1062, dica: "Tradicional para peixes e banca; útil para agenda com produtores e consumidores da Baía." },
       { nome: "Mercado de Campo Grande", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9035, lng: -43.5568, dica: "Polo de bairro denso; bom para temas de transporte e serviços periféricos." },
-      { nome: "Centro de Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7856, lng: -43.3117, dica: "Eixo histórico da Baixada; combine com entidades locais e rotas de ônibus." },
-      { nome: "Centro de Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7592, lng: -43.4513, dica: "Alto volume comercial; útil para fechar narrativa metropolitana sem ficar só na capital." },
+      { nome: "Centro de Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7856, lng: -43.3117, dica: "Eixo histórico da Baixada; combine com entidades locais e rotas de ônibus." },
+      { nome: "Centro de Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7592, lng: -43.4513, dica: "Alto volume comercial; útil para fechar narrativa metropolitana sem ficar só na capital." },
       { nome: "Mercado Municipal de Campos", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Feira ou mercado municipal", lat: -21.7583, lng: -41.3338, dica: "Ponto de encontro de interior; pauta rural-urbana e cadeias que abastecem a região." },
       { nome: "Centro comercial de Macaé", cidade: "Macaé", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.3708, lng: -41.7768, dica: "Economia ligada ao setor de energia; contraste entre serviços e comércio local." },
       { nome: "Rua Teresa e entorno", cidade: "Petrópolis", meso: "Centro Fluminense", tipo: "Turismo e comércio", lat: -22.5125, lng: -43.1735, dica: "Comércio turístico e histórico; atenção a logística em fins de semana e eventos." },
@@ -518,17 +540,17 @@
       { nome: "Centro de Resende", cidade: "Resende", meso: "Sul Fluminense", tipo: "Associação e rede de negócios", lat: -22.4688, lng: -44.4469, dica: "Proximidade a polo industrial; ACIs e sindicatos costumam concentrar demandas de PMEs." },
       { nome: "Orla e centro de Arraial do Cabo", cidade: "Arraial do Cabo", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.9664, lng: -42.0278, dica: "Pesca artesanal e turismo; visitas sensíveis ao calendário de mar e ocupação de praia." },
       { nome: "Centro de São Gonçalo", cidade: "São Gonçalo", meso: "Metropolitana do Rio de Janeiro", tipo: "Centro urbano e comércio de rua", lat: -22.8268, lng: -43.0538, dica: "Segundo maior pólo comercial da RM; boa vitrine para pauta metropolitana além da capital." },
-      { nome: "Centro de Belford Roxo", cidade: "Belford Roxo", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.764, lng: -43.3992, dica: "Tecido comercial denso na Baixada; diálogo com comerciantes e transporte coletivo." },
-      { nome: "Centro de São João de Meriti", cidade: "São João de Meriti", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.8039, lng: -43.3729, dica: "Fluxo intenso; útil para temas de segurança urbana e serviços." },
+      { nome: "Centro de Belford Roxo", cidade: "Belford Roxo", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.764, lng: -43.3992, dica: "Tecido comercial denso na Baixada; diálogo com comerciantes e transporte coletivo." },
+      { nome: "Centro de São João de Meriti", cidade: "São João de Meriti", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.8039, lng: -43.3729, dica: "Fluxo intenso; útil para temas de segurança urbana e serviços." },
       { nome: "Praça da Bandeira (polo comercial)", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.416, lng: -42.9756, dica: "Região serrana; comércio e turismo; atenção a eventos e clima." },
       { nome: "Centro de Cabo Frio", cidade: "Cabo Frio", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.8878, lng: -42.026, dica: "Litoral norte; sazonalidade forte; combine moradia local e turismo." },
       { nome: "Centro de Barra Mansa", cidade: "Barra Mansa", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.548, lng: -44.1753, dica: "Polo do médio Paraíba; boa ponte com Volta Redonda e rodovias." },
       { nome: "Centro de Três Rios", cidade: "Três Rios", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.1167, lng: -43.2092, dica: "Entroncamento rodoviário; comércio de passagem e interior." },
-      { nome: "Centro de Nilópolis", cidade: "Nilópolis", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.807, lng: -43.4139, dica: "Densidade urbana; escuta com lojistas de rua e associações." },
+      { nome: "Centro de Nilópolis", cidade: "Nilópolis", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.807, lng: -43.4139, dica: "Densidade urbana; escuta com lojistas de rua e associações." },
       { nome: "Feira de São Pedro (Teresópolis)", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Feira ou mercado municipal", lat: -22.4112, lng: -42.9656, dica: "Produtos da serra; bom para narrativa de agricultura e turismo." },
-      { nome: "Centro de Magé", cidade: "Magé", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.6528, lng: -43.0408, dica: "Baía de Guanabara; ligação com Barcas e logística fluvial." },
-      { nome: "Centro de Queimados", cidade: "Queimados", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7161, lng: -43.5553, dica: "Corredor metropolitano; comércio popular e feiras de bairro." },
-      { nome: "Centro de Mesquita", cidade: "Mesquita", meso: "Baixadas", tipo: "Centro urbano e comércio de rua", lat: -22.7839, lng: -43.4297, dica: "Tecido comercial contínuo com vizinhos; boa rota para microcredito e serviços." },
+      { nome: "Centro de Magé", cidade: "Magé", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.6528, lng: -43.0408, dica: "Baía de Guanabara; ligação com Barcas e logística fluvial." },
+      { nome: "Centro de Queimados", cidade: "Queimados", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7161, lng: -43.5553, dica: "Corredor metropolitano; comércio popular e feiras de bairro." },
+      { nome: "Centro de Mesquita", cidade: "Mesquita", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7839, lng: -43.4297, dica: "Tecido comercial contínuo com vizinhos; boa rota para microcredito e serviços." },
       { nome: "Centro de Barra do Piraí", cidade: "Barra do Piraí", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.4711, lng: -43.8261, dica: "Vale do Paraíba; polo regional de serviços e comércio." },
       { nome: "Orla de Búzios", cidade: "Armação dos Búzios", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.7469, lng: -41.8817, dica: "Economia turística; sensibilidade a moradia e trabalho informal na alta temporada." },
       { nome: "Centro de São Pedro da Aldeia", cidade: "São Pedro da Aldeia", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.8389, lng: -42.1028, dica: "Lagos region; eventos costumam puxar fluxo para o comércio local." },
@@ -619,9 +641,9 @@
       { nome: "Arraiá Beneficente APAE Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Evento beneficente", lat: -22.885, lng: -43.098, inicio: "2026-06-28", fim: "2026-06-28", linkOficial: "https://www.apae.org.br/", dica: "Festa junina; bom para parcerias com entidades." },
       { nome: "Meia Maratona de São Gonçalo", cidade: "São Gonçalo", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8268, lng: -43.0538, inicio: "2026-03-15", dica: "Grande público; atenção a rotas alternativas." },
       { nome: "Caminhada Ecológica da Baía", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Caminhada / mobilidade", lat: -22.891, lng: -43.124, inicio: "2026-09-20", dica: "Pauta ambiental; mídia espontânea em grupo." },
-      { nome: "Corrida da Integração — Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.7856, lng: -43.3117, inicio: "2026-05-10", dica: "Centro e avenidas; confirmar largada com PM." },
-      { nome: "Pedal Beneficente — Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixadas", tipo: "Evento beneficente", lat: -22.7592, lng: -43.4513, inicio: "2026-08-02", fim: "2026-08-02", dica: "Inscrições revertem a projetos sociais." },
-      { nome: "Corrida da Baixada Fluminense", cidade: "Belford Roxo", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.764, lng: -43.3992, inicio: "2026-07-12", dica: "Periferia densa; hidratação e segurança no percurso." },
+      { nome: "Corrida da Integração — Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixada Fluminense", tipo: "Corrida de rua", lat: -22.7856, lng: -43.3117, inicio: "2026-05-10", dica: "Centro e avenidas; confirmar largada com PM." },
+      { nome: "Pedal Beneficente — Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixada Fluminense", tipo: "Evento beneficente", lat: -22.7592, lng: -43.4513, inicio: "2026-08-02", fim: "2026-08-02", dica: "Inscrições revertem a projetos sociais." },
+      { nome: "Corrida da Baixada Fluminense", cidade: "Belford Roxo", meso: "Baixada Fluminense", tipo: "Corrida de rua", lat: -22.764, lng: -43.3992, inicio: "2026-07-12", dica: "Periferia densa; hidratação e segurança no percurso." },
       { nome: "Festival de Inverno — Petrópolis", cidade: "Petrópolis", meso: "Centro Fluminense", tipo: "Festival ou cultura", lat: -22.5049, lng: -43.1789, inicio: "2026-07-18", fim: "2026-07-26", dica: "Vários dias; cultura e comércio; trânsito intenso." },
       { nome: "Corrida Serra Teresópolis", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Corrida de rua", lat: -22.416, lng: -42.9756, inicio: "2026-04-12", dica: "Altitude; clima mais frio; confirme horário de largada." },
       { nome: "Gala Beneficente Hospital Municipal", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Evento beneficente", lat: -22.418, lng: -42.972, inicio: "2026-05-30", dica: "Evento fechado; networking com lideranças locais." },
@@ -648,13 +670,13 @@
       { nome: "Corrida Rio das Ostras", cidade: "Rio das Ostras", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.5269, lng: -41.945, inicio: "2026-12-06", dica: "Fim de ano; calendário escolar encerrando." },
       { nome: "Festival Praia — São Pedro da Aldeia", cidade: "São Pedro da Aldeia", meso: "Sul Fluminense", tipo: "Festival ou cultura", lat: -22.8389, lng: -42.1028, inicio: "2026-02-14", fim: "2026-02-16", dica: "Carnaval prolongado; som alto em áreas próximas." },
       { nome: "Corrida Madureira Roll", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Corrida de rua", lat: -22.8732, lng: -43.3378, inicio: "2026-11-22", dica: "Zona Norte; integração com mercado e BRT." },
-      { nome: "Pedal Queimados Solidário", cidade: "Queimados", meso: "Baixadas", tipo: "Evento beneficente", lat: -22.7161, lng: -43.5553, inicio: "2026-10-25", dica: "Bike e cesta básica; percurso curto urbano." },
-      { nome: "Corrida Mesquita em Movimento", cidade: "Mesquita", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.7839, lng: -43.4297, inicio: "2026-04-21", dica: "Percurso em avenida principal; confirme interdição." },
+      { nome: "Pedal Queimados Solidário", cidade: "Queimados", meso: "Baixada Fluminense", tipo: "Evento beneficente", lat: -22.7161, lng: -43.5553, inicio: "2026-10-25", dica: "Bike e cesta básica; percurso curto urbano." },
+      { nome: "Corrida Mesquita em Movimento", cidade: "Mesquita", meso: "Baixada Fluminense", tipo: "Corrida de rua", lat: -22.7839, lng: -43.4297, inicio: "2026-04-21", dica: "Percurso em avenida principal; confirme interdição." },
       { nome: "Barra do Piraí Night Run", cidade: "Barra do Piraí", meso: "Sul Fluminense", tipo: "Corrida de rua", lat: -22.4711, lng: -43.8261, inicio: "2026-09-19", dica: "Noite; iluminação pública variável." },
       { nome: "Festival Inverno — Nova Friburgo", cidade: "Nova Friburgo", meso: "Centro Fluminense", tipo: "Festival ou cultura", lat: -22.2818, lng: -42.531, inicio: "2026-07-10", fim: "2026-07-12", dica: "Frio; agasalhos para equipe de campanha." },
-      { nome: "Corrida Nilópolis", cidade: "Nilópolis", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.807, lng: -43.4139, inicio: "2026-06-01", dica: "Manhã de semana; trânsito escolar." },
-      { nome: "Magé Caminhada Azul", cidade: "Magé", meso: "Baixadas", tipo: "Caminhada / mobilidade", lat: -22.6528, lng: -43.0408, inicio: "2026-11-20", dica: "Novembro azul; saúde do homem." },
-      { nome: "São João de Meriti — Corrida Popular", cidade: "São João de Meriti", meso: "Baixadas", tipo: "Corrida de rua", lat: -22.8039, lng: -43.3729, inicio: "2026-08-09", dica: "Calendário escolar de férias; famílias presentes." },
+      { nome: "Corrida Nilópolis", cidade: "Nilópolis", meso: "Baixada Fluminense", tipo: "Corrida de rua", lat: -22.807, lng: -43.4139, inicio: "2026-06-01", dica: "Manhã de semana; trânsito escolar." },
+      { nome: "Magé Caminhada Azul", cidade: "Magé", meso: "Baixada Fluminense", tipo: "Caminhada / mobilidade", lat: -22.6528, lng: -43.0408, inicio: "2026-11-20", dica: "Novembro azul; saúde do homem." },
+      { nome: "São João de Meriti — Corrida Popular", cidade: "São João de Meriti", meso: "Baixada Fluminense", tipo: "Corrida de rua", lat: -22.8039, lng: -43.3729, inicio: "2026-08-09", dica: "Calendário escolar de férias; famílias presentes." },
     ];
 
     function parseISODate(s) {
