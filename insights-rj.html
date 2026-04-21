@@ -228,6 +228,35 @@
     }
     .filtro-baixada[hidden] { display: none !important; }
     .filtro-necessidade-baixada[hidden] { display: none !important; }
+
+    @media (max-width: 640px) {
+      .wrap { padding: 1rem 0.85rem 2.5rem; }
+      .site-nav { gap: 0.4rem 0.65rem; font-size: 0.82rem; margin-bottom: 1rem; }
+      header { margin-bottom: 1.15rem; }
+      header p { font-size: 0.9rem; }
+      .panel { padding: 1rem; margin-bottom: 1.1rem; }
+      .map-toolbar {
+        flex-direction: column; align-items: stretch; gap: 0.65rem; margin-bottom: 0.85rem;
+      }
+      .map-toolbar label { width: 100%; }
+      .map-toolbar select, .map-toolbar input[type="search"] {
+        min-width: 0; width: 100%; max-width: 100%;
+      }
+      .map-wrap { min-height: 0; }
+      #map { height: min(52vh, 440px) !important; min-height: 300px; }
+      .comercio-filtros { flex-direction: column; align-items: stretch; gap: 0.6rem; margin-bottom: 0.85rem; }
+      .comercio-filtros label { width: 100%; }
+      .comercio-filtros select { min-width: 0; width: 100%; }
+      #mapComercio { height: min(58vh, 520px) !important; min-height: 320px; }
+      .comercio-lista { display: none !important; }
+      .viagem-toolbar { flex-direction: column; align-items: stretch; gap: 0.65rem; }
+      .viagem-toolbar label { min-width: 0 !important; width: 100%; }
+      .viagem-toolbar .btn-viagem { width: 100%; align-self: stretch; }
+      .viagem-toolbar input[type="date"] { min-width: 0; width: 100%; max-width: 100%; }
+      input[type="range"] { max-width: 100% !important; width: 100%; }
+      #mapViagem { height: min(50vh, 400px) !important; min-height: 280px; }
+      .viagem-pois { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -334,7 +363,7 @@
       </div>
       <div class="legend" id="legendaComercio" style="margin-top:0.75rem" aria-hidden="true"></div>
       <p id="comercioStatus" class="note" style="margin-top:0.75rem"></p>
-      <div class="comercio-lista" id="listaComercio"></div>
+      <div class="comercio-lista" id="listaComercio" aria-label="Lista de polos: use marcadores no mapa em ecrãs pequenos"></div>
     </section>
 
     <section class="panel">
@@ -1208,6 +1237,12 @@
       });
 
       setTimeout(() => mapV.invalidateSize(), 300);
+
+      let invViagemT;
+      window.addEventListener("resize", () => {
+        clearTimeout(invViagemT);
+        invViagemT = setTimeout(() => mapV.invalidateSize(), 200);
+      });
     }
 
     function buildCards() {
@@ -1252,6 +1287,8 @@
 
     function initComercioMap() {
       const statusEl = document.getElementById("comercioStatus");
+      const listaEl = document.getElementById("listaComercio");
+      const mqComercioMobile = window.matchMedia("(max-width: 640px)");
       const tipos = [...new Set(POIS_COMERCIO.map((p) => p.tipo))].sort((a, b) => a.localeCompare(b, "pt-BR"));
       const mesos = [...new Set(POIS_COMERCIO.map((p) => p.meso))].sort((a, b) => a.localeCompare(b, "pt-BR"));
       const selTipo = document.getElementById("filtroTipoComercio");
@@ -1377,15 +1414,38 @@
         });
       }
 
+      function setComercioStatusText() {
+        const n = POIS_COMERCIO.filter(matchesFilter).length;
+        const mobile = mqComercioMobile.matches;
+        if (listaEl) listaEl.setAttribute("aria-hidden", mobile ? "true" : "false");
+        if (mobile) {
+          statusEl.textContent =
+            n === POIS_COMERCIO.length
+              ? `${n} pontos no mapa. Toque num marcador para ver detalhes e centralizar.`
+              : `${n} ponto(s) com os filtros atuais. Toque nos marcadores no mapa.`;
+        } else {
+          statusEl.textContent =
+            n === POIS_COMERCIO.length
+              ? `${n} pontos no mapa. Clique nos marcadores ou na lista para centralizar.`
+              : `${n} ponto(s) com os filtros atuais.`;
+        }
+      }
+
       function applyFilters() {
         refreshMarkers();
         buildLista();
-        const n = POIS_COMERCIO.filter(matchesFilter).length;
-        statusEl.textContent =
-          n === POIS_COMERCIO.length
-            ? `${n} pontos no mapa. Clique nos marcadores ou na lista para centralizar.`
-            : `${n} ponto(s) com os filtros atuais.`;
+        setComercioStatusText();
       }
+
+      mqComercioMobile.addEventListener("change", () => {
+        setComercioStatusText();
+      });
+
+      let invComercioT;
+      window.addEventListener("resize", () => {
+        clearTimeout(invComercioT);
+        invComercioT = setTimeout(() => mapC.invalidateSize(), 200);
+      });
 
       selTipo.addEventListener("change", applyFilters);
       selMeso.addEventListener("change", () => {
@@ -1547,6 +1607,12 @@
 
       gj.bringToFront();
       map.fitBounds(gj.getBounds(), { padding: [24, 24] });
+
+      let invNecT;
+      window.addEventListener("resize", () => {
+        clearTimeout(invNecT);
+        invNecT = setTimeout(() => map.invalidateSize(), 200);
+      });
 
       function updateMapNecessidadesStatus() {
         const partes = [];

@@ -720,6 +720,148 @@
       return [...mid, ...wz];
     }
 
+    function partidoTextoParaPdf(r) {
+      const p = r && r.partido && String(r.partido).trim();
+      const n = r && r.partidoNome && String(r.partidoNome).trim();
+      if (p && n) return p + "\n" + n;
+      if (p) return p;
+      if (n) return n;
+      return "—";
+    }
+
+    function redesTextoParaPdf(r) {
+      const itens = (redesEContactos(r) || []).filter((x) => x && x.url && String(x.url).trim());
+      if (!itens.length) return "—";
+      return itens
+        .map((x) => {
+          const u = String(x.url).trim();
+          const l = (x.label && String(x.label).trim()) || "";
+          return l ? l + ": " + u : u;
+        })
+        .join("\n");
+    }
+
+    function exportarCaxiasPDF() {
+      const wj = window.jspdf;
+      if (!wj || !wj.jsPDF) {
+        window.alert(
+          "Não foi possível carregar a biblioteca jsPDF. Verifique a ligação à internet e recarregue a página.",
+        );
+        return;
+      }
+      const { jsPDF } = wj;
+      const lista = sortPorVotosCrescente(filtrar());
+      if (!lista.length) {
+        window.alert("Não há registos para exportar com os filtros atuais.");
+        return;
+      }
+      const btn = document.getElementById("btnExportPdf");
+      btn.disabled = true;
+      try {
+        const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+        if (typeof doc.autoTable !== "function") {
+          window.alert("O plugin autotable do jsPDF não carregou. Tente recarregar a página.");
+          return;
+        }
+        const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
+        const margin = 40;
+        let y0 = margin;
+        doc.setFontSize(15);
+        doc.setTextColor(20, 28, 40);
+        doc.text("Duque de Caxias — vereadores 2024 (votos crescentes)", margin, y0);
+        y0 += 16;
+        doc.setFontSize(9);
+        doc.setTextColor(80, 90, 100);
+        const partido = document.getElementById("selPartido").value;
+        const papel = document.getElementById("selPapel").value;
+        const busca = document.getElementById("inpBusca").value.trim();
+        const sub =
+          "Lista completa (ordenada de menor para maior nº de votos) · " +
+          lista.length +
+          " registo(s)" +
+          (partido ? " · partido: " + partido : "") +
+          (papel ? " · grupo: " + (PAPEL_LABEL[papel] || papel) : "") +
+          (busca ? " · busca: " + busca : "") +
+          (geradoEm ? " · dados: " + geradoEm : "");
+        const subLines = doc.splitTextToSize(sub, pageW - margin * 2);
+        doc.text(subLines, margin, y0);
+        y0 += 8 + subLines.length * 10;
+
+        const head = [
+          [
+            "Nº",
+            "Nome de urna",
+            "Partido",
+            "Grupo",
+            "Resultado",
+            "Votos",
+            "Telefone",
+            "WhatsApp (URL)",
+            "Redes e contactos",
+            "SQ",
+          ],
+        ];
+        const body = lista.map((r) => {
+          const n = r.numero != null ? String(r.numero) : "—";
+          const nome = r.nomeUrna && String(r.nomeUrna).trim() ? String(r.nomeUrna) : "—";
+          const part = partidoTextoParaPdf(r);
+          const pap = papelFromRow(r);
+          const grup = PAPEL_LABEL[pap] || pap;
+          const res =
+            r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? String(r.dsSitTotTurno).trim() : "—";
+          const vot = fmtIntPt(r.votos);
+          const tel = telefoneTexto(r);
+          const wurl = urlWhatsappPreferida(r) || "—";
+          const red = redesTextoParaPdf(r);
+          const sq = r.sqCandidato != null ? String(r.sqCandidato) : "—";
+          return [n, nome, part, grup, res, vot, tel, wurl, red, sq];
+        });
+
+        doc.autoTable({
+          head,
+          body,
+          startY: y0 + 4,
+          margin: { left: margin, right: margin },
+          styles: { fontSize: 6.5, cellPadding: 1.8, overflow: "linebreak", lineColor: [220, 224, 232], lineWidth: 0.2 },
+          headStyles: { fillColor: [20, 28, 40], textColor: [240, 240, 245], fontStyle: "bold" },
+          columnStyles: {
+            0: { halign: "center", cellWidth: 30 },
+            1: { cellWidth: 95 },
+            2: { cellWidth: 70 },
+            3: { cellWidth: 58 },
+            4: { cellWidth: 78 },
+            5: { halign: "right", cellWidth: 44 },
+            6: { cellWidth: 64 },
+            7: { cellWidth: 100 },
+            8: { cellWidth: 130 },
+            9: { cellWidth: 52 },
+          },
+          didDrawPage: (data) => {
+            doc.setFontSize(7);
+            doc.setTextColor(120, 120, 128);
+            doc.text("Pág. " + data.pageNumber, pageW - margin, pageH - 16, { align: "right" });
+          },
+        });
+
+        const now = new Date();
+        const fn =
+          "vereadores-duque-caxias-2024-" +
+          now.getFullYear() +
+          "-" +
+          String(now.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(now.getDate()).padStart(2, "0") +
+          ".pdf";
+        doc.save(fn);
+      } catch (e) {
+        console.error(e);
+        window.alert("Erro ao gerar o PDF. " + (e && e.message ? e.message : String(e)));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     function contagemPorPapel(rows) {
       const c = { eleito: 0, suplente: 0, participante: 0 };
       for (const row of rows) {
@@ -853,6 +995,9 @@
     document.getElementById("btnNext").addEventListener("click", () => {
       PAGE.num++;
       render();
+    });
+    document.getElementById("btnExportPdf").addEventListener("click", () => {
+      exportarCaxiasPDF();
     });
 
     load();
