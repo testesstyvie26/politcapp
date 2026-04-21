@@ -212,6 +212,34 @@
     }
     .pa-table .mono { font-size: 0.78rem; }
 
+    .campo-acoes-comunidade {
+      margin-top: 1.75rem;
+      padding-top: 1.35rem;
+      border-top: 1px solid var(--border);
+    }
+    .campo-acoes-comunidade > h3 {
+      margin: 0 0 0.45rem;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .campo-acoes-comunidade > .acoes-lead {
+      margin: 0 0 1rem;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 72ch;
+    }
+    .campo-acoes-comunidade .acoes-liste {
+      margin: 0.75rem 0 0;
+      padding-left: 1.15rem;
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .campo-acoes-comunidade .acoes-liste li { margin-bottom: 0.45rem; }
+    .campo-acoes-comunidade .acoes-liste strong { color: var(--text); }
+
     .ficha dl {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -638,6 +666,81 @@
           Cumpra sempre a <strong>legislação eleitoral</strong> aplicável a propaganda, impulsionamentos e registo de contas de campanha.
           Metas numéricas são exemplos — calibres consoante o tamanho da equipa e a fase do calendário.
         </p>
+      </div>
+
+      <div class="campo-acoes-comunidade" id="acoes-comunidade" data-field="acoes-comunidade">
+        <h3>Ações de comunidade</h3>
+        <p class="acoes-lead">
+          Lista orientativa de <strong>janelas de alto fluxo e contacto comunitário</strong> no <strong>Rio de Janeiro (capital e entorno com deslocamento frequente)</strong>
+          nos meses seguintes — útil para voluntariado, visibilidade temática e parcerias <em>sem</em> confundir com comício.
+          <strong>Confirme datas e regras locais</strong> (trânsito, autorização da organização, lei eleitoral quando aplicável).
+        </p>
+        <div class="pa-table-wrap" role="region" aria-label="Eventos e ações de comunidade no Rio de Janeiro">
+          <table class="pa-table">
+            <thead>
+              <tr>
+                <th scope="col">Evento / ação</th>
+                <th scope="col">Janela (referência)</th>
+                <th scope="col">Potencial de engajamento</th>
+                <th scope="col">Ideias de ação de comunidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Festival de Inverno RJ</strong></td>
+                <td>24 jul – 2 ago 2026 · Marina da Glória</td>
+                <td>Muito alto — grandes públicos, zona sul, forte circulação e partilha em redes.</td>
+                <td>Brigadas de informação com pauta educação; parceria com coletivos musicais locais; registo audiovisual para Reels (autorização do espaço).</td>
+              </tr>
+              <tr>
+                <td><strong>Rock in Rio 2026</strong></td>
+                <td>4–7 e 11–13 set 2026 · Parque Olímpico (Barra)</td>
+                <td>Muito alto — audiência massiva nacional/internacional; narrativa «Rio recebe o mundo».</td>
+                <td>Ações de voluntariado ambiental nas adjacências; debate em núcleos comunitários da Barra/Recreio (fora do recinto); cuidado com vedações eleitorais em período de campanha.</td>
+              </tr>
+              <tr>
+                <td><strong>ALMA Festival</strong></td>
+                <td>18 jul 2026 · Riocentro (referência agenda local)</td>
+                <td>Alto — fluxo concentrado jovem/adulto, boa janela de registo de contactos.</td>
+                <td>Feira de causas paralela com ONGs de educação; ponto de «cartão de propostas» escolares.</td>
+              </tr>
+              <tr>
+                <td><strong>Festas juninas e arraiais</strong></td>
+                <td>Jun (e prolongamentos até jul)</td>
+                <td>Alto — famílias, escolas, bairros; forte componente comunitário.</td>
+                <td>Apoio logístico a festas de escola pública e CEUs; bancas temáticas «professor e merenda»; fotos de proximidade para redes.</td>
+              </tr>
+              <tr>
+                <td><strong>Parada LGBTQIAPN+ do Rio</strong></td>
+                <td>Tradicionalmente jun (confirmar calendário 2026)</td>
+                <td>Muito alto — visibilidade, causas de direitos humanos e juventude.</td>
+                <td>Participação institucional de apoio (cuidando com simbolismo partidário fora de período eleitoral); alianças com coletivos educativos LGBTQIA+.</td>
+              </tr>
+              <tr>
+                <td><strong>Grandes eventos de corrida</strong> <span class="muted">(p.ex. Meia/Maratona)</span></td>
+                <td>Janelas típicas jun–ago (confirmar edição)</td>
+                <td>Alto — saúde, causas sociais, solidariedade.</td>
+                <td>Hidratação voluntária em nome de projeto escolar; engajamento com atletas amadores de bairro (Duque de Caxias ↔ capital).</td>
+              </tr>
+              <tr>
+                <td><strong>7 de setembro e agendas cívicas</strong></td>
+                <td>Set 2026</td>
+                <td>Médio a alto — sentimento patriótico e escolas municipais.</td>
+                <td>Roteiros com associações de moradores e escolas; discurso de cidadania e transparência.</td>
+              </tr>
+              <tr>
+                <td><strong>Inverno escolar e campanhas solidárias</strong></td>
+                <td>Jun–ago</td>
+                <td>Alto em segmentos família/educação — reforça pauta «Professor».</td>
+                <td>Doação agasalho/livro com associações; mutirão em bibliotecas comunitárias na Baixada Fluminense (Caxias, NM, SG).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="acoes-liste">
+          <li><strong>Duque de Caxias:</strong> cruzar esta lista com <strong>calendário municipal</strong> (FEIPLAN, jogos escolares, audiências públicas) para ações de comunidade semanalmente.</li>
+          <li><strong>Fontes a seguir:</strong> calendários oficiais (<a href="http://www.rio.rj.gov.br" target="_blank" rel="noopener noreferrer">Prefeitura do Rio</a>, sites dos festivais), imprensa local e agenda cultural agregada (ex.: <a href="https://rolebom.com/pt-br/rio-de-janeiro/calendar/2026" target="_blank" rel="noopener noreferrer">rolebom.com</a> — eventos do ano).</li>
+        </ul>
       </div>
 
       <p class="insi-foot">
