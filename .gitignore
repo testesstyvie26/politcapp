@@ -1,5 +1,7 @@
 .env
 node_modules/
+.wrangler/
+dist/
 *.log
 _tmp/
 consulta_cand_2024_RJ.csv
