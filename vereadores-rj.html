@@ -357,7 +357,9 @@
         A lista inclui <strong>todos</strong> os registos de vereador (cargo 13): candidatos titulares, suplentes e demais participantes, conforme
         <span class="mono">DS_SIT_TOT_TURNO</span>. Votos (1º turno), redes declaradas e contactos WhatsApp provenientes dos ficheiros
         <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE, quando existirem.
-        Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
+        Por defeito, a tabela abre com <strong>Duque de Caxias</strong> e ordenação <strong>por votos do menor para o maior</strong> (1.º turno). Use
+        <strong>Município</strong>, <strong>Partido</strong> e <strong>Grupo</strong> para filtrar. Parâmetros de URL:
+        <span class="mono">?municipio=58335</span> (Caxias) ou <span class="mono">60011</span> (Rio).
         Atualize os dados com <span class="mono">npm run build:vereadores-rj</span>.
         <a href="vereadores-rj-mapa-votos.html">Mapa de votos por zona e (exemplo) por seção</a>.
       </p>
@@ -426,9 +428,8 @@
               <th>Partido</th>
               <th>Grupo</th>
               <th>Resultado (pleito)</th>
-              <th class="num">Votos</th>
-              <th>Mídias sociais</th>
-              <th>WhatsApp</th>
+              <th class="num">Votos <span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">(menor → maior)</span></th>
+              <th>Redes e contactos</th>
               <th class="mono">SQ</th>
             </tr>
           </thead>
@@ -550,6 +551,7 @@
       if (/twitter\.com|^x\.com|t\.co\//i.test(u) || l.includes("twitter") || /\bx\s*\(twitter\)/i.test(label || ""))
         return "x";
       if (/tiktok\.com/i.test(u) || l.includes("tiktok")) return "tiktok";
+      if (/kwai\.com/i.test(u) || l.includes("kwai")) return "link";
       if (/youtube\.com|youtu\.be/i.test(u) || l.includes("youtube")) return "youtube";
       if (/linkedin\.com/i.test(u) || l.includes("linkedin")) return "linkedin";
       return "link";
@@ -618,6 +620,26 @@
       });
     }
 
+    /** Menor número de votos primeiro; sem votos no fim; desempate por nome. */
+    function sortPorVotosCrescente(rows) {
+      return rows.slice().sort((a, b) => {
+        const va = Number(a.votos);
+        const vb = Number(b.votos);
+        const oka = Number.isFinite(va);
+        const okb = Number.isFinite(vb);
+        if (oka && okb && va !== vb) return va - vb;
+        if (oka && !okb) return -1;
+        if (!oka && okb) return 1;
+        return String(a.nomeUrna || "").localeCompare(String(b.nomeUrna || ""), "pt-BR");
+      });
+    }
+
+    function redesEContactos(r) {
+      const mid = r.midiasSociais && r.midiasSociais.length ? r.midiasSociais : [];
+      const wz = r.whatsapp && r.whatsapp.length ? r.whatsapp : [];
+      return [...mid, ...wz];
+    }
+
     function contagemPorPapel(rows) {
       const c = { eleito: 0, suplente: 0, participante: 0 };
       for (const row of rows) {
@@ -637,7 +659,7 @@
 
     function render() {
       const tbody = document.getElementById("tbody");
-      const lista = filtrar();
+      const lista = sortPorVotosCrescente(filtrar());
       PAGE.size = parseInt(document.getElementById("selPageSize").value, 10) || 50;
       const total = lista.length;
       const pages = Math.max(1, Math.ceil(total / PAGE.size));
@@ -654,8 +676,7 @@
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
           const vot = fmtIntPt(r.votos);
-          const mid = linksHtml(r.midiasSociais);
-          const wz = linksHtml(r.whatsapp);
+          const red = linksHtml(redesEContactos(r));
           const ueCode = codigoUeRow(r);
           const ue = ueCode
             ? `<span class="muted mono" style="display:block;font-size:0.75rem;margin-top:0.15rem">UE ${escapeHtml(ueCode)}</span>`
@@ -668,8 +689,7 @@
             <td>${escapeHtml(lbl)}</td>
             <td>${res}</td>
             <td class="num mono">${vot}</td>
-            <td class="soc-cell">${mid}</td>
-            <td class="soc-cell">${wz}</td>
+            <td class="soc-cell">${red}</td>
             <td class="mono">${sq}</td>
           </tr>`;
         })
@@ -746,9 +766,16 @@
               })
               .join("");
         }
+        const params = new URLSearchParams(window.location.search);
+        const munParam = (params.get("municipio") || params.get("ue") || "").replace(/\D/g, "");
+        if (munParam && Array.from(munSel.options).some((o) => o.value === munParam)) {
+          munSel.value = munParam;
+        } else {
+          munSel.value = UE_CAXIAS;
+        }
         const set = new Set(raw.map((x) => x.partido).filter(Boolean));
         partidosOrdenados = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
-        refreshPartidoOptions("");
+        refreshPartidoOptions(munSel.value);
         PAGE.num = 1;
         render();
       } catch (e) {
@@ -773,6 +800,11 @@
       refreshPartidoOptions(ue);
       document.getElementById("selPapel").value = "";
       PAGE.num = 1;
+      const q = new URLSearchParams(window.location.search);
+      if (ue) q.set("municipio", ue);
+      else q.delete("municipio");
+      const s = q.toString();
+      history.replaceState(null, "", s ? "?" + s : window.location.pathname);
       render();
     });
     document.getElementById("selPapel").addEventListener("change", () => {
