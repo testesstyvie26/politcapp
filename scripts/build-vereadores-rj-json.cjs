@@ -294,6 +294,44 @@ function enriquecerVereadores(rows, votosPorUeSq, redePorSq) {
   }
 }
 
+/**
+ * Complemento manual a rede_social_candidato (perfis públicos confirmados quando o TSE não traz URL).
+ * Chave: SQ_CANDIDATO (string).
+ */
+const MIDIAS_SUPLEMENTO_POR_SQ = {
+  "190001956959": [{ label: "Instagram", url: "https://www.instagram.com/prof.heitorqueiroz/" }],
+};
+
+function urlKeyMidia(u) {
+  try {
+    return new URL(String(u || "").trim()).href.replace(/\/$/, "").toLowerCase();
+  } catch {
+    return String(u || "")
+      .trim()
+      .replace(/\/$/, "")
+      .toLowerCase();
+  }
+}
+
+function mergeMidiasSuplemento(rows) {
+  for (const row of rows) {
+    const sq = row.sqCandidato != null ? String(row.sqCandidato).trim() : "";
+    const extra = MIDIAS_SUPLEMENTO_POR_SQ[sq];
+    if (!extra || !extra.length) continue;
+    const cur = Array.isArray(row.midiasSociais) ? [...row.midiasSociais] : [];
+    const seen = new Set(cur.map((x) => urlKeyMidia(x.url)));
+    for (const e of extra) {
+      const u = String(e.url || "").trim();
+      if (!u || !/^https?:\/\//i.test(u)) continue;
+      const k = urlKeyMidia(u);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      cur.push({ label: e.label || "Rede social", url: u });
+    }
+    if (cur.length) row.midiasSociais = cur;
+  }
+}
+
 function colIndex(header, name) {
   const i = header.indexOf(name);
   if (i < 0) throw new Error(`Coluna obrigatória ausente: ${name}. Cabeçalho: ${header.slice(0, 12).join(", ")}…`);
@@ -422,10 +460,11 @@ async function main() {
     console.error("Aviso: redes sociais / WhatsApp não incluídos:", e.message || e);
   }
   enriquecerVereadores(vereadores, votosPorUeSq, redePorSq);
+  mergeMidiasSuplemento(vereadores);
 
   const payload = {
     fonte:
-      "TSE — consulta_cand (UF RJ, SG_UE 60011 Rio capital, 58335 Duque de Caxias, cargo 13), votacao_candidato_munzona (soma QT_VOTOS_NOMINAIS, 1º turno, cargo 13), rede_social_candidato (DS_URL) e DDD/celular em consulta_cand quando existirem — eleições municipais 2024. Inclui eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).",
+      "TSE — consulta_cand (UF RJ, SG_UE 60011 Rio capital, 58335 Duque de Caxias, cargo 13), votacao_candidato_munzona (soma QT_VOTOS_NOMINAIS, 1º turno, cargo 13), rede_social_candidato (DS_URL) e DDD/celular em consulta_cand quando existirem; mais URLs de redes verificadas manualmente quando ausentes no TSE — eleições municipais 2024. Inclui eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).",
     uf: "RJ",
     municipios: [
       { nome: "Rio de Janeiro", sgUeTse: "60011", ibge: "3304557" },

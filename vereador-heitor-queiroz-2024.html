@@ -102,6 +102,61 @@
     .muted { color: var(--muted); font-size: 0.9rem; }
     .tag-ok { color: var(--ok); font-weight: 600; }
     .tag-risk { color: var(--caution); font-weight: 600; }
+    .insi-lead {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0 0 1rem;
+      line-height: 1.55;
+      max-width: 72ch;
+    }
+    .insi-profile {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+      margin-bottom: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+    }
+    .insi-profile a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .insi-profile a:hover { text-decoration: underline; }
+    .insi-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) {
+      .insi-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .insi-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+    .insi-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .insi-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.86rem; color: var(--muted); line-height: 1.5; }
+    .insi-card li { margin-bottom: 0.4rem; }
+    .insi-foot {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
 
     .ficha dl {
       display: grid;
@@ -352,6 +407,7 @@
       <button type="button" role="tab" id="tab-btn-pos" aria-controls="panel-pos" aria-selected="false">Pontos fortes</button>
       <button type="button" role="tab" id="tab-btn-neg" aria-controls="panel-neg" aria-selected="false">Limitações e riscos</button>
       <button type="button" role="tab" id="tab-btn-dicas" aria-controls="panel-dicas" aria-selected="false">Dicas e melhorias</button>
+      <button type="button" role="tab" id="tab-btn-insi" aria-controls="panel-insi" aria-selected="false">Insights mídia social</button>
     </div>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-ficha" aria-labelledby="tab-btn-ficha">
@@ -412,6 +468,60 @@
         <li>Divulgar abertamente compromissos com transparência (ferramentas do TSE, ouvidoria simbólica de campanha) para diferenciar-se em meio a cinismo eleitoral.</li>
       </ul>
     </section>
+
+    <section class="panel tab-panel" id="panel-insi" role="tabpanel" aria-labelledby="tab-btn-insi" hidden>
+      <h2>Insights — Instagram</h2>
+      <p class="insi-lead">
+        Análise <strong>orientativa</strong> do canal público no Instagram, alinhada ao nome de urna e à pauta educação / Duque de Caxias.
+        O Politapp <strong>não acede</strong> à API Meta nem a seguidores, alcance ou dados da conta — isso só na app Instagram ou em
+        <span class="mono">Meta Business Suite</span> para quem administra o perfil.
+      </p>
+      <div class="insi-profile">
+        <span class="muted">Perfil avaliado:</span>
+        <a href="https://www.instagram.com/prof.heitorqueiroz/" target="_blank" rel="noopener noreferrer">@prof.heitorqueiroz</a>
+        <span class="muted">—</span>
+        <span>Nome público indexado: <strong>Heitor Queiroz</strong> (identificador coerente com a marca «Professor» na urna).</span>
+      </div>
+      <div class="insi-grid">
+        <div class="insi-card">
+          <h3>Coerência de marca</h3>
+          <ul>
+            <li>O <strong>handle</strong> <span class="mono">prof.heitorqueiroz</span> reforça o apelido de urna e o ofício; bom para busca e memória quando o eleitor cruza número com nome.</li>
+            <li>Recomenda-se manter <strong>bio</strong> com cidade (Caxias), pauta (educação) e CTA claro (ex.: WhatsApp ou link de contato).</li>
+            <li><strong>Foto de perfil</strong> e <strong>destaques</strong> (Stories fixos) devem espelhar prioridades da campanha — por exemplo «Escolas», «Bairros», «Propostas».</li>
+          </ul>
+        </div>
+        <div class="insi-card">
+          <h3>Formato e ritmo</h3>
+          <ul>
+            <li><strong>Reels</strong> tendem a ampliar alcance orgânico; cortes curtos de falas em escolas ou reuniões geram prova social.</li>
+            <li><strong>Stories</strong> sustentam proximidade diária; úteis para agenda e convocação territorial.</li>
+            <li>Evitar postagens só esporádicas em semanas-chave do calendário eleitoral: algoritmo privilegia consistência.</li>
+          </ul>
+        </div>
+        <div class="insi-card">
+          <h3>Risco e conformidade</h3>
+          <ul>
+            <li>Respeitar regras de propaganda eleitoral e hiperlinks permitidos na legislação vigente à época da campanha.</li>
+            <li>Comentários e redes abrem <strong>críticas públicas</strong>: ter protocolo de resposta humilde e rápida evita crises de imagem.</li>
+            <li>Conteúdo partilhável deve ser factual; declarações sobre adversários aumentam risco jurídico e de polarização.</li>
+          </ul>
+        </div>
+        <div class="insi-card">
+          <h3>O que medir (equipa)</h3>
+          <ul>
+            <li>Seguidores, alcance, interações, saves e cliques no link da bio — métricas nativas do Instagram.</li>
+            <li>Comparar períodos (pré-campanha × pico) e correlacionar com agenda de rua, não atribuir causalidade só à rede.</li>
+            <li>Testar <strong>UTM</strong> ou páginas dedicadas para saber quantos chegam ao WhatsApp a partir do Instagram.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="insi-foot">
+        Referência pública do perfil:
+        <a href="https://www.instagram.com/prof.heitorqueiroz/" target="_blank" rel="noopener noreferrer">instagram.com/prof.heitorqueiroz</a>.
+        Conteúdo de posts e estatísticas precisam de confirmação direta na plataforma; esta aba é um guia de leitura estratégica, não um relatório de métricas.
+      </p>
+    </section>
   </div>
 
   <script>
@@ -423,6 +533,7 @@
       { id: "tab-btn-pos", panel: "panel-pos" },
       { id: "tab-btn-neg", panel: "panel-neg" },
       { id: "tab-btn-dicas", panel: "panel-dicas" },
+      { id: "tab-btn-insi", panel: "panel-insi" },
     ];
 
     function showTab(panelId) {
