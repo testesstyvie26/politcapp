@@ -647,14 +647,17 @@
 
     async function detalhar(codigo) {
       const chave = getChavePortal();
-      if (!chave || !codigo) return;
+      const cod = String(codigo ?? "").trim();
+      if (!chave || !cod) return;
       const base = apiBase();
-      const url = `${base}/emendas/${encodeURIComponent(codigo)}`;
+      const url = `${base}/emendas/${encodeURIComponent(cod)}`;
       const box = document.getElementById("detalheEmenda");
       box.hidden = false;
       box.innerHTML = "<p class=\"muted\">Carregando detalhe…</p>";
       try {
-        const r = await fetch(url, { headers: { Accept: "application/json", "chave-api-dados": chave } });
+        const r = await fetch(url, {
+          headers: { Accept: "application/json", "chave-api-dados": chave },
+        });
         const text = await r.text();
         let j = {};
         if (text) {
@@ -670,11 +673,16 @@
           }
         }
         if (!r.ok) {
-          box.innerHTML = `<p class="alert">${escapeHtml(j.erro || j["Erro na API"] || text?.slice(0, 300) || r.status)}</p>`;
+          const baseMsg = j.erro || j["Erro na API"] || text?.slice(0, 300) || String(r.status);
+          const hint403 =
+            r.status === 403
+              ? ` <span class="note">Se persistir após <span class="mono">npx wrangler deploy</span> com o Worker atualizado, a CGU pode limitar este endpoint — use o <a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">portal oficial</a> para o código da emenda.</span>`
+              : "";
+          box.innerHTML = `<p class="alert">${escapeHtml(typeof baseMsg === "string" ? baseMsg : JSON.stringify(baseMsg))}${hint403}</p>`;
           return;
         }
         box.innerHTML = `
-        <h3 style="margin:0 0 0.5rem;font-size:1rem">Emenda ${escapeHtml(j.codigoEmenda || codigo)}</h3>
+        <h3 style="margin:0 0 0.5rem;font-size:1rem">Emenda ${escapeHtml(j.codigoEmenda || cod)}</h3>
         <p style="margin:0.25rem 0"><strong>Autor:</strong> ${escapeHtml(j.nomeAutor || "—")} · <strong>Tipo:</strong> ${escapeHtml(j.tipoEmenda || "—")}</p>
         <p style="margin:0.25rem 0"><strong>Órgão executor:</strong> ${escapeHtml(j.orgaoExecutor || "—")}</p>
         <p style="margin:0.25rem 0"><strong>Programa:</strong> ${escapeHtml(j.programaGovernamental || "—")}</p>

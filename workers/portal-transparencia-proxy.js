@@ -34,12 +34,18 @@ export default {
     }
 
     const upstream = "https://api.portaldatransparencia.gov.br" + path + url.search;
+    // A CGU costuma devolver 403 em alguns paths se o pedido parecer “bot”; headers de browser ajudam.
     const upstreamRes = await fetch(upstream, {
       method: "GET",
       headers: {
         Accept: request.headers.get("Accept") || "application/json",
+        "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
         "chave-api-dados": request.headers.get("chave-api-dados") || "",
-        "User-Agent": "Politapp-CF-Worker-Proxy/1",
+        Referer: "https://portaldatransparencia.gov.br/",
+        Origin: "https://portaldatransparencia.gov.br",
+        "User-Agent":
+          request.headers.get("User-Agent") ||
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       },
     });
 
