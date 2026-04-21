@@ -370,8 +370,8 @@
     ];
 
     /**
-     * Converte valor da API (número ou texto pt-BR como "0,00" / "1.234,56") em número.
-     * Evita NaN em Number("0,00"), que impedia tratar zeros e ocultar restos zerados.
+     * Converte valor da API (número ou texto pt-BR) em número.
+     * Trata "0,00", "1.234,56" e milhares só com pontos ("1.234.567") — evita NaN e evita Number("1.500") virar 1,5.
      */
     function numeroMoedaApi(v) {
       if (v == null || v === "") return NaN;
@@ -379,10 +379,18 @@
       let s = String(v).trim();
       if (s === "") return NaN;
       s = s.replace(/\s/g, "").replace(/^R\$\s?/i, "");
-      if (/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(s)) return Number(s);
       if (s.includes(",")) {
         s = s.replace(/\./g, "").replace(",", ".");
+        const n = Number(s);
+        return Number.isNaN(n) ? NaN : n;
       }
+      // Milhares pt-BR sem centavos: 1.234.567
+      if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) {
+        s = s.replace(/\./g, "");
+        const n = Number(s);
+        return Number.isNaN(n) ? NaN : n;
+      }
+      if (/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(s)) return Number(s);
       const n = Number(s);
       return Number.isNaN(n) ? NaN : n;
     }
@@ -439,6 +447,9 @@
       valorRestoPagarInscritos: "Restos a pagar inscritos",
       valorRestoPagarCancelados: "Restos a pagar cancelados",
       valorRestoPagarPagos: "Restos a pagar pagos",
+      valorRestoInscrito: "Valor resto inscrito",
+      valorRestoCancelado: "Valor resto cancelado",
+      valorRestoPago: "Valor resto pago",
     };
 
     const ORDEM_CAMPOS_EMENDA = [
@@ -463,6 +474,9 @@
       "valorRestoPagarInscritos",
       "valorRestoPagarCancelados",
       "valorRestoPagarPagos",
+      "valorRestoInscrito",
+      "valorRestoCancelado",
+      "valorRestoPago",
     ];
 
     function rotuloCampoEmenda(key) {
@@ -739,10 +753,47 @@
     let ultimaLista = [];
 
     function normalizarLista(json) {
+      if (!json) return null;
       if (Array.isArray(json)) return json;
-      if (json && Array.isArray(json.dados)) return json.dados;
-      if (json && Array.isArray(json.emendas)) return json.emendas;
+      if (typeof json !== "object") return null;
+      const keys = ["dados", "emendas", "data", "items", "content", "registros", "resultado"];
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        if (Array.isArray(json[k])) return json[k];
+      }
+      if (json._embedded && Array.isArray(json._embedded.emendas)) return json._embedded.emendas;
       return null;
+    }
+
+    /** O GET /emendas/{cod} costuma vir em envelope { dados: { ... } } ou { dados: [ {...} ] } como no portal. */
+    function normalizarDetalheEmenda(json) {
+      if (json == null || typeof json !== "object") return json;
+      if (Array.isArray(json)) {
+        if (json.length === 1 && json[0] && typeof json[0] === "object") return json[0];
+        return {};
+      }
+      const d = json.dados;
+      if (d != null) {
+        if (Array.isArray(d)) {
+          if (d.length === 1 && d[0] && typeof d[0] === "object") return d[0];
+          return d.length ? d[0] : {};
+        }
+        if (typeof d === "object") return d;
+      }
+      if (json.data != null && typeof json.data === "object" && !Array.isArray(json.data)) return json.data;
+      if (Array.isArray(json.data) && json.data.length === 1 && json.data[0] && typeof json.data[0] === "object") {
+        return json.data[0];
+      }
+      if (json.emenda != null && typeof json.emenda === "object") return json.emenda;
+      return json;
+    }
+
+    /** Preenche campos que o detalhe omite com a linha já retornada em GET /emendas (listagem costuma trazer valores). */
+    function mesclarListaEDetalheEmenda(codigoEmenda, detalheNormalizado) {
+      const d = detalheNormalizado && typeof detalheNormalizado === "object" ? detalheNormalizado : {};
+      const row = ultimaLista.find((r) => String(r.codigoEmenda ?? "").trim() === String(codigoEmenda).trim());
+      if (!row) return d;
+      return { ...row, ...d };
     }
 
     function filtrarTipo(rows) {
@@ -948,7 +999,9 @@
           box.innerHTML = `<p class="alert">${core}${link403}</p>`;
           return;
         }
-        box.innerHTML = htmlDetalheEmendaPortal(j, cod);
+        const det = normalizarDetalheEmenda(j);
+        const merged = mesclarListaEDetalheEmenda(cod, det);
+        box.innerHTML = htmlDetalheEmendaPortal(merged, cod);
       } catch (e) {
         console.error(e);
         box.innerHTML = `<div class="alert">${mensagemFalhaRedePortal(e)}</div>`;
