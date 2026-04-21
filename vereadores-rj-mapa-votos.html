@@ -117,8 +117,11 @@
       <p>
         Visualização dos <strong>votos nominais</strong> (1.º turno) por <strong>zona eleitoral</strong> (agregado oficial TSE
         <span class="mono">votacao_candidato_munzona</span>) e, em modo de demonstração, por <strong>seção eleitoral</strong>
-        (cada ponto = local de votação / apuração por seção, ficheiro <span class="mono">votacao_secao</span>).
-        A posição no mapa é <strong>esquemática</strong> (dispersão estável por zona ou zona+seção), não o GPS do edifício.
+        (cada ponto = local de votação por seção, ficheiro <span class="mono">votacao_secao</span>).
+        Em <strong>modo zona</strong> os pontos são <strong>aproximados</strong> (sem morada no agregado).
+        Em <strong>modo seção</strong> o mapa usa o endereço TSE com geocodificação (Photon / OpenStreetMap) ou
+        <span class="mono">lat</span>/<span class="mono">lon</span> no JSON se o ficheiro tiver sido gerado com
+        <span class="mono">--geocode</span>; vários pontos no mesmo endereço recebem um micro-desvio estável.
         Rio de Janeiro (UE <span class="mono">60011</span>) e Duque de Caxias (UE <span class="mono">58335</span>).
       </p>
     </header>
@@ -147,7 +150,7 @@
           <label id="lblSec" style="opacity:0.5"><input type="radio" name="nivel" value="secao" id="radSec" disabled /> Por seção (ficheiro de exemplo; um SQ)</label>
         </fieldset>
       </div>
-      <p class="note" id="notaSec">No modo <strong>seção</strong>, o repositório inclui o detalhe para o <span class="mono">SQ_CANDIDATO</span> do ficheiro de exemplo (gerado com <span class="mono">npm run build:vereadores-secao-exemplo</span>).</p>
+      <p class="note" id="notaSec">No modo <strong>seção</strong>, o repositório inclui o detalhe para o <span class="mono">SQ_CANDIDATO</span> do ficheiro de exemplo (gerado com <span class="mono">npm run build:vereadores-secao-exemplo</span>). Coordenadas exactas no mapa: opcionalmente <span class="mono">npm run build:vereadores-secao-exemplo -- --geocode</span> (Nominatim, ~1 s por morada única).</p>
       <div class="map-wrap">
         <div id="mapVotos" role="application" aria-label="Mapa de calor de votos por zona ou seção"></div>
       </div>
@@ -176,7 +179,10 @@
     const UE_RIO = "60011";
     const UE_CAX = "58335";
     const CENTER = { [UE_RIO]: [-22.91, -43.19], [UE_CAX]: [-22.787, -43.32] };
+    const UE_MUN = { [UE_RIO]: "Rio de Janeiro", [UE_CAX]: "Duque de Caxias" };
     const ZOOM0 = 10;
+
+    let secaoRenderGen = 0;
 
     let map;
     let layerMarkers;
@@ -197,6 +203,39 @@
       let h = 0;
       for (let i = 0; i < str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
       return h;
+    }
+
+    function querySecGeocode(x) {
+      const mun = UE_MUN[x.ue] || "Rio de Janeiro";
+      const p = [];
+      if (x.local && x.local !== "—") p.push(x.local);
+      if (x.endereco && x.endereco !== "—") p.push(x.endereco);
+      p.push(mun, "RJ", "Brasil");
+      return p.join(", ");
+    }
+
+    /** Micro-desvio estável (várias secções no mesmo edifício). */
+    function jitterSec(lat, lon, ue, z, s) {
+      const h = hashSeed(String(ue) + "|z" + z + "|s" + s);
+      const u1 = ((h % 1000) + 1000) % 1000 / 1000 - 0.5;
+      const u2 = (Math.imul(h, 1103515245) % 1000 + 1000) % 1000 / 1000 - 0.5;
+      const dLat = u1 * 0.00032;
+      const dLon = (u2 * 0.00032) / Math.max(0.35, Math.cos((lat * Math.PI) / 180));
+      return [lat + dLat, lon + dLon];
+    }
+
+    async function photonGeocodeOnce(q) {
+      if (!q || q.length < 8) return null;
+      const url = "https://photon.komoot.io/api/?limit=1&q=" + encodeURIComponent(q);
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const f = data.features && data.features[0];
+      if (!f || !f.geometry || f.geometry.type !== "Point" || !Array.isArray(f.geometry.coordinates)) return null;
+      const lo = f.geometry.coordinates[0];
+      const la = f.geometry.coordinates[1];
+      if (!Number.isFinite(la) || !Number.isFinite(lo)) return null;
+      return [la, lo];
     }
 
     /** Posição no mapa: esquemática, estável, não é coordenada do endereço. */
@@ -300,7 +339,8 @@
         return;
       }
       if (nivel === "secao" && secExemplo && String(secExemplo.sqCandidato) === sq) {
-        renderSec(sq, row, ueFiltro, st);
+        secaoRenderGen++;
+        renderSecAsync(sq, row, ueFiltro, st, secaoRenderGen);
         return;
       }
       renderZona(sq, row, ueFiltro, st);
@@ -337,7 +377,7 @@
 
       st.textContent =
         (filtrado.length
-          ? filtrado.length + " zona(s) com votos no mapa"
+          ? filtrado.length + " zona(s) com votos no mapa (posição aproximada por zona)"
           : "Nenhum ponto (verifique ficheiro de zona)") +
         " · Soma nas zonas mostradas: " +
         sum.toLocaleString("pt-BR") +
@@ -364,7 +404,7 @@
       document.getElementById("tableMeta").textContent = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
     }
 
-    function renderSec(sq, row, ueFiltro, st) {
+    async function renderSecAsync(sq, row, ueFiltro, st, gen) {
       const list = (secExemplo && secExemplo.sqCandidato === sq && secExemplo.sec) || [];
       const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
       let sum = 0;
@@ -372,9 +412,60 @@
       const vs = filtrado.map((x) => x.v);
       const vmin = vs.length ? Math.min(...vs) : 0;
       const vmax = vs.length ? Math.max(...vs) : 0;
+
       layerMarkers.clearLayers();
+      st.textContent = "A preparar pontos por morada…";
+
+      const queries = [...new Set(filtrado.map(querySecGeocode))].filter((q) => q.length > 12);
+      const coordByQ = new Map();
+      let i = 0;
+      for (const q of queries) {
+        if (gen !== secaoRenderGen) return;
+        st.textContent = "Geocodificação (Photon)… " + ++i + "/" + queries.length;
+        const sameQ = filtrado.filter((x) => querySecGeocode(x) === q);
+        const withCoord = sameQ.find(
+          (x) => Number.isFinite(Number(x.lat)) && Number.isFinite(Number(x.lon))
+        );
+        let cell;
+        if (withCoord) {
+          cell = { pt: [Number(withCoord.lat), Number(withCoord.lon)], src: "json" };
+        } else {
+          const pt = await photonGeocodeOnce(q);
+          cell = { pt: pt && Number.isFinite(pt[0]) ? pt : null, src: "photon" };
+        }
+        coordByQ.set(q, cell);
+        if (cell.src === "photon") await new Promise((r) => setTimeout(r, 380));
+      }
+      if (gen !== secaoRenderGen) return;
+
+      let nEmb = 0;
+      let nPhoton = 0;
+      let nFallback = 0;
       for (const x of filtrado) {
-        const [la, lo] = posEsquematica(x.ue, x.z, x.s);
+        const q = querySecGeocode(x);
+        let la;
+        let lo;
+        if (Number.isFinite(Number(x.lat)) && Number.isFinite(Number(x.lon))) {
+          const jj = jitterSec(Number(x.lat), Number(x.lon), x.ue, x.z, x.s);
+          la = jj[0];
+          lo = jj[1];
+          nEmb++;
+        } else {
+          const cell = coordByQ.get(q);
+          const pt = cell && cell.pt;
+          if (pt && Number.isFinite(pt[0]) && Number.isFinite(pt[1])) {
+            const jj = jitterSec(pt[0], pt[1], x.ue, x.z, x.s);
+            la = jj[0];
+            lo = jj[1];
+            if (cell.src === "json") nEmb++;
+            else nPhoton++;
+          } else {
+            const sch = posEsquematica(x.ue, x.z, x.s);
+            la = sch[0];
+            lo = sch[1];
+            nFallback++;
+          }
+        }
         const m = L.circleMarker([la, lo], {
           radius: 3 + raioPorVotos(x.v, vmin, vmax) * 0.4,
           color: "rgba(255,255,255,0.25)",
@@ -390,9 +481,18 @@
         m.addTo(layerMarkers);
       }
       if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [28, 28], maxZoom: 14 });
+      const bits = [];
+      if (nEmb) bits.push(nEmb + " com coord. no JSON");
+      if (nPhoton) bits.push(nPhoton + " via Photon");
+      if (nFallback) bits.push(nFallback + " esquemático (morada não encontrada)");
       st.textContent =
         filtrado.length +
-        " seção(ões) · soma: " + sum.toLocaleString("pt-BR") + " (exemplo TSE " + (secExemplo.sqCandidato || "") + ")";
+        " seção(ões) · soma: " +
+        sum.toLocaleString("pt-BR") +
+        " · " +
+        (bits.length ? bits.join(" · ") + " · " : "") +
+        "exemplo TSE " +
+        (secExemplo.sqCandidato || "");
       document.getElementById("theadr").innerHTML =
         "<th>UE</th><th class='num'>Zona</th><th class='num'>Seção</th><th>Local</th><th>Endereço (TSE)</th><th class='num'>Votos</th>";
       document.getElementById("tbodyr").innerHTML = filtrado
@@ -403,7 +503,10 @@
             x.v.toLocaleString("pt-BR") + "</td></tr>"
         )
         .join("");
-      document.getElementById("tableMeta").textContent = "Modo seção (demonstração) · " + (secExemplo.geradoEm || "");
+      document.getElementById("tableMeta").textContent =
+        "Modo seção (demonstração) · " +
+        (secExemplo.geradoEm || "") +
+        (secExemplo.nota ? " · " + secExemplo.nota : "");
     }
 
     async function start() {
@@ -453,7 +556,6 @@
         renderMapa();
       });
       renderMapa();
-      st.textContent = "Mapa pronto. Escolha o município (opcional) e o candidato. Raio e cor respeitam a escala de votos nas zonas visíveis.";
     }
 
     start();

@@ -3,7 +3,7 @@
  * Faz streaming do ficheiro grande — adequado para um candidato de exemplo (ficheiro JSON pequeno no repo).
  *
  * Fonte: https://cdn.tse.jus.br/.../votacao_secao_2024_RJ.zip
- * Uso: node scripts/build-secao-exemplo-candidato-rj.cjs [SQ_CANDIDATO]
+ * Uso: node scripts/build-secao-exemplo-candidato-rj.cjs [SQ_CANDIDATO] [--geocode]
  * Default SQ: 190001956959 (PROFESSOR HEITOR QUEIROZ, Duque de Caxias)
  */
 const fs = require("fs");
@@ -116,6 +116,73 @@ async function main() {
   }
   rows.sort((a, b) => a.ue.localeCompare(b.ue) || a.z - b.z || a.s - b.s);
   const tot = rows.reduce((a, b) => a + b.v, 0);
+
+  const UE_MUN = { "60011": "Rio de Janeiro", "58335": "Duque de Caxias" };
+  const querGeocode = process.argv.includes("--geocode") || process.env.GEOCODE_SECOES === "1";
+
+  if (querGeocode && rows.length) {
+    function montaQuery(a) {
+      const mun = UE_MUN[a.ue] || "Rio de Janeiro";
+      const p = [];
+      if (a.local && a.local !== "—") p.push(a.local);
+      if (a.endereco && a.endereco !== "—") p.push(a.endereco);
+      p.push(mun, "RJ", "Brasil");
+      return p.join(", ");
+    }
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    function nominatim(q) {
+      return new Promise((resolve) => {
+        const path =
+          "/search?format=json&limit=1&countrycodes=br&q=" + encodeURIComponent(q);
+        const opts = {
+          hostname: "nominatim.openstreetmap.org",
+          path,
+          headers: {
+            "User-Agent": "Politapp/1.0 (build vereadores-secao; contact via repo politcapp)",
+            Accept: "application/json",
+          },
+        };
+        https
+          .get(opts, (res) => {
+            let b = "";
+            res.on("data", (c) => (b += c));
+            res.on("end", () => {
+              try {
+                const arr = JSON.parse(b);
+                if (!Array.isArray(arr) || !arr[0]) return resolve(null);
+                const la = parseFloat(arr[0].lat);
+                const lo = parseFloat(arr[0].lon);
+                if (!Number.isFinite(la) || !Number.isFinite(lo)) return resolve(null);
+                resolve({ lat: la, lon: lo });
+              } catch {
+                resolve(null);
+              }
+            });
+          })
+          .on("error", () => resolve(null));
+      });
+    }
+    const porQuery = new Map();
+    const chaves = [...new Set(rows.map(montaQuery))].filter((q) => q.length > 12);
+    console.error("Geocodificação Nominatim (1 req/s) para", chaves.length, "endereços únicos…");
+    for (let i = 0; i < chaves.length; i++) {
+      const q = chaves[i];
+      await sleep(i === 0 ? 0 : 1100);
+      const pt = await nominatim(q);
+      porQuery.set(q, pt);
+      if ((i + 1) % 25 === 0) console.error(" …", i + 1, "/", chaves.length);
+    }
+    for (const r of rows) {
+      const pt = porQuery.get(montaQuery(r));
+      if (pt) {
+        r.lat = pt.lat;
+        r.lon = pt.lon;
+      }
+    }
+    const ok = rows.filter((r) => r.lat != null).length;
+    console.error("Coordenadas obtidas:", ok, "/", rows.length);
+  }
+
   const payload = {
     fonte:
       "TSE — votacao_secao_2024 (RJ), cargo 13, 1.º turno, eleição ordinária, filtrado por SQ_CANDIDATO.",
@@ -123,8 +190,9 @@ async function main() {
     totalVotosSecao: tot,
     totalLocais: rows.length,
     sec: rows,
-    nota:
-      "Coordenadas no mapa do Politapp são esquemáticas (hash por zona/seção) para leitura territorial; o endereço e o n.º oficiais vêm do TSE.",
+    nota: querGeocode
+      ? "lat/lon obtidos via Nominatim (OpenStreetMap) a partir do endereço TSE; pontos no mesmo local recebem micro-desvio no cliente."
+      : "Sem --geocode: o mapa obtém coordenadas em tempo real (Photon OSM) ou posição esquemática; regenere com npm run build:vereadores-secao-exemplo -- --geocode para embutir lat/lon.",
     geradoEm: new Date().toISOString(),
   };
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
