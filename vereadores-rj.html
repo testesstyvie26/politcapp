@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vereadores — Rio de Janeiro 2024 | Politapp</title>
+  <title>Vereadores — Rio de Janeiro e Duque de Caxias 2024 | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -64,8 +64,8 @@
       align-items: end;
       margin-bottom: 1rem;
     }
-    @media (min-width: 900px) {
-      .filters { grid-template-columns: 1fr 9rem 11rem 5.5rem; }
+    @media (min-width: 1100px) {
+      .filters { grid-template-columns: 1fr 8rem 10.5rem 10.5rem 5.5rem; }
     }
     label {
       display: flex; flex-direction: column; gap: 0.35rem;
@@ -134,15 +134,16 @@
     </nav>
 
     <header>
-      <h1>Vereadores — Rio de Janeiro (capital)</h1>
+      <h1>Vereadores — Rio de Janeiro e Duque de Caxias</h1>
       <p>
-        Candidaturas a <strong>vereador</strong> nas eleições municipais de 2024 no município do Rio de Janeiro
-        (<abbr title="Unidade eleitoral TSE">UE</abbr> <span class="mono">60011</span>), segundo o arquivo
+        Candidaturas a <strong>vereador</strong> nas eleições municipais de 2024 nos municípios
+        <strong>Rio de Janeiro</strong> (<abbr title="Unidade eleitoral TSE">UE</abbr> <span class="mono">60011</span>, capital)
+        e <strong>Duque de Caxias</strong> (UE <span class="mono">58335</span>), com base no arquivo
         <span class="mono">consulta_cand</span> do
         <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2024" target="_blank" rel="noopener">Portal de Dados Abertos do TSE</a>.
-        A coluna <strong>Resultado (pleito)</strong> reproduz o campo <span class="mono">DS_SIT_TOT_TURNO</span> (situação após o pleito).
-        Use o filtro <strong>Grupo</strong> para <em>eleitos</em> (ELEITO POR QP/MÉDIA), <em>suplentes</em> (SUPLENTE) e <em>demais participantes</em> (ex.: NÃO ELEITO, <span class="mono">#NULO</span>).
-        Atualize a lista com <span class="mono">npm run build:vereadores-rj</span>.
+        A lista inclui <strong>todos</strong> os registos de vereador (cargo 13): candidatos titulares, suplentes e demais participantes, conforme
+        <span class="mono">DS_SIT_TOT_TURNO</span>. Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
+        Atualize os dados com <span class="mono">npm run build:vereadores-rj</span>.
       </p>
     </header>
 
@@ -158,6 +159,14 @@
         <label>
           Partido
           <select id="selPartido"><option value="">Todos</option></select>
+        </label>
+        <label>
+          Município
+          <select id="selMunicipio">
+            <option value="">Todos</option>
+            <option value="60011">Rio de Janeiro</option>
+            <option value="58335">Duque de Caxias</option>
+          </select>
         </label>
         <label>
           Grupo
@@ -181,6 +190,7 @@
         <table>
           <thead>
             <tr>
+              <th>Município</th>
               <th>Nº</th>
               <th>Nome de urna</th>
               <th>Partido</th>
@@ -207,7 +217,6 @@
     const PAGE = { num: 1, size: 50 };
     let raw = [];
     let partidosOrdenados = [];
-    let sgUeTse = "60011";
     let geradoEm = "";
 
     const PAPEL_LABEL = {
@@ -222,6 +231,11 @@
       if (s === "ELEITO POR QP" || s === "ELEITO POR MÉDIA") return "eleito";
       if (s === "SUPLENTE") return "suplente";
       return "participante";
+    }
+
+    function sgUeFromRow(r) {
+      if (r && r.sgUeTse) return String(r.sgUeTse).trim();
+      return "60011";
     }
 
     function escapeHtml(s) {
@@ -242,13 +256,15 @@
     function filtrar() {
       const q = norm(document.getElementById("inpBusca").value.trim());
       const p = document.getElementById("selPartido").value;
+      const munFiltro = document.getElementById("selMunicipio").value;
       const papelFiltro = document.getElementById("selPapel").value;
       return raw.filter((r) => {
         if (p && r.partido !== p) return false;
+        if (munFiltro && sgUeFromRow(r) !== munFiltro) return false;
         if (papelFiltro && papelFromRow(r) !== papelFiltro) return false;
         if (!q) return true;
         const pap = papelFromRow(r);
-        const hay = [r.nomeUrna, r.nomeCompleto, r.partido, r.numero, r.partidoNome, r.dsSitTotTurno, PAPEL_LABEL[pap]]
+        const hay = [r.municipio, r.nomeUrna, r.nomeCompleto, r.partido, r.numero, r.partidoNome, r.dsSitTotTurno, PAPEL_LABEL[pap]]
           .filter(Boolean)
           .map(norm)
           .join(" ");
@@ -260,6 +276,15 @@
       const c = { eleito: 0, suplente: 0, participante: 0 };
       for (const row of rows) {
         c[papelFromRow(row)]++;
+      }
+      return c;
+    }
+
+    function contagemPorMunicipio(rows) {
+      const c = {};
+      for (const row of rows) {
+        const k = row.municipio || "—";
+        c[k] = (c[k] || 0) + 1;
       }
       return c;
     }
@@ -282,7 +307,11 @@
           const pap = papelFromRow(r);
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
+          const ue = r.sgUeTse
+            ? `<span class="muted mono" style="display:block;font-size:0.75rem;margin-top:0.15rem">UE ${escapeHtml(String(r.sgUeTse))}</span>`
+            : "";
           return `<tr>
+            <td>${escapeHtml(r.municipio || "—")}${ue}</td>
             <td class="num mono">${n}</td>
             <td>${escapeHtml(r.nomeUrna || "—")}</td>
             <td><strong>${escapeHtml(r.partido || "—")}</strong>${r.partidoNome ? `<span class="muted" style="display:block;font-size:0.78rem">${escapeHtml(r.partidoNome)}</span>` : ""}</td>
@@ -303,9 +332,14 @@
 
       const meta = document.getElementById("metaLista");
       if (raw.length) {
-        const ts = geradoEm ? ` · gerado em ${escapeHtml(geradoEm)}` : "";
         const cc = contagemPorPapel(raw);
-        meta.textContent = `Fonte: TSE consulta_cand · UE ${sgUeTse} · ${raw.length} registos — eleitos: ${cc.eleito}, suplentes: ${cc.suplente}, demais participantes: ${cc.participante}${geradoEm ? ` · gerado em ${geradoEm}` : ""}.`;
+        const byMun = contagemPorMunicipio(raw);
+        const munTxt = Object.keys(byMun)
+          .sort((a, b) => a.localeCompare(b, "pt-BR"))
+          .map((k) => `${k}: ${byMun[k]}`)
+          .join(" · ");
+        const tail = geradoEm ? ` · gerado em ${geradoEm}` : "";
+        meta.textContent = `Fonte: TSE consulta_cand · ${munTxt} · total ${raw.length} · eleitos: ${cc.eleito}, suplentes: ${cc.suplente}, demais participantes: ${cc.participante}${tail}.`;
       }
     }
 
@@ -319,8 +353,20 @@
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const data = await r.json();
         raw = data.vereadores || [];
-        sgUeTse = data.sgUeTse || "60011";
         geradoEm = data.geradoEm || "";
+        const munSel = document.getElementById("selMunicipio");
+        if (data.municipios && data.municipios.length) {
+          munSel.innerHTML =
+            '<option value="">Todos</option>' +
+            data.municipios
+              .slice()
+              .sort((a, b) => (a.nome || "").localeCompare(b.nome || "", "pt-BR"))
+              .map((m) => {
+                const v = String(m.sgUeTse || "");
+                return `<option value="${escapeHtml(v)}">${escapeHtml(m.nome || v)}</option>`;
+              })
+              .join("");
+        }
         const set = new Set(raw.map((x) => x.partido).filter(Boolean));
         partidosOrdenados = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
         const sel = document.getElementById("selPartido");
@@ -341,6 +387,10 @@
       render();
     });
     document.getElementById("selPartido").addEventListener("change", () => {
+      PAGE.num = 1;
+      render();
+    });
+    document.getElementById("selMunicipio").addEventListener("change", () => {
       PAGE.num = 1;
       render();
     });

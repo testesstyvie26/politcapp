@@ -1,6 +1,7 @@
 /**
- * Gera lista de candidatos a vereador — capital (Rio de Janeiro), eleições municipais 2024 —
- * a partir de consulta_cand_2024_RJ.csv (TSE).
+ * Gera lista de candidatos a vereador — Rio de Janeiro (capital) e Duque de Caxias — eleições municipais 2024 —
+ * a partir de consulta_cand_2024_RJ.csv (TSE). Inclui todos os registos de vereador (CD_CARGO 13):
+ * eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).
  *
  * Fonte: ZIP em https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2024.zip
  *
@@ -22,8 +23,13 @@ const ENTRY_RX = /^consulta_cand_2024_RJ\.csv$/i;
 /** CD_CARGO 13 = Vereador (eleições municipais). */
 const CD_CARGO_VEREADOR = 13;
 
-/** Código TSE da unidade eleitoral — capital Rio de Janeiro (eleições municipais 2024). */
-const SG_UE_RIO_CAPITAL = "60011";
+/** Códigos TSE das unidades eleitorais (RJ, eleições municipais 2024). */
+const SG_UE_ALVO = new Set(["60011", "58335"]);
+
+const METADATA_UE = {
+  "60011": { municipio: "Rio de Janeiro", ibge: "3304557" },
+  "58335": { municipio: "Duque de Caxias", ibge: "3301702" },
+};
 
 function parseCsvLineSemicolon(line) {
   const parts = [];
@@ -136,7 +142,7 @@ function mainSync(csvText) {
     const sgUe = String(cols[ixUe] || "")
       .replace(/^"|"$/g, "")
       .trim();
-    if (sgUe !== SG_UE_RIO_CAPITAL) continue;
+    if (!SG_UE_ALVO.has(sgUe)) continue;
     const cdCargo = parseIntSafe(cols[ixCargo]);
     if (cdCargo !== CD_CARGO_VEREADOR) continue;
 
@@ -144,12 +150,15 @@ function mainSync(csvText) {
       ix >= 0 && cols[ix] != null ? String(cols[ix]).replace(/^"|"$/g, "").trim() : "";
 
     const dsSitTotTurno = ixSitTot >= 0 ? pick(ixSitTot) : "";
+    const metaUe = METADATA_UE[sgUe] || {};
     rows.push({
+      sgUeTse: sgUe,
       sqCandidato: pick(ixSq) || undefined,
       numero: pick(ixNr) || undefined,
       nomeUrna: pick(ixNmUrna) || pick(ixNmCand) || "—",
       nomeCompleto: pick(ixNmCand) || undefined,
-      municipio: ixNmUe >= 0 ? pick(ixNmUe) : undefined,
+      municipio: ixNmUe >= 0 ? pick(ixNmUe) : metaUe.municipio,
+      ibgeMunicipio: metaUe.ibge,
       partido: pick(ixPartido) || "—",
       partidoNome: pick(ixNmPartido) || undefined,
       situacao: pick(ixDsSit) || undefined,
@@ -161,6 +170,8 @@ function mainSync(csvText) {
 
   const ordPapel = { eleito: 0, suplente: 1, participante: 2 };
   rows.sort((a, b) => {
+    const pm = (a.municipio || "").localeCompare(b.municipio || "", "pt-BR");
+    if (pm !== 0) return pm;
     const pa = ordPapel[a.papelEleicao] - ordPapel[b.papelEleicao];
     if (pa !== 0) return pa;
     const pp = (a.partido || "").localeCompare(b.partido || "", "pt-BR");
@@ -191,11 +202,12 @@ async function main() {
 
   const payload = {
     fonte:
-      "TSE — consulta de candidatos (consulta_cand), UF RJ, SG_UE 60011 (capital), cargo 13 (vereador) — eleições municipais 2024. Campo DS_SIT_TOT_TURNO: eleitos (ELEITO POR QP/MÉDIA), suplentes (SUPLENTE) e demais participantes (ex.: NÃO ELEITO, #NULO).",
+      "TSE — consulta de candidatos (consulta_cand), UF RJ, SG_UE 60011 (Rio capital) e 58335 (Duque de Caxias), cargo 13 (vereador) — eleições municipais 2024. Inclui eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).",
     uf: "RJ",
-    municipio: "Rio de Janeiro",
-    sgUeTse: SG_UE_RIO_CAPITAL,
-    ibge: "3304557",
+    municipios: [
+      { nome: "Rio de Janeiro", sgUeTse: "60011", ibge: "3304557" },
+      { nome: "Duque de Caxias", sgUeTse: "58335", ibge: "3301702" },
+    ],
     cdCargo: CD_CARGO_VEREADOR,
     geradoEm: new Date().toISOString(),
     total: vereadores.length,
