@@ -113,15 +113,103 @@
       font-size: 0.86rem;
     }
     .alert { padding: 0.75rem; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fecaca; }
-    td.soc-cell { font-size: 0.8rem; min-width: 9rem; max-width: 18rem; }
-    td.soc-cell a {
-      color: var(--accent);
-      text-decoration: none;
-      display: inline-block;
-      margin-right: 0.35rem;
-      margin-bottom: 0.15rem;
+    td.soc-cell {
+      font-size: 0.8rem;
+      min-width: 11rem;
+      max-width: 26rem;
+      vertical-align: top;
     }
-    td.soc-cell a:hover { text-decoration: underline; }
+    .url-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    td.soc-cell .url-btn {
+      position: relative;
+      display: block;
+      padding: 0.55rem 0.65rem 0.58rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      background: linear-gradient(155deg, rgba(28, 36, 51, 0.95), rgba(18, 24, 36, 0.98));
+      border: 1px solid rgba(61, 139, 253, 0.28);
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.35),
+        0 4px 16px rgba(0, 0, 0, 0.32);
+      overflow: hidden;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+      animation: url-btn-glow 3.2s ease-in-out infinite;
+    }
+    td.soc-cell .url-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 0%,
+        rgba(61, 139, 253, 0.12) 45%,
+        transparent 70%
+      );
+      animation: url-btn-shimmer 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    td.soc-cell .url-btn:hover {
+      transform: translateY(-2px) scale(1.01);
+      border-color: rgba(61, 139, 253, 0.65);
+      box-shadow:
+        0 0 0 1px rgba(61, 139, 253, 0.35),
+        0 10px 28px rgba(61, 139, 253, 0.18);
+      animation: none;
+    }
+    td.soc-cell .url-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    td.soc-cell .url-btn__url {
+      position: relative;
+      z-index: 1;
+      display: block;
+      font-family: ui-monospace, monospace;
+      font-size: 0.68rem;
+      line-height: 1.4;
+      word-break: break-all;
+      color: #9ec5ff;
+      font-weight: 500;
+    }
+    td.soc-cell .url-btn__kind {
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin-top: 0.28rem;
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    @keyframes url-btn-glow {
+      0%, 100% {
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.35),
+          0 4px 16px rgba(0, 0, 0, 0.32),
+          0 0 22px rgba(61, 139, 253, 0.07);
+      }
+      50% {
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.35),
+          0 4px 20px rgba(0, 0, 0, 0.38),
+          0 0 32px rgba(61, 139, 253, 0.18);
+      }
+    }
+    @keyframes url-btn-shimmer {
+      0%, 100% { opacity: 0.35; transform: translateX(-8%); }
+      50% { opacity: 0.9; transform: translateX(8%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      td.soc-cell .url-btn { animation: none; }
+      td.soc-cell .url-btn::before { animation: none; opacity: 0.45; transform: none; }
+      td.soc-cell .url-btn:hover { transform: none; }
+    }
   </style>
 </head>
 <body>
@@ -304,17 +392,21 @@
       return x.toLocaleString("pt-BR");
     }
 
+    /** Botões com URL em destaque (tipo em linha pequena). Só https. */
     /** @param {{ label?: string, url?: string }[] | undefined} arr */
     function linksHtml(arr) {
       if (!arr || !arr.length) return '<span class="muted">—</span>';
-      return arr
-        .filter((x) => x && x.url)
+      const parts = arr
+        .filter((x) => x && x.url && /^https?:\/\//i.test(String(x.url).trim()))
         .map((x) => {
-          const lab = escapeHtml(x.label || "Link");
-          const u = escapeHtml(String(x.url));
-          return `<a href="${u}" target="_blank" rel="noopener noreferrer">${lab}</a>`;
-        })
-        .join('<span class="muted"> · </span>');
+          const raw = String(x.url).trim();
+          const uEsc = escapeHtml(raw);
+          const kind = escapeHtml(x.label || "Destino");
+          const a11y = escapeHtml(`Abrir em novo separador: ${raw}`);
+          return `<a class="url-btn" href="${uEsc}" target="_blank" rel="noopener noreferrer" aria-label="${a11y}"><span class="url-btn__url">${uEsc}</span><span class="url-btn__kind">${kind}</span></a>`;
+        });
+      if (!parts.length) return '<span class="muted">—</span>';
+      return `<div class="url-stack">${parts.join("")}</div>`;
     }
 
     function textoLinks(r) {
