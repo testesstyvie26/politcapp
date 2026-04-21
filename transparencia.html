@@ -148,6 +148,44 @@
       font-size: 0.88rem;
     }
     #detalheEmenda[hidden] { display: none !important; }
+    .det-emenda-links {
+      margin: 0 0 1rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      background: rgba(61, 139, 253, 0.08);
+      border: 1px solid rgba(61, 139, 253, 0.2);
+      font-size: 0.82rem;
+    }
+    .det-emenda-links a { color: var(--accent); margin-right: 1rem; white-space: nowrap; }
+    .det-emenda-grid { display: flex; flex-direction: column; gap: 0; margin-top: 0.5rem; }
+    .det-emenda-row {
+      display: grid;
+      grid-template-columns: minmax(7.5rem, 30%) 1fr;
+      gap: 0.5rem 1rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: baseline;
+    }
+    .det-emenda-row:last-child { border-bottom: none; }
+    .det-emenda-k {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .det-emenda-v { word-break: break-word; line-height: 1.45; }
+    .det-emenda-json {
+      margin: 0.25rem 0 0;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
     .muted { color: var(--muted); }
   </style>
 </head>
@@ -317,6 +355,120 @@
 
     function escapeAttr(s) {
       return String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+    }
+
+    /** Rótulos alinhados à consulta “Emendas parlamentares” no portal da CGU (campos da API). */
+    const ROTULOS_CAMPO_EMENDA = {
+      codigoEmenda: "Código da emenda",
+      anoEmenda: "Ano (orçamento)",
+      ano: "Ano",
+      tipoEmenda: "Tipo de emenda",
+      nomeAutor: "Autor da emenda",
+      codigoAutor: "Código do autor",
+      localidadeDoGasto: "Localidade do gasto",
+      nomeFuncao: "Função",
+      codigoFuncao: "Código da função",
+      orgaoExecutor: "Órgão executor",
+      programaGovernamental: "Programa governamental",
+      acao: "Ação orçamentária",
+      valorEmpenhado: "Valor empenhado",
+      valorLiquidado: "Valor liquidado",
+      valorPago: "Valor pago",
+      valorRestoPagarInscritos: "Restos a pagar inscritos",
+      valorRestoPagarCancelados: "Restos a pagar cancelados",
+      valorRestoPagarPagos: "Restos a pagar pagos",
+    };
+
+    const ORDEM_CAMPOS_EMENDA = [
+      "codigoEmenda",
+      "ano",
+      "anoEmenda",
+      "tipoEmenda",
+      "nomeAutor",
+      "codigoAutor",
+      "localidadeDoGasto",
+      "nomeFuncao",
+      "codigoFuncao",
+      "orgaoExecutor",
+      "programaGovernamental",
+      "acao",
+      "valorEmpenhado",
+      "valorLiquidado",
+      "valorPago",
+      "valorRestoPagarInscritos",
+      "valorRestoPagarCancelados",
+      "valorRestoPagarPagos",
+    ];
+
+    function rotuloCampoEmenda(key) {
+      if (ROTULOS_CAMPO_EMENDA[key]) return ROTULOS_CAMPO_EMENDA[key];
+      return key
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (c) => c.toUpperCase())
+        .trim();
+    }
+
+    /** Formata um valor scalar ou objeto da API para HTML seguro. */
+    function formatCampoEmendaParaHtml(key, v) {
+      if (v == null || v === "") return `<span class="muted">—</span>`;
+      if (typeof v === "boolean") return escapeHtml(v ? "Sim" : "Não");
+      if (Array.isArray(v)) {
+        if (!v.length) return `<span class="muted">—</span>`;
+        if (v.every((x) => typeof x !== "object" || x === null)) {
+          return escapeHtml(v.map((x) => String(x)).join(", "));
+        }
+        return `<pre class="det-emenda-json">${escapeHtml(JSON.stringify(v, null, 2))}</pre>`;
+      }
+      if (typeof v === "object") {
+        return `<pre class="det-emenda-json">${escapeHtml(JSON.stringify(v, null, 2))}</pre>`;
+      }
+      if (typeof v === "number") {
+        if (/valor|resto|empenh|liquid|pago|inscrit|cancel/i.test(key)) return escapeHtml(brl(v));
+        return escapeHtml(String(v));
+      }
+      const n = Number(v);
+      const isNum = !Number.isNaN(n) && String(v).trim() !== "" && /^-?\d/.test(String(v).trim());
+      if (isNum && /valor|resto|empenh|liquid|pago|inscrit|cancel/i.test(key)) {
+        return escapeHtml(brl(n));
+      }
+      return escapeHtml(String(v));
+    }
+
+    function htmlDetalheEmendaPortal(j, codFallback) {
+      const skip = new Set(["erro", "Erro na API"]);
+      const chaves = Object.keys(j).filter((k) => !skip.has(k));
+      const ordem = [];
+      ORDEM_CAMPOS_EMENDA.forEach((k) => {
+        if (chaves.includes(k)) ordem.push(k);
+      });
+      chaves
+        .filter((k) => !ordem.includes(k))
+        .sort((a, b) => a.localeCompare(b, "pt-BR"))
+        .forEach((k) => ordem.push(k));
+
+      const titulo = escapeHtml(j.codigoEmenda || codFallback || "Emenda");
+      const links =
+        `<div class="det-emenda-links">` +
+        `<span class="muted">Mesma família de dados que </span>` +
+        `<a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">Emendas parlamentares</a>` +
+        ` · <a href="https://portaldatransparencia.gov.br/emendas/consulta" target="_blank" rel="noopener">Consulta de emendas</a>` +
+        ` · <a href="https://portaldatransparencia.gov.br/api-de-dados" target="_blank" rel="noopener">API de dados</a>` +
+        `</div>`;
+
+      const linhas = ordem
+        .map((k) => {
+          const lab = escapeHtml(rotuloCampoEmenda(k));
+          const val = formatCampoEmendaParaHtml(k, j[k]);
+          return `<div class="det-emenda-row"><span class="det-emenda-k">${lab}</span><div class="det-emenda-v">${val}</div></div>`;
+        })
+        .join("");
+
+      return (
+        `<h3 style="margin:0 0 0.25rem;font-size:1rem">Detalhe — emenda ${titulo}</h3>` +
+        `<p class="note" style="margin:0 0 0.5rem;font-size:0.8rem">Campos retornados pela API oficial (estrutura equivalente às consultas do portal).</p>` +
+        links +
+        `<div class="det-emenda-grid">${linhas}</div>`
+      );
     }
 
     /**
@@ -682,15 +834,7 @@
           box.innerHTML = `<p class="alert">${core}${link403}</p>`;
           return;
         }
-        box.innerHTML = `
-        <h3 style="margin:0 0 0.5rem;font-size:1rem">Emenda ${escapeHtml(j.codigoEmenda || cod)}</h3>
-        <p style="margin:0.25rem 0"><strong>Autor:</strong> ${escapeHtml(j.nomeAutor || "—")} · <strong>Tipo:</strong> ${escapeHtml(j.tipoEmenda || "—")}</p>
-        <p style="margin:0.25rem 0"><strong>Órgão executor:</strong> ${escapeHtml(j.orgaoExecutor || "—")}</p>
-        <p style="margin:0.25rem 0"><strong>Programa:</strong> ${escapeHtml(j.programaGovernamental || "—")}</p>
-        <p style="margin:0.25rem 0"><strong>Ação:</strong> ${escapeHtml(j.acao || "—")}</p>
-        <p style="margin:0.25rem 0"><strong>Localidade:</strong> ${escapeHtml(j.localidadeDoGasto || "—")}</p>
-        <p style="margin:0.5rem 0 0"><strong>Valores:</strong> empenhado ${escapeHtml(brl(j.valorEmpenhado))} · liquidado ${escapeHtml(brl(j.valorLiquidado))} · pago ${escapeHtml(brl(j.valorPago))}</p>
-        <p class="note" style="margin:0.75rem 0 0">Painel completo no portal: <a href="https://portaldatransparencia.gov.br/emendas" target="_blank" rel="noopener">Emendas parlamentares →</a></p>`;
+        box.innerHTML = htmlDetalheEmendaPortal(j, cod);
       } catch (e) {
         console.error(e);
         box.innerHTML = `<div class="alert">${mensagemFalhaRedePortal(e)}</div>`;
