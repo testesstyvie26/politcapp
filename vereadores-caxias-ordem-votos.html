@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vereadores — Rio de Janeiro e Duque de Caxias 2024 | Politapp</title>
+  <title>Duque de Caxias — vereadores 2024 (votos crescentes) | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -73,8 +73,8 @@
       align-items: end;
       margin-bottom: 1rem;
     }
-    @media (min-width: 1100px) {
-      .filters { grid-template-columns: 1fr 8rem 10.5rem 10.5rem 5.5rem; }
+    @media (min-width: 1000px) {
+      .filters { grid-template-columns: 1fr 9.5rem 12rem 5.5rem; }
     }
     label {
       display: flex; flex-direction: column; gap: 0.35rem;
@@ -341,29 +341,25 @@
       <a href="conta.html">Conta</a>
     </nav>
     <nav class="vereador-sub" aria-label="Navegação — Vereadores RJ">
-      <a href="vereadores-rj.html" aria-current="page">Lista e filtros</a>
+      <a href="vereadores-rj.html">Lista e filtros (Rio + Caxias)</a>
       <span class="sep" aria-hidden="true">|</span>
-      <a href="vereadores-caxias-ordem-votos.html">Caxias — votos crescentes</a>
+      <a href="vereadores-caxias-ordem-votos.html" aria-current="page">Caxias — votos crescentes</a>
       <span class="sep" aria-hidden="true">|</span>
       <a href="vereadores-rj-mapa-votos.html">Mapa de votos (zona e seção)</a>
     </nav>
 
     <header>
-      <h1>Vereadores — Rio de Janeiro e Duque de Caxias</h1>
+      <h1>Duque de Caxias — vereadores 2024</h1>
       <p>
-        Candidaturas a <strong>vereador</strong> nas eleições municipais de 2024 nos municípios
-        <strong>Rio de Janeiro</strong> (<abbr title="Unidade eleitoral TSE">UE</abbr> <span class="mono">60011</span>, capital)
-        e <strong>Duque de Caxias</strong> (UE <span class="mono">58335</span>), com base no arquivo
-        <span class="mono">consulta_cand</span> do
-        <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2024" target="_blank" rel="noopener">Portal de Dados Abertos do TSE</a>.
-        A lista inclui <strong>todos</strong> os registos de vereador (cargo 13): candidatos titulares, suplentes e demais participantes, conforme
-        <span class="mono">DS_SIT_TOT_TURNO</span>. Votos (1º turno), redes declaradas e contactos WhatsApp provenientes dos ficheiros
-        <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE, quando existirem.
-        Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
-        Para <strong>Duque de Caxias</strong> com ordenação <strong>por votos crescentes</strong> (menor → maior), abra
-        <a href="vereadores-caxias-ordem-votos.html">a página dedicada</a>.
-        Atualize os dados com <span class="mono">npm run build:vereadores-rj</span>.
-        <a href="vereadores-rj-mapa-votos.html">Mapa de votos por zona e (exemplo) por seção</a>.
+        Apenas <strong>Duque de Caxias</strong> (UE TSE <span class="mono">58335</span>), <strong>todos os partidos</strong>, ordenados por
+        <strong>votos do menor para o maior</strong> (1.º turno). Os mesmos campos e fonte que a
+        <a href="vereadores-rj.html">lista geral (Rio e Caxias)</a> — ficheiro
+        <span class="mono">vereadores-rj-rio-2024.json</span> —
+        <span class="mono">consulta_cand</span>,
+        <span class="mono">votacao_candidato_munzona</span>,
+        <span class="mono">rede_social_candidato</span> e WhatsApp quando existirem.
+        Atualize com <span class="mono">npm run build:vereadores-rj</span>.
+        <a href="vereadores-rj-mapa-votos.html">Mapa de votos (zona e seção)</a>.
       </p>
       <p class="header-estudo">
         <span class="header-estudo__label">Estudo de caso (análise estratégica, dados TSE)</span>
@@ -395,14 +391,6 @@
           <select id="selPartido"><option value="">Todos</option></select>
         </label>
         <label>
-          Município
-          <select id="selMunicipio">
-            <option value="">Todos</option>
-            <option value="60011">Rio de Janeiro</option>
-            <option value="58335">Duque de Caxias</option>
-          </select>
-        </label>
-        <label>
           Grupo
           <select id="selPapel">
             <option value="">Todos</option>
@@ -424,15 +412,13 @@
         <table>
           <thead>
             <tr>
-              <th>Município</th>
               <th>Nº</th>
               <th>Nome de urna</th>
               <th>Partido</th>
               <th>Grupo</th>
               <th>Resultado (pleito)</th>
-              <th class="num">Votos</th>
-              <th>Mídias sociais</th>
-              <th>WhatsApp</th>
+              <th class="num">Votos <span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">↑ menor → maior</span></th>
+              <th>Redes e contactos</th>
               <th class="mono">SQ</th>
             </tr>
           </thead>
@@ -595,11 +581,9 @@
     function filtrar() {
       const q = norm(document.getElementById("inpBusca").value.trim());
       const p = document.getElementById("selPartido").value;
-      const munFiltro = document.getElementById("selMunicipio").value;
       const papelFiltro = document.getElementById("selPapel").value;
       return raw.filter((r) => {
         if (p && r.partido !== p) return false;
-        if (munFiltro && codigoUeRow(r) !== munFiltro) return false;
         if (papelFiltro && papelFromRow(r) !== papelFiltro) return false;
         if (!q) return true;
         const pap = papelFromRow(r);
@@ -623,6 +607,25 @@
       });
     }
 
+    function sortPorVotosCrescente(rows) {
+      return rows.slice().sort((a, b) => {
+        const va = Number(a.votos);
+        const vb = Number(b.votos);
+        const oka = Number.isFinite(va);
+        const okb = Number.isFinite(vb);
+        if (oka && okb && va !== vb) return va - vb;
+        if (oka && !okb) return -1;
+        if (!oka && okb) return 1;
+        return String(a.nomeUrna || "").localeCompare(String(b.nomeUrna || ""), "pt-BR");
+      });
+    }
+
+    function redesEContactos(r) {
+      const mid = r.midiasSociais && r.midiasSociais.length ? r.midiasSociais : [];
+      const wz = r.whatsapp && r.whatsapp.length ? r.whatsapp : [];
+      return [...mid, ...wz];
+    }
+
     function contagemPorPapel(rows) {
       const c = { eleito: 0, suplente: 0, participante: 0 };
       for (const row of rows) {
@@ -631,18 +634,9 @@
       return c;
     }
 
-    function contagemPorMunicipio(rows) {
-      const c = {};
-      for (const row of rows) {
-        const k = row.municipio || "—";
-        c[k] = (c[k] || 0) + 1;
-      }
-      return c;
-    }
-
     function render() {
       const tbody = document.getElementById("tbody");
-      const lista = filtrar();
+      const lista = sortPorVotosCrescente(filtrar());
       PAGE.size = parseInt(document.getElementById("selPageSize").value, 10) || 50;
       const total = lista.length;
       const pages = Math.max(1, Math.ceil(total / PAGE.size));
@@ -659,22 +653,15 @@
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
           const vot = fmtIntPt(r.votos);
-          const mid = linksHtml(r.midiasSociais);
-          const wz = linksHtml(r.whatsapp);
-          const ueCode = codigoUeRow(r);
-          const ue = ueCode
-            ? `<span class="muted mono" style="display:block;font-size:0.75rem;margin-top:0.15rem">UE ${escapeHtml(ueCode)}</span>`
-            : "";
+          const red = linksHtml(redesEContactos(r));
           return `<tr>
-            <td>${escapeHtml(r.municipio || "—")}${ue}</td>
             <td class="num mono">${n}</td>
             <td>${escapeHtml(r.nomeUrna || "—")}</td>
             <td><strong>${escapeHtml(r.partido || "—")}</strong>${r.partidoNome ? `<span class="muted" style="display:block;font-size:0.78rem">${escapeHtml(r.partidoNome)}</span>` : ""}</td>
             <td>${escapeHtml(lbl)}</td>
             <td>${res}</td>
             <td class="num mono">${vot}</td>
-            <td class="soc-cell">${mid}</td>
-            <td class="soc-cell">${wz}</td>
+            <td class="soc-cell">${red}</td>
             <td class="mono">${sq}</td>
           </tr>`;
         })
@@ -682,7 +669,6 @@
 
       const buscaAtiva = !!document.getElementById("inpBusca").value.trim();
       const partidoAtivo = !!document.getElementById("selPartido").value;
-      const munAtivo = !!document.getElementById("selMunicipio").value;
       const papelAtivo = !!document.getElementById("selPapel").value;
 
       document.getElementById("lblPagina").textContent =
@@ -694,12 +680,9 @@
       if (total === 0 && raw.length > 0) {
         hintEl.hidden = false;
         hintEl.textContent =
-          "Dica: ao mudar o município, a lista de partidos é atualizada para esse recorte. " +
-          "Se ainda estiver vazio, limpe a busca por texto ou escolha Grupo «Todos». " +
-          "O partido seleccionado anteriormente pode não existir no município escolhido.";
+          "Dica: limpe a busca por texto ou escolha Grupo e Partido «Todos» se não vir resultados.";
         if (buscaAtiva || partidoAtivo || papelAtivo) {
-          hintEl.textContent +=
-            " (Há busca, partido ou grupo a restringir o resultado.)";
+          hintEl.textContent += " (Filtro de busca, partido ou grupo activo.)";
         }
       } else {
         hintEl.hidden = true;
@@ -712,18 +695,13 @@
       const meta = document.getElementById("metaLista");
       if (raw.length) {
         const ccAll = contagemPorPapel(raw);
-        const byMun = contagemPorMunicipio(raw);
-        const munTxt = Object.keys(byMun)
-          .sort((a, b) => a.localeCompare(b, "pt-BR"))
-          .map((k) => `${k}: ${byMun[k]}`)
-          .join(" · ");
         const tail = geradoEm ? ` · gerado em ${geradoEm}` : "";
         const ccF = contagemPorPapel(lista);
         const filtroExtra =
           lista.length !== raw.length
             ? ` · visíveis agora: ${lista.length} (${ccF.eleito} el., ${ccF.suplente} supl., ${ccF.participante} demais)`
             : "";
-        meta.textContent = `Fonte: TSE (consulta_cand, votacao_munzona, rede_social) · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${tail}.`;
+        meta.textContent = `Duque de Caxias (UE 58335) · ordenação: votos crescentes · fonte: TSE · total ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${tail}.`;
       }
     }
 
@@ -736,21 +714,9 @@
         const r = await fetch(new URL(JSON_URL, window.location.href).toString(), { cache: "no-store" });
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const data = await r.json();
-        raw = data.vereadores || [];
+        const todos = data.vereadores || [];
+        raw = todos.filter((row) => codigoUeRow(row) === UE_CAXIAS);
         geradoEm = data.geradoEm || "";
-        const munSel = document.getElementById("selMunicipio");
-        if (data.municipios && data.municipios.length) {
-          munSel.innerHTML =
-            '<option value="">Todos</option>' +
-            data.municipios
-              .slice()
-              .sort((a, b) => (a.nome || "").localeCompare(b.nome || "", "pt-BR"))
-              .map((m) => {
-                const v = String(m.sgUeTse || "");
-                return `<option value="${escapeHtml(v)}">${escapeHtml(m.nome || v)}</option>`;
-              })
-              .join("");
-        }
         const set = new Set(raw.map((x) => x.partido).filter(Boolean));
         partidosOrdenados = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
         refreshPartidoOptions("");
@@ -770,13 +736,6 @@
       render();
     });
     document.getElementById("selPartido").addEventListener("change", () => {
-      PAGE.num = 1;
-      render();
-    });
-    document.getElementById("selMunicipio").addEventListener("change", () => {
-      const ue = document.getElementById("selMunicipio").value;
-      refreshPartidoOptions(ue);
-      document.getElementById("selPapel").value = "";
       PAGE.num = 1;
       render();
     });
