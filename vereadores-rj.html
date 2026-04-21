@@ -209,6 +209,108 @@
       .soc-icon-btn::before { animation: none; opacity: 0.4; transform: none; }
       .soc-icon-btn:hover { transform: none; }
     }
+
+    header .header-estudo {
+      margin: 1rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem 1rem;
+    }
+    header .header-estudo__label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 100%;
+    }
+    .btn-heitor {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.58rem 1.2rem 0.62rem;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      color: var(--text);
+      background: linear-gradient(155deg, rgba(28, 36, 51, 0.98), rgba(18, 26, 40, 0.99));
+      border: 1px solid rgba(61, 139, 253, 0.42);
+      border-radius: 10px;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.3),
+        0 6px 22px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+      animation: btn-heitor-glow 2.8s ease-in-out infinite;
+    }
+    .btn-heitor::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        110deg,
+        transparent 0%,
+        rgba(61, 139, 253, 0.18) 42%,
+        transparent 75%
+      );
+      animation: btn-heitor-shimmer 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .btn-heitor:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: rgba(61, 139, 253, 0.75);
+      box-shadow:
+        0 0 0 1px rgba(61, 139, 253, 0.4),
+        0 12px 32px rgba(61, 139, 253, 0.22);
+      animation: none;
+    }
+    .btn-heitor:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .btn-heitor__text {
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.02em;
+    }
+    .btn-heitor__ico {
+      position: relative;
+      z-index: 1;
+      width: 1.1rem;
+      height: 1.1rem;
+      flex-shrink: 0;
+      color: var(--accent);
+      animation: btn-heitor-ico-nudge 2s ease-in-out infinite;
+    }
+    @keyframes btn-heitor-glow {
+      0%, 100% {
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.3),
+          0 6px 22px rgba(0, 0, 0, 0.35),
+          0 0 26px rgba(61, 139, 253, 0.12);
+      }
+      50% {
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.3),
+          0 8px 26px rgba(0, 0, 0, 0.4),
+          0 0 40px rgba(61, 139, 253, 0.28);
+      }
+    }
+    @keyframes btn-heitor-shimmer {
+      0%, 100% { opacity: 0.35; transform: translateX(-12%); }
+      50% { opacity: 1; transform: translateX(12%); }
+    }
+    @keyframes btn-heitor-ico-nudge {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(3px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-heitor { animation: none; }
+      .btn-heitor::before { animation: none; opacity: 0.45; transform: none; }
+      .btn-heitor:hover { transform: none; }
+      .btn-heitor__ico { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -243,7 +345,19 @@
         <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE, quando existirem.
         Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
         Atualize os dados com <span class="mono">npm run build:vereadores-rj</span>.
-        Estudo de caso (análise estratégica, dados TSE): <a href="vereador-heitor-queiroz-2024.html">PROFESSOR HEITOR QUEIROZ</a>.
+      </p>
+      <p class="header-estudo">
+        <span class="header-estudo__label">Estudo de caso (análise estratégica, dados TSE)</span>
+        <a
+          class="btn-heitor"
+          href="vereador-heitor-queiroz-2024.html"
+          aria-label="Abrir página de análise de campanha: PROFESSOR HEITOR QUEIROZ"
+        >
+          <svg class="btn-heitor__ico" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+          <span class="btn-heitor__text">PROFESSOR HEITOR QUEIROZ</span>
+        </a>
       </p>
     </header>
 
