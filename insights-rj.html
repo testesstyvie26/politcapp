@@ -156,6 +156,12 @@
     .comercio-item h4 { margin: 0 0 0.35rem; font-size: 0.92rem; font-weight: 600; }
     .comercio-item .meta { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
     .comercio-item p { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
+    .comercio-item .dias-feira {
+      margin: 0.4rem 0 0;
+      font-size: 0.78rem;
+      color: #9ec5ff;
+      line-height: 1.4;
+    }
     .marker-dot {
       width: 12px; height: 12px; border-radius: 50%;
       border: 2px solid rgba(255,255,255,0.85);
@@ -333,6 +339,7 @@
         Referência de <strong>locais com forte presença de comércio, feiras e associações</strong>, úteis para
         <strong>agenda de rua, escuta com lojistas e produtores</strong> e conteúdo de campanha regionalizado.
         Coordenadas são aproximadas (centro do equipamento ou polo); confirme endereço e horário antes da visita.
+        Para <strong>feiras e mercados</strong>, cada ponto traz <strong>dias e faixa de horário de referência</strong> (podem mudar com feriados, clima ou decisão da gestão).
         <strong>Corridas, caminhadas e eventos beneficentes</strong> por município estão na base ilustrativa da seção
         <strong>Viagens entre municípios</strong> (filtro por período + proximidade à rota).
         Com <strong>Baixada Fluminense</strong> na mesorregião, use o filtro de município para focar em:
@@ -589,14 +596,14 @@
     ];
 
     const POIS_COMERCIO = [
-      { nome: "Saara (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9045, lng: -43.1845, dica: "Alto fluxo, pequenos lojistas; boa janela para escuta sobre custos e logística urbana." },
-      { nome: "Mercado Municipal de Madureira", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8732, lng: -43.3378, dica: "Referência de abastecimento e trabalho informal; priorize horários de menor tumulto e diálogo com permissionários." },
-      { nome: "Centro Luiz Gonzaga (Feira de São Cristóvão)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9015, lng: -43.2309, dica: "Cultura nordestina e economia criativa; visitas pedem alinhamento com a gestão do espaço e fornecedores." },
-      { nome: "Mercado São Pedro", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8835, lng: -43.1062, dica: "Tradicional para peixes e banca; útil para agenda com produtores e consumidores da Baía." },
-      { nome: "Mercado de Campo Grande", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9035, lng: -43.5568, dica: "Polo de bairro denso; bom para temas de transporte e serviços periféricos." },
+      { nome: "Saara (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9045, lng: -43.1845, dica: "Alto fluxo, pequenos lojistas; boa janela para escuta sobre custos e logística urbana.", diasFuncionamento: "Lojas e galerias: em geral seg–sáb, horário comercial; domingos e feriados com parte do comércio fechada ou horário reduzido." },
+      { nome: "Mercado Municipal de Madureira", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8732, lng: -43.3378, dica: "Referência de abastecimento e trabalho informal; priorize horários de menor tumulto e diálogo com permissionários.", diasFuncionamento: "Edifício do mercado: em geral seg–dom, cedo até a tarde (bancas de peixe/carnes costumam concentrar na madrugada e manhã). Confirme corredor." },
+      { nome: "Centro Luiz Gonzaga (Feira de São Cristóvão)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9015, lng: -43.2309, dica: "Cultura nordestina e economia criativa; visitas pedem alinhamento com a gestão do espaço e fornecedores.", diasFuncionamento: "Tradicionalmente qui–dom e feriados; horário costuma estender no fim de semana. Conferir programação e bilheteria no site do espaço." },
+      { nome: "Mercado São Pedro", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8835, lng: -43.1062, dica: "Tradicional para peixes e banca; útil para agenda com produtores e consumidores da Baía.", diasFuncionamento: "Em geral todos os dias, com pico pela manhã (peixaria). Restaurantes e bancas podem ter folgas; confirme no local." },
+      { nome: "Mercado de Campo Grande", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9035, lng: -43.5568, dica: "Polo de bairro denso; bom para temas de transporte e serviços periféricos.", diasFuncionamento: "Costuma funcionar todos os dias, horário comercial e manhã intensa nas bancas. Feriados podem reduzir movimento." },
       { nome: "Centro de Duque de Caxias", cidade: "Duque de Caxias", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7856, lng: -43.3117, dica: "Eixo histórico da Baixada; combine com entidades locais e rotas de ônibus." },
       { nome: "Centro de Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7592, lng: -43.4513, dica: "Alto volume comercial; útil para fechar narrativa metropolitana sem ficar só na capital." },
-      { nome: "Mercado Municipal de Campos", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Feira ou mercado municipal", lat: -21.7583, lng: -41.3338, dica: "Ponto de encontro de interior; pauta rural-urbana e cadeias que abastecem a região." },
+      { nome: "Mercado Municipal de Campos", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Feira ou mercado municipal", lat: -21.7583, lng: -41.3338, dica: "Ponto de encontro de interior; pauta rural-urbana e cadeias que abastecem a região.", diasFuncionamento: "Em geral seg–sáb com abertura matinal; domingo e feriados variam por corredor. Verificar com feirantes ou prefeitura." },
       { nome: "Centro comercial de Macaé", cidade: "Macaé", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.3708, lng: -41.7768, dica: "Economia ligada ao setor de energia; contraste entre serviços e comércio local." },
       { nome: "Rua Teresa e entorno", cidade: "Petrópolis", meso: "Centro Fluminense", tipo: "Turismo e comércio", lat: -22.5125, lng: -43.1735, dica: "Comércio turístico e histórico; atenção a logística em fins de semana e eventos." },
       { nome: "Centro de Nova Friburgo", cidade: "Nova Friburgo", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.2818, lng: -42.531, dica: "Tecido comercial pós-reconstrução; bom para escuta com pequenos lojistas e cooperativas." },
@@ -613,7 +620,10 @@
       { nome: "Centro de Barra Mansa", cidade: "Barra Mansa", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.548, lng: -44.1753, dica: "Polo do médio Paraíba; boa ponte com Volta Redonda e rodovias." },
       { nome: "Centro de Três Rios", cidade: "Três Rios", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.1167, lng: -43.2092, dica: "Entroncamento rodoviário; comércio de passagem e interior." },
       { nome: "Centro de Nilópolis", cidade: "Nilópolis", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.807, lng: -43.4139, dica: "Densidade urbana; escuta com lojistas de rua e associações." },
-      { nome: "Feira de São Pedro (Teresópolis)", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Feira ou mercado municipal", lat: -22.4112, lng: -42.9656, dica: "Produtos da serra; bom para narrativa de agricultura e turismo." },
+      { nome: "Feira de São Pedro (Teresópolis)", cidade: "Teresópolis", meso: "Centro Fluminense", tipo: "Feira ou mercado municipal", lat: -22.4112, lng: -42.9656, dica: "Produtos da serra; bom para narrativa de agricultura e turismo.", diasFuncionamento: "Feira livre e entorno: em geral sábados (e alguns dias úteis conforme calendário municipal). Mercados fixos próximos costumam seg–sáb." },
+      { nome: "Feira da Glória (praça)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9194, lng: -43.1892, dica: "Artesanato, antiguidades e comida de rua; forte fluxo pela manhã.", diasFuncionamento: "Domingos, em geral das 7h às 13h (chuva e feriados alteram; chegue cedo para estacionamento)." },
+      { nome: "Feira Hippie de Ipanema (Praça General Osório)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9832, lng: -43.1979, dica: "Artesanato e moda; público turístico e moradores.", diasFuncionamento: "Domingos, em geral manhã até o início da tarde." },
+      { nome: "Feira do Rio Antigo — Rua do Lavradio", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9112, lng: -43.1825, dica: "Antiguidades, brechós e cultura da Lapa; combina com comércio de rua do bairro.", diasFuncionamento: "Primeiro sábado de cada mês (tradicionalmente à noite); confirme calendário e interdições." },
       { nome: "Centro de Magé", cidade: "Magé", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.6528, lng: -43.0408, dica: "Baía de Guanabara; ligação com Barcas e logística fluvial." },
       { nome: "Centro de Queimados", cidade: "Queimados", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7161, lng: -43.5553, dica: "Corredor metropolitano; comércio popular e feiras de bairro." },
       { nome: "Centro de Mesquita", cidade: "Mesquita", meso: "Baixada Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.7839, lng: -43.4297, dica: "Tecido comercial contínuo com vizinhos; boa rota para microcredito e serviços." },
@@ -631,6 +641,21 @@
       { nome: "Centro de São Fidélis", cidade: "São Fidélis", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.6819, lng: -41.7531, dica: "Vale do Café; rotas para Campos e interior." },
       { nome: "Centro de Rio das Ostras", cidade: "Rio das Ostras", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.5269, lng: -41.945, dica: "Crescimento urbano e petróleo próximo; orla e comércio de bairro." },
     ];
+
+    /** Dias e horários ilustrativos; confirme no local ou na prefeitura. */
+    function comercioDiasFuncionamentoRef(p) {
+      if (p.diasFuncionamento) return p.diasFuncionamento;
+      if (p.tipo === "Feira ou mercado municipal") {
+        return "Mercado ou feira livre: dias e horários variam por banca e calendário municipal — confirme com feirantes ou prefeitura.";
+      }
+      if (p.tipo === "Turismo e comércio") {
+        return "Comércio e serviços costumam intensificar fins de semana e alta temporada; horários variam por segmento.";
+      }
+      if (p.tipo === "Associação e rede de negócios") {
+        return "Em geral horário comercial (seg–sex); confirme ACIs, sindicatos e entidades.";
+      }
+      return "Comércio de rua e galerias: tipicamente seg–sáb, horário comercial; domingos e feriados costumam ser mais fracos.";
+    }
 
     /** Eventos ilustrativos (2026) — confirmar datas e locais em fontes oficiais. */
     const TIPO_EVENTO_COLORS = {
@@ -998,6 +1023,7 @@
           <div class="popup-title">${escapeHtml(p.nome)}</div>
           <div class="popup-meso">~${distKm.toFixed(1)} km da rota · ${escapeHtml(p.cidade)}</div>
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
+          <p style="margin:0.45rem 0 0"><strong>Dias / horário (referência):</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
           <p style="margin:0.45rem 0 0">${escapeHtml(p.dica)}</p>
         `;
       }
@@ -1202,6 +1228,7 @@
             card.innerHTML = `
               <div class="dist">~${dist.toFixed(1)} km da rota · ${escapeHtml(p.tipo)}</div>
               <strong>${escapeHtml(p.nome)}</strong> — ${escapeHtml(p.cidade)}
+              <p class="note" style="margin:0.35rem 0 0"><strong>Dias / horário:</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
               <p class="note" style="margin:0.35rem 0 0">${escapeHtml(p.dica)}</p>
             `;
             poisRoot.appendChild(card);
@@ -1335,6 +1362,7 @@
           <div class="popup-title">${escapeHtml(p.nome)}</div>
           <div class="popup-meso">${escapeHtml(p.cidade)} · ${escapeHtml(p.meso)}</div>
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
+          <p style="margin:0.45rem 0 0"><strong>Dias / horário (referência):</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
           <p style="margin:0.5rem 0 0"><strong>Visita:</strong> ${escapeHtml(p.dica)}</p>
         `;
       }
@@ -1392,6 +1420,7 @@
           art.innerHTML = `
             <div class="meta">${escapeHtml(p.cidade)} · ${escapeHtml(p.tipo)}</div>
             <h4>${escapeHtml(p.nome)}</h4>
+            <p class="dias-feira"><strong>Dias / horário:</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
             <p>${escapeHtml(p.dica)}</p>
           `;
           const open = () => {
