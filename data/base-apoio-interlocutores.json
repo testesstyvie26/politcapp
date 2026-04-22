@@ -1,0 +1,105 @@
+{
+  "aviso": "Modelo de base para CRM político. Substitua exemplos por dados reais só com fundamento em LGPD e regras eleitorais. Perfis abaixo são fictícios para demonstração da UI.",
+  "atualizado": "2026-04-22",
+  "pessoas": [
+    {
+      "id": "demo-01",
+      "nome": "Ana Costa (exemplo fictício)",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Articuladora de bairro",
+      "eixos": ["direita", "politicas_publicas", "acoes_sociais"],
+      "origem_dado": "Demonstração — voluntário em evento de bairro (preencher origem real)",
+      "contatos": {
+        "email": "",
+        "telefone": "",
+        "whatsapp": ""
+      },
+      "redes": [
+        {
+          "plataforma": "instagram",
+          "handle": "@exemplo_articuladora_rj",
+          "url": "https://www.instagram.com/"
+        },
+        {
+          "plataforma": "facebook",
+          "handle": "facebook.com/exemplo",
+          "url": "https://www.facebook.com/"
+        }
+      ],
+      "notas_internas": "Substituir por notas internas após consentimento para tratamento de dados."
+    },
+    {
+      "id": "demo-02",
+      "nome": "Carlos Mendes (exemplo fictício)",
+      "cidade": "Duque de Caxias — RJ",
+      "papel": "Militante — segurança pública",
+      "eixos": ["operacoes_policiais", "direita"],
+      "origem_dado": "Demonstração — interação pública em post (sem API; registo manual)",
+      "contatos": {
+        "email": "",
+        "telefone": "",
+        "whatsapp": ""
+      },
+      "redes": [
+        {
+          "plataforma": "x",
+          "handle": "@exemplo_carlos_caxias",
+          "url": "https://x.com/"
+        }
+      ],
+      "notas_internas": "Eixo operações: validar tom e contexto antes de qualquer abordagem."
+    },
+    {
+      "id": "demo-03",
+      "nome": "Projeto Social Vila Esperança (exemplo)",
+      "cidade": "Niterói — RJ",
+      "papel": "ONG / ação social",
+      "eixos": ["acoes_sociais", "politicas_publicas"],
+      "origem_dado": "Demonstração — site ou página pública da entidade",
+      "contatos": {
+        "email": "contato@exemplo-ong.org.br",
+        "telefone": "",
+        "whatsapp": ""
+      },
+      "redes": [
+        {
+          "plataforma": "instagram",
+          "handle": "@exemplo_vila_esperanca",
+          "url": "https://www.instagram.com/"
+        },
+        {
+          "plataforma": "web",
+          "handle": "site",
+          "url": "https://prefeitura.rio/"
+        }
+      ],
+      "notas_internas": "E-mail ilustrativo; troque por contacto validado da entidade."
+    },
+    {
+      "id": "demo-04",
+      "nome": "Beatriz Alves (exemplo fictício)",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Produtora de conteúdo local",
+      "eixos": ["direita", "acoes_sociais"],
+      "origem_dado": "Demonstração",
+      "contatos": {
+        "email": "",
+        "telefone": "",
+        "whatsapp": ""
+      },
+      "redes": [
+        {
+          "plataforma": "threads",
+          "handle": "@exemplo_beatriz_threads",
+          "url": "https://www.threads.net/"
+        },
+        {
+          "plataforma": "youtube",
+          "handle": "CanalExemploRJ",
+          "url": "https://www.youtube.com/"
+        }
+      ],
+      "notas_internas": "Inclua WhatsApp ou telefone só após opt-in explícito."
+    }
+  ]
+}

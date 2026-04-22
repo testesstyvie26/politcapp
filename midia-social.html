@@ -644,6 +644,183 @@
       font-weight: 400;
       opacity: 0.92;
     }
+
+    /* ——— Base de apoio (CRM) ——— */
+    .crm-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem 1rem;
+      margin-bottom: 1rem;
+      padding: 0.65rem 0.85rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .crm-toolbar .btn-crm {
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      border: 1px solid rgba(61, 139, 253, 0.45);
+      background: rgba(61, 139, 253, 0.18);
+      color: #b8d4ff;
+      cursor: pointer;
+    }
+    .crm-toolbar .btn-crm:hover {
+      background: rgba(61, 139, 253, 0.28);
+      color: var(--text);
+    }
+    .crm-toolbar .btn-crm.secondary {
+      border-color: var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+    }
+    .crm-toolbar .btn-crm.secondary:hover {
+      color: var(--text);
+    }
+    .crm-search {
+      flex: 1;
+      min-width: 200px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .crm-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.84rem;
+    }
+    .crm-filters label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .crm-filters label:hover { color: var(--text); }
+    .crm-filters input { accent-color: var(--accent); }
+    .crm-status {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0 0 1rem;
+    }
+    .crm-bulk-panel {
+      margin-bottom: 1.25rem;
+      padding: 1rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(61, 139, 253, 0.25);
+      background: rgba(61, 139, 253, 0.06);
+    }
+    .crm-bulk-panel[hidden] { display: none !important; }
+    .crm-bulk-panel h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .crm-bulk-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 280px;
+      overflow: auto;
+      font-size: 0.86rem;
+    }
+    .crm-bulk-list li {
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.75rem;
+      align-items: baseline;
+    }
+    .crm-bulk-list li:last-child { border-bottom: none; }
+    .crm-bulk-list a { color: var(--accent); font-weight: 600; }
+    .crm-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    .crm-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .crm-card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .crm-card .crm-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+    .crm-eixos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.65rem;
+    }
+    .crm-eixos span {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.45rem;
+      border-radius: 5px;
+      background: rgba(46, 196, 182, 0.15);
+      color: var(--heat-low);
+    }
+    .crm-eixos span.eixo--dir { background: rgba(61, 139, 253, 0.18); color: #9ec5ff; }
+    .crm-eixos span.eixo--pol { background: rgba(244, 162, 97, 0.18); color: #f4c4a5; }
+    .crm-eixos span.eixo--soc { background: rgba(167, 139, 250, 0.2); color: #c4b5fd; }
+    .crm-eixos span.eixo--pp { background: rgba(129, 199, 132, 0.2); color: #a5d6a7; }
+    .crm-contatos {
+      font-size: 0.82rem;
+      color: var(--text);
+      margin: 0 0 0.5rem;
+      line-height: 1.5;
+    }
+    .crm-contatos .empty { color: var(--muted); font-style: italic; }
+    .crm-redes {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .crm-redes summary {
+      cursor: pointer;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--accent);
+      list-style: none;
+    }
+    .crm-redes summary::-webkit-details-marker { display: none; }
+    .crm-redes ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.1rem;
+      font-size: 0.84rem;
+    }
+    .crm-redes a { color: var(--accent); }
+    .crm-origem {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -691,6 +868,7 @@
     <div class="tabs" role="tablist" aria-label="Seções mídia social">
       <button type="button" role="tab" id="tab-termo" aria-selected="true" aria-controls="panel-termo">Termômetros temáticos</button>
       <button type="button" role="tab" id="tab-seg" aria-selected="false" aria-controls="panel-seg">Segurança — escuta social</button>
+      <button type="button" role="tab" id="tab-crm" aria-selected="false" aria-controls="panel-crm">Base de apoio (CRM)</button>
       <button type="button" role="tab" id="tab-formatos" aria-selected="false" aria-controls="panel-formatos">Formatos e plataformas</button>
       <button type="button" role="tab" id="tab-exemplos" aria-selected="false" aria-controls="panel-exemplos">Exemplos de postagens</button>
       <button type="button" role="tab" id="tab-check" aria-selected="false" aria-controls="panel-check">Ética e legislação</button>
@@ -760,6 +938,40 @@
         </div>
         <div class="coment-grid" id="segComentRoot"></div>
       </div>
+    </section>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-crm" aria-labelledby="tab-crm" hidden>
+      <h2>Base de apoio — interlocutores e redes</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Ferramenta para <strong>organizar contactos e perfis públicos</strong> que demonstram apoio a temas da campanha (direita, operações policiais, ações sociais, políticas públicas).
+        Os dados vêm do ficheiro editável <span class="mono">data/base-apoio-interlocutores.json</span> — inclua apenas informação obtida com <strong>base legal</strong> (consentimento, relação prévia, dado manifestamente público conforme LGPD) e respeite a <strong>legislação eleitoral</strong>
+        (<a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a>). Não há ligação às APIs das redes: não é possível “varrer” automaticamente quem comentou em posts alheios a partir desta página.
+      </p>
+
+      <div class="crm-toolbar">
+        <input type="search" class="crm-search" id="crmSearch" placeholder="Buscar nome, cidade, papel ou notas…" autocomplete="off" />
+        <button type="button" class="btn-crm" id="crmReload">Atualizar base (JSON)</button>
+        <button type="button" class="btn-crm" id="crmListRedes" title="Mostra todos os links de perfis do resultado filtrado">Listar perfis nas redes</button>
+        <button type="button" class="btn-crm secondary" id="crmExportCsv">Exportar CSV</button>
+      </div>
+
+      <div class="crm-filters" role="group" aria-label="Filtrar por eixo de apoio (qualquer correspondência)">
+        <span class="note" style="margin:0;font-weight:600;color:var(--text)">Eixos:</span>
+        <label><input type="checkbox" name="crm-eixo" value="direita" checked /> Apoio à direita</label>
+        <label><input type="checkbox" name="crm-eixo" value="operacoes_policiais" checked /> Operações policiais</label>
+        <label><input type="checkbox" name="crm-eixo" value="acoes_sociais" checked /> Ações sociais</label>
+        <label><input type="checkbox" name="crm-eixo" value="politicas_publicas" checked /> Políticas públicas</label>
+      </div>
+
+      <p class="crm-status" id="crmStatus" aria-live="polite">Carregue a base ou altere os filtros.</p>
+
+      <div class="crm-bulk-panel" id="crmBulkPanel" hidden>
+        <h3>Perfis nas redes (resultado filtrado)</h3>
+        <p class="note" style="margin:0 0 0.5rem">Um registo por linha: pessoa, plataforma e link. Use para abrir perfis em nova aba ou copiar para planilha.</p>
+        <ul class="crm-bulk-list" id="crmBulkList"></ul>
+      </div>
+
+      <div class="crm-grid" id="crmRoot"></div>
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-formatos" aria-labelledby="tab-formatos" hidden>
@@ -884,6 +1096,7 @@
         <li>Respeitar <strong>legislação eleitoral</strong> e normas da plataforma (impulsionamento, desinformação, uso de imagens).</li>
         <li>Não prometer obras ou benefícios vinculados a voto; cuidado com tom de “troca de favores”.</li>
         <li>Consentimento e dignidade: crianças, pessoas em situação de vulnerabilidade e dados pessoais.</li>
+        <li>Base de contactos (CRM): trate só dados com base legal; não armazene ou trate dados obtidos por meios ilícitos; documente origem e finalidade (LGPD).</li>
         <li>Arquivar prints ou links de postagens relevantes para prestação de contas e transparência.</li>
       </ul>
       <p class="note" style="margin-top:1rem">
@@ -1096,6 +1309,7 @@
           panels.forEach((p) => {
             p.hidden = p.id !== id;
           });
+          if (id === "panel-crm") loadCrmBaseOnce();
         });
       });
     }
@@ -1795,10 +2009,265 @@
       renderComentariosTabSlice();
     }
 
+    const CRM_JSON = "data/base-apoio-interlocutores.json";
+    let crmPessoasAll = [];
+    let crmLoadedOnce = false;
+
+    const CRM_EIXO_LABELS = {
+      direita: "Direita",
+      operacoes_policiais: "Operações policiais",
+      acoes_sociais: "Ações sociais",
+      politicas_publicas: "Políticas públicas",
+    };
+
+    function crmEixoClass(eixo) {
+      if (eixo === "direita") return "eixo--dir";
+      if (eixo === "operacoes_policiais") return "eixo--pol";
+      if (eixo === "acoes_sociais") return "eixo--soc";
+      if (eixo === "politicas_publicas") return "eixo--pp";
+      return "";
+    }
+
+    function getCrmSelectedEixos() {
+      const boxes = document.querySelectorAll('input[name="crm-eixo"]:checked');
+      return Array.from(boxes).map((b) => b.value);
+    }
+
+    function crmPersonMatchesFilters(p, q, eixosSel) {
+      if (!eixosSel.length) return false;
+      const pe = Array.isArray(p.eixos) ? p.eixos : [];
+      const matchEixo = eixosSel.some((e) => pe.includes(e));
+      if (!matchEixo) return false;
+      if (!q) return true;
+      const hay = [
+        p.nome,
+        p.cidade,
+        p.papel,
+        p.notas_internas,
+        p.origem_dado,
+        ...pe.map((e) => CRM_EIXO_LABELS[e] || e),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      const words = q.split(/\s+/).filter(Boolean);
+      return words.length ? words.every((w) => hay.includes(w)) : true;
+    }
+
+    function crmGetFiltered() {
+      const q = (document.getElementById("crmSearch")?.value || "").trim().toLowerCase();
+      const eixos = getCrmSelectedEixos();
+      return crmPessoasAll.filter((p) => crmPersonMatchesFilters(p, q, eixos));
+    }
+
+    function crmPlatformLabel(pl) {
+      const x = String(pl || "").toLowerCase();
+      const map = {
+        x: "X",
+        twitter: "X",
+        threads: "Threads",
+        instagram: "Instagram",
+        facebook: "Facebook",
+        tiktok: "TikTok",
+        youtube: "YouTube",
+        linkedin: "LinkedIn",
+        web: "Web",
+      };
+      return map[x] || pl || "Rede";
+    }
+
+    function htmlCrmContatos(c) {
+      const email = (c && c.email) || "";
+      const tel = (c && c.telefone) || "";
+      const zap = (c && c.whatsapp) || "";
+      const parts = [];
+      if (email) parts.push(`E-mail: ${escapeHtml(email)}`);
+      if (tel) parts.push(`Tel.: ${escapeHtml(tel)}`);
+      if (zap) parts.push(`WhatsApp: ${escapeHtml(zap)}`);
+      if (!parts.length) {
+        return '<p class="crm-contatos"><span class="empty">Sem contactos no JSON — preencha com base legal e consentimento.</span></p>';
+      }
+      return `<p class="crm-contatos">${parts.join("<br />")}</p>`;
+    }
+
+    function htmlCrmCard(p) {
+      const eixos = (Array.isArray(p.eixos) ? p.eixos : [])
+        .map((e) => {
+          const lab = escapeHtml(CRM_EIXO_LABELS[e] || e);
+          const cl = crmEixoClass(e);
+          return `<span class="${cl}">${lab}</span>`;
+        })
+        .join("");
+      const redes = Array.isArray(p.redes) ? p.redes : [];
+      const redesLi = redes
+        .map((r) => {
+          const lab = escapeHtml(crmPlatformLabel(r.plataforma));
+          const h = escapeHtml(r.handle || "");
+          const u = escapeHtml(r.url || "#");
+          return `<li><strong>${lab}</strong>${h ? ` · ${h}` : ""} — <a href="${u}" target="_blank" rel="noopener noreferrer">abrir perfil ↗</a></li>`;
+        })
+        .join("");
+      const redesBlock =
+        redes.length === 0
+          ? '<p class="note" style="margin:0">Sem redes no registo.</p>'
+          : `<ul>${redesLi}</ul>`;
+
+      return `
+        <article class="crm-card">
+          <h3>${escapeHtml(p.nome || "—")}</h3>
+          <div class="crm-meta">${escapeHtml(p.papel || "")}${p.cidade ? ` · ${escapeHtml(p.cidade)}` : ""}</div>
+          <div class="crm-eixos">${eixos || '<span class="note">Sem eixos</span>'}</div>
+          ${htmlCrmContatos(p.contatos || {})}
+          <details class="crm-redes">
+            <summary>Perfis nas redes (${redes.length})</summary>
+            ${redesBlock}
+          </details>
+          ${p.origem_dado ? `<p class="crm-origem">Origem do dado: ${escapeHtml(p.origem_dado)}</p>` : ""}
+          ${p.notas_internas ? `<p class="note" style="margin:0.5rem 0 0">${escapeHtml(p.notas_internas)}</p>` : ""}
+        </article>`;
+    }
+
+    function renderCrmGrid() {
+      const root = document.getElementById("crmRoot");
+      const st = document.getElementById("crmStatus");
+      if (!root) return;
+      const list = crmGetFiltered();
+      if (st) st.textContent = `${list.length} pessoa(s) neste filtro · ${crmPessoasAll.length} no total na base`;
+      if (!list.length) {
+        root.innerHTML =
+          '<p class="note err">Nenhum registo corresponde aos filtros. Ajuste os eixos ou a pesquisa, ou edite o JSON.</p>';
+        return;
+      }
+      root.innerHTML = list.map(htmlCrmCard).join("");
+    }
+
+    function crmShowBulkRedes() {
+      const panel = document.getElementById("crmBulkPanel");
+      const ul = document.getElementById("crmBulkList");
+      if (!panel || !ul) return;
+      if (!crmLoadedOnce) {
+        loadCrmBaseOnce().then(() => crmShowBulkRedes());
+        return;
+      }
+      const list = crmGetFiltered();
+      const rows = [];
+      for (const p of list) {
+        const nome = p.nome || "—";
+        const redes = Array.isArray(p.redes) ? p.redes : [];
+        for (const r of redes) {
+          const url = (r.url || "").trim();
+          if (!url) continue;
+          const plat = crmPlatformLabel(r.plataforma);
+          const handle = r.handle || "";
+          rows.push({ nome, plat, handle, url });
+        }
+      }
+      panel.hidden = false;
+      if (!rows.length) {
+        ul.innerHTML = '<li class="note">Nenhum link de perfil nos registos filtrados.</li>';
+        return;
+      }
+      ul.innerHTML = rows
+        .map(
+          (row) =>
+            `<li><strong>${escapeHtml(row.nome)}</strong> · <span class="muted">${escapeHtml(row.plat)}</span>${row.handle ? ` · ${escapeHtml(row.handle)}` : ""} — <a href="${escapeHtml(row.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(row.url)}</a></li>`
+        )
+        .join("");
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function crmExportCsv() {
+      if (!crmLoadedOnce) {
+        loadCrmBaseOnce().then(() => crmExportCsv());
+        return;
+      }
+      const list = crmGetFiltered();
+      const headers = ["nome", "cidade", "papel", "email", "telefone", "whatsapp", "eixos", "plataforma", "handle", "url_perfil", "origem_dado"];
+      const lines = [headers.join(";")];
+      for (const p of list) {
+        const c = p.contatos || {};
+        const eixos = (Array.isArray(p.eixos) ? p.eixos : []).join("|");
+        const redes = Array.isArray(p.redes) && p.redes.length ? p.redes : [{ plataforma: "", handle: "", url: "" }];
+        for (const r of redes) {
+          const row = [p.nome || "", p.cidade || "", p.papel || "", c.email || "", c.telefone || "", c.whatsapp || "", eixos, r.plataforma || "", r.handle || "", r.url || "", p.origem_dado || ""].map((cell) => {
+            const s = String(cell).replace(/"/g, '""');
+            return `"${s}"`;
+          });
+          lines.push(row.join(";"));
+        }
+      }
+      const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "base-apoio-interlocutores-filtrado.csv";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    async function loadCrmBaseOnce() {
+      if (crmLoadedOnce) {
+        renderCrmGrid();
+        return;
+      }
+      const root = document.getElementById("crmRoot");
+      const st = document.getElementById("crmStatus");
+      if (root) root.innerHTML = '<p class="note">A carregar base…</p>';
+      try {
+        const r = await fetch(new URL(CRM_JSON, window.location.href).toString(), { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const j = await r.json();
+        crmPessoasAll = Array.isArray(j.pessoas) ? j.pessoas : [];
+        crmLoadedOnce = true;
+        if (st) st.textContent = `Base carregada · ${crmPessoasAll.length} registo(s)`;
+      } catch (e) {
+        crmPessoasAll = [];
+        crmLoadedOnce = true;
+        if (st) st.textContent = "Não foi possível ler o JSON. Use um servidor HTTP local ou verifique o ficheiro.";
+        if (root) {
+          root.innerHTML =
+            '<p class="note err">Falha ao carregar base. Sirva o projecto via HTTP e confirme <span class="mono">data/base-apoio-interlocutores.json</span>.</p>';
+        }
+        return;
+      }
+      renderCrmGrid();
+    }
+
+    function setupCrmUi() {
+      document.getElementById("crmReload")?.addEventListener("click", async () => {
+        crmLoadedOnce = false;
+        await loadCrmBaseOnce();
+      });
+      document.getElementById("crmListRedes")?.addEventListener("click", () => {
+        crmShowBulkRedes();
+      });
+      document.getElementById("crmExportCsv")?.addEventListener("click", () => {
+        crmExportCsv();
+      });
+      const debounce = (fn, ms) => {
+        let t;
+        return () => {
+          clearTimeout(t);
+          t = setTimeout(fn, ms);
+        };
+      };
+      document.getElementById("crmSearch")?.addEventListener(
+        "input",
+        debounce(() => {
+          if (crmLoadedOnce) renderCrmGrid();
+        }, 200)
+      );
+      document.querySelectorAll('input[name="crm-eixo"]').forEach((inp) => {
+        inp.addEventListener("change", () => {
+          if (crmLoadedOnce) renderCrmGrid();
+        });
+      });
+    }
+
     function bootMidiaSocialPage() {
       renderTermometros();
       setupMainTabs();
       setupSegSubtabs();
+      setupCrmUi();
       document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
       setupSegPlatformFilters();
       setupSegComentadoresPagination();
