@@ -442,10 +442,14 @@
       return document.querySelector('input[name="nivel"]:checked')?.value || "zona";
     }
 
-    /** O UMD do autotable por vezes não regista o plugin se window.jspdf não estiver pronto; reforça aqui. */
+    /**
+     * jsPDF-AutoTable regista o método em jsPDF.API.autoTable (não em jsPDF.prototype).
+     * A verificação errada deixava o botão PDF sempre desativado.
+     */
     function ensureJspdfAutoTable() {
       const ctor = window.jspdf && window.jspdf.jsPDF;
       if (!ctor) return false;
+      if (ctor.API && typeof ctor.API.autoTable === "function") return true;
       if (typeof ctor.prototype.autoTable === "function") return true;
       const apply = typeof window.applyPlugin === "function" ? window.applyPlugin : null;
       if (apply) {
@@ -455,7 +459,7 @@
           console.warn("applyPlugin jsPDF-AutoTable", e);
         }
       }
-      return typeof ctor.prototype.autoTable === "function";
+      return !!(ctor.API && typeof ctor.API.autoTable === "function");
     }
 
     function getTableMatrixForPdf() {
