@@ -61,6 +61,7 @@
     .panel h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-weight: 600; }
     .panel h3 { font-size: 0.95rem; margin: 1rem 0 0.5rem; color: var(--muted); font-weight: 600; }
     .note { font-size: 0.85rem; color: var(--muted); margin: 0; }
+    .note.err { color: #f0a090; }
 
     .tabs {
       display: flex;
@@ -215,6 +216,122 @@
       text-decoration: none;
     }
     .seg-card a.seg-link:hover { text-decoration: underline; }
+
+    .seg-platform {
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.18rem 0.42rem;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+    .seg-platform.x { background: rgba(15, 20, 25, 0.9); color: #e7e9ea; border: 1px solid rgba(231, 233, 234, 0.25); }
+    .seg-platform.threads { background: rgba(20, 20, 20, 0.95); color: #f5f5f5; border: 1px solid rgba(255, 255, 255, 0.12); }
+    .seg-platform.instagram { background: linear-gradient(125deg, #f58529, #dd2a7b, #8134af); color: #fff; }
+    .seg-platform.facebook { background: rgba(24, 119, 242, 0.25); color: #8cb9ff; border: 1px solid rgba(24, 119, 242, 0.45); }
+    .seg-platform.web { background: rgba(61, 139, 253, 0.15); color: #9ec5ff; }
+    .seg-platform.mini { font-size: 0.58rem; padding: 0.12rem 0.32rem; }
+
+    .seg-autor {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+      line-height: 1.45;
+    }
+    .seg-autor a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .seg-autor a:hover { text-decoration: underline; }
+
+    .seg-comentadores {
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .seg-comentadores h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .seg-comentadores ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.8rem;
+    }
+    .seg-comentadores li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem 0.65rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .seg-comentadores li:last-child { border-bottom: none; }
+    .seg-comentadores a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .seg-comentadores a:hover { text-decoration: underline; }
+    .seg-coment-snippet {
+      flex: 1 1 100%;
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0;
+    }
+
+    .seg-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+    .seg-filters span { font-size: 0.72rem; color: var(--muted); margin-right: 0.35rem; }
+    .seg-filter-btn {
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.32rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .seg-filter-btn:hover { color: var(--text); border-color: rgba(61, 139, 253, 0.35); }
+    .seg-filter-btn[aria-pressed="true"] {
+      background: rgba(61, 139, 253, 0.22);
+      color: #b8d4ff;
+      border-color: rgba(61, 139, 253, 0.45);
+    }
+
+    .perfil-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+    }
+    .perfil-links a {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .perfil-links a:hover { text-decoration: underline; }
 
     .coment-grid {
       display: grid;
@@ -493,19 +610,28 @@
 
       <div class="subpanel" role="tabpanel" id="subpanel-posts" aria-labelledby="subtab-posts">
         <p class="note" style="margin:0 0 1rem">
-          Postagens agregadas por <strong>plugins de busca</strong> (ficheiro local + Reddit JSON público). Conteúdo de terceiros —
-          confirme em fonte oficial antes de usar em campanha ou relatório. Reddit pode falhar por rate limit ou bloqueio de rede.
+          Visão por <strong>rede</strong> (X, Threads, Instagram, Facebook) com <strong>links para perfis</strong> de autores e comentadores quando o extracto os trouxer.
+          Notícias (Google News) aparecem como «web» — normalmente sem lista de comentadores. Listagem em tempo real nas APIs oficiais Meta/X exige conector backend ou exportação do seu social listening; estes cartões mostram o modelo de dados e exemplos.
         </p>
         <div class="seg-toolbar">
           <button type="button" class="btn-seg" id="segRefreshPosts">Atualizar postagens</button>
           <span class="seg-status" id="segPostsStatus" aria-live="polite">A iniciar…</span>
+        </div>
+        <div class="seg-filters" role="group" aria-label="Filtrar por plataforma">
+          <span>Plataforma:</span>
+          <button type="button" class="seg-filter-btn" data-pf="all" aria-pressed="true" id="segFiltAll">Todas</button>
+          <button type="button" class="seg-filter-btn" data-pf="x" aria-pressed="false" id="segFiltX">X</button>
+          <button type="button" class="seg-filter-btn" data-pf="threads" aria-pressed="false" id="segFiltThreads">Threads</button>
+          <button type="button" class="seg-filter-btn" data-pf="instagram" aria-pressed="false" id="segFiltIg">Instagram</button>
+          <button type="button" class="seg-filter-btn" data-pf="facebook" aria-pressed="false" id="segFiltFb">Facebook</button>
+          <button type="button" class="seg-filter-btn" data-pf="web" aria-pressed="false" id="segFiltWeb">Web / notícias</button>
         </div>
         <div class="seg-grid" id="segPostsRoot"></div>
       </div>
 
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
-          <strong>Sentimento positivo</strong> em relação à ação policial, à divulgação de dados ou à prevenção — com <strong>perfil inferido ou declarado</strong> do autor (idade aproximada, local, ocupação), quando disponível no perfil público.
+          <strong>Sentimento positivo</strong> em relação à ação policial, dados ou prevenção. Cada cartão inclui <strong>link direto para o perfil</strong> na rede (X, Threads, Instagram ou Facebook), quando declarado no extracto — útil para auditoria e resposta institucional.
         </p>
         <div class="coment-grid" id="segComentRoot"></div>
       </div>
@@ -870,10 +996,114 @@
     /* ——— Escuta social: plugins + render ——— */
     const ESCUTA_JSON = "data/escuta-social-seguranca.json";
 
+    /**
+     * Sempre disponível (não depende de fetch). Reddit e ficheiro local falham com frequência
+     * (403, file://, deploy sem /data). Isto garante cartões visíveis em qualquer ambiente.
+     */
+    const ESCUTA_EMBEDDED_POSTS = [
+      {
+        titulo: "Boletim: séries de segurança — cruzar com fonte estadual antes de republicar",
+        corpo: "Demonstração embutida. Substitua por RSS, API de listening ou exportação auditável.",
+        fonte: "Politapp (embutido)",
+        url: "https://www.gov.br/pt-br",
+        badge: "evento",
+        tags: ["baseline", "oficial"],
+        plugin: "embutido",
+        dataIso: new Date().toISOString(),
+      },
+      {
+        titulo: "Operação integrada: comunicação oficial reduz rumor em grupo de bairro",
+        corpo: "Checklist: horário, vias afetadas, canais da PM ou SSP. Evite repasse de vídeo sem contexto.",
+        fonte: "Politapp (embutido)",
+        url: "https://www12.senado.leg.br/noticias",
+        badge: "operacao",
+        tags: ["operação", "comunicação"],
+        plugin: "embutido",
+        dataIso: new Date(Date.now() - 86400000).toISOString(),
+      },
+      {
+        titulo: "Prevenção social e escolas — pauta para escuta comunitária",
+        corpo: "Destaque iniciativas com telefone ou site verificável de órgão público.",
+        fonte: "Politapp (embutido)",
+        url: "https://www.ibge.gov.br/",
+        badge: "evento",
+        tags: ["prevenção", "comunidade"],
+        plugin: "embutido",
+        dataIso: new Date(Date.now() - 172800000).toISOString(),
+      },
+    ];
+
+    const ESCUTA_EMBEDDED_COMENTARIOS = [
+      {
+        nome: "Marina L.",
+        handle: "@marina_cidadania",
+        perfilDesc: "Professora · Zona Norte (demonstração embutida)",
+        texto: "Bom ver dados oficiais separados de boatos. Peço link da SSP ou PRF antes de compartilhar vídeo de operação.",
+        ctx: "Discussão sobre desinformação em grupos de bairro",
+      },
+      {
+        nome: "Ricardo Souza",
+        handle: "perfil ilustrativo",
+        perfilDesc: "Comerciante · Baixada (demonstração embutida)",
+        texto: "Aqui no comércio a gente sente quando melhora o policiamento ostensivo; política social de médio prazo também importa.",
+        ctx: "Thread sobre segurança urbana",
+      },
+    ];
+
+    function stripHtml(html) {
+      if (!html) return "";
+      return String(html)
+        .replace(/<script[\s\S]*?<\/script>/gi, "")
+        .replace(/<style[\s\S]*?<\/style>/gi, "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    /** Google News RSS via rss2json (Access-Control-Allow-Origin: *). */
+    async function fetchGoogleNewsPosts(searchQuery, limit) {
+      const rss =
+        "https://news.google.com/rss/search?q=" +
+        encodeURIComponent(searchQuery) +
+        "&hl=pt-BR&gl=BR&ceid=BR%3Apt-419";
+      const api =
+        "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rss) + "&count=" + limit;
+      const r = await fetch(api);
+      if (!r.ok) throw new Error("rss2json HTTP " + r.status);
+      const j = await r.json();
+      if (j.status !== "ok") throw new Error(j.message || "RSS inválido");
+      return (j.items || []).map((item) => {
+        const titulo = item.title || "(sem título)";
+        const desc = stripHtml(item.description || "");
+        const badge = inferBadgeFromText(titulo, desc);
+        let dataIso = null;
+        try {
+          if (item.pubDate) dataIso = new Date(item.pubDate).toISOString();
+        } catch (_) {}
+        return {
+          titulo,
+          corpo: desc.slice(0, 500),
+          fonte: item.author || "Google News",
+          url: item.link || "#",
+          badge,
+          tags: ["notícias", "Google News"],
+          plugin: "google-news",
+          dataIso,
+        };
+      });
+    }
+
     const ESCUTA_PLUGINS = [
       {
+        id: "embed",
+        label: "Conteúdo embutido",
+        async fetchPosts() {
+          return ESCUTA_EMBEDDED_POSTS.map((p) => ({ ...p }));
+        },
+      },
+      {
         id: "local-json",
-        label: "Arquivo local (fallback)",
+        label: "Arquivo data/escuta-social-seguranca.json",
         async fetchPosts() {
           try {
             const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
@@ -895,24 +1125,17 @@
         },
       },
       {
-        id: "reddit-brasil",
-        label: "Reddit r/brasil",
+        id: "gn-rio",
+        label: "Google News — Rio / segurança",
         async fetchPosts() {
-          return fetchRedditSearch("brasil", "segurança pública OR polícia OR SSP", 10);
+          return fetchGoogleNewsPosts("segurança pública Rio de Janeiro", 10);
         },
       },
       {
-        id: "reddit-brasil-op",
-        label: "Reddit r/brasil — operações",
+        id: "gn-baixada",
+        label: "Google News — Baixada / polícia",
         async fetchPosts() {
-          return fetchRedditSearch("brasil", "operação policial OR PRF OR polícia federal", 8);
-        },
-      },
-      {
-        id: "reddit-rio",
-        label: "Reddit r/riodejaneiro",
-        async fetchPosts() {
-          return fetchRedditSearch("riodejaneiro", "segurança OR crime OR UPP OR PM", 10);
+          return fetchGoogleNewsPosts("polícia Duque de Caxias Baixada Fluminense operação", 8);
         },
       },
     ];
@@ -929,35 +1152,6 @@
       if (/morto|morte|homic|tirote|assassin|facção|tráfico|sequestro/i.test(t)) return "crime";
       if (/operação|operacao|pm\b|polícia|policial|prf|core|bope|defesa civil|blitz/i.test(t)) return "operacao";
       return "evento";
-    }
-
-    async function fetchRedditSearch(subreddit, query, limit) {
-      const u = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&include_over_18=off&sort=new&limit=${limit}`;
-      const r = await fetch(u, { method: "GET" });
-      if (!r.ok) throw new Error("Reddit HTTP " + r.status);
-      const j = await r.json();
-      const children = j?.data?.children || [];
-      return children
-        .map((c) => c?.data)
-        .filter(Boolean)
-        .map((d) => {
-          const permalink = d.permalink ? "https://www.reddit.com" + d.permalink : "";
-          const url = d.url && /^https?:\/\//i.test(d.url) ? d.url : permalink;
-          const titulo = d.title || "(sem título)";
-          const corpo = (d.selftext || "").slice(0, 420);
-          const badge = inferBadgeFromText(titulo, corpo);
-          const created = d.created_utc ? new Date(d.created_utc * 1000).toISOString() : null;
-          return {
-            titulo,
-            corpo: corpo || (d.is_self ? "" : "Link externo — ver discussão no Reddit."),
-            fonte: `r/${d.subreddit || subreddit}`,
-            url: url || permalink,
-            badge,
-            tags: [d.link_flair_text || "reddit", d.subreddit].filter(Boolean),
-            plugin: "reddit",
-            dataIso: created,
-          };
-        });
     }
 
     async function runEscutaPlugins() {
@@ -1068,15 +1262,7 @@
         /* fallback abaixo */
       }
       if (!comentarios.length) {
-        comentarios = [
-          {
-            nome: "Usuário demo",
-            handle: "@demo",
-            perfilDesc: "Perfil ilustrativo",
-            texto: "Conteúdo de comentários positivos carregado a partir do JSON local quando disponível.",
-            ctx: "Fallback",
-          },
-        ];
+        comentarios = ESCUTA_EMBEDDED_COMENTARIOS.map((c) => ({ ...c }));
       }
       root.innerHTML = comentarios
         .map(
@@ -1094,12 +1280,20 @@
         .join("");
     }
 
-    renderTermometros();
-    setupMainTabs();
-    setupSegSubtabs();
-    document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
-    loadSegPosts();
-    loadSegComentarios();
+    function bootMidiaSocialPage() {
+      renderTermometros();
+      setupMainTabs();
+      setupSegSubtabs();
+      document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
+      loadSegPosts();
+      loadSegComentarios();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootMidiaSocialPage);
+    } else {
+      bootMidiaSocialPage();
+    }
   </script>
 </body>
 </html>
