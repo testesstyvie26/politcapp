@@ -91,6 +91,145 @@
 
     .tab-panel[hidden] { display: none !important; }
 
+    .subtabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0 0 1.1rem;
+      padding: 0.2rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 9px;
+      border: 1px solid var(--border);
+    }
+    .subtabs button {
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+    }
+    .subtabs button:hover { color: var(--text); }
+    .subtabs button[aria-selected="true"] {
+      background: rgba(61, 139, 253, 0.22);
+      color: #b8d4ff;
+      border: 1px solid rgba(61, 139, 253, 0.35);
+    }
+    .subpanel[hidden] { display: none !important; }
+
+    .seg-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    .seg-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .seg-card .seg-kicker {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ec5ff;
+      margin-bottom: 0.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+    }
+    .seg-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 5px;
+      background: rgba(46, 196, 182, 0.15);
+      color: var(--heat-low);
+      font-weight: 700;
+    }
+    .seg-badge.crime { background: rgba(224, 122, 95, 0.18); color: #f0a090; }
+    .seg-badge.operacao { background: rgba(244, 162, 97, 0.18); color: #f4c4a5; }
+    .seg-badge.evento { background: rgba(61, 139, 253, 0.15); color: #9ec5ff; }
+    .seg-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.98rem;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .seg-card .seg-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+    .seg-card .seg-body {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .seg-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.65rem; }
+    .seg-tags span {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+    }
+
+    .coment-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    .coment-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      border-left: 3px solid var(--heat-low);
+    }
+    .coment-card .perfil {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.75rem;
+      border-radius: 8px;
+      background: rgba(46, 196, 182, 0.08);
+      border: 1px solid rgba(46, 196, 182, 0.2);
+    }
+    .coment-card .perfil strong {
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .coment-card .perfil .handle {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .coment-card .perfil .perfil-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .coment-card .coment-txt {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0 0 0.5rem;
+      font-style: italic;
+    }
+    .coment-card .ctx {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
     .termo-grid {
       display: grid;
       gap: 1rem;
@@ -289,6 +428,7 @@
 
     <div class="tabs" role="tablist" aria-label="Seções mídia social">
       <button type="button" role="tab" id="tab-termo" aria-selected="true" aria-controls="panel-termo">Termômetros temáticos</button>
+      <button type="button" role="tab" id="tab-seg" aria-selected="false" aria-controls="panel-seg">Segurança — escuta social</button>
       <button type="button" role="tab" id="tab-formatos" aria-selected="false" aria-controls="panel-formatos">Formatos e plataformas</button>
       <button type="button" role="tab" id="tab-exemplos" aria-selected="false" aria-controls="panel-exemplos">Exemplos de postagens</button>
       <button type="button" role="tab" id="tab-check" aria-selected="false" aria-controls="panel-check">Ética e legislação</button>
@@ -301,6 +441,34 @@
         Ajuste conforme Trends, noticiário local e relatórios oficiais na sua semana de conteúdo.
       </p>
       <div class="termo-grid" id="termoCards"></div>
+    </section>
+
+    <section class="panel tab-panel" role="tabpanel" id="panel-seg" aria-labelledby="tab-seg" hidden>
+      <h2>Escuta social — segurança pública</h2>
+      <p class="note" style="margin-bottom:1rem">
+        Painel de <strong>demonstração</strong> para organizar monitoramento de postagens sobre <strong>segurança pública, eventos policiais e crimes</strong>,
+        e para destacar <strong>comentários positivos</strong> à atuação das forças ou a políticas de prevenção, com perfil resumido de quem comenta.
+        Em produção, ligue a exportações do seu social listening, API de redes ou planilha auditável — não substitui análise jurídica nem confirmação em fontes oficiais.
+      </p>
+
+      <div class="subtabs" role="tablist" aria-label="Submenu segurança e escuta">
+        <button type="button" role="tab" id="subtab-posts" aria-selected="true" aria-controls="subpanel-posts">Busca — postagens</button>
+        <button type="button" role="tab" id="subtab-coment" aria-selected="false" aria-controls="subpanel-coment">Comentários positivos</button>
+      </div>
+
+      <div class="subpanel" role="tabpanel" id="subpanel-posts" aria-labelledby="subtab-posts">
+        <p class="note" style="margin:0 0 1rem">
+          Amostra de <strong>postagens captadas</strong> por palavras-chave e temas (operação, ocorrência, violência urbana, prevenção). Revise sempre com boletins oficiais (SSP, PRF, imprensa local).
+        </p>
+        <div class="seg-grid" id="segPostsRoot"></div>
+      </div>
+
+      <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
+        <p class="note" style="margin:0 0 1rem">
+          <strong>Sentimento positivo</strong> em relação à ação policial, à divulgação de dados ou à prevenção — com <strong>perfil inferido ou declarado</strong> do autor (idade aproximada, local, ocupação), quando disponível no perfil público.
+        </p>
+        <div class="coment-grid" id="segComentRoot"></div>
+      </div>
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-formatos" aria-labelledby="tab-formatos" hidden>
