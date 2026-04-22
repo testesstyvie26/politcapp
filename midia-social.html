@@ -376,6 +376,22 @@
       background: var(--surface2);
       color: var(--text);
     }
+    .coment-filter-positivo {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      max-width: 26rem;
+      line-height: 1.35;
+      cursor: pointer;
+    }
+    .coment-filter-positivo input {
+      accent-color: var(--accent);
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+    }
     .coment-pager {
       display: flex;
       flex-wrap: wrap;
@@ -1036,7 +1052,8 @@
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
           <strong>Sem OAuth:</strong> respostas públicas em fios <strong>Mastodon</strong> (API de contexto). Na lista abaixo entram o JSON curado (inclui temas em Instagram, Facebook, YouTube e TikTok como <strong>ligações para escuta manual</strong>) e injeções Mastodon/X.
-          Os comentários listados incluem os que vêm <strong>das postagens carregadas</strong> (bloco «Perfis a comentar» em cada cartão) e, para <strong>Mastodon</strong>, uma <strong>amostra automática de respostas públicas</strong> nos primeiros toots após «Atualizar postagens». Outras redes: use API oficial ou escuta manual.
+          Por defeito a grelha mostra só <strong>vozes de apoio</strong> (operações policiais, concursos, cursos/formação em segurança) — heurística em português e campo <span class="mono">comentarioPositivo</span> no JSON. Desmarque a caixa para ver todos os extractos fundidos.
+          Inclui comentários <strong>das postagens carregadas</strong> e respostas Mastodon (amostra) após «Atualizar postagens».
         </p>
         <div class="escuta-api-box" id="escutaApiBox">
           <h3>Mastodon — respostas em postagens (sem autenticação)</h3>
@@ -1086,6 +1103,10 @@
           </details>
         </div>
         <div class="coment-tab-toolbar">
+          <label class="coment-filter-positivo" title="Mostra extractos com tom de apoio a operações policiais ou a cursos/formação em segurança pública (heurística em português)">
+            <input type="checkbox" id="segComentFiltroPositivo" checked />
+            Só vozes de apoio (operações / formação)
+          </label>
           <label class="coment-page-size" for="segComentPageSize"
             >Comentários por página
             <select id="segComentPageSize" aria-label="Itens por página">
@@ -1516,7 +1537,8 @@
     window.__segPostComentarios = [];
     const COMENT_CARD_PAGE_SIZE = 4;
 
-    let segComentariosAll = [];
+    /** Lista completa (JSON + curados + postagens + API); a aba aplica filtro «vozes de apoio» sobre esta lista. */
+    let segComentariosMerged = [];
     let segComentTabPage = 0;
     let segComentTabPageSize = 6;
     let segComentariosLastFromJson = [];
@@ -1819,6 +1841,7 @@
                     ...c,
                     verificado: c.verificado,
                     tipoFonte: c.tipoFonte || null,
+                    comentarioPositivo: c.comentarioPositivo,
                   }))
                 : [],
               dataIso: p.dataIso || null,
@@ -2490,21 +2513,85 @@
         </article>`;
     }
 
+    function escutaTextoComentarioParaMatch(c) {
+      return `${c.texto || ""} ${c.ctx || ""} ${c.perfilDesc || ""} ${c.nome || ""}`
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    /**
+     * Identifica comentários «a favor» de operações policiais ou de cursos/formação em segurança pública.
+     * Curadoria: campo JSON comentarioPositivo: true. Caso contrário, heurística em texto (pt-BR).
+     */
+    function escutaIsComentarioPositivoTema(c) {
+      if (!c) return false;
+      if (c.comentarioPositivo === true) return true;
+      const raw = escutaTextoComentarioParaMatch(c);
+      if (
+        /violencia policial|abuso de autoridade|truculenc|chacina|execucao extrajudicial|genocidio|assassinato de inocente/i.test(
+          raw
+        )
+      ) {
+        return false;
+      }
+      const tema =
+        /operacao\s*policial|policia\s*militar|policia\s*civil|\bpmerj\b|\bpcerj\b|\bprf\b|\bbope\b|forcas?\s*de\s*seguranca|concurso\s*(publico|policial)|curso(s)?\s*(de|em|para)\s*(seguranca|polic|formacao)|formacao\s*policial|capacitacao\s*(policial|da\s*seguranca|em\s*seguranca)|seguranca\s*publica|agente(s)?\s+(penitenciari|de\s*seguranca)|preparatorio\s*(policial|para\s*concurso)/i.test(
+          raw
+        );
+      const apoio =
+        /\bapoio\b|\bparabens\b|orgulho|\ba favor\b|defendemos|\bdefendo\b|valoriz|reconhec|gratidao|excelente(\s|$)|muito bom|importante trabalho|parabeniz|admiracao|confianca\s+na\s+pol|obrigad[oa]\s+a\s+pol|felizmente temos|satisfeit[oa]\s+com|parabens\s+aos?\s+(pm|polic|agente)|iniciativa\s+necessaria|trabalho\s+importante\s+d(a|e)\s+pol|merecido\s+reconhec|orgulho\s+dos?\s+nossos?\s+polic|parabens\s+pm|parabens\s+policia|apoio\s+aos?\s+polic/i.test(
+          raw
+        );
+      const formacaoPos =
+        /(curso|capacitacao|formacao)\b.*(seguranca|polic|concurso|preparator)/i.test(raw) &&
+        /util|recomend|excelente|parabens|importante|gratidao|apoio|vale a pena|muito bom|contratar mais polic|grande oportunid/i.test(raw);
+      return (tema && apoio) || formacaoPos;
+    }
+
+    function segComentariosListaExibicao() {
+      const cb = document.getElementById("segComentFiltroPositivo");
+      const filtroAtivo = cb ? cb.checked : true;
+      if (!filtroAtivo) {
+        return {
+          rows: segComentariosMerged,
+          totalMerged: segComentariosMerged.length,
+          filtroAtivo: false,
+        };
+      }
+      const rows = segComentariosMerged.filter(escutaIsComentarioPositivoTema);
+      return {
+        rows,
+        totalMerged: segComentariosMerged.length,
+        filtroAtivo: true,
+      };
+    }
+
     function renderComentariosTabSlice() {
       const root = document.getElementById("segComentRoot");
       const pager = document.getElementById("segComentPager");
       if (!root) return;
-      const total = segComentariosAll.length;
+      const { rows, totalMerged, filtroAtivo } = segComentariosListaExibicao();
+      const total = rows.length;
       const size = Math.max(1, segComentTabPageSize);
       const totalPages = Math.max(1, Math.ceil(total / size) || 1);
       if (segComentTabPage > totalPages - 1) segComentTabPage = Math.max(0, totalPages - 1);
       const start = segComentTabPage * size;
-      const slice = segComentariosAll.slice(start, start + size);
-      root.innerHTML = slice.map((c) => htmlComentarioPositivoCard(c)).join("");
+      const slice = rows.slice(start, start + size);
+      if (!slice.length && filtroAtivo && totalMerged > 0) {
+        root.innerHTML = `<p class="note err" style="margin:0">Nenhum extracto corresponde ao filtro de <strong>apoio</strong> (operações policiais ou formação em segurança). Desmarque «Só vozes de apoio» para ver os ${totalMerged} itens fundidos, ou atualize as postagens para trazer novas respostas.</p>`;
+      } else if (!slice.length) {
+        root.innerHTML =
+          '<p class="note err" style="margin:0">Sem comentários nesta vista. Carregue o JSON, atualize postagens (Mastodon) ou use a API acima.</p>';
+      } else {
+        root.innerHTML = slice.map((c) => htmlComentarioPositivoCard(c)).join("");
+      }
       if (pager) {
+        const filtroHint =
+          filtroAtivo && totalMerged > total ? ` · filtro apoio: ${total} de ${totalMerged}` : filtroAtivo ? ` · filtro apoio ativo` : "";
         pager.innerHTML = `
           <button type="button" class="coment-pager__btn" data-coment-prev ${segComentTabPage <= 0 ? "disabled" : ""}>Anterior</button>
-          <span class="coment-pager__meta">Página ${segComentTabPage + 1} de ${totalPages} · ${total} comentários / perfis</span>
+          <span class="coment-pager__meta">Página ${segComentTabPage + 1} de ${totalPages} · ${total} nesta vista${filtroHint}</span>
           <button type="button" class="coment-pager__btn" data-coment-next ${segComentTabPage >= totalPages - 1 ? "disabled" : ""}>Próximo</button>`;
       }
     }
@@ -2522,7 +2609,8 @@
           }
           if (e.target.closest("[data-coment-next]")) {
             const size = Math.max(1, segComentTabPageSize);
-            const totalPages = Math.max(1, Math.ceil(segComentariosAll.length / size) || 1);
+            const { rows } = segComentariosListaExibicao();
+            const totalPages = Math.max(1, Math.ceil(rows.length / size) || 1);
             segComentTabPage = Math.min(totalPages - 1, segComentTabPage + 1);
             renderComentariosTabSlice();
           }
@@ -2536,10 +2624,18 @@
           renderComentariosTabSlice();
         });
       }
+      const filtroPos = document.getElementById("segComentFiltroPositivo");
+      if (filtroPos && !filtroPos.dataset.comentBound) {
+        filtroPos.dataset.comentBound = "1";
+        filtroPos.addEventListener("change", () => {
+          segComentTabPage = 0;
+          renderComentariosTabSlice();
+        });
+      }
     }
 
     function rebuildSegComentariosAll() {
-      segComentariosAll = mergeComentariosLista(segComentariosLastFromJson).map((c) => {
+      segComentariosMerged = mergeComentariosLista(segComentariosLastFromJson).map((c) => {
         const pf = normalizePlatform(c.plataforma || "web");
         const url = (c.perfilUrl && String(c.perfilUrl).trim()) || perfilUrlPlataforma(pf, c.handle);
         return { ...c, plataforma: pf, perfilUrl: url };
@@ -2740,7 +2836,7 @@
             st.textContent =
               items.length === 0
                 ? "Nenhuma resposta pública neste fio (ou a instância não devolveu descendentes)."
-                : `${added} novo(s) cartão(ões) · ${items.length} resposta(s) no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total na lista: ${segComentariosAll.length}`;
+                : `${added} novo(s) cartão(ões) · ${items.length} resposta(s) no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total na lista: ${segComentariosMerged.length}`;
           }
         } catch (e) {
           if (st) {
@@ -2754,7 +2850,7 @@
         rebuildSegComentariosAll();
         if (st) {
           st.className = "seg-status";
-          st.textContent = `Injeções API limpas · ${segComentariosAll.length} comentário(s) na lista (JSON + curados).`;
+          st.textContent = `Injeções API limpas · ${segComentariosMerged.length} comentário(s) na lista (JSON + curados).`;
         }
       });
       document.getElementById("escutaApiSave")?.addEventListener("click", () => {
@@ -2811,7 +2907,7 @@
           rebuildSegComentariosAll();
           if (st) {
             st.className = "seg-status";
-            st.textContent = `${added} novo(s) da API X · ${items.length} no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total na lista: ${segComentariosAll.length}`;
+            st.textContent = `${added} novo(s) da API X · ${items.length} no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total na lista: ${segComentariosMerged.length}`;
           }
         } catch (e) {
           if (st) {

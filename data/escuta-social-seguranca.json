@@ -538,6 +538,42 @@
       "perfilDesc": "API pública de hashtag no painel",
       "texto": "Listagens automáticas de toots por hashtag na instância configurada; respostas em fio via URL do post.",
       "ctx": "Demonstração · Comentários positivos"
+    },
+    {
+      "nome": "Ilustração — apoio a operação policial",
+      "handle": "@exemplo_escuta_rj",
+      "plataforma": "instagram",
+      "perfilUrl": "https://www.instagram.com/explore/tags/riodejaneiro/",
+      "perfilDesc": "Texto fictício para demonstrar filtro «vozes de apoio»",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "comentarioPositivo": true,
+      "texto": "Parabéns à Polícia Militar pela operação: moradores agradecem o reforço de segurança no bairro.",
+      "ctx": "Demonstração · tom a favor de operação"
+    },
+    {
+      "nome": "Ilustração — curso de segurança pública",
+      "handle": "@exemplo_capacitacao",
+      "plataforma": "web",
+      "perfilUrl": "https://www.gov.br/pt-br",
+      "perfilDesc": "Texto fictício",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "comentarioPositivo": true,
+      "texto": "Excelente curso de capacitação em segurança pública — conteúdo importante para quem vai prestar concurso da polícia.",
+      "ctx": "Demonstração · apoio a formação"
+    },
+    {
+      "nome": "Ilustração — concurso público policial",
+      "handle": "@exemplo_concurseiro",
+      "plataforma": "facebook",
+      "perfilUrl": "https://www.facebook.com/search/top?q=concurso%20pol%C3%ADcia",
+      "perfilDesc": "Texto fictício",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "comentarioPositivo": true,
+      "texto": "Defendo mais vagas no concurso público da Polícia Civil: é gratidão aos que já servem e apoio a quem quer entrar.",
+      "ctx": "Demonstração · apoio a concurso / carreira policial"
     }
   ]
 }
