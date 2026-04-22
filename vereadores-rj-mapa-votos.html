@@ -97,14 +97,24 @@
       color: var(--text); padding: 0.5rem 1rem;
     }
     .btn-export-pdf:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-export-pdf:disabled { opacity: 0.45; cursor: not-allowed; }
+    .panel-table-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .wrap { padding: 0.5rem !important; max-width: none !important; }
+      .no-print { display: none !important; }
+      #panelTabelaVotos .panel-table-head .panel-table-actions { display: none !important; }
+      #panelTabelaVotos { box-shadow: none !important; border: 1px solid #ccc !important; }
+      #panelTabelaVotos .table-wrap { max-height: none !important; overflow: visible !important; }
+      #panelTabelaVotos th { background: #eee !important; color: #000 !important; }
+      #panelTabelaVotos td, #panelTabelaVotos th { border-color: #333 !important; }
+    }
   </style>
 </head>
 <body>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="Navegação principal">
+    <nav class="site-nav no-print" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
       <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
       <a href="executivo.html">Visão executiva</a>
@@ -118,7 +128,7 @@
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
     </nav>
-    <nav class="vereador-sub" aria-label="Navegação — Vereadores RJ">
+    <nav class="vereador-sub no-print" aria-label="Navegação — Vereadores RJ">
       <a href="vereadores-rj.html">Lista e filtros</a>
       <span class="sep" aria-hidden="true">|</span>
       <a href="vereadores-caxias-ordem-votos.html">Caxias — votos crescentes</a>
@@ -126,7 +136,7 @@
       <a href="vereadores-rj-mapa-votos.html" aria-current="page">Mapa de votos (zona e seção)</a>
     </nav>
 
-    <header>
+    <header class="no-print">
       <h1>Mapa de votos — eleições 2024 (vereador)</h1>
       <p>
         Visualização dos <strong>votos nominais</strong> (1.º turno) por <strong>zona eleitoral</strong> (agregado oficial TSE
@@ -143,7 +153,7 @@
       </p>
     </header>
 
-    <section class="panel">
+    <section class="panel no-print" id="panelControloMapa">
       <h2>Controlo do mapa</h2>
       <p class="note" id="mapStatus">A carregar dados…</p>
       <div class="map-toolbar">
@@ -173,10 +183,13 @@
       </div>
     </section>
 
-    <section class="panel">
+    <section class="panel" id="panelTabelaVotos">
       <div class="panel-table-head">
         <h2>Tabela (mesmos pontos do mapa)</h2>
-        <button type="button" class="btn-export-pdf" id="btnExportPdf" disabled onclick="typeof politappExportPdf==='function'&amp;&amp;politappExportPdf();">Exportar PDF</button>
+        <div class="panel-table-actions no-print">
+          <button type="button" class="btn-export-pdf" id="btnExportPdf" title="" onclick="if(window.politappExportPdf)window.politappExportPdf();">Exportar PDF</button>
+          <button type="button" class="btn-export-pdf" id="btnPrintTable" title="" onclick="if(window.politappPrintTabela)window.politappPrintTabela();">Imprimir</button>
+        </div>
       </div>
       <p class="note" id="tableMeta"></p>
       <div class="table-wrap">
@@ -526,12 +539,22 @@
       }, 250);
     }
 
-    function syncPdfExportButton() {
-      const btn = document.getElementById("btnExportPdf");
-      if (!btn) return;
+    /** Impressão na própria página (sem pop-up): esconde mapa/nav via .no-print e abre o diálogo do sistema. */
+    function printTabelaVotosInPage() {
+      if (!document.querySelector("#tbodyr tr")) {
+        alert("Não há linhas na tabela para imprimir.");
+        return;
+      }
+      window.print();
+    }
+
+    function syncTabelaExportUi() {
       const n = document.querySelectorAll("#tbodyr tr").length;
-      /* Só desactiva sem linhas; jsPDF/AutoTable validam ao clicar (evita botão preso se CDN falhar ou houver race). */
-      btn.disabled = n === 0;
+      const hint = n === 0 ? "Aguarde o mapa carregar a tabela ou altere candidato / município." : "";
+      ["btnExportPdf", "btnPrintTable"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.title = hint;
+      });
     }
 
     function exportTableToPdf() {
@@ -540,7 +563,7 @@
         return;
       }
       if (!getJspdfConstructor()) {
-        exportTableToPdfPrintFallback();
+        printTabelaVotosInPage();
         return;
       }
       const { headers, body } = getTableMatrixForPdf();
@@ -603,7 +626,7 @@
         doc.save(fn);
       } catch (err) {
         console.error(err);
-        alert("Erro ao gerar PDF: " + (err && err.message ? err.message : String(err)));
+        printTabelaVotosInPage();
       }
     }
 
@@ -629,7 +652,7 @@
       const nivel = getNivel();
       if (!row) {
         st.innerHTML = "<span class='error'>Candidato inválido.</span>";
-        syncPdfExportButton();
+        syncTabelaExportUi();
         return;
       }
       if (nivel === "secao" && secExemplo && String(secExemplo.sqCandidato) === sq) {
@@ -819,7 +842,7 @@
       if (zonaLocal && zonaLocal.geradoEm) metaZ += " · Moradas zona: " + zonaLocal.geradoEm;
       document.getElementById("tableMeta").textContent = metaZ;
       } finally {
-        syncPdfExportButton();
+        syncTabelaExportUi();
       }
     }
 
@@ -966,7 +989,7 @@
         (secExemplo.geradoEm || "") +
         (secExemplo.nota ? " · " + secExemplo.nota : "");
       } finally {
-        syncPdfExportButton();
+        syncTabelaExportUi();
       }
     }
 
@@ -993,7 +1016,7 @@
       } catch (e) {
         console.error(e);
         st.innerHTML = "<span class='error'>Erro: " + escapeHtml(e.message) + " — execute <span class='mono'>npm run build:vereadores-votos-zona</span> e <span class='mono'>npm run build:vereadores-rj</span>.</span>";
-        syncPdfExportButton();
+        syncTabelaExportUi();
         return;
       }
       st.textContent = "A inicializar mapa…";
@@ -1023,6 +1046,7 @@
     }
 
     window.politappExportPdf = exportTableToPdf;
+    window.politappPrintTabela = printTabelaVotosInPage;
     start();
   </script>
 </body>
