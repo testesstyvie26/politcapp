@@ -190,8 +190,8 @@
     </section>
   </div>
 
-  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin=""></script>
-  <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     const CAND_URL = "data/vereadores-rj-rio-2024.json";
@@ -442,69 +442,105 @@
       return document.querySelector('input[name="nivel"]:checked')?.value || "zona";
     }
 
+    /** O UMD do autotable por vezes não regista o plugin se window.jspdf não estiver pronto; reforça aqui. */
+    function ensureJspdfAutoTable() {
+      const ctor = window.jspdf && window.jspdf.jsPDF;
+      if (!ctor) return false;
+      if (typeof ctor.prototype.autoTable === "function") return true;
+      const apply = typeof window.applyPlugin === "function" ? window.applyPlugin : null;
+      if (apply) {
+        try {
+          apply(ctor);
+        } catch (e) {
+          console.warn("applyPlugin jsPDF-AutoTable", e);
+        }
+      }
+      return typeof ctor.prototype.autoTable === "function";
+    }
+
+    function getTableMatrixForPdf() {
+      const headers = Array.from(document.querySelectorAll("#theadr th")).map((th) => th.textContent.trim());
+      const body = Array.from(document.querySelectorAll("#tbodyr tr")).map((tr) =>
+        Array.from(tr.querySelectorAll("td")).map((td) => td.textContent.trim())
+      );
+      return { headers, body };
+    }
+
     function syncPdfExportButton() {
       const btn = document.getElementById("btnExportPdf");
       if (!btn) return;
       const n = document.querySelectorAll("#tbodyr tr").length;
-      const hasJs = typeof window.jspdf !== "undefined" && window.jspdf.jsPDF;
-      btn.disabled = n === 0 || !hasJs;
+      btn.disabled = n === 0 || !ensureJspdfAutoTable();
     }
 
     function exportTableToPdf() {
-      const hasJs = typeof window.jspdf !== "undefined" && window.jspdf.jsPDF;
-      if (!hasJs) {
-        alert("Biblioteca PDF não carregou. Verifique a ligação à rede e recarregue a página.");
+      if (!ensureJspdfAutoTable()) {
+        alert(
+          "Não foi possível carregar jsPDF / AutoTable (rede ou bloqueio de script). Recarregue a página ou verifique se cdn.jsdelivr.net / unpkg.com não está bloqueado."
+        );
         return;
       }
       if (!document.querySelector("#tbodyr tr")) {
         alert("Não há linhas na tabela para exportar.");
         return;
       }
-      const { jsPDF } = window.jspdf;
-      const landscape = getNivel() === "secao";
-      const doc = new jsPDF({ orientation: landscape ? "landscape" : "portrait", unit: "mm", format: "a4" });
-      const pageW = doc.internal.pageSize.getWidth();
-      const margin = 14;
-      const textW = pageW - margin * 2;
-      let y = 12;
-      doc.setFontSize(14);
-      doc.text("Mapa de votos — filtro aplicado", margin, y);
-      y += 8;
-      doc.setFontSize(9);
-      const selCand = document.getElementById("selCand");
-      const selUe = document.getElementById("selUe");
-      const nivel = getNivel() === "secao" ? "Por seção eleitoral" : "Por zona eleitoral";
-      const meta = document.getElementById("tableMeta");
-      const st = document.getElementById("mapStatus");
-      const blocos = [
-        "Candidato: " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "—"),
-        "Município: " + (selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "—"),
-        "Nível: " + nivel,
-        "SQ: " + getSelSq(),
-      ];
-      if (meta && meta.textContent) blocos.push(meta.textContent);
-      if (st && st.textContent && !st.querySelector(".error")) blocos.push("Resumo mapa: " + st.textContent);
-      blocos.push("Exportado: " + new Date().toLocaleString("pt-BR"));
-      doc.setTextColor(40, 40, 40);
-      blocos.forEach((line) => {
-        doc.splitTextToSize(line, textW).forEach((wline) => {
-          doc.text(wline, margin, y);
-          y += 4.5;
+      const { headers, body } = getTableMatrixForPdf();
+      if (!body.length) {
+        alert("Não há linhas na tabela para exportar.");
+        return;
+      }
+      try {
+        const { jsPDF } = window.jspdf;
+        const landscape = getNivel() === "secao";
+        const doc = new jsPDF({ orientation: landscape ? "landscape" : "portrait", unit: "mm", format: "a4" });
+        const pageW = doc.internal.pageSize.getWidth();
+        const margin = 14;
+        const textW = pageW - margin * 2;
+        let y = 12;
+        doc.setFontSize(14);
+        doc.text("Mapa de votos — filtro aplicado", margin, y);
+        y += 8;
+        doc.setFontSize(9);
+        const selCand = document.getElementById("selCand");
+        const selUe = document.getElementById("selUe");
+        const nivel = getNivel() === "secao" ? "Por seção eleitoral" : "Por zona eleitoral";
+        const meta = document.getElementById("tableMeta");
+        const st = document.getElementById("mapStatus");
+        const blocos = [
+          "Candidato: " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "—"),
+          "Município: " + (selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "—"),
+          "Nível: " + nivel,
+          "SQ: " + getSelSq(),
+        ];
+        if (meta && meta.textContent) blocos.push(meta.textContent);
+        if (st && st.textContent && !st.querySelector(".error")) blocos.push("Resumo mapa: " + st.textContent);
+        blocos.push("Exportado: " + new Date().toLocaleString("pt-BR"));
+        doc.setTextColor(40, 40, 40);
+        blocos.forEach((line) => {
+          doc.splitTextToSize(line, textW).forEach((wline) => {
+            doc.text(wline, margin, y);
+            y += 4.5;
+          });
         });
-      });
-      y += 3;
-      doc.autoTable({
-        html: "#tabelaVotosMapa",
-        startY: y,
-        styles: { fontSize: landscape ? 7 : 8, cellPadding: 1.2, overflow: "linebreak" },
-        headStyles: { fillColor: [28, 36, 51], textColor: 255 },
-        alternateRowStyles: { fillColor: [248, 249, 252] },
-        margin: { left: margin, right: margin },
-      });
-      const sq = getSelSq() || "x";
-      const suf = getNivel() === "secao" ? "secao" : "zona";
-      const fn = "politapp-votos-" + String(sq).replace(/\D/g, "").slice(0, 14) + "-" + suf + ".pdf";
-      doc.save(fn);
+        y += 3;
+        const tableOpts = {
+          startY: y,
+          body: body,
+          styles: { fontSize: landscape ? 7 : 8, cellPadding: 1.2, overflow: "linebreak" },
+          headStyles: { fillColor: [28, 36, 51], textColor: 255 },
+          alternateRowStyles: { fillColor: [248, 249, 252] },
+          margin: { left: margin, right: margin },
+        };
+        if (headers.length) tableOpts.head = [headers];
+        doc.autoTable(tableOpts);
+        const sq = getSelSq() || "x";
+        const suf = getNivel() === "secao" ? "secao" : "zona";
+        const fn = "politapp-votos-" + String(sq).replace(/\D/g, "").slice(0, 14) + "-" + suf + ".pdf";
+        doc.save(fn);
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao gerar PDF: " + (err && err.message ? err.message : String(err)));
+      }
     }
 
     function syncSecRadio() {
