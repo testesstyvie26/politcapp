@@ -245,6 +245,8 @@
     .seg-platform.facebook { background: rgba(24, 119, 242, 0.25); color: #8cb9ff; border: 1px solid rgba(24, 119, 242, 0.45); }
     .seg-platform.web { background: rgba(61, 139, 253, 0.15); color: #9ec5ff; }
     .seg-platform.mastodon { background: rgba(99, 100, 255, 0.2); color: #a5b4fc; border: 1px solid rgba(165, 180, 252, 0.35); }
+    .seg-platform.youtube { background: rgba(255, 0, 0, 0.18); color: #ffb4b4; border: 1px solid rgba(255, 80, 80, 0.4); }
+    .seg-platform.tiktok { background: rgba(105, 201, 240, 0.12); color: #b8ecff; border: 1px solid rgba(105, 201, 240, 0.35); }
     .seg-platform.mini { font-size: 0.58rem; padding: 0.12rem 0.32rem; }
 
     .seg-autor {
@@ -1008,8 +1010,8 @@
       <div class="subpanel" role="tabpanel" id="subpanel-posts" aria-labelledby="subtab-posts">
         <p class="note" style="margin:0 0 1rem">
           Fontes <strong>sem login</strong>: RSS (G1, Prefeitura), Google News, ficheiro
-          <span class="mono">data/escuta-social-seguranca.json</span>, <strong>Mastodon</strong> (API pública de hashtag na instância configurada — fediverso).
-          <strong>X, Instagram e Facebook</strong> não expõem leitura programática das suas APIs sem registo de aplicação e tokens; não há “conta pública genérica” segura nem recomendável — use Mastodon/RSS ou o seu próprio projeto na API oficial.
+          <span class="mono">data/escuta-social-seguranca.json</span>, <strong>Mastodon</strong> (API pública de hashtag — fediverso).
+          <strong>Instagram, Facebook, YouTube e TikTok</strong> no painel: ligações públicas (hashtags, buscas) e notícias agregadas — não há leitura de comentários por API no browser sem credenciais de projeto; use Mastodon/RSS ou API oficial da rede no seu ambiente.
           Páginas não verificadas no JSON: <span class="mono">"verificado": false</span> → selo <span class="fonte-badge fonte-badge--unverified">Não verificada</span>.
         </p>
         <div class="seg-toolbar">
@@ -1024,6 +1026,8 @@
           <button type="button" class="seg-filter-btn" data-pf="threads" aria-pressed="false" id="segFiltThreads">Threads</button>
           <button type="button" class="seg-filter-btn" data-pf="instagram" aria-pressed="false" id="segFiltIg">Instagram</button>
           <button type="button" class="seg-filter-btn" data-pf="facebook" aria-pressed="false" id="segFiltFb">Facebook</button>
+          <button type="button" class="seg-filter-btn" data-pf="youtube" aria-pressed="false" id="segFiltYt">YouTube</button>
+          <button type="button" class="seg-filter-btn" data-pf="tiktok" aria-pressed="false" id="segFiltTt">TikTok</button>
           <button type="button" class="seg-filter-btn" data-pf="web" aria-pressed="false" id="segFiltWeb">Web / notícias</button>
         </div>
         <div class="seg-grid" id="segPostsRoot"></div>
@@ -1031,13 +1035,13 @@
 
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
-          <strong>Sem OAuth:</strong> pode listar <strong>respostas públicas</strong> em fios <strong>Mastodon</strong> (API de contexto, sem token na maioria das instâncias públicas). O JSON e a curadoria continuam disponíveis.
-          <strong>X / Instagram / Facebook</strong> não oferecem leitura das mesmas informações pelo browser sem projeto registado e credenciais — não utilize credenciais partilhadas ou “conta genérica”.
+          <strong>Sem OAuth:</strong> respostas públicas em fios <strong>Mastodon</strong> (API de contexto). Na lista abaixo entram o JSON curado (inclui temas em Instagram, Facebook, YouTube e TikTok como <strong>ligações para escuta manual</strong>) e injeções Mastodon/X.
+          Redes fechadas não expõem comentários no browser sem API de projeto — use os cartões «Abrir publicação» e as buscas/hashtags indicadas.
         </p>
         <div class="escuta-api-box" id="escutaApiBox">
           <h3>Mastodon — respostas em postagens (sem autenticação)</h3>
           <p class="note" style="margin:0 0 0.75rem">
-            A cronologia por hashtag nas postagens acima também usa esta instância (guardada localmente). Para <strong>comentários/respostas</strong>, cole o URL do post ou só o ID numérico.
+            A cronologia por hashtag nas postagens acima usa a instância <strong>guardada neste navegador</strong>. Sem valor guardado, o painel usa <span class="mono">https://mastodon.social</span> nas APIs. Para <strong>respostas em fio</strong>, cole o URL do post ou só o ID numérico.
           </p>
           <div class="escuta-api-grid">
             <label>URL da instância Mastodon
@@ -1048,6 +1052,8 @@
             </label>
           </div>
           <div class="escuta-api-actions">
+            <button type="button" class="btn-seg secondary" id="escutaSessionClear" title="Apaga URLs guardadas (Mastodon/proxy) e esvazia injeções API">Limpar sessão</button>
+            <button type="button" class="btn-seg" id="escutaSessionDefaults" title="mastodon.social, proxy local padrão, campos de post limpos">Configuração automática</button>
             <button type="button" class="btn-seg" id="escutaMastoSave">Guardar instância</button>
             <button type="button" class="btn-seg" id="escutaMastoFetchReplies">Buscar respostas públicas</button>
             <button type="button" class="btn-seg secondary" id="escutaApiClearInjetados" title="Remove comentários trazidos por API (Mastodon/X)">Limpar injeções API</button>
@@ -1871,6 +1877,48 @@
           return fetchMastodonHashtagPosts("segurança", 15);
         },
       },
+      {
+        id: "mastodon-tag-segpub",
+        label: "Mastodon — #segurançapublica",
+        async fetchPosts() {
+          return fetchMastodonHashtagPosts("segurançapublica", 12);
+        },
+      },
+      {
+        id: "mastodon-tag-concurso",
+        label: "Mastodon — #concursopublico (PM/PC, Brasil)",
+        async fetchPosts() {
+          return fetchMastodonHashtagPosts("concursopublico", 12);
+        },
+      },
+      {
+        id: "gn-operacoes-rj",
+        label: "Google News — operações policiais RJ",
+        async fetchPosts() {
+          return fetchGoogleNewsPosts("operação policial Rio de Janeiro PM PC", 10);
+        },
+      },
+      {
+        id: "gn-concursos-pol",
+        label: "Google News — concursos policiais Brasil",
+        async fetchPosts() {
+          return fetchGoogleNewsPosts("concurso público polícia militar civil Brasil edital", 10);
+        },
+      },
+      {
+        id: "gn-cursos-formacao",
+        label: "Google News — cursos e formação em segurança",
+        async fetchPosts() {
+          return fetchGoogleNewsPosts("curso capacitação policial segurança pública Brasil", 8);
+        },
+      },
+      {
+        id: "gn-segpub-nacional",
+        label: "Google News — segurança pública (âmbito nacional)",
+        async fetchPosts() {
+          return fetchGoogleNewsPosts("segurança pública Brasil polícia operações", 10);
+        },
+      },
     ];
 
     const LS_ESCUTA_MASTO_INSTANCE = "politapp_escuta_mastodon_instance";
@@ -1997,6 +2045,8 @@
       if (x === "threads" || x === "thread") return "threads";
       if (x === "instagram" || x === "ig") return "instagram";
       if (x === "facebook" || x === "fb") return "facebook";
+      if (x === "youtube" || x === "yt") return "youtube";
+      if (x === "tiktok" || x === "tt") return "tiktok";
       return "web";
     }
 
@@ -2008,6 +2058,8 @@
         threads: "Threads",
         instagram: "Instagram",
         facebook: "Facebook",
+        youtube: "YouTube",
+        tiktok: "TikTok",
         web: "Web / notícias",
       };
       return map[n] || "Web / notícias";
@@ -2048,6 +2100,11 @@
         if (/^\d+$/.test(h)) return "https://www.facebook.com/profile.php?id=" + encodeURIComponent(h);
         return "https://www.facebook.com/" + encodeURIComponent(h);
       }
+      if (pf === "youtube") {
+        if (h.startsWith("UC") && h.length > 10) return "https://www.youtube.com/channel/" + encodeURIComponent(h);
+        return "https://www.youtube.com/@" + encodeURIComponent(h.replace(/^@+/, ""));
+      }
+      if (pf === "tiktok") return "https://www.tiktok.com/@" + encodeURIComponent(h.replace(/^@+/, ""));
       return "";
     }
 
@@ -2346,6 +2403,10 @@
           ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir post no X ↗</a>`
           : pubUrl && pf === "mastodon"
           ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir publicação ↗</a>`
+          : pubUrl && pf === "youtube"
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir no YouTube ↗</a>`
+          : pubUrl && pf === "tiktok"
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir no TikTok ↗</a>`
           : pubUrl
           ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir publicação ↗</a>`
           : "";
@@ -2448,6 +2509,60 @@
       return escutaDefaultProxyBase();
     }
 
+    function escutaBootstrapEscutaOnFirstLoad() {
+      try {
+        if (!localStorage.getItem(LS_ESCUTA_MASTO_INSTANCE)) {
+          localStorage.setItem(LS_ESCUTA_MASTO_INSTANCE, "https://mastodon.social");
+        }
+      } catch (_) {}
+    }
+
+    function escutaClearEscutaSession(statusEl) {
+      try {
+        localStorage.removeItem(LS_ESCUTA_MASTO_INSTANCE);
+        localStorage.removeItem(LS_ESCUTA_PROXY);
+      } catch (_) {}
+      ESCUTA_COMENTARIOS_API = [];
+      const mastoIn = document.getElementById("escutaMastoInstance");
+      const postIn = document.getElementById("escutaMastoPostUrl");
+      const proxyIn = document.getElementById("escutaProxyBase");
+      const tweetIn = document.getElementById("escutaTweetId");
+      if (mastoIn) mastoIn.value = "";
+      if (postIn) postIn.value = "";
+      if (proxyIn) proxyIn.value = escutaDefaultProxyBase();
+      if (tweetIn) tweetIn.value = "";
+      rebuildSegComentariosAll();
+      const st = statusEl || document.getElementById("escutaApiStatus");
+      if (st) {
+        st.className = "seg-status";
+        st.textContent =
+          "Sessão limpa: Mastodon/proxy removidos do navegador; injeções API esvaziadas. APIs Mastodon usam mastodon.social até guardar outra instância.";
+      }
+    }
+
+    function escutaApplyDefaultEscutaSetup(statusEl) {
+      const defM = "https://mastodon.social";
+      try {
+        localStorage.setItem(LS_ESCUTA_MASTO_INSTANCE, defM);
+        localStorage.removeItem(LS_ESCUTA_PROXY);
+      } catch (_) {}
+      const mastoIn = document.getElementById("escutaMastoInstance");
+      const postIn = document.getElementById("escutaMastoPostUrl");
+      const proxyIn = document.getElementById("escutaProxyBase");
+      const tweetIn = document.getElementById("escutaTweetId");
+      if (mastoIn) mastoIn.value = defM;
+      if (postIn) postIn.value = "";
+      if (proxyIn) proxyIn.value = escutaDefaultProxyBase();
+      if (tweetIn) tweetIn.value = "";
+      rebuildSegComentariosAll();
+      const st = statusEl || document.getElementById("escutaApiStatus");
+      if (st) {
+        st.className = "seg-status";
+        st.textContent =
+          "Configuração automática aplicada: mastodon.social guardado, proxy local padrão, campos de post limpos.";
+      }
+    }
+
     function mapTwitterApiToComentarios(j) {
       if (!j) return { error: "Resposta vazia" };
       if (j.detail && !j.data) return { error: String(j.detail).slice(0, 400) };
@@ -2510,6 +2625,7 @@
     }
 
     function setupEscutaApiUi() {
+      escutaBootstrapEscutaOnFirstLoad();
       const proxyIn = document.getElementById("escutaProxyBase");
       const mastoIn = document.getElementById("escutaMastoInstance");
       const st = document.getElementById("escutaApiStatus");
@@ -2519,6 +2635,8 @@
       if (mastoIn) {
         mastoIn.value = escutaMastodonInstanceBase();
       }
+      document.getElementById("escutaSessionClear")?.addEventListener("click", () => escutaClearEscutaSession(st));
+      document.getElementById("escutaSessionDefaults")?.addEventListener("click", () => escutaApplyDefaultEscutaSetup(st));
       document.getElementById("escutaMastoSave")?.addEventListener("click", () => {
         const v = (mastoIn && mastoIn.value.trim()) || "";
         if (!/^https?:\/\//i.test(v)) {

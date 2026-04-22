@@ -1,5 +1,5 @@
 {
-  "descricao": "Curadoria de fontes públicas para escuta social — Rio de Janeiro: imprensa (Reage Rio, G1, Extra), prefeitura, perfis institucionais e entradas de comunidade (Reddit, hashtags no Instagram, busca no Facebook) com «Não verificada» quando não há selo institucional. Comentários = trechos ou citações com link, não API de redes.",
+  "descricao": "Curadoria para escuta social — segurança pública, operações, concursos e cursos: imprensa, órgãos, Mastodon/RSS/Google News no painel, e ligações públicas (hashtags/buscas) em Instagram, Facebook, YouTube e TikTok sem API proprietária. Comentários = extractos com link, não colheita automática de threads.",
   "atualizado": "2026-04-22",
   "fontes_curadas": [
     {
@@ -209,6 +209,186 @@
         "perfilUrl": "https://www.facebook.com/search/top?q=seguran%C3%A7a%20Rio%20de%20Janeiro"
       },
       "comentarios": []
+    },
+    {
+      "titulo": "Instagram — #segurançapública (explore)",
+      "corpo": "Fluxo público de publicações com a hashtag; mistura jornalismo, órgãos e conteúdo de utilizadores. Filtrar antes de citar em relatório.",
+      "fonte": "Instagram explore",
+      "url": "https://www.instagram.com/explore/tags/segurancapublica/",
+      "plataforma": "instagram",
+      "badge": "operacao",
+      "tags": ["segurança pública", "hashtag", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:00:00.000Z",
+      "autor": {
+        "nome": "#segurançapública",
+        "handle": "explore/tags/segurancapublica",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/explore/tags/segurancapublica/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Instagram — #concursopúblico (PM, PC, áreas policiais)",
+      "corpo": "Publicações sobre editais e preparação; cruzar sempre com site oficial do órgão e DOU.",
+      "fonte": "Instagram explore",
+      "url": "https://www.instagram.com/explore/tags/concursopublico/",
+      "plataforma": "instagram",
+      "badge": "evento",
+      "tags": ["concurso", "polícia", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:02:00.000Z",
+      "autor": {
+        "nome": "#concursopúblico",
+        "handle": "explore/tags/concursopublico",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/explore/tags/concursopublico/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Instagram — #operaçãopolicia / operações (sondagem)",
+      "corpo": "Hashtag com grafia variada; pode incluir notícias e opinião. Verificar data e fonte.",
+      "fonte": "Instagram explore",
+      "url": "https://www.instagram.com/explore/tags/operacaopolicia/",
+      "plataforma": "instagram",
+      "badge": "operacao",
+      "tags": ["operação", "polícia", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:04:00.000Z",
+      "autor": {
+        "nome": "#operacaopolicia",
+        "handle": "explore/tags/operacaopolicia",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/explore/tags/operacaopolicia/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Facebook — busca «concurso polícia militar civil»",
+      "corpo": "Resultados públicos sobre concursos; priorizar páginas oficiais e imprensa estabelecida.",
+      "fonte": "Facebook pesquisa",
+      "url": "https://www.facebook.com/search/top?q=concurso%20pol%C3%ADcia%20militar%20civil",
+      "plataforma": "facebook",
+      "badge": "evento",
+      "tags": ["concurso", "facebook", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:06:00.000Z",
+      "autor": {
+        "nome": "Busca Facebook — concursos",
+        "handle": "search/top",
+        "plataforma": "facebook",
+        "perfilUrl": "https://www.facebook.com/search/top?q=concurso%20pol%C3%ADcia%20militar%20civil"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Facebook — busca «operação policial Rio»",
+      "corpo": "Sondagem de publicações e páginas; confirmar em comunicados oficiais (PM, PC, PRF, governo).",
+      "fonte": "Facebook pesquisa",
+      "url": "https://www.facebook.com/search/top?q=opera%C3%A7%C3%A3o%20policial%20Rio",
+      "plataforma": "facebook",
+      "badge": "operacao",
+      "tags": ["operação", "Rio", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:08:00.000Z",
+      "autor": {
+        "nome": "Busca Facebook — operações",
+        "handle": "search/top",
+        "plataforma": "facebook",
+        "perfilUrl": "https://www.facebook.com/search/top?q=opera%C3%A7%C3%A3o%20policial%20Rio"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "YouTube — pesquisa «segurança pública concursos polícia»",
+      "corpo": "Vídeos públicos (aulas, notícias, canais institucionais). Verificar selo do canal e data.",
+      "fonte": "YouTube",
+      "url": "https://www.youtube.com/results?search_query=seguran%C3%A7a+p%C3%BAblica+concurso+pol%C3%ADcia+Brasil",
+      "plataforma": "youtube",
+      "badge": "evento",
+      "tags": ["YouTube", "concurso", "segurança"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:10:00.000Z",
+      "autor": {
+        "nome": "Busca YouTube",
+        "handle": "results",
+        "plataforma": "youtube",
+        "perfilUrl": "https://www.youtube.com/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "YouTube — pesquisa «curso formação policial»",
+      "corpo": "Capacitação e cursos na área de segurança; distinguir conteúdo institucional de opinião.",
+      "fonte": "YouTube",
+      "url": "https://www.youtube.com/results?search_query=curso+forma%C3%A7%C3%A3o+policial+capacita%C3%A7%C3%A3o",
+      "plataforma": "youtube",
+      "badge": "evento",
+      "tags": ["YouTube", "cursos", "formação"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:12:00.000Z",
+      "autor": {
+        "nome": "Busca YouTube — cursos",
+        "handle": "results",
+        "plataforma": "youtube",
+        "perfilUrl": "https://www.youtube.com/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "TikTok — tag «segurança pública»",
+      "corpo": "Vídeos curtos sobre o tema; alto ruído e opinião — usar como sondagem qualitativa.",
+      "fonte": "TikTok",
+      "url": "https://www.tiktok.com/tag/segurancapublica",
+      "plataforma": "tiktok",
+      "badge": "evento",
+      "tags": ["TikTok", "segurança pública", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:14:00.000Z",
+      "autor": {
+        "nome": "Tag TikTok",
+        "handle": "tag/segurancapublica",
+        "plataforma": "tiktok",
+        "perfilUrl": "https://www.tiktok.com/tag/segurancapublica"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "TikTok — tag «concurso polícia»",
+      "corpo": "Conteúdo de estudo e entretenimento sobre concursos; validar informações com editais oficiais.",
+      "fonte": "TikTok",
+      "url": "https://www.tiktok.com/tag/concursopolicia",
+      "plataforma": "tiktok",
+      "badge": "evento",
+      "tags": ["TikTok", "concurso", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T14:16:00.000Z",
+      "autor": {
+        "nome": "Tag TikTok — concursos",
+        "handle": "tag/concursopolicia",
+        "plataforma": "tiktok",
+        "perfilUrl": "https://www.tiktok.com/tag/concursopolicia"
+      },
+      "comentarios": []
     }
   ],
   "comentarios": [
@@ -294,6 +474,70 @@
       "tipoFonte": "nao_verificada",
       "texto": "Tipo de fonte não verificada: útil para escuta qualitativa sobre cidade e segurança; validar antes de usar em relatório.",
       "ctx": "Reddit · comunidade"
+    },
+    {
+      "nome": "Instagram — hashtag segurança pública",
+      "handle": "#segurançapública",
+      "plataforma": "instagram",
+      "perfilUrl": "https://www.instagram.com/explore/tags/segurancapublica/",
+      "perfilDesc": "Explore público — não é API",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "texto": "Para mapear discurso e imagens sobre segurança pública; cruzar com fontes oficiais e imprensa.",
+      "ctx": "Tema · postagens (não comentários exportados)"
+    },
+    {
+      "nome": "Instagram — concursos e carreira policial",
+      "handle": "#concursopúblico",
+      "plataforma": "instagram",
+      "perfilUrl": "https://www.instagram.com/explore/tags/concursopublico/",
+      "perfilDesc": "Explore público",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "texto": "Monitorização qualitativa sobre editais e preparação; confirmar dados nos sites dos órgãos.",
+      "ctx": "Tema · concursos policiais"
+    },
+    {
+      "nome": "Facebook — busca operações e concursos",
+      "handle": "search/top",
+      "plataforma": "facebook",
+      "perfilUrl": "https://www.facebook.com/search/top?q=opera%C3%A7%C3%A3o%20policial%20Rio",
+      "perfilDesc": "Resultados públicos da rede",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "texto": "Útil para achar páginas de notícia e discussão; não substitui boletim oficial.",
+      "ctx": "Tema · operações / cidade"
+    },
+    {
+      "nome": "YouTube — segurança e concursos (busca)",
+      "handle": "youtube.com",
+      "plataforma": "youtube",
+      "perfilUrl": "https://www.youtube.com/results?search_query=seguran%C3%A7a+p%C3%BAblica+concurso+pol%C3%ADcia+Brasil",
+      "perfilDesc": "Vídeos públicos",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "texto": "Aulas, telejornais e canais institucionais aparecem misturados; verificar canal e data.",
+      "ctx": "Tema · vídeo / formação"
+    },
+    {
+      "nome": "TikTok — tag segurança pública",
+      "handle": "@tag",
+      "plataforma": "tiktok",
+      "perfilUrl": "https://www.tiktok.com/tag/segurancapublica",
+      "perfilDesc": "Conteúdo viral e opinião",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "texto": "Sondagem de narrativas curtas; alto ruído — usar com critério metodológico.",
+      "ctx": "Tema · vídeo curto"
+    },
+    {
+      "nome": "Painel Politapp — Mastodon sem login",
+      "handle": "fediverso",
+      "plataforma": "mastodon",
+      "perfilUrl": "https://mastodon.social/explore",
+      "perfilDesc": "API pública de hashtag no painel",
+      "texto": "Listagens automáticas de toots por hashtag na instância configurada; respostas em fio via URL do post.",
+      "ctx": "Demonstração · Comentários positivos"
     }
   ]
 }
