@@ -877,6 +877,52 @@
       background: rgba(255, 255, 255, 0.06);
       color: var(--muted);
     }
+
+    .escuta-api-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .escuta-api-box h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .escuta-api-grid {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      margin-bottom: 0.75rem;
+    }
+    .escuta-api-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .escuta-api-grid input {
+      font-family: inherit;
+      font-size: 0.86rem;
+      padding: 0.4rem 0.55rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--text);
+    }
+    .escuta-api-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .escuta-api-actions .seg-status {
+      flex: 1;
+      min-width: 140px;
+    }
   </style>
 </head>
 <body>
@@ -978,9 +1024,37 @@
 
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
-          Entradas do <span class="mono">data/escuta-social-seguranca.json</span> mais citações de apoio da curadoria (matérias «Reage Rio», institucionais PM/PC/Prefeitura).
-          Itens <strong>web</strong> abrem a <strong>matéria ou página oficial</strong>; Instagram/Facebook abrem o perfil público indicado.
+          Lista <strong>comentários e respostas em postagens</strong> (cartões com texto + link ao post quando disponível): curadoria no JSON, mais
+          <strong>comentários obtidos via API do X</strong> quando configurar o proxy local abaixo. Instagram/Facebook exigem app Meta e token no servidor — não há chamada direta do browser.
         </p>
+        <div class="escuta-api-box" id="escutaApiBox">
+          <h3>Autenticação e busca na API do X (opcional)</h3>
+          <p class="note" style="margin:0 0 0.75rem">
+            O browser <strong>não pode</strong> chamar <span class="mono">api.twitter.com</span> (CORS). Use o proxy
+            <span class="mono">npm run dev:escuta-proxy</span> com <span class="mono">TWITTER_BEARER_TOKEN</span> no ambiente do servidor (Bearer da app no
+            <a href="https://developer.x.com/" target="_blank" rel="noopener">developer.x.com</a>). Pesquisa recente e respostas por <span class="mono">conversation_id</span> exigem nível de acesso adequado na API v2.
+          </p>
+          <div class="escuta-api-grid">
+            <label>URL base do proxy (só este computador)
+              <input type="url" id="escutaProxyBase" autocomplete="off" placeholder="http://127.0.0.1:3334" />
+            </label>
+            <label>ID do post no X (opcional — respostas na conversa)
+              <input type="text" id="escutaTweetId" autocomplete="off" placeholder="ex.: 1234567890123456789" />
+            </label>
+            <label>Consulta recente (se não usar ID)
+              <input type="text" id="escutaXQuery" autocomplete="off" value="segurança Rio de Janeiro -is:retweet lang:pt" />
+            </label>
+            <label>Máx. resultados
+              <input type="number" id="escutaXMax" min="5" max="50" value="15" />
+            </label>
+          </div>
+          <div class="escuta-api-actions">
+            <button type="button" class="btn-seg" id="escutaApiSave">Guardar definições (navegador)</button>
+            <button type="button" class="btn-seg" id="escutaApiHealth">Testar proxy</button>
+            <button type="button" class="btn-seg" id="escutaApiFetch">Buscar comentários / posts (X)</button>
+            <span class="seg-status" id="escutaApiStatus" aria-live="polite"></span>
+          </div>
+        </div>
         <div class="coment-tab-toolbar">
           <label class="coment-page-size" for="segComentPageSize"
             >Comentários por página
@@ -1415,6 +1489,10 @@
     let segComentariosAll = [];
     let segComentTabPage = 0;
     let segComentTabPageSize = 6;
+    let segComentariosLastFromJson = [];
+    /** Itens devolvidos pelo proxy da API X (fundidos na lista de comentários). */
+    let ESCUTA_COMENTARIOS_API = [];
+    const LS_ESCUTA_PROXY = "politapp_escuta_proxy_base";
 
     const ESCUTA_EMBEDDED_POSTS = [
       {
@@ -1790,7 +1868,13 @@
       if (!row) return false;
       if (row.verificado === false) return true;
       const t = String(row.tipoFonte || "").toLowerCase();
-      return t === "nao_verificada" || t === "nao verificada" || t === "comunidade" || t === "grupo_bairro";
+      return (
+        t === "nao_verificada" ||
+        t === "nao verificada" ||
+        t === "comunidade" ||
+        t === "grupo_bairro" ||
+        t === "api_x"
+      );
     }
 
     function htmlBadgeNaoVerificada() {
@@ -2040,6 +2124,7 @@
     }
 
     function comentarioDedupeKey(c) {
+      if (c.tweetId != null && String(c.tweetId).trim()) return "tweet:" + String(c.tweetId).trim();
       const u = c.perfilUrl && String(c.perfilUrl).trim().toLowerCase();
       if (u) return "url:" + u;
       const h = String(c.handle || "")
@@ -2059,6 +2144,13 @@
         }
       }
       for (const c of ESCUTA_CITACOES_FALLBACK) {
+        const k = comentarioDedupeKey(c);
+        if (!keys.has(k)) {
+          list.push({ ...c });
+          keys.add(k);
+        }
+      }
+      for (const c of ESCUTA_COMENTARIOS_API) {
         const k = comentarioDedupeKey(c);
         if (!keys.has(k)) {
           list.push({ ...c });
@@ -2087,7 +2179,11 @@
             ${linkRow}
           </div>
           <p class="coment-txt">“${escapeHtml(c.texto)}”</p>
-          <p class="ctx">${escapeHtml(c.ctx)}</p>
+          <p class="ctx">${escapeHtml(c.ctx)}${
+            c.tweetUrl
+              ? ` · <a class="seg-link" href="${escapeHtml(c.tweetUrl)}" target="_blank" rel="noopener noreferrer">Abrir post no X ↗</a>`
+              : ""
+          }</p>
         </article>`;
     }
 
@@ -2139,18 +2235,8 @@
       }
     }
 
-    async function loadSegComentarios() {
-      let fromJson = [];
-      try {
-        const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
-        if (r.ok) {
-          const j = await r.json();
-          fromJson = j.comentarios || [];
-        }
-      } catch {
-        /* ignora */
-      }
-      segComentariosAll = mergeComentariosLista(fromJson).map((c) => {
+    function rebuildSegComentariosAll() {
+      segComentariosAll = mergeComentariosLista(segComentariosLastFromJson).map((c) => {
         const pf = normalizePlatform(c.plataforma || "web");
         const url = (c.perfilUrl && String(c.perfilUrl).trim()) || perfilUrlPlataforma(pf, c.handle);
         return { ...c, plataforma: pf, perfilUrl: url };
@@ -2159,6 +2245,163 @@
       const sel = document.getElementById("segComentPageSize");
       if (sel) segComentTabPageSize = Math.max(1, Number(sel.value) || 6);
       renderComentariosTabSlice();
+    }
+
+    async function loadSegComentarios() {
+      segComentariosLastFromJson = [];
+      try {
+        const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          segComentariosLastFromJson = j.comentarios || [];
+        }
+      } catch {
+        /* ignora */
+      }
+      rebuildSegComentariosAll();
+    }
+
+    function escutaDefaultProxyBase() {
+      return "http://127.0.0.1:3334";
+    }
+
+    function escutaGetProxyBase() {
+      try {
+        const s = localStorage.getItem(LS_ESCUTA_PROXY);
+        if (s && /^https?:\/\//i.test(s)) return s.replace(/\/$/, "");
+      } catch (_) {}
+      return escutaDefaultProxyBase();
+    }
+
+    function mapTwitterApiToComentarios(j) {
+      if (!j) return { error: "Resposta vazia" };
+      if (j.detail && !j.data) return { error: String(j.detail).slice(0, 400) };
+      if (j.errors && j.errors.length) {
+        const e = j.errors[0];
+        return { error: (e.detail || e.message || e.title || JSON.stringify(e)).slice(0, 400) };
+      }
+      const users = {};
+      const userList = (j.includes && j.includes.users) || [];
+      userList.forEach((u) => {
+        users[u.id] = u;
+      });
+      const out = [];
+      for (const t of j.data || []) {
+        const u = users[t.author_id];
+        const un = (u && u.username) || "user";
+        const nome = (u && u.name) || un;
+        out.push({
+          nome: nome + " — publicação no X",
+          handle: "@" + un,
+          plataforma: "x",
+          perfilUrl: "https://x.com/" + un,
+          perfilDesc: "Conteúdo via API X (proxy local)",
+          texto: String(t.text || "").slice(0, 560),
+          ctx: t.conversation_id ? "Na conversa (respostas / posts ligados)" : "Pesquisa recente na API",
+          tweetId: t.id,
+          tweetUrl: "https://x.com/i/web/status/" + t.id,
+          verificado: false,
+          tipoFonte: "api_x",
+        });
+      }
+      return { items: out };
+    }
+
+    async function escutaFetchXComments() {
+      const base = escutaGetProxyBase();
+      const tweetId = (document.getElementById("escutaTweetId")?.value || "").trim().replace(/\D/g, "");
+      const q =
+        (document.getElementById("escutaXQuery")?.value || "").trim() || "segurança Rio de Janeiro -is:retweet lang:pt";
+      const max = Math.min(50, Math.max(5, Number(document.getElementById("escutaXMax")?.value) || 15));
+      const path = tweetId
+        ? `${base}/api/x/conversation?tweet_id=${encodeURIComponent(tweetId)}&max=${max}`
+        : `${base}/api/x/search/recent?q=${encodeURIComponent(q)}&max=${max}`;
+      const r = await fetch(path);
+      let j;
+      try {
+        j = await r.json();
+      } catch {
+        throw new Error("JSON inválido na resposta do proxy");
+      }
+      if (!r.ok) {
+        const msg =
+          (j.errors && j.errors[0] && (j.errors[0].detail || j.errors[0].message)) || j.error || "HTTP " + r.status;
+        throw new Error(String(msg).slice(0, 400));
+      }
+      const mapped = mapTwitterApiToComentarios(j);
+      if (mapped.error) throw new Error(mapped.error);
+      return mapped.items;
+    }
+
+    function setupEscutaApiUi() {
+      const proxyIn = document.getElementById("escutaProxyBase");
+      const st = document.getElementById("escutaApiStatus");
+      if (proxyIn) {
+        proxyIn.value = escutaGetProxyBase();
+      }
+      document.getElementById("escutaApiSave")?.addEventListener("click", () => {
+        const v = (proxyIn && proxyIn.value.trim()) || escutaDefaultProxyBase();
+        try {
+          localStorage.setItem(LS_ESCUTA_PROXY, v.replace(/\/$/, ""));
+          if (st) {
+            st.className = "seg-status";
+            st.textContent = "URL do proxy guardada neste navegador.";
+          }
+        } catch (e) {
+          if (st) {
+            st.className = "seg-status err";
+            st.textContent = "Não foi possível guardar (storage bloqueado?).";
+          }
+        }
+      });
+      document.getElementById("escutaApiHealth")?.addEventListener("click", async () => {
+        if (st) {
+          st.className = "seg-status";
+          st.textContent = "A testar proxy…";
+        }
+        const base = escutaGetProxyBase();
+        try {
+          const r = await fetch(base.replace(/\/$/, "") + "/health");
+          const j = await r.json();
+          if (st) {
+            st.className = r.ok ? "seg-status" : "seg-status err";
+            st.textContent = r.ok
+              ? `Proxy OK · Bearer no servidor: ${j.hasBearer ? "sim" : "não"}`
+              : "Proxy respondeu com erro.";
+          }
+        } catch (e) {
+          if (st) {
+            st.className = "seg-status err";
+            st.textContent =
+              "Sem ligação ao proxy. Execute npm run dev:escuta-proxy e confirme a URL (ex.: http://127.0.0.1:3334).";
+          }
+        }
+      });
+      document.getElementById("escutaApiFetch")?.addEventListener("click", async () => {
+        if (proxyIn && proxyIn.value.trim()) {
+          try {
+            localStorage.setItem(LS_ESCUTA_PROXY, proxyIn.value.trim().replace(/\/$/, ""));
+          } catch (_) {}
+        }
+        if (st) {
+          st.className = "seg-status";
+          st.textContent = "A buscar na API do X via proxy…";
+        }
+        try {
+          const items = await escutaFetchXComments();
+          ESCUTA_COMENTARIOS_API = items;
+          rebuildSegComentariosAll();
+          if (st) {
+            st.className = "seg-status";
+            st.textContent = `${items.length} publicação(ões) da API fundida(s) na lista · total ${segComentariosAll.length} cartões`;
+          }
+        } catch (e) {
+          if (st) {
+            st.className = "seg-status err";
+            st.textContent = String(e.message || e).slice(0, 220);
+          }
+        }
+      });
     }
 
     const CRM_JSON = "data/base-apoio-interlocutores.json";
@@ -2598,6 +2841,7 @@
       renderTermometros();
       setupMainTabs();
       setupSegSubtabs();
+      setupEscutaApiUi();
       setupCrmUi();
       document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
       setupSegPlatformFilters();
