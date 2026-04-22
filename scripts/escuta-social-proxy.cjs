@@ -34,13 +34,21 @@ const META_TOKEN =
 
 const GRAPH_VERSION = "v21.0";
 
+/** Evita bloqueio “Private Network Access” ao pedir localhost a partir de páginas https ou alguns contextos. */
+function corsHeaders(extra) {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Access-Control-Request-Private-Network",
+    "Access-Control-Allow-Private-Network": "true",
+    ...extra,
+  };
+}
+
 function sendJson(res, status, obj) {
   const body = JSON.stringify(obj);
   res.writeHead(status, {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Content-Type": "application/json; charset=utf-8",
+    ...corsHeaders({ "Content-Type": "application/json; charset=utf-8" }),
   });
   res.end(body);
 }
@@ -157,11 +165,7 @@ function mapIgComments(graphBody, mediaPermalink) {
 
 const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
-    res.writeHead(204, {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    });
+    res.writeHead(204, corsHeaders());
     res.end();
     return;
   }

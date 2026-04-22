@@ -1079,7 +1079,9 @@
           <details style="margin-top:1rem;border-top:1px solid var(--border);padding-top:0.85rem">
             <summary style="cursor:pointer;font-weight:600;color:var(--muted)">API do X com Bearer (opcional — proxy local)</summary>
             <p class="note" style="margin:0.65rem 0">
-              Chame <span class="mono">api.twitter.com</span> só via <span class="mono">npm run dev:escuta-proxy</span> e <span class="mono">TWITTER_BEARER_TOKEN</span> no servidor. Isto é independente do fluxo Mastodon.
+              Chame <span class="mono">api.twitter.com</span> via proxy local: <span class="mono">npm run dev:escuta-proxy</span> e <span class="mono">TWITTER_BEARER_TOKEN</span>.
+              Se aparecer <strong>Failed to fetch</strong>: não abra o HTML em <span class="mono">file://</span> — use <span class="mono">npm run dev</span> e
+              <span class="mono">http://127.0.0.1:8787/midia-social.html</span> (URL do proxy por defeito <span class="mono">…/escuta-proxy</span> na mesma origem).
             </p>
             <div class="escuta-api-grid">
               <label>URL base do proxy
@@ -2703,7 +2705,39 @@
     }
 
     function escutaDefaultProxyBase() {
+      try {
+        const o = window.location;
+        if (o.protocol === "http:" && (o.hostname === "127.0.0.1" || o.hostname === "localhost")) {
+          const p = o.port || "";
+          if (p === "8787") {
+            return o.origin.replace(/\/$/, "") + "/escuta-proxy";
+          }
+        }
+      } catch (_) {}
       return "http://127.0.0.1:3334";
+    }
+
+    /** Mensagem útil quando o browser só diz “Failed to fetch”. */
+    function escutaExplainFetchError(err) {
+      const msg = String(err && err.message != null ? err.message : err || "");
+      if (/failed to fetch|networkerror|load failed|network request failed/i.test(msg)) {
+        if (window.location.protocol === "file:") {
+          return "Falha de rede: página em file:// — use npm run dev e abra http://127.0.0.1:8787/midia-social.html";
+        }
+        if (window.location.port === "8787") {
+          return (
+            "Falha de rede: confirme npm run dev:escuta-proxy (porta 3334). URL do proxy: " +
+            window.location.origin +
+            "/escuta-proxy"
+          );
+        }
+        return (
+          "Falha de rede: proxy de escuta inacessível. Corra npm run dev:escuta-proxy e use URL " +
+          escutaDefaultProxyBase() +
+          " (ou teste http://127.0.0.1:3334/health)."
+        );
+      }
+      return msg.slice(0, 400);
     }
 
     function escutaGetProxyBase() {
@@ -2933,7 +2967,7 @@
         } catch (e) {
           if (st) {
             st.className = "seg-status err";
-            st.textContent = String(e.message || e).slice(0, 220);
+            st.textContent = escutaExplainFetchError(e).slice(0, 320);
           }
         }
       });
@@ -2968,18 +3002,20 @@
         const base = escutaGetProxyBase();
         try {
           const r = await fetch(base.replace(/\/$/, "") + "/health");
-          const j = await r.json();
+          let j = {};
+          try {
+            j = await r.json();
+          } catch (_) {}
           if (st) {
             st.className = r.ok ? "seg-status" : "seg-status err";
             st.textContent = r.ok
               ? `Proxy OK · X Bearer: ${j.hasBearer ? "sim" : "não"} · Meta (página): ${j.hasMetaPageToken ? "sim" : "não"}`
-              : "Proxy respondeu com erro.";
+              : String(j.error || "Proxy respondeu com erro (HTTP " + r.status + ").").slice(0, 320);
           }
         } catch (e) {
           if (st) {
             st.className = "seg-status err";
-            st.textContent =
-              "Sem ligação ao proxy. Execute npm run dev:escuta-proxy e confirme a URL (ex.: http://127.0.0.1:3334).";
+            st.textContent = escutaExplainFetchError(e);
           }
         }
       });
@@ -3004,7 +3040,7 @@
         } catch (e) {
           if (st) {
             st.className = "seg-status err";
-            st.textContent = String(e.message || e).slice(0, 220);
+            st.textContent = escutaExplainFetchError(e).slice(0, 320);
           }
         }
       });
@@ -3029,7 +3065,7 @@
         } catch (e) {
           if (st) {
             st.className = "seg-status err";
-            st.textContent = String(e.message || e).slice(0, 220);
+            st.textContent = escutaExplainFetchError(e).slice(0, 320);
           }
         }
       });
@@ -3054,7 +3090,7 @@
         } catch (e) {
           if (st) {
             st.className = "seg-status err";
-            st.textContent = String(e.message || e).slice(0, 220);
+            st.textContent = escutaExplainFetchError(e).slice(0, 320);
           }
         }
       });

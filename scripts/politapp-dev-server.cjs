@@ -4,6 +4,9 @@
  *
  * Uso: npm run dev
  * Abra: http://127.0.0.1:8787/transparencia.html
+ *
+ * Encaminha /escuta-proxy/* → http://127.0.0.1:3334/* (mesma origem, evita “Failed to fetch”).
+ * Requer noutro terminal: npm run dev:escuta-proxy
  */
 "use strict";
 
@@ -16,6 +19,7 @@ const { URL } = require("url");
 const ROOT = path.join(__dirname, "..");
 const PORT = Number(process.env.PORT) || 8787;
 const UPSTREAM = "api.portaldatransparencia.gov.br";
+const ESCUTA_UPSTREAM = process.env.POLITAPP_ESCUTA_UPSTREAM || "http://127.0.0.1:3334";
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -107,6 +111,67 @@ function sendStatic(filePath, res) {
   fs.createReadStream(filePath).pipe(res);
 }
 
+function proxyEscuta(req, res) {
+  let inner;
+  try {
+    const u = new URL(req.url || "/", "http://127.0.0.1");
+    inner = (u.pathname.slice("/escuta-proxy".length) || "/") + u.search;
+  } catch {
+    res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Bad request");
+    return;
+  }
+
+  let base;
+  try {
+    base = new URL(ESCUTA_UPSTREAM);
+  } catch {
+    res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("POLITAPP_ESCUTA_UPSTREAM inválido");
+    return;
+  }
+
+  const isHttps = base.protocol === "https:";
+  const port = base.port ? Number(base.port) : isHttps ? 443 : 80;
+  const opts = {
+    hostname: base.hostname,
+    port,
+    path: inner,
+    method: req.method || "GET",
+    headers: {
+      "User-Agent": req.headers["user-agent"] || "Politapp-Dev-EscutaForward/1",
+    },
+  };
+
+  const lib = isHttps ? https : http;
+  const preq = lib.request(opts, (pres) => {
+    const skip = new Set(["connection", "transfer-encoding"]);
+    const h = {};
+    for (const [k, v] of Object.entries(pres.headers)) {
+      if (v != null && !skip.has(k.toLowerCase())) h[k] = v;
+    }
+    res.writeHead(pres.statusCode || 502, h);
+    pres.pipe(res);
+  });
+  preq.on("error", (e) => {
+    if (res.headersSent) return;
+    res.writeHead(502, {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    });
+    res.end(
+      JSON.stringify({
+        error:
+          "Ligação ao proxy de escuta falhou (" +
+          ESCUTA_UPSTREAM +
+          "). Noutro terminal execute: npm run dev:escuta-proxy — " +
+          e.message,
+      })
+    );
+  });
+  preq.end();
+}
+
 function staticHandler(req, res) {
   const u = new URL(req.url, "http://127.0.0.1");
   let pathname = u.pathname;
@@ -144,6 +209,11 @@ function staticHandler(req, res) {
 }
 
 const server = http.createServer((req, res) => {
+  if (req.url && req.url.startsWith("/escuta-proxy")) {
+    proxyEscuta(req, res);
+    return;
+  }
+
   if (req.url && req.url.startsWith("/api-de-dados")) {
     if (req.method === "OPTIONS") {
       sendCors(res, 204, "");
@@ -178,6 +248,11 @@ server.listen(PORT, "127.0.0.1", () => {
       UPSTREAM +
       "\n[politapp-dev] Transparência: http://127.0.0.1:" +
       PORT +
-      "/transparencia.html"
+      "/transparencia.html" +
+      "\n[politapp-dev] Mídia social: http://127.0.0.1:" +
+      PORT +
+      "/midia-social.html (proxy escuta: /escuta-proxy → " +
+      ESCUTA_UPSTREAM +
+      " ; corra npm run dev:escuta-proxy)"
   );
 });
