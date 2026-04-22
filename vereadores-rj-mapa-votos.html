@@ -176,7 +176,7 @@
     <section class="panel">
       <div class="panel-table-head">
         <h2>Tabela (mesmos pontos do mapa)</h2>
-        <button type="button" class="btn-export-pdf" id="btnExportPdf" disabled>Exportar PDF</button>
+        <button type="button" class="btn-export-pdf" id="btnExportPdf" disabled onclick="typeof politappExportPdf==='function'&amp;&amp;politappExportPdf();">Exportar PDF</button>
       </div>
       <p class="note" id="tableMeta"></p>
       <div class="table-wrap">
@@ -190,8 +190,8 @@
     </section>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin=""></script>
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="vendor/jspdf.plugin.autotable.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     const CAND_URL = "data/vereadores-rj-rio-2024.json";
@@ -475,6 +475,57 @@
       return { headers, body };
     }
 
+    /** Sem jsPDF: abre janela com a tabela para Imprimir → Guardar como PDF. */
+    function exportTableToPdfPrintFallback() {
+      const tbl = document.getElementById("tabelaVotosMapa");
+      if (!tbl || !document.querySelector("#tbodyr tr")) {
+        alert("Não há linhas na tabela para exportar.");
+        return;
+      }
+      const selCand = document.getElementById("selCand");
+      const selUe = document.getElementById("selUe");
+      const meta = document.getElementById("tableMeta");
+      const nivel = getNivel() === "secao" ? "Por seção eleitoral" : "Por zona eleitoral";
+      const title = "Mapa de votos — " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "") + " — " + nivel;
+      const w = window.open("", "_blank");
+      if (!w) {
+        alert("O navegador bloqueou a janela. Permita pop-ups para imprimir / guardar em PDF.");
+        return;
+      }
+      const headBlock =
+        "<h1 style=\"font:600 16px system-ui,sans-serif;margin:0 0 8px\">Mapa de votos — filtro aplicado</h1>" +
+        "<p style=\"font:12px system-ui,sans-serif;margin:0 0 6px;color:#333\">" +
+        "Candidato: " +
+        escapeHtml(selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "—") +
+        "<br/>Município: " +
+        escapeHtml(selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "—") +
+        "<br/>Nível: " +
+        escapeHtml(nivel) +
+        "<br/>SQ: " +
+        escapeHtml(getSelSq()) +
+        (meta && meta.textContent ? "<br/>" + escapeHtml(meta.textContent) : "") +
+        "<br/>Exportado: " +
+        escapeHtml(new Date().toLocaleString("pt-BR")) +
+        "</p>";
+      w.document.write(
+        "<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"/><title>" +
+          escapeHtml(title) +
+          "</title><style>body{font-family:system-ui,sans-serif;padding:16px;color:#111}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #333;padding:6px;text-align:left}th{background:#1c2433;color:#fff}.num{text-align:right}</style></head><body>"
+      );
+      w.document.write(headBlock);
+      w.document.write(tbl.outerHTML);
+      w.document.write("<p style=\"font:11px system-ui;margin-top:12px;color:#555\">Use o diálogo de impressão do navegador e escolha <strong>Guardar como PDF</strong>.</p></body></html>");
+      w.document.close();
+      w.focus();
+      setTimeout(function () {
+        try {
+          w.print();
+        } catch (e) {
+          console.error(e);
+        }
+      }, 250);
+    }
+
     function syncPdfExportButton() {
       const btn = document.getElementById("btnExportPdf");
       if (!btn) return;
@@ -484,14 +535,12 @@
     }
 
     function exportTableToPdf() {
-      if (!getJspdfConstructor()) {
-        alert(
-          "Não foi possível carregar jsPDF (rede ou bloqueio de script). Recarregue a página ou verifique o CDN."
-        );
-        return;
-      }
       if (!document.querySelector("#tbodyr tr")) {
         alert("Não há linhas na tabela para exportar.");
+        return;
+      }
+      if (!getJspdfConstructor()) {
+        exportTableToPdfPrintFallback();
         return;
       }
       const { headers, body } = getTableMatrixForPdf();
@@ -970,10 +1019,10 @@
         history.replaceState(null, "", (q.toString() ? "?" + q.toString() : window.location.pathname));
         renderMapa();
       });
-      document.getElementById("btnExportPdf").addEventListener("click", exportTableToPdf);
       renderMapa();
     }
 
+    window.politappExportPdf = exportTableToPdf;
     start();
   </script>
 </body>
