@@ -827,6 +827,56 @@
       color: var(--muted);
       margin-top: 0.5rem;
     }
+
+    .crm-card.crm-card--inst {
+      border-left: 3px solid rgba(46, 196, 182, 0.55);
+    }
+    .crm-card.crm-card--pessoa {
+      border-left: 3px solid rgba(167, 139, 250, 0.55);
+    }
+    .crm-card .crm-categoria {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #7dd3c0;
+      margin-bottom: 0.35rem;
+    }
+    .crm-contact-highlight {
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.28);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .crm-contact-highlight .crm-contact-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c4b5fd;
+      margin-bottom: 0.35rem;
+    }
+    .crm-consent {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+    .crm-consent--ok {
+      background: rgba(129, 199, 132, 0.22);
+      color: #a5d6a7;
+    }
+    .crm-consent--pend {
+      background: rgba(224, 122, 95, 0.2);
+      color: #f0a090;
+    }
+    .crm-consent--neutral {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -949,14 +999,18 @@
     <section class="panel tab-panel" role="tabpanel" id="panel-crm" aria-labelledby="tab-crm" hidden>
       <h2>Base de apoio — interlocutores e redes</h2>
       <p class="note" style="margin-bottom:1rem">
-        Ferramenta para <strong>organizar contactos e perfis públicos</strong> alinhados a eixos da campanha (direita, operações policiais, ações sociais, políticas públicas).
-        O ficheiro <span class="mono">data/base-apoio-interlocutores.json</span> inclui um <strong>conjunto inicial curado</strong> (órgãos de segurança, governo, partido, parlamentares com mandato, ONG e think tank) com <strong>URLs oficiais públicas</strong> — revisto em abril/2026; confirme handles antes de campanhas.
-        Para dados pessoais (telefone, e-mail direto) exija <strong>base legal</strong> (LGPD) e cumpra a <strong>legislação eleitoral</strong> (<a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a>).
-        Não há API de redes aqui: não é possível “varrer” automaticamente interações ou montar base de cidadãos privados só com esta página.
+        O JSON separa <strong>instituições</strong> (órgãos, partidos, ONGs, governos) de <strong>contatos pessoais</strong> (indivíduos). Em pessoas, destaque para <strong>telefone, e-mail e WhatsApp</strong> só após <strong>consentimento</strong> (campo
+        <span class="mono">consentimento_lgpd</span>). Figuras públicas podem ter só redes oficiais até registar consentimento para dados adicionais.
+        Ficheiro: <span class="mono">data/base-apoio-interlocutores.json</span>. <strong>LGPD</strong> e <strong>TSE</strong> (<a href="https://www.tse.jus.br/" target="_blank" rel="noopener">tse.jus.br</a>).
       </p>
 
+      <div class="subtabs crm-subtabs" role="tablist" aria-label="Tipo de registo CRM">
+        <button type="button" role="tab" id="crm-subtab-inst" aria-selected="true" aria-controls="crm-subpanel-inst">Instituições</button>
+        <button type="button" role="tab" id="crm-subtab-pess" aria-selected="false" aria-controls="crm-subpanel-pess">Contatos pessoais</button>
+      </div>
+
       <div class="crm-toolbar">
-        <input type="search" class="crm-search" id="crmSearch" placeholder="Buscar nome, cidade, papel ou notas…" autocomplete="off" />
+        <input type="search" class="crm-search" id="crmSearch" placeholder="Buscar instituição, categoria, cidade…" autocomplete="off" />
         <button type="button" class="btn-crm" id="crmReload">Atualizar base (JSON)</button>
         <button type="button" class="btn-crm" id="crmListRedes" title="Mostra todos os links de perfis do resultado filtrado">Listar perfis nas redes</button>
         <button type="button" class="btn-crm secondary" id="crmExportCsv">Exportar CSV</button>
@@ -973,12 +1027,19 @@
       <p class="crm-status" id="crmStatus" aria-live="polite">Carregue a base ou altere os filtros.</p>
 
       <div class="crm-bulk-panel" id="crmBulkPanel" hidden>
-        <h3>Perfis nas redes (resultado filtrado)</h3>
-        <p class="note" style="margin:0 0 0.5rem">Um registo por linha: pessoa, plataforma e link. Use para abrir perfis em nova aba ou copiar para planilha.</p>
+        <h3 id="crmBulkTitle">Perfis nas redes (resultado filtrado)</h3>
+        <p class="note" style="margin:0 0 0.5rem">Um registo por linha: nome, plataforma e link.</p>
         <ul class="crm-bulk-list" id="crmBulkList"></ul>
       </div>
 
-      <div class="crm-grid" id="crmRoot"></div>
+      <div class="crm-subpanel-wrap">
+        <div class="subpanel" role="tabpanel" id="crm-subpanel-inst" aria-labelledby="crm-subtab-inst">
+          <div class="crm-grid" id="crmRootInst"></div>
+        </div>
+        <div class="subpanel" role="tabpanel" id="crm-subpanel-pess" aria-labelledby="crm-subtab-pess" hidden>
+          <div class="crm-grid" id="crmRootPess"></div>
+        </div>
+      </div>
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-formatos" aria-labelledby="tab-formatos" hidden>
@@ -2101,7 +2162,10 @@
     }
 
     const CRM_JSON = "data/base-apoio-interlocutores.json";
-    let crmPessoasAll = [];
+    let crmInstituicoesAll = [];
+    let crmContatosPessoaisAll = [];
+    /** @type {"instituicoes" | "pessoais"} */
+    let crmSegment = "instituicoes";
     let crmLoadedOnce = false;
 
     const CRM_EIXO_LABELS = {
@@ -2124,6 +2188,42 @@
       return Array.from(boxes).map((b) => b.value);
     }
 
+    function crmLegacyTipoToCategoria(tipo) {
+      const map = {
+        institucional: "Institucional",
+        governo: "Governo",
+        partido: "Partido político",
+        ong: "ONG",
+      };
+      return map[tipo] || tipo || "";
+    }
+
+    function crmApplyJsonArrays(j) {
+      if (Array.isArray(j.instituicoes) && Array.isArray(j.contatos_pessoais)) {
+        crmInstituicoesAll = j.instituicoes.slice();
+        crmContatosPessoaisAll = j.contatos_pessoais.slice();
+        return;
+      }
+      if (Array.isArray(j.pessoas)) {
+        const tiposInst = new Set(["institucional", "governo", "partido", "ong"]);
+        crmInstituicoesAll = j.pessoas
+          .filter((p) => tiposInst.has(p.tipo_entidade))
+          .map((p) => ({
+            ...p,
+            categoria: p.categoria || crmLegacyTipoToCategoria(p.tipo_entidade),
+          }));
+        crmContatosPessoaisAll = j.pessoas
+          .filter((p) => p.tipo_entidade === "figura_publica")
+          .map((p) => ({
+            ...p,
+            consentimento_lgpd: p.consentimento_lgpd !== undefined ? p.consentimento_lgpd : null,
+          }));
+        return;
+      }
+      crmInstituicoesAll = [];
+      crmContatosPessoaisAll = [];
+    }
+
     function crmPersonMatchesFilters(p, q, eixosSel) {
       if (!eixosSel.length) return false;
       const pe = Array.isArray(p.eixos) ? p.eixos : [];
@@ -2131,13 +2231,16 @@
       if (!matchEixo) return false;
       if (!q) return true;
       const redesTxt = (Array.isArray(p.redes) ? p.redes : []).map((r) => [r.handle, r.url, r.plataforma].filter(Boolean).join(" "));
+      const consentStr =
+        p.consentimento_lgpd === true ? "consentimento sim" : p.consentimento_lgpd === false ? "consentimento pendente" : String(p.consentimento_lgpd || "");
       const hay = [
         p.nome,
         p.cidade,
         p.papel,
         p.notas_internas,
         p.origem_dado,
-        p.tipo_entidade,
+        p.categoria,
+        consentStr,
         ...pe.map((e) => CRM_EIXO_LABELS[e] || e),
         ...redesTxt,
       ]
@@ -2148,10 +2251,17 @@
       return words.length ? words.every((w) => hay.includes(w)) : true;
     }
 
-    function crmGetFiltered() {
+    function crmGetFilteredLists() {
       const q = (document.getElementById("crmSearch")?.value || "").trim().toLowerCase();
       const eixos = getCrmSelectedEixos();
-      return crmPessoasAll.filter((p) => crmPersonMatchesFilters(p, q, eixos));
+      const inst = crmInstituicoesAll.filter((p) => crmPersonMatchesFilters(p, q, eixos));
+      const pess = crmContatosPessoaisAll.filter((p) => crmPersonMatchesFilters(p, q, eixos));
+      return { inst, pess, q, eixos };
+    }
+
+    function crmGetFilteredForSegment() {
+      const { inst, pess } = crmGetFilteredLists();
+      return crmSegment === "instituicoes" ? inst : pess;
     }
 
     function crmPlatformLabel(pl) {
@@ -2170,7 +2280,7 @@
       return map[x] || pl || "Rede";
     }
 
-    function htmlCrmContatos(c) {
+    function htmlCrmContatosLinhas(c, emptyMsg) {
       const email = (c && c.email) || "";
       const tel = (c && c.telefone) || "";
       const zap = (c && c.whatsapp) || "";
@@ -2179,20 +2289,12 @@
       if (tel) parts.push(`Tel.: ${escapeHtml(tel)}`);
       if (zap) parts.push(`WhatsApp: ${escapeHtml(zap)}`);
       if (!parts.length) {
-        return '<p class="crm-contatos"><span class="empty">Sem contactos no JSON — preencha com base legal e consentimento.</span></p>';
+        return `<p class="crm-contatos" style="margin:0"><span class="empty">${emptyMsg}</span></p>`;
       }
-      return `<p class="crm-contatos">${parts.join("<br />")}</p>`;
+      return `<p class="crm-contatos" style="margin:0">${parts.join("<br />")}</p>`;
     }
 
-    function htmlCrmCard(p) {
-      const eixos = (Array.isArray(p.eixos) ? p.eixos : [])
-        .map((e) => {
-          const lab = escapeHtml(CRM_EIXO_LABELS[e] || e);
-          const cl = crmEixoClass(e);
-          return `<span class="${cl}">${lab}</span>`;
-        })
-        .join("");
-      const redes = Array.isArray(p.redes) ? p.redes : [];
+    function htmlCrmRedesBlock(redes) {
       const redesLi = redes
         .map((r) => {
           const lab = escapeHtml(crmPlatformLabel(r.plataforma));
@@ -2201,21 +2303,75 @@
           return `<li><strong>${lab}</strong>${h ? ` · ${h}` : ""} — <a href="${u}" target="_blank" rel="noopener noreferrer">abrir perfil ↗</a></li>`;
         })
         .join("");
-      const redesBlock =
-        redes.length === 0
-          ? '<p class="note" style="margin:0">Sem redes no registo.</p>'
-          : `<ul>${redesLi}</ul>`;
+      if (!redes.length) return '<p class="note" style="margin:0">Sem redes no registo.</p>';
+      return `<ul>${redesLi}</ul>`;
+    }
 
-      const tipo = p.tipo_entidade ? ` · ${escapeHtml(p.tipo_entidade.replace(/_/g, " "))}` : "";
+    function htmlCrmEixos(p) {
+      const eixos = (Array.isArray(p.eixos) ? p.eixos : [])
+        .map((e) => {
+          const lab = escapeHtml(CRM_EIXO_LABELS[e] || e);
+          const cl = crmEixoClass(e);
+          return `<span class="${cl}">${lab}</span>`;
+        })
+        .join("");
+      return eixos || '<span class="note">Sem eixos</span>';
+    }
+
+    function htmlCrmConsentBadge(p) {
+      const v = p.consentimento_lgpd;
+      if (v === true) {
+        return `<span class="crm-consent crm-consent--ok">LGPD: consentimento para dados pessoais registado</span>`;
+      }
+      if (v === false) {
+        return `<span class="crm-consent crm-consent--pend">LGPD: consentimento pendente — não use telefone/e-mail direto até regularizar</span>`;
+      }
+      if (typeof v === "string" && v.trim()) {
+        return `<span class="crm-consent crm-consent--ok">LGPD: ${escapeHtml(v)}</span>`;
+      }
+      return `<span class="crm-consent crm-consent--neutral">Público / redes — sem contacto direto ou consentimento extra registado nesta ficha</span>`;
+    }
+
+    function htmlCrmCardInst(p) {
+      const redes = Array.isArray(p.redes) ? p.redes : [];
+      const cat = p.categoria ? `<div class="crm-categoria">${escapeHtml(p.categoria)}</div>` : "";
       return `
-        <article class="crm-card">
+        <article class="crm-card crm-card--inst">
+          ${cat}
           <h3>${escapeHtml(p.nome || "—")}</h3>
-          <div class="crm-meta">${escapeHtml(p.papel || "")}${p.cidade ? ` · ${escapeHtml(p.cidade)}` : ""}${tipo}</div>
-          <div class="crm-eixos">${eixos || '<span class="note">Sem eixos</span>'}</div>
-          ${htmlCrmContatos(p.contatos || {})}
+          <div class="crm-meta">${escapeHtml(p.papel || "")}${p.cidade ? ` · ${escapeHtml(p.cidade)}` : ""}</div>
+          <div class="crm-eixos">${htmlCrmEixos(p)}</div>
+          ${htmlCrmContatosLinhas(
+            p.contatos || {},
+            "Sem e-mail ou telefone institucional no JSON — acrescente ouvidoria oficial, se existir."
+          )}
+          <details class="crm-redes">
+            <summary>Sites e redes (${redes.length})</summary>
+            ${htmlCrmRedesBlock(redes)}
+          </details>
+          ${p.origem_dado ? `<p class="crm-origem">Origem do dado: ${escapeHtml(p.origem_dado)}</p>` : ""}
+          ${p.notas_internas ? `<p class="note" style="margin:0.5rem 0 0">${escapeHtml(p.notas_internas)}</p>` : ""}
+        </article>`;
+    }
+
+    function htmlCrmCardPessoa(p) {
+      const redes = Array.isArray(p.redes) ? p.redes : [];
+      return `
+        <article class="crm-card crm-card--pessoa">
+          <h3>${escapeHtml(p.nome || "—")}</h3>
+          ${htmlCrmConsentBadge(p)}
+          <div class="crm-meta">${escapeHtml(p.papel || "")}${p.cidade ? ` · ${escapeHtml(p.cidade)}` : ""}</div>
+          <div class="crm-eixos">${htmlCrmEixos(p)}</div>
+          <div class="crm-contact-highlight">
+            <div class="crm-contact-label">Contactos pessoais (diretos)</div>
+            ${htmlCrmContatosLinhas(
+              p.contatos || {},
+              "Nenhum telefone/e-mail/WhatsApp — preencha só após consentimento explícito (LGPD)."
+            )}
+          </div>
           <details class="crm-redes">
             <summary>Perfis nas redes (${redes.length})</summary>
-            ${redesBlock}
+            ${htmlCrmRedesBlock(redes)}
           </details>
           ${p.origem_dado ? `<p class="crm-origem">Origem do dado: ${escapeHtml(p.origem_dado)}</p>` : ""}
           ${p.notas_internas ? `<p class="note" style="margin:0.5rem 0 0">${escapeHtml(p.notas_internas)}</p>` : ""}
@@ -2223,17 +2379,25 @@
     }
 
     function renderCrmGrid() {
-      const root = document.getElementById("crmRoot");
+      const rootInst = document.getElementById("crmRootInst");
+      const rootPess = document.getElementById("crmRootPess");
       const st = document.getElementById("crmStatus");
-      if (!root) return;
-      const list = crmGetFiltered();
-      if (st) st.textContent = `${list.length} pessoa(s) neste filtro · ${crmPessoasAll.length} no total na base`;
-      if (!list.length) {
-        root.innerHTML =
-          '<p class="note err">Nenhum registo corresponde aos filtros. Ajuste os eixos ou a pesquisa, ou edite o JSON.</p>';
-        return;
+      const bulkTitle = document.getElementById("crmBulkTitle");
+      if (!rootInst || !rootPess) return;
+      const { inst, pess } = crmGetFilteredLists();
+      const emptyMsg = '<p class="note err">Nenhum registo corresponde aos filtros. Ajuste eixos ou pesquisa, ou edite o JSON.</p>';
+      rootInst.innerHTML = inst.length ? inst.map(htmlCrmCardInst).join("") : emptyMsg;
+      rootPess.innerHTML = pess.length ? pess.map(htmlCrmCardPessoa).join("") : emptyMsg;
+      if (st) {
+        st.textContent =
+          crmSegment === "instituicoes"
+            ? `Instituições: ${inst.length} no filtro · ${crmInstituicoesAll.length} na base · Contactos pessoais: ${crmContatosPessoaisAll.length} na base`
+            : `Contactos pessoais: ${pess.length} no filtro · ${crmContatosPessoaisAll.length} na base · Instituições: ${crmInstituicoesAll.length} na base`;
       }
-      root.innerHTML = list.map(htmlCrmCard).join("");
+      if (bulkTitle) {
+        bulkTitle.textContent =
+          crmSegment === "instituicoes" ? "Sites e perfis — instituições (filtrado)" : "Perfis nas redes — contactos pessoais (filtrado)";
+      }
     }
 
     function crmShowBulkRedes() {
@@ -2244,7 +2408,7 @@
         loadCrmBaseOnce().then(() => crmShowBulkRedes());
         return;
       }
-      const list = crmGetFiltered();
+      const list = crmGetFilteredForSegment();
       const rows = [];
       for (const p of list) {
         const nome = p.nome || "—";
@@ -2276,15 +2440,48 @@
         loadCrmBaseOnce().then(() => crmExportCsv());
         return;
       }
-      const list = crmGetFiltered();
-      const headers = ["nome", "cidade", "papel", "tipo_entidade", "email", "telefone", "whatsapp", "eixos", "plataforma", "handle", "url_perfil", "origem_dado"];
+      const list = crmGetFilteredForSegment();
+      const isInst = crmSegment === "instituicoes";
+      const headers = [
+        "segmento",
+        "nome",
+        "cidade",
+        "papel",
+        "categoria_instituicao",
+        "consentimento_lgpd",
+        "email",
+        "telefone",
+        "whatsapp",
+        "eixos",
+        "plataforma",
+        "handle",
+        "url_perfil",
+        "origem_dado",
+      ];
       const lines = [headers.join(";")];
       for (const p of list) {
         const c = p.contatos || {};
         const eixos = (Array.isArray(p.eixos) ? p.eixos : []).join("|");
         const redes = Array.isArray(p.redes) && p.redes.length ? p.redes : [{ plataforma: "", handle: "", url: "" }];
+        const consent =
+          p.consentimento_lgpd === true ? "sim" : p.consentimento_lgpd === false ? "pendente" : p.consentimento_lgpd != null ? String(p.consentimento_lgpd) : "";
         for (const r of redes) {
-          const row = [p.nome || "", p.cidade || "", p.papel || "", p.tipo_entidade || "", c.email || "", c.telefone || "", c.whatsapp || "", eixos, r.plataforma || "", r.handle || "", r.url || "", p.origem_dado || ""].map((cell) => {
+          const row = [
+            isInst ? "instituicao" : "pessoa",
+            p.nome || "",
+            p.cidade || "",
+            p.papel || "",
+            isInst ? p.categoria || "" : "",
+            isInst ? "" : consent,
+            c.email || "",
+            c.telefone || "",
+            c.whatsapp || "",
+            eixos,
+            r.plataforma || "",
+            r.handle || "",
+            r.url || "",
+            p.origem_dado || "",
+          ].map((cell) => {
             const s = String(cell).replace(/"/g, '""');
             return `"${s}"`;
           });
@@ -2294,9 +2491,40 @@
       const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "base-apoio-interlocutores-filtrado.csv";
+      a.download = isInst ? "base-apoio-instituicoes-filtrado.csv" : "base-apoio-contatos-pessoais-filtrado.csv";
       a.click();
       URL.revokeObjectURL(a.href);
+    }
+
+    function crmUpdateSearchPlaceholder() {
+      const ph = document.getElementById("crmSearch");
+      if (!ph) return;
+      ph.placeholder =
+        crmSegment === "instituicoes"
+          ? "Buscar instituição, categoria, cidade…"
+          : "Buscar nome, cidade, consentimento, notas…";
+    }
+
+    function setupCrmSubtabs() {
+      const panel = document.getElementById("panel-crm");
+      if (!panel) return;
+      const tablist = panel.querySelector(".crm-subtabs");
+      if (!tablist) return;
+      const tabs = tablist.querySelectorAll(':scope > [role="tab"]');
+      const panels = panel.querySelectorAll(':scope .crm-subpanel-wrap > .subpanel[role="tabpanel"]');
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.getAttribute("aria-controls");
+          const isInst = id === "crm-subpanel-inst";
+          crmSegment = isInst ? "instituicoes" : "pessoais";
+          tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+          panels.forEach((p) => {
+            p.hidden = p.id !== id;
+          });
+          crmUpdateSearchPlaceholder();
+          renderCrmGrid();
+        });
+      });
     }
 
     async function loadCrmBaseOnce() {
@@ -2304,30 +2532,38 @@
         renderCrmGrid();
         return;
       }
-      const root = document.getElementById("crmRoot");
+      const rootInst = document.getElementById("crmRootInst");
+      const rootPess = document.getElementById("crmRootPess");
       const st = document.getElementById("crmStatus");
-      if (root) root.innerHTML = '<p class="note">A carregar base…</p>';
+      const loading = '<p class="note">A carregar base…</p>';
+      if (rootInst) rootInst.innerHTML = loading;
+      if (rootPess) rootPess.innerHTML = loading;
       try {
         const r = await fetch(new URL(CRM_JSON, window.location.href).toString(), { cache: "no-store" });
         if (!r.ok) throw new Error("HTTP " + r.status);
         const j = await r.json();
-        crmPessoasAll = Array.isArray(j.pessoas) ? j.pessoas : [];
+        crmApplyJsonArrays(j);
         crmLoadedOnce = true;
-        if (st) st.textContent = `Base carregada · ${crmPessoasAll.length} registo(s)`;
+        if (st) {
+          st.textContent = `Base carregada · ${crmInstituicoesAll.length} instituição(ões) · ${crmContatosPessoaisAll.length} contacto(s) pessoal(is)`;
+        }
       } catch (e) {
-        crmPessoasAll = [];
+        crmInstituicoesAll = [];
+        crmContatosPessoaisAll = [];
         crmLoadedOnce = true;
         if (st) st.textContent = "Não foi possível ler o JSON. Use um servidor HTTP local ou verifique o ficheiro.";
-        if (root) {
-          root.innerHTML =
-            '<p class="note err">Falha ao carregar base. Sirva o projecto via HTTP e confirme <span class="mono">data/base-apoio-interlocutores.json</span>.</p>';
-        }
+        const err =
+          '<p class="note err">Falha ao carregar base. Sirva o projecto via HTTP e confirme <span class="mono">data/base-apoio-interlocutores.json</span>.</p>';
+        if (rootInst) rootInst.innerHTML = err;
+        if (rootPess) rootPess.innerHTML = err;
         return;
       }
       renderCrmGrid();
     }
 
     function setupCrmUi() {
+      setupCrmSubtabs();
+      crmUpdateSearchPlaceholder();
       document.getElementById("crmReload")?.addEventListener("click", async () => {
         crmLoadedOnce = false;
         await loadCrmBaseOnce();
