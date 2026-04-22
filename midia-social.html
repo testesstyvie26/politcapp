@@ -1051,8 +1051,8 @@
 
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
-          <strong>Sem OAuth:</strong> respostas públicas em fios <strong>Mastodon</strong> (API de contexto). Na lista abaixo entram o JSON curado (inclui temas em Instagram, Facebook, YouTube e TikTok como <strong>ligações para escuta manual</strong>) e injeções Mastodon/X.
-          Por defeito a grelha mostra só <strong>vozes de apoio</strong> (operações policiais, concursos, cursos/formação em segurança) — heurística em português e campo <span class="mono">comentarioPositivo</span> no JSON. Desmarque a caixa para ver todos os extractos fundidos.
+          <strong>Mastodon</strong> (API pública) e <strong>Meta (Facebook / Instagram)</strong> via <span class="mono">npm run dev:escuta-proxy</span> + token de página. Na lista entram o JSON curado, ligações manuais a redes e injeções de API.
+          Por defeito a grelha mostra só <strong>vozes de apoio</strong> (operações policiais, concursos, cursos/formação em segurança) — heurística em português e campo <span class="mono">comentarioPositivo</span> no JSON (inclui <strong>citações reais</strong> de reportagens, com link para a matéria). Desmarque a caixa para ver todos os extractos fundidos.
           Inclui comentários <strong>das postagens carregadas</strong> e respostas Mastodon (amostra) após «Atualizar postagens».
         </p>
         <div class="escuta-api-box" id="escutaApiBox">
@@ -1073,7 +1073,7 @@
             <button type="button" class="btn-seg" id="escutaSessionDefaults" title="mastodon.social, proxy local padrão, campos de post limpos">Configuração automática</button>
             <button type="button" class="btn-seg" id="escutaMastoSave">Guardar instância</button>
             <button type="button" class="btn-seg" id="escutaMastoFetchReplies">Buscar respostas públicas</button>
-            <button type="button" class="btn-seg secondary" id="escutaApiClearInjetados" title="Remove comentários trazidos por API (Mastodon/X)">Limpar injeções API</button>
+            <button type="button" class="btn-seg secondary" id="escutaApiClearInjetados" title="Remove comentários trazidos por API (Mastodon, X, Meta)">Limpar injeções API</button>
             <span class="seg-status" id="escutaApiStatus" aria-live="polite"></span>
           </div>
           <details style="margin-top:1rem;border-top:1px solid var(--border);padding-top:0.85rem">
@@ -1099,6 +1099,44 @@
               <button type="button" class="btn-seg" id="escutaApiSave">Guardar URL do proxy</button>
               <button type="button" class="btn-seg" id="escutaApiHealth">Testar proxy</button>
               <button type="button" class="btn-seg" id="escutaApiFetch">Buscar (X via proxy)</button>
+            </div>
+          </details>
+          <details style="margin-top:1rem;border-top:1px solid var(--border);padding-top:0.85rem">
+            <summary style="cursor:pointer;font-weight:600;color:var(--muted)">Facebook / Instagram — comentários (Meta Graph API, proxy local)</summary>
+            <p class="note" style="margin:0.65rem 0">
+              No servidor, defina <span class="mono">META_PAGE_ACCESS_TOKEN</span> (token de <strong>página</strong> de longa duração, com permissões para ler comentários). O Instagram exige conta comercial/creator ligada à mesma página; use o <strong>Ig Media ID</strong> devolvido pela Graph API (não o atalho do browser).
+              Documentação: <a href="https://developers.facebook.com/docs/graph-api/reference/post/comments" target="_blank" rel="noopener noreferrer">comentários em posts</a> e
+              <a href="https://developers.facebook.com/docs/instagram-api/reference/ig-media/comments" target="_blank" rel="noopener noreferrer">comentários em mídias IG</a>.
+            </p>
+            <h4 style="margin:0.75rem 0 0.35rem;font-size:0.88rem;color:var(--muted)">Facebook · publicação da página</h4>
+            <div class="escuta-api-grid">
+              <label>ID da publicação (<span class="mono">pageId_postId</span>)
+                <input type="text" id="escutaFbPostId" autocomplete="off" placeholder="ex.: 123456789012345_9876543210987654" />
+              </label>
+              <label>Ou URL da publicação (alternativa ao ID)
+                <input type="url" id="escutaFbPostUrl" autocomplete="off" placeholder="https://www.facebook.com/..." />
+              </label>
+              <label>Máx. comentários
+                <input type="number" id="escutaFbCommentLimit" min="1" max="100" value="25" />
+              </label>
+            </div>
+            <div class="escuta-api-actions" style="margin-top:0.5rem">
+              <button type="button" class="btn-seg" id="escutaMetaFbFetch">Buscar comentários (Facebook)</button>
+            </div>
+            <h4 style="margin:1rem 0 0.35rem;font-size:0.88rem;color:var(--muted)">Instagram · mídia</h4>
+            <div class="escuta-api-grid">
+              <label>Ig Media ID (numérico)
+                <input type="text" id="escutaIgMediaId" autocomplete="off" placeholder="ex.: 1784…" />
+              </label>
+              <label>URL da publicação (opcional — link «Abrir publicação» nos cartões)
+                <input type="url" id="escutaIgPermalink" autocomplete="off" placeholder="https://www.instagram.com/p/…" />
+              </label>
+              <label>Máx. comentários
+                <input type="number" id="escutaIgCommentLimit" min="1" max="100" value="25" />
+              </label>
+            </div>
+            <div class="escuta-api-actions" style="margin-top:0.5rem">
+              <button type="button" class="btn-seg" id="escutaMetaIgFetch">Buscar comentários (Instagram)</button>
             </div>
           </details>
         </div>
@@ -2152,6 +2190,8 @@
         t === "comunidade" ||
         t === "grupo_bairro" ||
         t === "api_x" ||
+        t === "api_facebook" ||
+        t === "api_instagram" ||
         t === "mastodon_reply"
       );
     }
@@ -2420,6 +2460,8 @@
     function comentarioDedupeKey(c) {
       if (c.tweetId != null && String(c.tweetId).trim()) return "tweet:" + String(c.tweetId).trim();
       if (c.mastodonStatusId != null && String(c.mastodonStatusId).trim()) return "masto:" + String(c.mastodonStatusId).trim();
+      if (c.fbCommentId != null && String(c.fbCommentId).trim()) return "fb:" + String(c.fbCommentId).trim();
+      if (c.igCommentId != null && String(c.igCommentId).trim()) return "ig:" + String(c.igCommentId).trim();
       const u = c.perfilUrl && String(c.perfilUrl).trim().toLowerCase();
       if (u) return "url:" + u;
       const h = String(c.handle || "")
@@ -2787,6 +2829,56 @@
       return mapped.items;
     }
 
+    async function escutaFetchFacebookComments() {
+      const base = escutaGetProxyBase().replace(/\/$/, "");
+      const postId = (document.getElementById("escutaFbPostId")?.value || "").trim();
+      const url = (document.getElementById("escutaFbPostUrl")?.value || "").trim();
+      const limit = Math.min(100, Math.max(1, Number(document.getElementById("escutaFbCommentLimit")?.value) || 25));
+      if (!postId && !url) {
+        throw new Error("Indique o ID da publicação (pageId_postId) ou o URL da publicação da página no Facebook.");
+      }
+      let path = `${base}/api/meta/fb/comments?limit=${limit}`;
+      if (postId) path += `&post_id=${encodeURIComponent(postId)}`;
+      if (url) path += `&url=${encodeURIComponent(url)}`;
+      const r = await fetch(path);
+      let j;
+      try {
+        j = await r.json();
+      } catch {
+        throw new Error("JSON inválido na resposta do proxy (Meta).");
+      }
+      if (!r.ok) {
+        throw new Error(String(j.error || j.message || "HTTP " + r.status).slice(0, 400));
+      }
+      if (!Array.isArray(j.items)) throw new Error("Resposta Meta inválida (sem items).");
+      return j.items;
+    }
+
+    async function escutaFetchInstagramComments() {
+      const base = escutaGetProxyBase().replace(/\/$/, "");
+      const mediaId = (document.getElementById("escutaIgMediaId")?.value || "").replace(/\D/g, "");
+      const permalink = (document.getElementById("escutaIgPermalink")?.value || "").trim();
+      const limit = Math.min(100, Math.max(1, Number(document.getElementById("escutaIgCommentLimit")?.value) || 25));
+      if (!mediaId) {
+        throw new Error("Indique o Ig Media ID numérico (Graph API). Obtenha-o via endpoint de mídias da conta IG ligada à página.");
+      }
+      let path =
+        `${base}/api/meta/ig/comments?media_id=${encodeURIComponent(mediaId)}&limit=${limit}` +
+        (permalink ? `&media_permalink=${encodeURIComponent(permalink)}` : "");
+      const r = await fetch(path);
+      let j;
+      try {
+        j = await r.json();
+      } catch {
+        throw new Error("JSON inválido na resposta do proxy (Meta).");
+      }
+      if (!r.ok) {
+        throw new Error(String(j.error || j.message || "HTTP " + r.status).slice(0, 400));
+      }
+      if (!Array.isArray(j.items)) throw new Error("Resposta Meta inválida (sem items).");
+      return j.items;
+    }
+
     function setupEscutaApiUi() {
       escutaBootstrapEscutaOnFirstLoad();
       const proxyIn = document.getElementById("escutaProxyBase");
@@ -2880,7 +2972,7 @@
           if (st) {
             st.className = r.ok ? "seg-status" : "seg-status err";
             st.textContent = r.ok
-              ? `Proxy OK · Bearer no servidor: ${j.hasBearer ? "sim" : "não"}`
+              ? `Proxy OK · X Bearer: ${j.hasBearer ? "sim" : "não"} · Meta (página): ${j.hasMetaPageToken ? "sim" : "não"}`
               : "Proxy respondeu com erro.";
           }
         } catch (e) {
@@ -2908,6 +3000,56 @@
           if (st) {
             st.className = "seg-status";
             st.textContent = `${added} novo(s) da API X · ${items.length} no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total na lista: ${segComentariosMerged.length}`;
+          }
+        } catch (e) {
+          if (st) {
+            st.className = "seg-status err";
+            st.textContent = String(e.message || e).slice(0, 220);
+          }
+        }
+      });
+      document.getElementById("escutaMetaFbFetch")?.addEventListener("click", async () => {
+        if (proxyIn && proxyIn.value.trim()) {
+          try {
+            localStorage.setItem(LS_ESCUTA_PROXY, proxyIn.value.trim().replace(/\/$/, ""));
+          } catch (_) {}
+        }
+        if (st) {
+          st.className = "seg-status";
+          st.textContent = "A buscar comentários no Facebook via proxy…";
+        }
+        try {
+          const items = await escutaFetchFacebookComments();
+          const added = escutaMergeIntoApiComments(items);
+          rebuildSegComentariosAll();
+          if (st) {
+            st.className = "seg-status";
+            st.textContent = `${added} novo(s) do Facebook · ${items.length} no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total: ${segComentariosMerged.length}`;
+          }
+        } catch (e) {
+          if (st) {
+            st.className = "seg-status err";
+            st.textContent = String(e.message || e).slice(0, 220);
+          }
+        }
+      });
+      document.getElementById("escutaMetaIgFetch")?.addEventListener("click", async () => {
+        if (proxyIn && proxyIn.value.trim()) {
+          try {
+            localStorage.setItem(LS_ESCUTA_PROXY, proxyIn.value.trim().replace(/\/$/, ""));
+          } catch (_) {}
+        }
+        if (st) {
+          st.className = "seg-status";
+          st.textContent = "A buscar comentários no Instagram via proxy…";
+        }
+        try {
+          const items = await escutaFetchInstagramComments();
+          const added = escutaMergeIntoApiComments(items);
+          rebuildSegComentariosAll();
+          if (st) {
+            st.className = "seg-status";
+            st.textContent = `${added} novo(s) do Instagram · ${items.length} no pedido · injetados API: ${ESCUTA_COMENTARIOS_API.length} · total: ${segComentariosMerged.length}`;
           }
         } catch (e) {
           if (st) {

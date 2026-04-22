@@ -540,40 +540,52 @@
       "ctx": "Demonstração · Comentários positivos"
     },
     {
-      "nome": "Ilustração — apoio a operação policial",
-      "handle": "@exemplo_escuta_rj",
-      "plataforma": "instagram",
-      "perfilUrl": "https://www.instagram.com/explore/tags/riodejaneiro/",
-      "perfilDesc": "Texto fictício para demonstrar filtro «vozes de apoio»",
-      "verificado": false,
-      "tipoFonte": "nao_verificada",
-      "comentarioPositivo": true,
-      "texto": "Parabéns à Polícia Militar pela operação: moradores agradecem o reforço de segurança no bairro.",
-      "ctx": "Demonstração · tom a favor de operação"
-    },
-    {
-      "nome": "Ilustração — curso de segurança pública",
-      "handle": "@exemplo_capacitacao",
+      "nome": "Renata Marcondes — presidente da AFAPM",
+      "handle": "Citação em reportagem g1 Santos",
       "plataforma": "web",
-      "perfilUrl": "https://www.gov.br/pt-br",
-      "perfilDesc": "Texto fictício",
+      "perfilUrl": "https://g1.globo.com/sp/santos-regiao/noticia/2024/03/09/policiais-deputados-e-moradores-fazem-ato-em-apoio-a-operacao-verao-da-pm-no-litoral-de-sp.ghtml",
+      "perfilDesc": "Associação de Apoio à Família Policial Militar; fala em ato na Baixada Santista (09/03/2024)",
       "verificado": false,
       "tipoFonte": "nao_verificada",
       "comentarioPositivo": true,
-      "texto": "Excelente curso de capacitação em segurança pública — conteúdo importante para quem vai prestar concurso da polícia.",
-      "ctx": "Demonstração · apoio a formação"
+      "texto": "À reportagem, informou que a manifestação buscou mostrar que a “sociedade de bem está ao lado da polícia” e que há intenção de continuidade da Operação Verão. Ressaltou: “Se tivermos que falar em mortes, precisamos falar da morte de agentes de segurança pública, que morreram em nome da sociedade”.",
+      "ctx": "g1 Santos · interações reais em ato pró-Operação Verão (litoral de SP)"
     },
     {
-      "nome": "Ilustração — concurso público policial",
-      "handle": "@exemplo_concurseiro",
-      "plataforma": "facebook",
-      "perfilUrl": "https://www.facebook.com/search/top?q=concurso%20pol%C3%ADcia",
-      "perfilDesc": "Texto fictício",
+      "nome": "Andrey Azeredo — vereador e presidente da Câmara de Goiânia",
+      "handle": "Moção de confiança · g1 GO",
+      "plataforma": "web",
+      "perfilUrl": "https://g1.globo.com/go/goias/noticia/2018/11/21/vereadores-aprovam-mocao-elogiando-pm-que-comemorou-acesso-do-goias-com-torcedores.ghtml",
+      "perfilDesc": "Autor da moção que elogiou PM filmado com torcedores do Goiás; fala à reportagem (21/11/2018)",
       "verificado": false,
       "tipoFonte": "nao_verificada",
       "comentarioPositivo": true,
-      "texto": "Defendo mais vagas no concurso público da Polícia Civil: é gratidão aos que já servem e apoio a quem quer entrar.",
-      "ctx": "Demonstração · apoio a concurso / carreira policial"
+      "texto": "O texto da moção aprovada diz que os “parlamentares goianienses apoiam e parabenizam a postura desse Policial Militar”. Completou à reportagem: “Demonstramos nosso total apoio a esse policial, ele fez um gesto que merece aplauso”.",
+      "ctx": "g1 Goiás · apoio legislativo à conduta de PM em evento com torcida"
+    },
+    {
+      "nome": "Cel. Cássio Araújo de Freitas — comandante da PM na Baixada Santista",
+      "handle": "Entrevista g1 / TV Tribuna",
+      "plataforma": "web",
+      "perfilUrl": "https://g1.globo.com/sp/santos-regiao/noticia/2024/03/09/policiais-deputados-e-moradores-fazem-ato-em-apoio-a-operacao-verao-da-pm-no-litoral-de-sp.ghtml",
+      "perfilDesc": "Polícia Militar de SP; declaração no mesmo ato de 09/03/2024",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "comentarioPositivo": true,
+      "texto": "“Se tem uma instituição que defende os Direitos Humanos são as Polícias Militares do Brasil. Eu não vejo nenhuma outra instituição que defenda mais. Nós tiramos armas das ruas, nós tiramos criminosos das ruas.”",
+      "ctx": "g1 Santos · fala sobre atuação da PM durante Operação Verão"
+    },
+    {
+      "nome": "Matéria g1 Piauí — convocação para Curso de Formação (PC-PI)",
+      "handle": "Concursos PC-PI",
+      "plataforma": "web",
+      "perfilUrl": "https://g1.globo.com/pi/piaui/noticia/2023/07/25/governo-do-piaui-convoca-mais-de-100-aprovados-em-concurso-da-policia-civil-para-curso-de-formacao-aulas-iniciam-este-mes.ghtml",
+      "perfilDesc": "Reportagem de 25/07/2023 sobre aprovados convocados à Acadepol",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "comentarioPositivo": true,
+      "texto": "O g1 registrou a convocação do secretário Chico Lucas para 110 delegados, agentes e peritos aprovados iniciarem o Curso de Formação na Academia de Polícia Civil, “consideradas [as aulas] requisito legal para ingresso nos cargos”, com calendário publicado no Diário Oficial.",
+      "ctx": "g1 PI · interação institucional real: concurso → curso de formação"
     }
   ]
 }
