@@ -216,6 +216,12 @@
       text-decoration: none;
     }
     .seg-card a.seg-link:hover { text-decoration: underline; }
+    .seg-card .seg-link--missing {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: help;
+    }
 
     .seg-platform {
       font-size: 0.62rem;
@@ -1457,19 +1463,98 @@
         .trim();
     }
 
+    /**
+     * Google News (e alguns agregadores) devolvem `link` em news.google.com que frequentemente abre "not found".
+     * Extrai o URL do veículo a partir do HTML da descrição ou de parâmetros de redirecionamento.
+     */
+    function extractRssItemArticleUrl(item) {
+      const raw = String(item.link || "").trim();
+      const guidRaw = String(item.guid || "").trim();
+      const guid = guidRaw.replace(/^permalink:\s*/i, "").trim();
+      const html = String(item.description || "");
+
+      const decodeEnt = (s) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+
+      const urlsFromHtml = [];
+      const re = /href\s*=\s*["']([^"']+)["']/gi;
+      let m;
+      while ((m = re.exec(html)) !== null) {
+        let h = decodeEnt(m[1].trim());
+        if (!/^https?:\/\//i.test(h)) continue;
+        const low = h.toLowerCase();
+        if (low.includes("schema.org")) continue;
+        if (/\/url\?/i.test(h) && low.includes("google.")) {
+          try {
+            const inner = new URL(h);
+            const innerUrl = inner.searchParams.get("url") || inner.searchParams.get("q");
+            if (innerUrl && /^https?:\/\//i.test(innerUrl)) {
+              urlsFromHtml.push(innerUrl);
+              continue;
+            }
+          } catch (_) {}
+        }
+        urlsFromHtml.push(h);
+      }
+
+      const isGoogleWrapper = (low) =>
+        low.includes("news.google.com") ||
+        low.includes("google.com/rss") ||
+        /google\.com\/url\?/i.test(low);
+
+      const pickPublisherUrl = (candidates) => {
+        for (const h of candidates) {
+          if (!h) continue;
+          const low = h.toLowerCase();
+          if (isGoogleWrapper(low)) continue;
+          if (low === "https://www.google.com/" || low === "http://www.google.com/") continue;
+          return h;
+        }
+        return null;
+      };
+
+      const fromHtml = pickPublisherUrl(urlsFromHtml);
+      if (fromHtml) return fromHtml;
+
+      const unwrapGoogleRedirect = (uStr) => {
+        if (!uStr) return null;
+        try {
+          const u = new URL(uStr);
+          const v = u.searchParams.get("url") || u.searchParams.get("q");
+          if (v && /^https?:\/\//i.test(v)) return v;
+        } catch (_) {}
+        return null;
+      };
+
+      const fromParam = unwrapGoogleRedirect(raw) || unwrapGoogleRedirect(guid);
+      if (fromParam && !isGoogleWrapper(fromParam.toLowerCase())) return fromParam;
+
+      if (guid && /^https?:\/\//i.test(guid) && !isGoogleWrapper(guid.toLowerCase())) return guid;
+
+      if (raw && !isGoogleWrapper(raw.toLowerCase())) return raw;
+
+      return "";
+    }
+
+    function segPostPublicUrl(row) {
+      const u = String(row.url || "").trim();
+      if (!u || u === "#") return "";
+      const low = u.toLowerCase();
+      if (low.includes("news.google.com") || /google\.com\/rss\/articles/i.test(u)) return "";
+      return u;
+    }
+
     /** Google News RSS via rss2json (Access-Control-Allow-Origin: *). */
     async function fetchGoogleNewsPosts(searchQuery, limit) {
       const rss =
         "https://news.google.com/rss/search?q=" +
         encodeURIComponent(searchQuery) +
         "&hl=pt-BR&gl=BR&ceid=BR%3Apt-419";
-      const api =
-        "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rss) + "&count=" + limit;
+      const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rss);
       const r = await fetch(api);
       if (!r.ok) throw new Error("rss2json HTTP " + r.status);
       const j = await r.json();
       if (j.status !== "ok") throw new Error(j.message || "RSS inválido");
-      return (j.items || []).map((item) => {
+      return (j.items || []).slice(0, limit).map((item) => {
         const titulo = item.title || "(sem título)";
         const desc = stripHtml(item.description || "");
         const badge = inferBadgeFromText(titulo, desc);
@@ -1477,11 +1562,12 @@
         try {
           if (item.pubDate) dataIso = new Date(item.pubDate).toISOString();
         } catch (_) {}
+        const url = extractRssItemArticleUrl(item) || "#";
         return {
           titulo,
           corpo: desc.slice(0, 500),
           fonte: item.author || "Google News",
-          url: item.link || "#",
+          url,
           badge,
           tags: ["notícias", "Google News"],
           plugin: "google-news",
@@ -1499,13 +1585,12 @@
       try {
         host = fonteCurta || new URL(rssUrl).hostname.replace(/^www\./, "");
       } catch (_) {}
-      const api =
-        "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rssUrl) + "&count=" + limit;
+      const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rssUrl);
       const r = await fetch(api);
       if (!r.ok) throw new Error("rss2json HTTP " + r.status);
       const j = await r.json();
       if (j.status !== "ok") throw new Error(j.message || "RSS inválido");
-      return (j.items || []).map((item) => {
+      return (j.items || []).slice(0, limit).map((item) => {
         const titulo = item.title || "(sem título)";
         const desc = stripHtml(item.description || "");
         const badge = inferBadgeFromText(titulo, desc);
@@ -1514,11 +1599,12 @@
           if (item.pubDate) dataIso = new Date(item.pubDate).toISOString();
         } catch (_) {}
         const authorName = stripHtml(item.author || "").trim();
+        const url = extractRssItemArticleUrl(item) || item.link || "#";
         return {
           titulo,
           corpo: desc.slice(0, 500),
           fonte: authorName ? authorName + " · " + host : host,
-          url: item.link || "#",
+          url,
           badge,
           tags: [tagLabel, host],
           plugin: "rss",
@@ -1854,7 +1940,11 @@
           ${autorHtml}
           <p class="seg-body">${escapeHtml(row.corpo || "").replace(/\n/g, " ") || "—"}</p>
           <div class="seg-tags">${tags}</div>
-          <a class="seg-link" href="${escapeHtml(row.url)}" target="_blank" rel="noopener noreferrer">Abrir publicação ↗</a>
+          ${
+            segPostPublicUrl(row)
+              ? `<a class="seg-link" href="${escapeHtml(segPostPublicUrl(row))}" target="_blank" rel="noopener noreferrer">Abrir publicação ↗</a>`
+              : `<span class="seg-link seg-link--missing" title="Este item não tem URL direta no feed.">Sem ligação direta ao texto</span>`
+          }
           ${comentHtml}
         </article>`;
         })
