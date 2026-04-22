@@ -442,12 +442,17 @@
       return document.querySelector('input[name="nivel"]:checked')?.value || "zona";
     }
 
+    function getJspdfConstructor() {
+      if (window.jspdf && typeof window.jspdf.jsPDF === "function") return window.jspdf.jsPDF;
+      if (typeof window.jsPDF === "function") return window.jsPDF;
+      return null;
+    }
+
     /**
-     * jsPDF-AutoTable regista o método em jsPDF.API.autoTable (não em jsPDF.prototype).
-     * A verificação errada deixava o botão PDF sempre desativado.
+     * jsPDF-AutoTable regista em jsPDF.API.autoTable; reforça applyPlugin se necessário.
      */
     function ensureJspdfAutoTable() {
-      const ctor = window.jspdf && window.jspdf.jsPDF;
+      const ctor = getJspdfConstructor();
       if (!ctor) return false;
       if (ctor.API && typeof ctor.API.autoTable === "function") return true;
       if (typeof ctor.prototype.autoTable === "function") return true;
@@ -474,13 +479,14 @@
       const btn = document.getElementById("btnExportPdf");
       if (!btn) return;
       const n = document.querySelectorAll("#tbodyr tr").length;
-      btn.disabled = n === 0 || !ensureJspdfAutoTable();
+      /* Só desactiva sem linhas; jsPDF/AutoTable validam ao clicar (evita botão preso se CDN falhar ou houver race). */
+      btn.disabled = n === 0;
     }
 
     function exportTableToPdf() {
-      if (!ensureJspdfAutoTable()) {
+      if (!getJspdfConstructor()) {
         alert(
-          "Não foi possível carregar jsPDF / AutoTable (rede ou bloqueio de script). Recarregue a página ou verifique se cdn.jsdelivr.net / unpkg.com não está bloqueado."
+          "Não foi possível carregar jsPDF (rede ou bloqueio de script). Recarregue a página ou verifique o CDN."
         );
         return;
       }
@@ -494,9 +500,14 @@
         return;
       }
       try {
-        const { jsPDF } = window.jspdf;
+        const JsPDF = getJspdfConstructor();
+        if (!JsPDF) throw new Error("jsPDF não encontrado em window.jspdf.jsPDF");
+        ensureJspdfAutoTable();
         const landscape = getNivel() === "secao";
-        const doc = new jsPDF({ orientation: landscape ? "landscape" : "portrait", unit: "mm", format: "a4" });
+        const doc = new JsPDF({ orientation: landscape ? "landscape" : "portrait", unit: "mm", format: "a4" });
+        if (typeof doc.autoTable !== "function") {
+          throw new Error("AutoTable não ligado ao jsPDF (falhou o script jspdf-autotable?)");
+        }
         const pageW = doc.internal.pageSize.getWidth();
         const margin = 14;
         const textW = pageW - margin * 2;
@@ -588,8 +599,7 @@
     }
 
     async function renderZonaAsync(sq, row, ueFiltro, st, gen) {
-      const btnPdf = document.getElementById("btnExportPdf");
-      if (btnPdf) btnPdf.disabled = true;
+      try {
       const list = (bySqZona.bySq && bySqZona.bySq[sq]) || [];
       const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
       let sum = 0;
@@ -759,12 +769,13 @@
       let metaZ = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
       if (zonaLocal && zonaLocal.geradoEm) metaZ += " · Moradas zona: " + zonaLocal.geradoEm;
       document.getElementById("tableMeta").textContent = metaZ;
-      syncPdfExportButton();
+      } finally {
+        syncPdfExportButton();
+      }
     }
 
     async function renderSecAsync(sq, row, ueFiltro, st, gen) {
-      const btnPdf0 = document.getElementById("btnExportPdf");
-      if (btnPdf0) btnPdf0.disabled = true;
+      try {
       const list = (secExemplo && secExemplo.sqCandidato === sq && secExemplo.sec) || [];
       const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
       let sum = 0;
@@ -905,7 +916,9 @@
         "Modo seção (demonstração) · " +
         (secExemplo.geradoEm || "") +
         (secExemplo.nota ? " · " + secExemplo.nota : "");
-      syncPdfExportButton();
+      } finally {
+        syncPdfExportButton();
+      }
     }
 
     async function start() {
