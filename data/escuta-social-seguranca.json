@@ -1,139 +1,299 @@
 {
-  "descricao": "Dados para o painel «Escuta social — segurança» (midia-social.html). Campos opcionais: plataforma (x | threads | instagram | facebook | web), autor, comentarios[]. Use perfilUrl absoluto para cada comentador quando possível.",
+  "descricao": "Curadoria de fontes públicas para escuta social — Rio de Janeiro: imprensa (Reage Rio, G1, Extra), prefeitura, perfis institucionais e entradas de comunidade (Reddit, hashtags no Instagram, busca no Facebook) com «Não verificada» quando não há selo institucional. Comentários = trechos ou citações com link, não API de redes.",
   "atualizado": "2026-04-22",
+  "fontes_curadas": [
+    {
+      "nome": "Reage, Rio! (O Globo)",
+      "tipo": "editorial / bairros",
+      "url": "https://oglobo.globo.com/rio/reage-rio/"
+    },
+    {
+      "nome": "G1 Rio de Janeiro",
+      "tipo": "notícias",
+      "url": "https://g1.globo.com/rj/rio-de-janeiro/"
+    },
+    {
+      "nome": "Prefeitura da cidade do Rio",
+      "tipo": "institucional",
+      "url": "https://prefeitura.rio/"
+    },
+    {
+      "nome": "Extra — Rio",
+      "tipo": "notícias",
+      "url": "https://extra.globo.com/rio/"
+    }
+  ],
   "postagens": [
     {
-      "titulo": "Boletim: homicídios em queda em determinadas regiões — conferir série histórica",
-      "corpo": "Texto ilustrativo. Em produção, ligue a RSS de SSP, G1 Segurança ou API interna. Sempre cite fonte primária antes de republicar.",
-      "fonte": "Exemplo — SSP estadual",
-      "url": "https://www.gov.br/pt-br",
+      "titulo": "Secção «Reage, Rio!» — moradores, humor e cobrança em bairros",
+      "corpo": "Quadro do O Globo dedicado a histórias de moradores que usam redes e criatividade para expor problemas locais e cobrar respostas de órgãos públicos.",
+      "fonte": "O Globo",
+      "url": "https://oglobo.globo.com/rio/reage-rio/",
       "plataforma": "web",
       "badge": "evento",
-      "tags": ["dados oficiais", "série histórica"],
+      "tags": ["Reage Rio", "bairros", "comunidade"],
+      "plugin": "arquivo-local",
+      "dataIso": "2026-04-22T10:00:00.000Z",
+      "autor": null,
+      "comentarios": []
+    },
+    {
+      "titulo": "Reage, Rio!: moradores usam humor em denúncias sobre problemas nos bairros",
+      "corpo": "Matéria sobre páginas de bairro e moradores que combinam humor e redes sociais para chamar a atenção de poder público sobre iluminação, esgoto e mobiliário urbano.",
+      "fonte": "O Globo",
+      "url": "https://oglobo.globo.com/rio/reage-rio/reage-rio-moradores-usam-humor-em-denuncias-sobre-problemas-em-seus-bairros-1-25164858",
+      "plataforma": "web",
+      "badge": "evento",
+      "tags": ["Reage Rio", "imprensa"],
       "plugin": "arquivo-local",
       "dataIso": "2026-04-20T12:00:00.000Z",
       "autor": null,
       "comentarios": []
     },
     {
-      "titulo": "Operação integrada: o que mudou no trânsito e no acesso a comunidades",
-      "corpo": "Use para lembrar: operações geram impacto logístico; comunicação oficial reduz rumor.",
-      "fonte": "Exemplo — imprensa local",
-      "url": "https://www12.senado.leg.br/noticias",
+      "titulo": "Reage, Rio!: projeto social em comunidade no Alto da Boa Vista",
+      "corpo": "Cobertura de iniciativa com educação e arte para jovens em comunidade na Zona Norte do Rio.",
+      "fonte": "O Globo",
+      "url": "https://oglobo.globo.com/rio/reage-rio/reage-rio-projeto-social-em-comunidade-no-alto-da-boa-vista-oferece-educacao-arte-aos-jovens-25185376",
       "plataforma": "web",
-      "badge": "operacao",
-      "tags": ["operação", "comunicação"],
+      "badge": "evento",
+      "tags": ["comunidade", "prevenção", "Zona Norte"],
       "plugin": "arquivo-local",
-      "dataIso": "2026-04-18T09:30:00.000Z",
+      "dataIso": "2026-04-18T15:00:00.000Z",
       "autor": null,
       "comentarios": []
     },
     {
-      "titulo": "Exemplo export social: Reels sobre checagem antes de repassar vídeo de operação",
-      "corpo": "Modelo de entrada com autor + comentadores e links de perfil (substitua por export real do listening).",
-      "fonte": "Instagram — @exemplo_escuta_demo (JSON)",
-      "url": "https://www.instagram.com/reel/EXEMPLO000/",
+      "titulo": "‘Reage, Rio’: há 30 anos, sociedade se reuniu para protestar contra a violência",
+      "corpo": "Retrospectiva sobre a manifestação na Avenida Rio Branco e a mobilização pela paz na cidade.",
+      "fonte": "Extra",
+      "url": "https://extra.globo.com/rio/noticia/2025/11/reage-rio-ha-30-anos-sociedade-se-reuniu-para-protestar-contra-a-violencia-e-pedir-paz.ghtml",
+      "plataforma": "web",
+      "badge": "evento",
+      "tags": ["história", "violência", "mobilização"],
+      "plugin": "arquivo-local",
+      "dataIso": "2025-11-01T08:00:00.000Z",
+      "autor": null,
+      "comentarios": []
+    },
+    {
+      "titulo": "Polícia Militar do Estado do Rio de Janeiro — comunicação institucional",
+      "corpo": "Canal oficial no Instagram da PMERJ para campanhas e comunicados (sempre confira selo e conteúdo no aplicativo).",
+      "fonte": "Instagram @pmerj",
+      "url": "https://www.instagram.com/pmerj/",
       "plataforma": "instagram",
       "badge": "operacao",
-      "tags": ["export", "perfil"],
+      "tags": ["PMERJ", "oficial", "segurança"],
       "plugin": "arquivo-local",
-      "dataIso": "2026-04-17T14:00:00.000Z",
+      "dataIso": "2026-04-22T09:00:00.000Z",
       "autor": {
-        "nome": "Escuta Demo",
-        "handle": "exemplo_escuta_demo",
+        "nome": "PMERJ",
+        "handle": "pmerj",
         "plataforma": "instagram",
-        "perfilUrl": "https://www.instagram.com/exemplo_escuta_demo/"
+        "perfilUrl": "https://www.instagram.com/pmerj/"
       },
-      "comentarios": [
-        {
-          "nome": "Paula",
-          "handle": "paula_x_demo",
-          "plataforma": "x",
-          "perfilUrl": "https://x.com/paula_x_demo",
-          "trecho": "Salvei para mandar no grupo da rua."
-        },
-        {
-          "nome": "Lucas",
-          "handle": "lucas_threads_demo",
-          "plataforma": "threads",
-          "perfilUrl": "https://www.threads.net/@lucas_threads_demo",
-          "trecho": "Faltou só o telefone da ouvidoria no carrossel."
-        }
-      ]
+      "comentarios": []
+    },
+    {
+      "titulo": "Polícia Civil do Estado do Rio de Janeiro — Instagram",
+      "corpo": "Divulgação de operações e orientações ao cidadão pela PCERJ.",
+      "fonte": "Instagram @policiacivilrj",
+      "url": "https://www.instagram.com/policiacivilrj/",
+      "plataforma": "instagram",
+      "badge": "operacao",
+      "tags": ["PCERJ", "oficial"],
+      "plugin": "arquivo-local",
+      "dataIso": "2026-04-22T09:30:00.000Z",
+      "autor": {
+        "nome": "PCERJ",
+        "handle": "policiacivilrj",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/policiacivilrj/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Prefeitura do Rio — Facebook",
+      "corpo": "Página pública com anúncios de serviço, obras e comunicação da administração municipal.",
+      "fonte": "Facebook PrefeituradoRio",
+      "url": "https://www.facebook.com/PrefeituradoRio",
+      "plataforma": "facebook",
+      "badge": "evento",
+      "tags": ["prefeitura", "oficial"],
+      "plugin": "arquivo-local",
+      "dataIso": "2026-04-21T18:00:00.000Z",
+      "autor": {
+        "nome": "Prefeitura do Rio",
+        "handle": "PrefeituradoRio",
+        "plataforma": "facebook",
+        "perfilUrl": "https://www.facebook.com/PrefeituradoRio"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "r/riodejaneiro — discussões sobre segurança e cidade",
+      "corpo": "Subreddit da cidade: tópicos espontâneos de moradores (sem curadoria editorial). Útil para escuta qualitativa; não é fonte oficial.",
+      "fonte": "Reddit r/riodejaneiro",
+      "url": "https://www.reddit.com/r/riodejaneiro/",
+      "plataforma": "web",
+      "badge": "evento",
+      "tags": ["reddit", "comunidade", "escuta"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T12:00:00.000Z",
+      "autor": {
+        "nome": "r/riodejaneiro",
+        "handle": "reddit.com/r/riodejaneiro",
+        "plataforma": "web",
+        "perfilUrl": "https://www.reddit.com/r/riodejaneiro/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Instagram — explore #reagorio",
+      "corpo": "Fluxo público de publicações com a hashtag (moradores, mídia, influenciadores). Conteúdo heterogéneo; filtrar com critério.",
+      "fonte": "Instagram explore",
+      "url": "https://www.instagram.com/explore/tags/reagorio/",
+      "plataforma": "instagram",
+      "badge": "evento",
+      "tags": ["hashtag", "reage rio", "comunidade"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T12:05:00.000Z",
+      "autor": {
+        "nome": "#reagorio",
+        "handle": "explore/tags/reagorio",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/explore/tags/reagorio/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Instagram — explore #riodejaneiro",
+      "corpo": "Hashtag ampla da cidade; inclui turismo, cultura e reclamações. Bom para sondagem, não para citar como decisão única.",
+      "fonte": "Instagram explore",
+      "url": "https://www.instagram.com/explore/tags/riodejaneiro/",
+      "plataforma": "instagram",
+      "badge": "evento",
+      "tags": ["hashtag", "rj", "comunidade"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T12:08:00.000Z",
+      "autor": {
+        "nome": "#riodejaneiro",
+        "handle": "explore/tags/riodejaneiro",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/explore/tags/riodejaneiro/"
+      },
+      "comentarios": []
+    },
+    {
+      "titulo": "Facebook — busca «segurança Rio de Janeiro»",
+      "corpo": "Resultados públicos (páginas, grupos, publicações). Permite achar páginas de bairro e grupos comunitários; verificar origem antes de usar em relatório.",
+      "fonte": "Facebook pesquisa",
+      "url": "https://www.facebook.com/search/top?q=seguran%C3%A7a%20Rio%20de%20Janeiro",
+      "plataforma": "facebook",
+      "badge": "evento",
+      "tags": ["facebook", "grupos", "comunidade"],
+      "plugin": "arquivo-local",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "dataIso": "2026-04-22T12:10:00.000Z",
+      "autor": {
+        "nome": "Busca Facebook",
+        "handle": "search/top",
+        "plataforma": "facebook",
+        "perfilUrl": "https://www.facebook.com/search/top?q=seguran%C3%A7a%20Rio%20de%20Janeiro"
+      },
+      "comentarios": []
     }
   ],
   "comentarios": [
     {
-      "nome": "Marina L.",
-      "handle": "@marina_cidadania",
+      "nome": "Matéria O Globo — humor e denúncias de bairro (Reage Rio)",
+      "handle": "oglobo.globo.com",
+      "plataforma": "web",
+      "perfilUrl": "https://oglobo.globo.com/rio/reage-rio/reage-rio-moradores-usam-humor-em-denuncias-sobre-problemas-em-seus-bairros-1-25164858",
+      "perfilDesc": "Texto jornalístico — não é comentário colhido em API social",
+      "texto": "A reportagem descreve o uso de humor em redes por moradores para evidenciar problemas urbanos e acelerar respostas de órgãos públicos.",
+      "ctx": "O Globo · Reage, Rio!"
+    },
+    {
+      "nome": "Matéria O Globo — projeto no Alto da Boa Vista",
+      "handle": "oglobo.globo.com",
+      "plataforma": "web",
+      "perfilUrl": "https://oglobo.globo.com/rio/reage-rio/reage-rio-projeto-social-em-comunidade-no-alto-da-boa-vista-oferece-educacao-arte-aos-jovens-25185376",
+      "perfilDesc": "Cobertura de comunidade e prevenção",
+      "texto": "Destaque para educação e arte com jovens em comunidade na Zona Norte.",
+      "ctx": "O Globo · Reage, Rio!"
+    },
+    {
+      "nome": "Matéria Extra — 30 anos do Reage, Rio",
+      "handle": "extra.globo.com",
+      "plataforma": "web",
+      "perfilUrl": "https://extra.globo.com/rio/noticia/2025/11/reage-rio-ha-30-anos-sociedade-se-reuniu-para-protestar-contra-a-violencia-e-pedir-paz.ghtml",
+      "perfilDesc": "História da mobilização de 1995",
+      "texto": "Contexto da marcha pela paz e da participação de diversos setores da sociedade.",
+      "ctx": "Extra · Rio"
+    },
+    {
+      "nome": "PMERJ — Instagram oficial",
+      "handle": "@pmerj",
       "plataforma": "instagram",
-      "perfilUrl": "https://www.instagram.com/marina_cidadania/",
-      "perfilDesc": "Professora · Zona Norte (perfil fictício para demonstração)",
-      "texto": "Bom ver dados oficiais separados de boatos. Peço sempre link da SSP ou da PRF antes de compartilhar vídeo de operação.",
-      "ctx": "Discussão sobre desinformação em grupos de bairro"
+      "perfilUrl": "https://www.instagram.com/pmerj/",
+      "perfilDesc": "Institucional",
+      "texto": "Canal oficial da Polícia Militar do Estado do Rio para campanhas e avisos à população.",
+      "ctx": "Perfil verificável no Instagram"
     },
     {
-      "nome": "Ricardo Souza",
-      "handle": "ricardo.baixada.demo",
-      "plataforma": "facebook",
-      "perfilUrl": "https://www.facebook.com/ricardo.baixada.demo",
-      "perfilDesc": "Comerciante · Baixada (ilustrativo)",
-      "texto": "Aqui no comércio a gente sente quando melhora o policiamento ostensivo, mas precisa de política social de médio prazo também.",
-      "ctx": "Thread sobre segurança urbana"
-    },
-    {
-      "nome": "Anônimo verificado",
-      "handle": "ouvidoria_demo",
-      "plataforma": "x",
-      "perfilUrl": "https://x.com/ouvidoria_demo",
-      "perfilDesc": "Conta de exemplo — ouvidoria / transparência",
-      "texto": "Parabéns à equipe por divulgar o canal oficial de ouvidoria — facilita denúncia com rastreio.",
-      "ctx": "Post de órgão público"
-    },
-    {
-      "nome": "Luana Freire",
-      "handle": "luana_freire_threads",
-      "plataforma": "threads",
-      "perfilUrl": "https://www.threads.net/@luana_freire_threads",
-      "perfilDesc": "Arquiteta urbana (exemplo JSON)",
-      "texto": "Boa iniciativa combinar iluminação pública com presença da guarda — reduz pontos cegos.",
-      "ctx": "Threads sobre projeto de praça segura"
-    },
-    {
-      "nome": "Márcio Antunes",
-      "handle": "marcio_antunes_ig",
+      "nome": "PCERJ — Instagram oficial",
+      "handle": "@policiacivilrj",
       "plataforma": "instagram",
-      "perfilUrl": "https://www.instagram.com/marcio_antunes_ig/",
-      "perfilDesc": "Personal trainer · parque (exemplo JSON)",
-      "texto": "O corredor noturno voltou a encher depois que a PM passou a ronda fixa às 21h.",
-      "ctx": "Comentário em Reels de rotina esportiva"
+      "perfilUrl": "https://www.instagram.com/policiacivilrj/",
+      "perfilDesc": "Institucional",
+      "texto": "Comunicação da Polícia Civil do Estado do Rio de Janeiro.",
+      "ctx": "Perfil verificável no Instagram"
     },
     {
-      "nome": "Selma Duarte",
-      "handle": "selma.duarte.fb",
+      "nome": "Prefeitura do Rio — Facebook",
+      "handle": "PrefeituradoRio",
       "plataforma": "facebook",
-      "perfilUrl": "https://www.facebook.com/selma.duarte.fb",
-      "perfilDesc": "Artesã · feira local (exemplo JSON)",
-      "texto": "Feira fechou mais tarde com segurança reforçada — vendas melhoraram, obrigada.",
-      "ctx": "Post de prefeitura sobre feira livre"
+      "perfilUrl": "https://www.facebook.com/PrefeituradoRio",
+      "perfilDesc": "Institucional",
+      "texto": "Comunicados oficiais da prefeitura da cidade do Rio de Janeiro.",
+      "ctx": "Página pública"
     },
     {
-      "nome": "Diego Ramos",
-      "handle": "diego_ramos_x",
-      "plataforma": "x",
-      "perfilUrl": "https://x.com/diego_ramos_x",
-      "perfilDesc": "Cicloativista (exemplo JSON)",
-      "texto": "Sinalização da ciclovia após a operação ficou mais clara — pedido antigo atendido.",
-      "ctx": "Debate mobilidade e segurança viária"
+      "nome": "G1 — Rio de Janeiro (capa)",
+      "handle": "g1.globo.com",
+      "plataforma": "web",
+      "perfilUrl": "https://g1.globo.com/rj/rio-de-janeiro/",
+      "perfilDesc": "Agregador de notícias",
+      "texto": "Cobertura contínua da capital e região metropolitana; cruzar com RSS injetado no painel.",
+      "ctx": "G1"
     },
     {
-      "nome": "Cláudia Reis",
-      "handle": "claudia_reis_threads",
-      "plataforma": "threads",
-      "perfilUrl": "https://www.threads.net/@claudia_reis_threads",
-      "perfilDesc": "Enfermeira · UBS (exemplo JSON)",
-      "texto": "Equipe conseguiu chegar no tempo certo no mutirão — corredor funcionou.",
-      "ctx": "Relato em thread sobre saúde e trânsito"
+      "nome": "Prefeitura — portal e feed",
+      "handle": "prefeitura.rio",
+      "plataforma": "web",
+      "perfilUrl": "https://prefeitura.rio/",
+      "perfilDesc": "Institucional",
+      "texto": "Serviços, transparência e notícias da administração municipal.",
+      "ctx": "Site oficial"
+    },
+    {
+      "nome": "r/riodejaneiro — discussão entre moradores",
+      "handle": "reddit.com/r/riodejaneiro",
+      "plataforma": "web",
+      "perfilUrl": "https://www.reddit.com/r/riodejaneiro/",
+      "perfilDesc": "Fórum público; opiniões variadas, sem curadoria editorial",
+      "verificado": false,
+      "tipoFonte": "nao_verificada",
+      "texto": "Tipo de fonte não verificada: útil para escuta qualitativa sobre cidade e segurança; validar antes de usar em relatório.",
+      "ctx": "Reddit · comunidade"
     }
   ]
 }
