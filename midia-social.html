@@ -1036,7 +1036,7 @@
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
           <strong>Sem OAuth:</strong> respostas públicas em fios <strong>Mastodon</strong> (API de contexto). Na lista abaixo entram o JSON curado (inclui temas em Instagram, Facebook, YouTube e TikTok como <strong>ligações para escuta manual</strong>) e injeções Mastodon/X.
-          Redes fechadas não expõem comentários no browser sem API de projeto — use os cartões «Abrir publicação» e as buscas/hashtags indicadas.
+          Os comentários listados incluem os que vêm <strong>das postagens carregadas</strong> (bloco «Perfis a comentar» em cada cartão) e, para <strong>Mastodon</strong>, uma <strong>amostra automática de respostas públicas</strong> nos primeiros toots após «Atualizar postagens». Outras redes: use API oficial ou escuta manual.
         </p>
         <div class="escuta-api-box" id="escutaApiBox">
           <h3>Mastodon — respostas em postagens (sem autenticação)</h3>
@@ -1984,6 +1984,26 @@
       return null;
     }
 
+    function escutaMastodonStatusToComentarioCard(st, ctxLine) {
+      const acct = st.account;
+      const plain = stripHtml(st.content || "").replace(/\s+/g, " ").trim();
+      const postUrl = st.url || "";
+      return {
+        nome: (acct.display_name || acct.username) + " — resposta Mastodon",
+        handle: "@" + String(acct.acct || acct.username).replace(/^@+/, ""),
+        plataforma: "mastodon",
+        perfilUrl: acct.url,
+        perfilDesc: "Resposta pública (API sem token)",
+        texto: plain.slice(0, 560),
+        ctx: ctxLine,
+        mastodonStatusId: st.id,
+        postUrl,
+        tweetUrl: postUrl,
+        verificado: false,
+        tipoFonte: "mastodon_reply",
+      };
+    }
+
     async function escutaFetchMastodonRepliesToPost() {
       const raw = document.getElementById("escutaMastoPostUrl")?.value || "";
       const parsed = parseMastodonStatusFromUrl(raw);
@@ -2001,27 +2021,59 @@
       if (!descendants.length) {
         return [];
       }
-      const items = [];
-      for (const st of descendants) {
-        const acct = st.account;
-        const plain = stripHtml(st.content || "").replace(/\s+/g, " ").trim();
-        const postUrl = st.url || "";
-        items.push({
-          nome: (acct.display_name || acct.username) + " — resposta Mastodon",
-          handle: "@" + String(acct.acct || acct.username).replace(/^@+/, ""),
-          plataforma: "mastodon",
-          perfilUrl: acct.url,
-          perfilDesc: "Resposta pública (API sem token)",
-          texto: plain.slice(0, 560),
-          ctx: "Resposta no fio Mastodon",
-          mastodonStatusId: st.id,
-          postUrl,
-          tweetUrl: postUrl,
-          verificado: false,
-          tipoFonte: "mastodon_reply",
-        });
+      return descendants.map((st) => escutaMastodonStatusToComentarioCard(st, "Resposta no fio Mastodon"));
+    }
+
+    /** Respostas públicas nos primeiros toots Mastodon do lote (limite para não sobrecarregar a API). */
+    async function escutaAttachMastodonRepliesToLoadedPosts(posts) {
+      const list = Array.isArray(posts) ? posts : [];
+      const mastoRows = list.filter((p) => normalizePlatform(p.plataforma) === "mastodon" && String(p.url || "").trim());
+      let budget = 40;
+      const maxPosts = 8;
+      const perPost = 6;
+      for (const p of mastoRows.slice(0, maxPosts)) {
+        if (budget <= 0) break;
+        const u = String(p.url || "").trim();
+        const parsed = parseMastodonStatusFromUrl(u);
+        if (!parsed) continue;
+        try {
+          const ctxUrl = `${parsed.base.replace(/\/$/, "")}/api/v1/statuses/${parsed.id}/context`;
+          const r = await fetch(ctxUrl);
+          if (!r.ok) continue;
+          const j = await r.json();
+          const descendants = j.descendants || [];
+          const take = Math.min(perPost, descendants.length, budget);
+          if (!take) continue;
+          if (!Array.isArray(p.comentarios)) p.comentarios = [];
+          for (let i = 0; i < take; i++) {
+            p.comentarios.push(
+              escutaMastodonStatusToComentarioCard(descendants[i], "Resposta pública no fio do post listado")
+            );
+          }
+          budget -= take;
+        } catch {
+          /* ignora instância indisponível / CORS */
+        }
       }
-      return items;
+    }
+
+    function escutaComentariosDerivedFromLoadedPosts() {
+      const out = [];
+      for (const post of escutaPostsFull || []) {
+        const pub = segPostPublicUrl(post) || String(post.url || "").trim();
+        const titulo = String(post.titulo || "Postagem").slice(0, 200);
+        const postPf = normalizePlatform(post.plataforma);
+        for (const c of Array.isArray(post.comentarios) ? post.comentarios : []) {
+          const merged = {
+            ...c,
+            postUrl: c.postUrl || c.tweetUrl || c.mastodonUrl || pub || "",
+            ctx: c.ctx ? `${c.ctx} · «${titulo}»` : `Comentário ligado à postagem · «${titulo}»`,
+          };
+          if (!merged.plataforma) merged.plataforma = postPf || "web";
+          out.push(merged);
+        }
+      }
+      return out;
     }
 
     function badgeClass(b) {
@@ -2321,14 +2373,20 @@
 
       try {
         const { posts, errors } = await runEscutaPlugins();
+        if (status) {
+          status.textContent = "A carregar respostas Mastodon nos toots (amostra)…";
+        }
+        await escutaAttachMastodonRepliesToLoadedPosts(posts);
         escutaPostsFull = posts;
         document.querySelectorAll(".seg-filter-btn").forEach((b) => {
           b.setAttribute("aria-pressed", String((b.getAttribute("data-pf") || "") === "all"));
         });
         renderSegPostCards(posts, errors);
+        rebuildSegComentariosAll();
       } catch (e) {
         escutaPostsFull = [];
         renderSegPostCards([], [String(e.message || e)]);
+        rebuildSegComentariosAll();
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -2371,6 +2429,13 @@
         }
       }
       for (const c of ESCUTA_CITACOES_FALLBACK) {
+        const k = comentarioDedupeKey(c);
+        if (!keys.has(k)) {
+          list.push({ ...c });
+          keys.add(k);
+        }
+      }
+      for (const c of escutaComentariosDerivedFromLoadedPosts()) {
         const k = comentarioDedupeKey(c);
         if (!keys.has(k)) {
           list.push({ ...c });
