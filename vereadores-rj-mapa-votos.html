@@ -120,7 +120,10 @@
         Visualização dos <strong>votos nominais</strong> (1.º turno) por <strong>zona eleitoral</strong> (agregado oficial TSE
         <span class="mono">votacao_candidato_munzona</span>) e, em modo de demonstração, por <strong>seção eleitoral</strong>
         (cada ponto = local de votação por seção, ficheiro <span class="mono">votacao_secao</span>).
-        Em <strong>modo zona</strong> os pontos são <strong>aproximados</strong> (sem morada no agregado).
+        Em <strong>modo zona</strong> cada ponto usa a <strong>morada de referência TSE</strong> dessa zona
+        (ficheiro <span class="mono">vereadores-zona-local-2024-rj.json</span>, geocodificação Photon ou
+        <span class="mono">lat</span>/<span class="mono">lon</span> se tiver sido gerado com
+        <span class="mono">--geocode</span>); só recai em posição esquemática se não houver morada.
         Em <strong>modo seção</strong> o mapa usa o endereço TSE com geocodificação (Photon / OpenStreetMap) ou
         <span class="mono">lat</span>/<span class="mono">lon</span> no JSON se o ficheiro tiver sido gerado com
         <span class="mono">--geocode</span>; vários pontos no mesmo endereço recebem um micro-desvio estável.
@@ -176,6 +179,7 @@
   <script>
     const CAND_URL = "data/vereadores-rj-rio-2024.json";
     const ZONA_URL = "data/vereadores-votos-zona-2024-rj.json";
+    const ZONA_LOCAL_URL = "data/vereadores-zona-local-2024-rj.json";
     const SEC_EXEMPLO_URL = "data/vereadores-secao-exemplo-2024.json";
 
     const UE_RIO = "60011";
@@ -187,16 +191,18 @@
       [UE_RIO]: [-43.88, -23.1, -43.02, -22.75],
       [UE_CAX]: [-43.45, -22.95, -43.0, -22.55],
     };
-    const GEO_CACHE_KEY = "politcapp-vereadores-sec-geo-v3";
+    const GEO_CACHE_KEY = "politcapp-vereadores-sec-geo-v4";
     const PHOTON_CONCURRENCY = 10;
     const ZOOM0 = 10;
 
     let secaoRenderGen = 0;
+    let zonaRenderGen = 0;
 
     let map;
     let layerMarkers;
     let vereadores = [];
     let bySqZona = null;
+    let zonaLocal = null;
     let secExemplo = null;
     const candBySq = new Map();
 
@@ -212,6 +218,13 @@
       let h = 0;
       for (let i = 0; i < str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
       return h;
+    }
+
+    /** Dois valores em [0,1) estáveis a partir da seed (evita grelha 1000×1000 do % 1000). */
+    function stableUnitPair(seed) {
+      const h1 = hashSeed(String(seed));
+      const h2 = Math.imul(h1, 1597334677) + hashSeed(String(seed) + "\0b") | 0;
+      return [(h1 >>> 0) / 4294967296, (h2 >>> 0) / 4294967296];
     }
 
     function normStr(s) {
@@ -275,9 +288,9 @@
 
     /** Micro-desvio estável (várias secções no mesmo edifício). */
     function jitterSec(lat, lon, ue, z, s) {
-      const h = hashSeed(String(ue) + "|z" + z + "|s" + s);
-      const u1 = ((h % 1000) + 1000) % 1000 / 1000 - 0.5;
-      const u2 = (Math.imul(h, 1103515245) % 1000 + 1000) % 1000 / 1000 - 0.5;
+      const [a, b] = stableUnitPair(String(ue) + "|z" + z + "|s" + s);
+      const u1 = a - 0.5;
+      const u2 = b - 0.5;
       const dLat = u1 * 0.00032;
       const dLon = (u2 * 0.00032) / Math.max(0.35, Math.cos((lat * Math.PI) / 180));
       return [lat + dLat, lon + dLon];
@@ -337,13 +350,11 @@
       await Promise.all(Array.from({ length: wn }, () => worker()));
     }
 
-    /** Posição no mapa: esquemática, estável, não é coordenada do endereço. */
+    /** Posição no mapa: esquemática, estável, só para fallback (sem morada / geocode falhou). */
     function posEsquematica(ue, z, s) {
       const c = CENTER[ue] || CENTER[UE_RIO];
       const seed = s != null && s > 0 ? `${ue}|z${z}|s${s}` : `${ue}|z${z}`;
-      const h = hashSeed(seed);
-      const u1 = ((h % 1000) + 1000) % 1000 / 1000;
-      const u2 = (Math.imul(h, 1103515245) % 1000 + 1000) % 1000 / 1000;
+      const [u1, u2] = stableUnitPair(seed);
       const rZ = 0.08;
       const rS = 0.028;
       const r = s != null && s > 0 ? rS : rZ;
@@ -442,10 +453,17 @@
         renderSecAsync(sq, row, ueFiltro, st, secaoRenderGen);
         return;
       }
-      renderZona(sq, row, ueFiltro, st);
+      zonaRenderGen++;
+      renderZonaAsync(sq, row, ueFiltro, st, zonaRenderGen);
     }
 
-    function renderZona(sq, row, ueFiltro, st) {
+    function rowZonaLocal(ue, z) {
+      const k = String(ue) + "|" + z;
+      const pz = zonaLocal && zonaLocal.porZona;
+      return pz && pz[k] ? pz[k] : null;
+    }
+
+    async function renderZonaAsync(sq, row, ueFiltro, st, gen) {
       const list = (bySqZona.bySq && bySqZona.bySq[sq]) || [];
       const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
       let sum = 0;
@@ -456,8 +474,114 @@
       const vmax = vs.length ? Math.max(...vs) : 0;
 
       layerMarkers.clearLayers();
+      st.textContent = zonaLocal ? "A preparar pontos por morada (zona)…" : "A posicionar zonas (sem ficheiro de moradas)…";
+
+      const keyToRows = new Map();
       for (const x of filtrado) {
-        const [la, lo] = posEsquematica(x.ue, x.z, null);
+        const zl = rowZonaLocal(x.ue, x.z);
+        const syn = {
+          ue: x.ue,
+          z: x.z,
+          s: 0,
+          endereco: zl && zl.endereco != null ? zl.endereco : "—",
+          local: zl && zl.local != null ? zl.local : "—",
+        };
+        const gk = geocodeDedupKey(syn);
+        if (!keyToRows.has(gk)) keyToRows.set(gk, []);
+        keyToRows.get(gk).push({ x, zl, syn });
+      }
+      const dedupKeys = [...keyToRows.keys()];
+      const geoCache = loadGeoCache();
+      const coordByKey = new Map();
+      const needFetch = [];
+
+      for (const key of dedupKeys) {
+        const rows = keyToRows.get(key) || [];
+        const first = rows[0];
+        const zl = first.zl;
+        const x0 = first.syn;
+        const hasAddr =
+          (normStr(x0.endereco) && normStr(x0.endereco) !== "—") ||
+          (normStr(x0.local) && normStr(x0.local) !== "—");
+        if (zl && Number.isFinite(Number(zl.lat)) && Number.isFinite(Number(zl.lon))) {
+          coordByKey.set(key, { pt: [Number(zl.lat), Number(zl.lon)], src: "json" });
+          continue;
+        }
+        const c0 = geoCache[key];
+        if (c0 && Number.isFinite(c0.la) && Number.isFinite(c0.lo)) {
+          coordByKey.set(key, { pt: [c0.la, c0.lo], src: "cache" });
+          continue;
+        }
+        if (!hasAddr) {
+          coordByKey.set(key, { pt: null, src: "none" });
+          continue;
+        }
+        needFetch.push({ key, ue: String(x0.ue), queries: photonQueryCandidates(x0) });
+      }
+
+      let fetchDone = 0;
+      const nFetch = needFetch.length;
+      if (nFetch) {
+        st.textContent = "Geocodificação (Photon) — zonas… 0/" + nFetch;
+        await runPoolItems(needFetch, async (item) => {
+          if (gen !== zonaRenderGen) return;
+          const c = CENTER[item.ue] || CENTER[UE_RIO];
+          const bbox = PHOTON_BBOX[item.ue] || PHOTON_BBOX[UE_RIO];
+          const pt = await photonGeocodeFirstHit(item.queries, {
+            ue: item.ue,
+            bbox,
+            lat: c[0],
+            lon: c[1],
+          });
+          if (pt) {
+            coordByKey.set(item.key, { pt, src: "photon" });
+            saveGeoCacheEntry(item.key, pt[0], pt[1]);
+          } else {
+            coordByKey.set(item.key, { pt: null, src: "photon" });
+          }
+          fetchDone++;
+          if (gen === zonaRenderGen) {
+            st.textContent = "Geocodificação (Photon) — zonas… " + fetchDone + "/" + nFetch;
+          }
+        });
+      }
+      if (gen !== zonaRenderGen) return;
+
+      let nEmb = 0;
+      let nCache = 0;
+      let nPhoton = 0;
+      let nFallback = 0;
+      for (const x of filtrado) {
+        const zl = rowZonaLocal(x.ue, x.z);
+        const syn = {
+          ue: x.ue,
+          z: x.z,
+          s: 0,
+          endereco: zl && zl.endereco != null ? zl.endereco : "—",
+          local: zl && zl.local != null ? zl.local : "—",
+        };
+        const gk = geocodeDedupKey(syn);
+        let la;
+        let lo;
+        if (zl && Number.isFinite(Number(zl.lat)) && Number.isFinite(Number(zl.lon))) {
+          la = Number(zl.lat);
+          lo = Number(zl.lon);
+          nEmb++;
+        } else {
+          const cell = coordByKey.get(gk);
+          const pt = cell && cell.pt;
+          if (pt && Number.isFinite(pt[0]) && Number.isFinite(pt[1])) {
+            la = pt[0];
+            lo = pt[1];
+            if (cell.src === "cache") nCache++;
+            else nPhoton++;
+          } else {
+            const sch = posEsquematica(x.ue, x.z, null);
+            la = sch[0];
+            lo = sch[1];
+            nFallback++;
+          }
+        }
         const m = L.circleMarker([la, lo], {
           radius: raioPorVotos(x.v, vmin, vmax),
           color: "rgba(255,255,255,0.35)",
@@ -465,18 +589,24 @@
           fillColor: corPorVotos(x.v, vmin, vmax),
           fillOpacity: 0.75,
         });
+        const locLine = zl && (zl.local || zl.endereco) ? "<br/><small>" + escapeHtml(zl.local || "") + "<br/>" + escapeHtml(zl.endereco || "") + "</small>" : "";
         m.bindPopup(
           "<strong>" + escapeHtml(row.nomeUrna || "") + "</strong><br/>UE " +
-            escapeHtml(x.ue) + " · Zona " + x.z + "<br/>" + x.v.toLocaleString("pt-BR") + " votos (zona)"
+            escapeHtml(x.ue) + " · Zona " + x.z + "<br/>" + x.v.toLocaleString("pt-BR") + " votos (zona)" + locLine
         );
         m.addTo(layerMarkers);
       }
-      if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [32, 32], maxZoom: 12 });
+      if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [32, 32], maxZoom: 14 });
       else map.setView(CENTER[UE_RIO], ZOOM0);
 
+      const bits = [];
+      if (nEmb) bits.push(nEmb + " com coord. no JSON");
+      if (nCache) bits.push(nCache + " do cache");
+      if (nPhoton) bits.push(nPhoton + " via Photon");
+      if (nFallback) bits.push(nFallback + " só esquemático (sem morada ou geocode falhou)");
       st.textContent =
         (filtrado.length
-          ? filtrado.length + " zona(s) com votos no mapa (posição aproximada por zona)"
+          ? filtrado.length + " zona(s) no mapa" + (bits.length ? " · " + bits.join(" · ") : "")
           : "Nenhum ponto (verifique ficheiro de zona)") +
         " · Soma nas zonas mostradas: " +
         sum.toLocaleString("pt-BR") +
@@ -500,7 +630,9 @@
             "</td></tr>"
         )
         .join("");
-      document.getElementById("tableMeta").textContent = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
+      let metaZ = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
+      if (zonaLocal && zonaLocal.geradoEm) metaZ += " · Moradas zona: " + zonaLocal.geradoEm;
+      document.getElementById("tableMeta").textContent = metaZ;
     }
 
     async function renderSecAsync(sq, row, ueFiltro, st, gen) {
@@ -650,16 +782,18 @@
       const st = document.getElementById("mapStatus");
       st.textContent = "A carregar ficheiros…";
       try {
-        const [r1, r2, r3] = await Promise.all([
+        const [r1, r2, r3, r4] = await Promise.all([
           fetch(new URL(CAND_URL, location.href), { cache: "no-store" }),
           fetch(new URL(ZONA_URL, location.href), { cache: "no-store" }),
           fetch(new URL(SEC_EXEMPLO_URL, location.href), { cache: "no-store" }),
+          fetch(new URL(ZONA_LOCAL_URL, location.href), { cache: "no-store" }),
         ]);
         if (!r1.ok) throw new Error("candidatos " + r1.status);
         if (!r2.ok) throw new Error("votos por zona " + r2.status);
         const d1 = await r1.json();
         bySqZona = await r2.json();
         if (r3.ok) secExemplo = await r3.json();
+        if (r4.ok) zonaLocal = await r4.json();
         vereadores = d1.vereadores || [];
         for (const r of vereadores) {
           if (r.sqCandidato) candBySq.set(String(r.sqCandidato), r);
