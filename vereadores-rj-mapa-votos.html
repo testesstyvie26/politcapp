@@ -235,6 +235,8 @@
     let zonaLocal = null;
     let secExemplo = null;
     const candBySq = new Map();
+    /** Última matriz exportável (cabeçalhos + linhas), para PDF/impressão mesmo antes do mapa terminar ou se o DOM falhar. */
+    let lastExportMatrix = null;
 
     function escapeHtml(s) {
       return String(s ?? "")
@@ -480,17 +482,94 @@
       return !!(ctor.API && typeof ctor.API.autoTable === "function");
     }
 
+    function storeExportMatrixZona(filtradoSorted) {
+      if (!filtradoSorted.length) {
+        lastExportMatrix = { headers: ["UE", "Zona", "Votos"], body: [] };
+        return;
+      }
+      lastExportMatrix = {
+        headers: ["UE", "Zona", "Votos"],
+        body: filtradoSorted.map((x) => [String(x.ue), String(x.z), x.v.toLocaleString("pt-BR")]),
+      };
+    }
+
+    function storeExportMatrixSecao(filtradoSorted) {
+      if (!filtradoSorted.length) {
+        lastExportMatrix = { headers: ["UE", "Zona", "Seção", "Local", "Endereço (TSE)", "Votos"], body: [] };
+        return;
+      }
+      lastExportMatrix = {
+        headers: ["UE", "Zona", "Seção", "Local", "Endereço (TSE)", "Votos"],
+        body: filtradoSorted.map((x) => [
+          String(x.ue),
+          String(x.z),
+          String(x.s),
+          String(x.local || ""),
+          String(x.endereco || ""),
+          x.v.toLocaleString("pt-BR"),
+        ]),
+      };
+    }
+
     function getTableMatrixForPdf() {
-      const headers = Array.from(document.querySelectorAll("#theadr th")).map((th) => th.textContent.trim());
-      const body = Array.from(document.querySelectorAll("#tbodyr tr")).map((tr) =>
+      const headersDom = Array.from(document.querySelectorAll("#theadr th")).map((th) => th.textContent.trim());
+      const bodyDom = Array.from(document.querySelectorAll("#tbodyr tr")).map((tr) =>
         Array.from(tr.querySelectorAll("td")).map((td) => td.textContent.trim())
       );
-      return { headers, body };
+      if (bodyDom.length) return { headers: headersDom, body: bodyDom };
+      if (lastExportMatrix && lastExportMatrix.body.length) {
+        return {
+          headers: lastExportMatrix.headers.slice(),
+          body: lastExportMatrix.body.map((r) => r.slice()),
+        };
+      }
+      return { headers: headersDom, body: [] };
+    }
+
+    function hasExportableRows() {
+      return getTableMatrixForPdf().body.length > 0;
+    }
+
+    function openPrintWindowFromMatrix(matrix) {
+      const w = window.open("", "_blank");
+      if (!w) {
+        alert("O navegador bloqueou a janela. Permita pop-ups para imprimir / guardar em PDF.");
+        return;
+      }
+      const headRow = matrix.headers.map((h) => "<th>" + escapeHtml(h) + "</th>").join("");
+      const bodyRows = matrix.body
+        .map((row) => "<tr>" + row.map((c) => "<td>" + escapeHtml(c) + "</td>").join("") + "</tr>")
+        .join("");
+      w.document.write(
+        "<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"/><title>Politapp — tabela</title>" +
+          "<style>body{font-family:system-ui,sans-serif;padding:16px}table{border-collapse:collapse;width:100%;font-size:12px}" +
+          "th,td{border:1px solid #333;padding:6px}th{background:#1c2433;color:#fff}</style></head><body>" +
+          "<table><thead><tr>" +
+          headRow +
+          "</tr></thead><tbody>" +
+          bodyRows +
+          "</tbody></table>" +
+          "<p style=\"font:11px system-ui;margin-top:12px\">No diálogo de impressão escolha <strong>Guardar como PDF</strong> se quiser.</p>" +
+          "</body></html>"
+      );
+      w.document.close();
+      w.focus();
+      setTimeout(function () {
+        try {
+          w.print();
+        } catch (e) {
+          console.error(e);
+        }
+      }, 200);
     }
 
     /** Sem jsPDF: abre janela com a tabela para Imprimir → Guardar como PDF. */
     function exportTableToPdfPrintFallback() {
       const tbl = document.getElementById("tabelaVotosMapa");
+      if (lastExportMatrix && lastExportMatrix.body.length && (!tbl || !document.querySelector("#tbodyr tr"))) {
+        openPrintWindowFromMatrix(lastExportMatrix);
+        return;
+      }
       if (!tbl || !document.querySelector("#tbodyr tr")) {
         alert("Não há linhas na tabela para exportar.");
         return;
@@ -541,6 +620,10 @@
 
     /** Impressão na própria página (sem pop-up): esconde mapa/nav via .no-print e abre o diálogo do sistema. */
     function printTabelaVotosInPage() {
+      if (!document.querySelector("#tbodyr tr") && lastExportMatrix && lastExportMatrix.body.length) {
+        openPrintWindowFromMatrix(lastExportMatrix);
+        return;
+      }
       if (!document.querySelector("#tbodyr tr")) {
         alert("Não há linhas na tabela para imprimir.");
         return;
@@ -549,7 +632,7 @@
     }
 
     function syncTabelaExportUi() {
-      const n = document.querySelectorAll("#tbodyr tr").length;
+      const n = hasExportableRows() ? 1 : 0;
       const hint = n === 0 ? "Aguarde o mapa carregar a tabela ou altere candidato / município." : "";
       ["btnExportPdf", "btnPrintTable"].forEach((id) => {
         const el = document.getElementById(id);
@@ -558,17 +641,14 @@
     }
 
     function exportTableToPdf() {
-      if (!document.querySelector("#tbodyr tr")) {
+      const { headers, body } = getTableMatrixForPdf();
+      if (!body.length) {
         alert("Não há linhas na tabela para exportar.");
         return;
       }
       if (!getJspdfConstructor()) {
-        printTabelaVotosInPage();
-        return;
-      }
-      const { headers, body } = getTableMatrixForPdf();
-      if (!body.length) {
-        alert("Não há linhas na tabela para exportar.");
+        if (document.querySelector("#tbodyr tr")) window.print();
+        else openPrintWindowFromMatrix({ headers: headers.slice(), body: body.map((r) => r.slice()) });
         return;
       }
       try {
@@ -652,6 +732,9 @@
       const nivel = getNivel();
       if (!row) {
         st.innerHTML = "<span class='error'>Candidato inválido.</span>";
+        lastExportMatrix = null;
+        document.getElementById("theadr").innerHTML = "";
+        document.getElementById("tbodyr").innerHTML = "";
         syncTabelaExportUi();
         return;
       }
@@ -680,6 +763,24 @@
       const vs = filtrado.map((x) => x.v);
       const vmin = vs.length ? Math.min(...vs) : 0;
       const vmax = vs.length ? Math.max(...vs) : 0;
+
+      const filtradoSortedZ = filtrado.slice().sort((a, b) => a.ue.localeCompare(b.ue) || a.z - b.z);
+      storeExportMatrixZona(filtradoSortedZ);
+      document.getElementById("theadr").innerHTML =
+        "<th>UE</th><th class='num'>Zona</th><th class='num'>Votos</th>";
+      document.getElementById("tbodyr").innerHTML = filtradoSortedZ
+        .map(
+          (x) =>
+            "<tr><td class='mono'>" +
+            escapeHtml(x.ue) +
+            "</td><td class='num'>" +
+            x.z +
+            "</td><td class='num'>" +
+            x.v.toLocaleString("pt-BR") +
+            "</td></tr>"
+        )
+        .join("");
+      syncTabelaExportUi();
 
       layerMarkers.clearLayers();
       st.textContent = zonaLocal ? "A preparar pontos por morada (zona)…" : "A posicionar zonas (sem ficheiro de moradas)…";
@@ -822,22 +923,6 @@
           ? " — total geral (ficheiro candidatos): " + tAg.toLocaleString("pt-BR")
           : "");
 
-      document.getElementById("theadr").innerHTML =
-        "<th>UE</th><th class='num'>Zona</th><th class='num'>Votos</th>";
-      document.getElementById("tbodyr").innerHTML = filtrado
-        .slice()
-        .sort((a, b) => a.ue.localeCompare(b.ue) || a.z - b.z)
-        .map(
-          (x) =>
-            "<tr><td class='mono'>" +
-            escapeHtml(x.ue) +
-            "</td><td class='num'>" +
-            x.z +
-            "</td><td class='num'>" +
-            x.v.toLocaleString("pt-BR") +
-            "</td></tr>"
-        )
-        .join("");
       let metaZ = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
       if (zonaLocal && zonaLocal.geradoEm) metaZ += " · Moradas zona: " + zonaLocal.geradoEm;
       document.getElementById("tableMeta").textContent = metaZ;
@@ -855,6 +940,20 @@
       const vs = filtrado.map((x) => x.v);
       const vmin = vs.length ? Math.min(...vs) : 0;
       const vmax = vs.length ? Math.max(...vs) : 0;
+
+      const filtradoSortedS = filtrado.slice().sort((a, b) => a.ue.localeCompare(b.ue) || a.z - b.z || a.s - b.s);
+      storeExportMatrixSecao(filtradoSortedS);
+      document.getElementById("theadr").innerHTML =
+        "<th>UE</th><th class='num'>Zona</th><th class='num'>Seção</th><th>Local</th><th>Endereço (TSE)</th><th class='num'>Votos</th>";
+      document.getElementById("tbodyr").innerHTML = filtradoSortedS
+        .map(
+          (x) =>
+            "<tr><td class='mono'>" + escapeHtml(x.ue) + "</td><td class='num'>" + x.z + "</td><td class='num'>" + x.s +
+            "</td><td>" + escapeHtml(x.local) + "</td><td>" + escapeHtml(x.endereco) + "</td><td class='num'>" +
+            x.v.toLocaleString("pt-BR") + "</td></tr>"
+        )
+        .join("");
+      syncTabelaExportUi();
 
       layerMarkers.clearLayers();
       st.textContent = "A preparar pontos por morada…";
@@ -974,16 +1073,6 @@
         (bits.length ? bits.join(" · ") + " · " : "") +
         "exemplo TSE " +
         (secExemplo.sqCandidato || "");
-      document.getElementById("theadr").innerHTML =
-        "<th>UE</th><th class='num'>Zona</th><th class='num'>Seção</th><th>Local</th><th>Endereço (TSE)</th><th class='num'>Votos</th>";
-      document.getElementById("tbodyr").innerHTML = filtrado
-        .map(
-          (x) =>
-            "<tr><td class='mono'>" + escapeHtml(x.ue) + "</td><td class='num'>" + x.z + "</td><td class='num'>" + x.s +
-            "</td><td>" + escapeHtml(x.local) + "</td><td>" + escapeHtml(x.endereco) + "</td><td class='num'>" +
-            x.v.toLocaleString("pt-BR") + "</td></tr>"
-        )
-        .join("");
       document.getElementById("tableMeta").textContent =
         "Modo seção (demonstração) · " +
         (secExemplo.geradoEm || "") +
@@ -1016,6 +1105,9 @@
       } catch (e) {
         console.error(e);
         st.innerHTML = "<span class='error'>Erro: " + escapeHtml(e.message) + " — execute <span class='mono'>npm run build:vereadores-votos-zona</span> e <span class='mono'>npm run build:vereadores-rj</span>.</span>";
+        lastExportMatrix = null;
+        document.getElementById("theadr").innerHTML = "";
+        document.getElementById("tbodyr").innerHTML = "";
         syncTabelaExportUi();
         return;
       }
