@@ -86,6 +86,18 @@
     th { position: sticky; top: 0; background: var(--surface2); color: var(--muted); z-index: 1; }
     tr:hover td { background: rgba(61, 139, 253, 0.07); }
     .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .panel-table-head {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 0.75rem; margin-bottom: 0.75rem;
+    }
+    .panel-table-head h2 { margin: 0; }
+    .btn-export-pdf {
+      font: inherit; font-weight: 600; font-size: 0.88rem; cursor: pointer;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text); padding: 0.5rem 1rem;
+    }
+    .btn-export-pdf:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-export-pdf:disabled { opacity: 0.45; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -162,10 +174,13 @@
     </section>
 
     <section class="panel">
-      <h2>Tabela (mesmos pontos do mapa)</h2>
+      <div class="panel-table-head">
+        <h2>Tabela (mesmos pontos do mapa)</h2>
+        <button type="button" class="btn-export-pdf" id="btnExportPdf" disabled>Exportar PDF</button>
+      </div>
       <p class="note" id="tableMeta"></p>
       <div class="table-wrap">
-        <table>
+        <table id="tabelaVotosMapa">
           <thead>
             <tr id="theadr"></tr>
           </thead>
@@ -175,6 +190,8 @@
     </section>
   </div>
 
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin=""></script>
+  <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     const CAND_URL = "data/vereadores-rj-rio-2024.json";
@@ -425,6 +442,71 @@
       return document.querySelector('input[name="nivel"]:checked')?.value || "zona";
     }
 
+    function syncPdfExportButton() {
+      const btn = document.getElementById("btnExportPdf");
+      if (!btn) return;
+      const n = document.querySelectorAll("#tbodyr tr").length;
+      const hasJs = typeof window.jspdf !== "undefined" && window.jspdf.jsPDF;
+      btn.disabled = n === 0 || !hasJs;
+    }
+
+    function exportTableToPdf() {
+      const hasJs = typeof window.jspdf !== "undefined" && window.jspdf.jsPDF;
+      if (!hasJs) {
+        alert("Biblioteca PDF não carregou. Verifique a ligação à rede e recarregue a página.");
+        return;
+      }
+      if (!document.querySelector("#tbodyr tr")) {
+        alert("Não há linhas na tabela para exportar.");
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const landscape = getNivel() === "secao";
+      const doc = new jsPDF({ orientation: landscape ? "landscape" : "portrait", unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const margin = 14;
+      const textW = pageW - margin * 2;
+      let y = 12;
+      doc.setFontSize(14);
+      doc.text("Mapa de votos — filtro aplicado", margin, y);
+      y += 8;
+      doc.setFontSize(9);
+      const selCand = document.getElementById("selCand");
+      const selUe = document.getElementById("selUe");
+      const nivel = getNivel() === "secao" ? "Por seção eleitoral" : "Por zona eleitoral";
+      const meta = document.getElementById("tableMeta");
+      const st = document.getElementById("mapStatus");
+      const blocos = [
+        "Candidato: " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "—"),
+        "Município: " + (selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "—"),
+        "Nível: " + nivel,
+        "SQ: " + getSelSq(),
+      ];
+      if (meta && meta.textContent) blocos.push(meta.textContent);
+      if (st && st.textContent && !st.querySelector(".error")) blocos.push("Resumo mapa: " + st.textContent);
+      blocos.push("Exportado: " + new Date().toLocaleString("pt-BR"));
+      doc.setTextColor(40, 40, 40);
+      blocos.forEach((line) => {
+        doc.splitTextToSize(line, textW).forEach((wline) => {
+          doc.text(wline, margin, y);
+          y += 4.5;
+        });
+      });
+      y += 3;
+      doc.autoTable({
+        html: "#tabelaVotosMapa",
+        startY: y,
+        styles: { fontSize: landscape ? 7 : 8, cellPadding: 1.2, overflow: "linebreak" },
+        headStyles: { fillColor: [28, 36, 51], textColor: 255 },
+        alternateRowStyles: { fillColor: [248, 249, 252] },
+        margin: { left: margin, right: margin },
+      });
+      const sq = getSelSq() || "x";
+      const suf = getNivel() === "secao" ? "secao" : "zona";
+      const fn = "politapp-votos-" + String(sq).replace(/\D/g, "").slice(0, 14) + "-" + suf + ".pdf";
+      doc.save(fn);
+    }
+
     function syncSecRadio() {
       const sq = getSelSq();
       const r = document.getElementById("radSec");
@@ -447,6 +529,7 @@
       const nivel = getNivel();
       if (!row) {
         st.innerHTML = "<span class='error'>Candidato inválido.</span>";
+        syncPdfExportButton();
         return;
       }
       if (nivel === "secao" && secExemplo && String(secExemplo.sqCandidato) === sq) {
@@ -465,6 +548,8 @@
     }
 
     async function renderZonaAsync(sq, row, ueFiltro, st, gen) {
+      const btnPdf = document.getElementById("btnExportPdf");
+      if (btnPdf) btnPdf.disabled = true;
       const list = (bySqZona.bySq && bySqZona.bySq[sq]) || [];
       const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
       let sum = 0;
@@ -634,9 +719,12 @@
       let metaZ = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
       if (zonaLocal && zonaLocal.geradoEm) metaZ += " · Moradas zona: " + zonaLocal.geradoEm;
       document.getElementById("tableMeta").textContent = metaZ;
+      syncPdfExportButton();
     }
 
     async function renderSecAsync(sq, row, ueFiltro, st, gen) {
+      const btnPdf0 = document.getElementById("btnExportPdf");
+      if (btnPdf0) btnPdf0.disabled = true;
       const list = (secExemplo && secExemplo.sqCandidato === sq && secExemplo.sec) || [];
       const filtrado = !ueFiltro ? list : list.filter((x) => x.ue === ueFiltro);
       let sum = 0;
@@ -777,6 +865,7 @@
         "Modo seção (demonstração) · " +
         (secExemplo.geradoEm || "") +
         (secExemplo.nota ? " · " + secExemplo.nota : "");
+      syncPdfExportButton();
     }
 
     async function start() {
@@ -802,6 +891,7 @@
       } catch (e) {
         console.error(e);
         st.innerHTML = "<span class='error'>Erro: " + escapeHtml(e.message) + " — execute <span class='mono'>npm run build:vereadores-votos-zona</span> e <span class='mono'>npm run build:vereadores-rj</span>.</span>";
+        syncPdfExportButton();
         return;
       }
       st.textContent = "A inicializar mapa…";
@@ -827,6 +917,7 @@
         history.replaceState(null, "", (q.toString() ? "?" + q.toString() : window.location.pathname));
         renderMapa();
       });
+      document.getElementById("btnExportPdf").addEventListener("click", exportTableToPdf);
       renderMapa();
     }
 
