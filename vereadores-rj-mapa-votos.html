@@ -191,7 +191,7 @@
       [UE_RIO]: [-43.88, -23.1, -43.02, -22.75],
       [UE_CAX]: [-43.45, -22.95, -43.0, -22.55],
     };
-    const GEO_CACHE_KEY = "politcapp-vereadores-sec-geo-v4";
+    const GEO_CACHE_KEY = "politcapp-vereadores-sec-geo-v5";
     const PHOTON_CONCURRENCY = 10;
     const ZOOM0 = 10;
 
@@ -306,7 +306,7 @@
       const u = new URL("https://photon.komoot.io/api/");
       u.searchParams.set("q", q);
       u.searchParams.set("limit", "1");
-      u.searchParams.set("lang", "pt");
+      /* Photon público só aceita lang default, de, en, fr — lang=pt devolve erro JSON sem features. */
       if (opts.bbox && opts.bbox.length === 4) u.searchParams.set("bbox", opts.bbox.join(","));
       if (Number.isFinite(opts.lat) && Number.isFinite(opts.lon)) {
         u.searchParams.set("lat", String(opts.lat));
@@ -323,7 +323,8 @@
         const res = await fetch(u);
         if (!res.ok) continue;
         const data = await res.json();
-        const f = data.features && data.features[0];
+        if (!data || !Array.isArray(data.features)) continue;
+        const f = data.features[0];
         if (!f || !f.geometry || f.geometry.type !== "Point" || !Array.isArray(f.geometry.coordinates)) continue;
         const lo = f.geometry.coordinates[0];
         const la = f.geometry.coordinates[1];
