@@ -1,0 +1,59 @@
+{
+  "descricao": "Camada offline / fallback para o painel «Escuta social — segurança» em midia-social.html. Substitua ou complemente com exportações do seu social listening.",
+  "atualizado": "2026-04-22",
+  "postagens": [
+    {
+      "titulo": "Boletim: homicídios em queda em determinadas regiões — conferir série histórica",
+      "corpo": "Texto ilustrativo. Em produção, ligue a RSS de SSP, G1 Segurança ou API interna. Sempre cite fonte primária antes de republicar.",
+      "fonte": "Exemplo — SSP estadual",
+      "url": "https://www.gov.br/pt-br",
+      "badge": "evento",
+      "tags": ["dados oficiais", "série histórica"],
+      "plugin": "arquivo-local",
+      "dataIso": "2026-04-20T12:00:00.000Z"
+    },
+    {
+      "titulo": "Operação integrada: o que mudou no trânsito e no acesso a comunidades",
+      "corpo": "Use para lembrar: operações geram impacto logístico; comunicação oficial reduz rumor.",
+      "fonte": "Exemplo — imprensa local",
+      "url": "https://www12.senado.leg.br/noticias",
+      "badge": "operacao",
+      "tags": ["operação", "comunicação"],
+      "plugin": "arquivo-local",
+      "dataIso": "2026-04-18T09:30:00.000Z"
+    },
+    {
+      "titulo": "Prevenção: programas comunitários e escolas — agenda de participação social",
+      "corpo": "Eixo positivo para escuta: destacar iniciativas de prevenção com contato de órgão verificável.",
+      "fonte": "Exemplo — prefeitura / conselhos",
+      "url": "https://www.ibge.gov.br/",
+      "badge": "evento",
+      "tags": ["prevenção", "comunidade"],
+      "plugin": "arquivo-local",
+      "dataIso": "2026-04-15T16:00:00.000Z"
+    }
+  ],
+  "comentarios": [
+    {
+      "nome": "Marina L.",
+      "handle": "@marina_cidadania",
+      "perfilDesc": "Professora · Zona Norte (perfil público fictício para demonstração)",
+      "texto": "Bom ver dados oficiais separados de boatos. Peço sempre link da SSP ou da PRF antes de compartilhar vídeo de operação.",
+      "ctx": "Discussão sobre desinformação em grupos de bairro"
+    },
+    {
+      "nome": "Ricardo Souza",
+      "handle": "u/ric_souza_demo",
+      "perfilDesc": "Comerciante · Baixada (ilustrativo)",
+      "texto": "Aqui no comércio a gente sente quando melhora o policiamento ostensivo, mas precisa de política social de médio prazo também.",
+      "ctx": "Thread sobre segurança urbana"
+    },
+    {
+      "nome": "Anônimo verificado",
+      "handle": "comentário moderado",
+      "perfilDesc": "Conta com histórico público de participação em conselhos (exemplo)",
+      "texto": "Parabéns à equipe por divulgar o canal oficial de ouvidoria — facilita denúncia com rastreio.",
+      "ctx": "Post de órgão público"
+    }
+  ]
+}

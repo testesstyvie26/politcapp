@@ -180,6 +180,41 @@
       background: rgba(255, 255, 255, 0.06);
       color: var(--muted);
     }
+    .seg-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem 1rem;
+      margin-bottom: 1rem;
+      padding: 0.65rem 0.85rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .btn-seg {
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      border: 1px solid rgba(61, 139, 253, 0.45);
+      background: rgba(61, 139, 253, 0.18);
+      color: #b8d4ff;
+      cursor: pointer;
+    }
+    .btn-seg:hover { background: rgba(61, 139, 253, 0.28); color: var(--text); }
+    .btn-seg:disabled { opacity: 0.55; cursor: not-allowed; }
+    .seg-status { font-size: 0.8rem; color: var(--muted); flex: 1; min-width: 12rem; }
+    .seg-status.err { color: #f0a090; }
+    .seg-card a.seg-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .seg-card a.seg-link:hover { text-decoration: underline; }
 
     .coment-grid {
       display: grid;
@@ -458,8 +493,13 @@
 
       <div class="subpanel" role="tabpanel" id="subpanel-posts" aria-labelledby="subtab-posts">
         <p class="note" style="margin:0 0 1rem">
-          Amostra de <strong>postagens captadas</strong> por palavras-chave e temas (operação, ocorrência, violência urbana, prevenção). Revise sempre com boletins oficiais (SSP, PRF, imprensa local).
+          Postagens agregadas por <strong>plugins de busca</strong> (ficheiro local + Reddit JSON público). Conteúdo de terceiros —
+          confirme em fonte oficial antes de usar em campanha ou relatório. Reddit pode falhar por rate limit ou bloqueio de rede.
         </p>
+        <div class="seg-toolbar">
+          <button type="button" class="btn-seg" id="segRefreshPosts">Atualizar postagens</button>
+          <span class="seg-status" id="segPostsStatus" aria-live="polite">A iniciar…</span>
+        </div>
         <div class="seg-grid" id="segPostsRoot"></div>
       </div>
 
@@ -792,13 +832,16 @@
       ).join("");
     }
 
-    function setupTabs() {
-      const tabs = document.querySelectorAll('[role="tab"]');
-      const panels = document.querySelectorAll('[role="tabpanel"]');
+    /** Só abas principais — evita que subtabs escondam panel-termo, etc. */
+    function setupMainTabs() {
+      const tablist = document.querySelector('.tabs[aria-label="Seções mídia social"]');
+      if (!tablist) return;
+      const tabs = tablist.querySelectorAll(':scope > [role="tab"]');
+      const panels = document.querySelectorAll("section.tab-panel[role=\"tabpanel\"]");
       tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const id = tab.getAttribute("aria-controls");
-          tabs.forEach((t) => t.setAttribute("aria-selected", t === tab ? "true" : "false"));
+          tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
           panels.forEach((p) => {
             p.hidden = p.id !== id;
           });
@@ -806,8 +849,257 @@
       });
     }
 
+    function setupSegSubtabs() {
+      const panelSeg = document.getElementById("panel-seg");
+      if (!panelSeg) return;
+      const tablist = panelSeg.querySelector(".subtabs");
+      if (!tablist) return;
+      const tabs = tablist.querySelectorAll(':scope > [role="tab"]');
+      const panels = panelSeg.querySelectorAll(':scope > .subpanel[role="tabpanel"]');
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.getAttribute("aria-controls");
+          tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+          panels.forEach((p) => {
+            p.hidden = p.id !== id;
+          });
+        });
+      });
+    }
+
+    /* ——— Escuta social: plugins + render ——— */
+    const ESCUTA_JSON = "data/escuta-social-seguranca.json";
+
+    const ESCUTA_PLUGINS = [
+      {
+        id: "local-json",
+        label: "Arquivo local (fallback)",
+        async fetchPosts() {
+          try {
+            const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
+            if (!r.ok) return [];
+            const j = await r.json();
+            return (j.postagens || []).map((p) => ({
+              titulo: p.titulo,
+              corpo: p.corpo || "",
+              fonte: p.fonte || "local",
+              url: p.url || "#",
+              badge: p.badge || "evento",
+              tags: p.tags || [],
+              plugin: p.plugin || "arquivo-local",
+              dataIso: p.dataIso || null,
+            }));
+          } catch {
+            return [];
+          }
+        },
+      },
+      {
+        id: "reddit-brasil",
+        label: "Reddit r/brasil",
+        async fetchPosts() {
+          return fetchRedditSearch("brasil", "segurança pública OR polícia OR SSP", 10);
+        },
+      },
+      {
+        id: "reddit-brasil-op",
+        label: "Reddit r/brasil — operações",
+        async fetchPosts() {
+          return fetchRedditSearch("brasil", "operação policial OR PRF OR polícia federal", 8);
+        },
+      },
+      {
+        id: "reddit-rio",
+        label: "Reddit r/riodejaneiro",
+        async fetchPosts() {
+          return fetchRedditSearch("riodejaneiro", "segurança OR crime OR UPP OR PM", 10);
+        },
+      },
+    ];
+
+    function badgeClass(b) {
+      const x = String(b || "").toLowerCase();
+      if (x === "crime" || x === "violência") return "crime";
+      if (x === "operacao" || x === "operação") return "operacao";
+      return "evento";
+    }
+
+    function inferBadgeFromText(titulo, corpo) {
+      const t = `${titulo} ${corpo}`.toLowerCase();
+      if (/morto|morte|homic|tirote|assassin|facção|tráfico|sequestro/i.test(t)) return "crime";
+      if (/operação|operacao|pm\b|polícia|policial|prf|core|bope|defesa civil|blitz/i.test(t)) return "operacao";
+      return "evento";
+    }
+
+    async function fetchRedditSearch(subreddit, query, limit) {
+      const u = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&include_over_18=off&sort=new&limit=${limit}`;
+      const r = await fetch(u, { method: "GET" });
+      if (!r.ok) throw new Error("Reddit HTTP " + r.status);
+      const j = await r.json();
+      const children = j?.data?.children || [];
+      return children
+        .map((c) => c?.data)
+        .filter(Boolean)
+        .map((d) => {
+          const permalink = d.permalink ? "https://www.reddit.com" + d.permalink : "";
+          const url = d.url && /^https?:\/\//i.test(d.url) ? d.url : permalink;
+          const titulo = d.title || "(sem título)";
+          const corpo = (d.selftext || "").slice(0, 420);
+          const badge = inferBadgeFromText(titulo, corpo);
+          const created = d.created_utc ? new Date(d.created_utc * 1000).toISOString() : null;
+          return {
+            titulo,
+            corpo: corpo || (d.is_self ? "" : "Link externo — ver discussão no Reddit."),
+            fonte: `r/${d.subreddit || subreddit}`,
+            url: url || permalink,
+            badge,
+            tags: [d.link_flair_text || "reddit", d.subreddit].filter(Boolean),
+            plugin: "reddit",
+            dataIso: created,
+          };
+        });
+    }
+
+    async function runEscutaPlugins() {
+      const merged = [];
+      const seen = new Set();
+      const errors = [];
+
+      for (const p of ESCUTA_PLUGINS) {
+        try {
+          const rows = await p.fetchPosts();
+          for (const row of rows) {
+            const key = (row.url || "") + "|" + (row.titulo || "").slice(0, 80);
+            if (seen.has(key)) continue;
+            seen.add(key);
+            merged.push(row);
+          }
+        } catch (e) {
+          errors.push(`${p.label}: ${e.message || e}`);
+        }
+      }
+
+      merged.sort((a, b) => {
+        const ta = a.dataIso ? Date.parse(a.dataIso) : 0;
+        const tb = b.dataIso ? Date.parse(b.dataIso) : 0;
+        return tb - ta;
+      });
+      return { posts: merged, errors };
+    }
+
+    function renderSegPostCards(posts, errors) {
+      const root = document.getElementById("segPostsRoot");
+      const status = document.getElementById("segPostsStatus");
+      if (!root) return;
+
+      if (!posts.length) {
+        root.innerHTML =
+          '<p class="note err">Nenhuma postagem disponível. Verifique a rede, o ficheiro <span class="mono">data/escuta-social-seguranca.json</span> e tente «Atualizar».</p>';
+        if (status) {
+          status.className = "seg-status err";
+          status.textContent = errors.length ? errors.join(" · ") : "Sem dados.";
+        }
+        return;
+      }
+
+      if (status) {
+        status.className = "seg-status";
+        const errHint = errors.length ? ` · Avisos: ${errors.join("; ")}` : "";
+        status.textContent = `${posts.length} itens agregados (${ESCUTA_PLUGINS.length} fontes tentadas).${errHint}`;
+      }
+
+      root.innerHTML = posts
+        .map((row) => {
+          const bClass = badgeClass(row.badge);
+          const tags = (row.tags || []).slice(0, 6).map((t) => `<span>${escapeHtml(t)}</span>`).join("");
+          const when = row.dataIso
+            ? new Date(row.dataIso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+            : "—";
+          const plugin = escapeHtml(row.plugin || "—");
+          return `
+        <article class="seg-card">
+          <div class="seg-kicker">
+            <span class="seg-badge ${bClass}">${escapeHtml(row.badge || "evento")}</span>
+            <span>${escapeHtml(row.fonte || "")}</span>
+            · <span class="mono">${plugin}</span>
+          </div>
+          <h3>${escapeHtml(row.titulo)}</h3>
+          <div class="seg-meta">${escapeHtml(when)}</div>
+          <p class="seg-body">${escapeHtml(row.corpo || "").replace(/\n/g, " ") || "—"}</p>
+          <div class="seg-tags">${tags}</div>
+          <a class="seg-link" href="${escapeHtml(row.url)}" target="_blank" rel="noopener noreferrer">Abrir fonte ↗</a>
+        </article>`;
+        })
+        .join("");
+    }
+
+    async function loadSegPosts() {
+      const btn = document.getElementById("segRefreshPosts");
+      const status = document.getElementById("segPostsStatus");
+      if (btn) btn.disabled = true;
+      if (status) {
+        status.className = "seg-status";
+        status.textContent = "A buscar postagens (plugins)…";
+      }
+      const root = document.getElementById("segPostsRoot");
+      if (root) root.innerHTML = '<p class="note">A carregar…</p>';
+
+      try {
+        const { posts, errors } = await runEscutaPlugins();
+        renderSegPostCards(posts, errors);
+      } catch (e) {
+        renderSegPostCards([], [String(e.message || e)]);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function loadSegComentarios() {
+      const root = document.getElementById("segComentRoot");
+      if (!root) return;
+      let comentarios = [];
+      try {
+        const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          comentarios = j.comentarios || [];
+        }
+      } catch {
+        /* fallback abaixo */
+      }
+      if (!comentarios.length) {
+        comentarios = [
+          {
+            nome: "Usuário demo",
+            handle: "@demo",
+            perfilDesc: "Perfil ilustrativo",
+            texto: "Conteúdo de comentários positivos carregado a partir do JSON local quando disponível.",
+            ctx: "Fallback",
+          },
+        ];
+      }
+      root.innerHTML = comentarios
+        .map(
+          (c) => `
+        <article class="coment-card">
+          <div class="perfil">
+            <strong>${escapeHtml(c.nome)}</strong>
+            <span class="handle">${escapeHtml(c.handle)}</span>
+            <span class="perfil-desc">${escapeHtml(c.perfilDesc)}</span>
+          </div>
+          <p class="coment-txt">“${escapeHtml(c.texto)}”</p>
+          <p class="ctx">${escapeHtml(c.ctx)}</p>
+        </article>`
+        )
+        .join("");
+    }
+
     renderTermometros();
-    setupTabs();
+    setupMainTabs();
+    setupSegSubtabs();
+    document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
+    loadSegPosts();
+    loadSegComentarios();
   </script>
 </body>
 </html>

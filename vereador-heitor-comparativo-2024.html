@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Heitor Queiroz — relatório comparativo 2024 | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --ok: #34d399;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.12), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    header h1 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+    header .lede { color: var(--muted); margin: 0 0 1rem; max-width: 78ch; font-size: 0.96rem; }
+    .mono { font-family: ui-monospace, monospace; font-size: 0.85rem; }
+    .disclaimer {
+      font-size: 0.84rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-bottom: 1.35rem;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.35rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { margin: 0 0 0.75rem; font-size: 1.05rem; font-weight: 600; }
+    .panel p { margin: 0 0 0.65rem; font-size: 0.9rem; color: var(--muted); max-width: 72ch; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1rem;
+      align-items: flex-end;
+      margin-bottom: 1rem;
+    }
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .field label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .field select, .field input[type="search"] {
+      font: inherit;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      min-width: 220px;
+      max-width: 100%;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .btn {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+    .btn:hover { border-color: rgba(61, 139, 253, 0.45); color: var(--accent); }
+    .btn--primary {
+      background: rgba(61, 139, 253, 0.2);
+      border-color: rgba(61, 139, 253, 0.45);
+      color: var(--accent);
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+    .chip {
+      font-size: 0.78rem;
+      padding: 0.28rem 0.55rem;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .chip strong { color: var(--text); font-weight: 600; }
+    .chip button {
+      margin-left: 0.35rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 0.15rem;
+      vertical-align: middle;
+    }
+    .chip button:hover { color: var(--accent); }
+    .chip--anchor { border-color: rgba(61, 139, 253, 0.5); color: var(--accent); }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+    .cmp-table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .cmp-table th,
+    .cmp-table td {
+      padding: 0.55rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    .cmp-table thead th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .cmp-table tbody th {
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+      max-width: 14rem;
+    }
+    .cmp-table tbody tr:last-child td,
+    .cmp-table tbody tr:last-child th { border-bottom: none; }
+    .cmp-col--anchor {
+      background: rgba(61, 139, 253, 0.08);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+    .cmp-head-name { display: block; font-size: 0.88rem; color: var(--text); font-weight: 600; }
+    .cmp-head-sub { display: block; font-size: 0.72rem; color: var(--muted); font-weight: 500; margin-top: 0.2rem; }
+    .bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 120px;
+    }
+    .bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      min-width: 60px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #2563eb, #22c55e);
+    }
+    .bar--anchor > i { background: linear-gradient(90deg, #3d8bfd, #34d399); }
+    .muted { color: var(--muted); }
+    .loading { color: var(--muted); padding: 2rem; text-align: center; }
+    .error { color: #f87171; padding: 1rem; }
+    .zona-mini { font-size: 0.76rem; color: var(--muted); line-height: 1.45; margin: 0.15rem 0 0; }
+    .link-stack a {
+      display: inline-block;
+      margin: 0.15rem 0.35rem 0 0;
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.78rem;
+    }
+    .link-stack a:hover { text-decoration: underline; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="vereadores-rj.html">Vereadores RJ</a>
+      <a href="vereador-heitor-queiroz-2024.html">Heitor Queiroz — análise</a>
+      <a href="vereador-heitor-comparativo-2024.html" aria-current="page">Comparativo</a>
+      <a href="executivo.html">Visão executiva</a>
+    </nav>
+
+    <header>
+      <h1>Relatório comparativo — Professor Heitor Queiroz (2024)</h1>
+      <p class="lede">
+        Quadro para contrastar <strong>votação nominal</strong>, <strong>declarações de mídia ao TSE</strong> e
+        <strong>distribuição por zona</strong> (quando disponível no agregado Politapp) entre Heitor Queiroz e outros
+        vereadores do mesmo ficheiro municipal. Útil para leitura estratégica; não substitui auditoria interna de campanha.
+      </p>
+    </header>
+
+    <p class="disclaimer">
+      <strong>Fontes:</strong> <span class="mono">data/vereadores-rj-rio-2024.json</span> e
+      <span class="mono">data/vereadores-votos-zona-2024-rj.json</span> (TSE, 1.º turno, vereador).
+      Métricas de rede refletem apenas <em>URLs declaradas</em>, não seguidores nem alcance.
+      <strong>Deputados federais/estaduais</strong> não entram neste pacote — apenas candidatos a vereador RJ/Caxias agregados no projeto.
+    </p>
+
+    <section class="panel" aria-labelledby="cmp-title">
+      <h2 id="cmp-title">Painel de comparação</h2>
+      <p>
+        Heitor permanece como referência. Adicione ou remova colunas com o seletor. A barra de votos usa como 100% o maior voto
+        entre os candidatos <em>nesta tabela</em> (para leitura relativa imediata).
+      </p>
+      <div class="controls">
+        <div class="field">
+          <label for="filtroUe">Município (lista de adição)</label>
+          <select id="filtroUe" aria-label="Filtrar município para adicionar candidato">
+            <option value="58335" selected>Duque de Caxias</option>
+            <option value="60011">Rio de Janeiro (capital)</option>
+            <option value="">Todos (RJ neste ficheiro)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="addCand">Adicionar vereador</label>
+          <select id="addCand" aria-label="Escolher vereador para adicionar à comparação"></select>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" id="btnAdd">Adicionar</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="btnPreset" title="Referência + líderes de voto e PL eleito em Caxias">Cenário sugerido (Caxias)</button>
+        <button type="button" class="btn" id="btnTopRio">Top 5 votos — Rio capital</button>
+        <button type="button" class="btn" id="btnClear">Só Heitor</button>
+      </div>
+      <div class="chips" id="chipList" aria-live="polite"></div>
+      <div id="tableMount" class="loading">A carregar dados…</div>
+    </section>
+  </div>
+
+  <script>
+    const ANCHOR_SQ = "190001956959";
+    /** Cenário inicial: referência local forte + bancada PL eleita. */
+    const PRESET_PEER_SQS_CAXIAS = [
+      "190002000014",
+      "190002000029",
+      "190001956966",
+      "190002000021",
+    ];
+    const JSON_VER = "data/vereadores-rj-rio-2024.json";
+    const JSON_ZONA = "data/vereadores-votos-zona-2024-rj.json";
+
+    let vereadores = [];
+    let bySqVereador = new Map();
+    let bySqZona = {};
+    let maxByUe = new Map();
+    let geradoEm = "—";
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function fmtInt(n) {
+      if (n == null || n === "") return "—";
+      const x = Number(n);
+      return Number.isFinite(x) ? x.toLocaleString("pt-BR") : "—";
+    }
+
+    function redeTipoFromUrl(rawUrl, label) {
+      const u = String(rawUrl || "").toLowerCase();
+      const l = String(label || "").toLowerCase();
+      if (/whatsapp\.|wa\.me|api\.whatsapp/i.test(u) || l.includes("whatsapp")) return "whatsapp";
+      if (/instagram\.|instagr\.am/i.test(u) || l.includes("instagram")) return "instagram";
+      if (/facebook\.|fb\.me|fb\.com/i.test(u) || l.includes("facebook")) return "facebook";
+      if (/twitter\.com|^x\.com/i.test(u) || l.includes("twitter")) return "x";
+      if (/tiktok\.com/i.test(u) || l.includes("tiktok")) return "tiktok";
+      if (/youtube\.com|youtu\.be/i.test(u) || l.includes("youtube")) return "youtube";
+      if (/linkedin\.com/i.test(u) || l.includes("linkedin")) return "linkedin";
+      return "outro";
+    }
+
+    function indiceMidiaticoDeclarado(row) {
+      const midias = row.midiasSociais || [];
+      const wzs = row.whatsapp || [];
+      const todos = [...midias, ...wzs].filter((x) => x && /^https?:\/\//i.test(String(x.url || "").trim()));
+      if (!todos.length) {
+        return { pct: 0, nLinks: 0, nTipos: 0, tipos: [] };
+      }
+      const tipos = new Set();
+      for (const x of todos) tipos.add(redeTipoFromUrl(x.url, x.label));
+      const nTipos = tipos.size;
+      const nLinks = todos.length;
+      const bonusW = wzs.length > 0 ? 18 : 0;
+      const divPts = Math.min(42, nTipos * 11);
+      const volPts = Math.min(40, nLinks * 10);
+      const pct = Math.min(100, Math.round(divPts + volPts + bonusW));
+      return { pct, nLinks, nTipos, tipos: [...tipos].sort() };
+    }
+
+    function pctVsMaxUe(row) {
+      const ue = String(row.sgUeTse || "");
+      const v = Number(row.votos);
+      const max = maxByUe.get(ue) || 0;
+      if (!Number.isFinite(v) || v < 0 || max <= 0) return 0;
+      return Math.min(100, Math.round((v / max) * 100));
+    }
+
+    function zonaStats(sq) {
+      const arr = bySqZona[sq];
+      if (!arr || !arr.length) return null;
+      const tot = arr.reduce((s, x) => s + (Number(x.v) || 0), 0);
+      if (tot <= 0) return { nZonas: 0, top: null, topPct: 0, tot: 0 };
+      const sorted = [...arr].sort((a, b) => (Number(b.v) || 0) - (Number(a.v) || 0));
+      const top = sorted[0];
+      const topV = Number(top.v) || 0;
+      return {
+        nZonas: arr.filter((x) => (Number(x.v) || 0) > 0).length,
+        top,
+        topPct: Math.round((topV / tot) * 1000) / 10,
+        tot,
+      };
+    }
+
+    /** @type {Set<string>} */
+    let selectedSq = new Set();
+
+    function orderedSelectedRows() {
+      const rows = [...selectedSq]
+        .map((sq) => bySqVereador.get(sq))
+        .filter(Boolean);
+      rows.sort((a, b) => {
+        if (String(a.sqCandidato) === ANCHOR_SQ) return -1;
+        if (String(b.sqCandidato) === ANCHOR_SQ) return 1;
+        return (Number(b.votos) || 0) - (Number(a.votos) || 0);
+      });
+      return rows;
+    }
+
+    function refillAddSelect(ueFilter) {
+      const sel = document.getElementById("addCand");
+      const prev = sel.value;
+      sel.innerHTML = "";
+      let list = vereadores;
+      if (ueFilter) list = list.filter((x) => String(x.sgUeTse) === ueFilter);
+      list = [...list].sort((a, b) => String(a.nomeUrna).localeCompare(String(b.nomeUrna), "pt-BR"));
+      for (const r of list) {
+        const sq = String(r.sqCandidato);
+        if (sq === ANCHOR_SQ) continue;
+        const opt = document.createElement("option");
+        opt.value = sq;
+        opt.textContent = `${r.nomeUrna} · ${fmtInt(r.votos)} votos · ${r.partido || "—"}`;
+        sel.appendChild(opt);
+      }
+      if (prev && [...sel.options].some((o) => o.value === prev)) sel.value = prev;
+    }
+
+    function renderChips() {
+      const box = document.getElementById("chipList");
+      const rows = orderedSelectedRows();
+      box.innerHTML = rows
+        .map((r) => {
+          const sq = String(r.sqCandidato);
+          const isA = sq === ANCHOR_SQ;
+          const cls = isA ? "chip chip--anchor" : "chip";
+          const rm = isA
+            ? ""
+            : `<button type="button" aria-label="Remover ${escapeHtml(r.nomeUrna)}" data-rm="${escapeHtml(sq)}">×</button>`;
+          return `<span class="${cls}"><strong>${escapeHtml(r.nomeUrna)}</strong> · ${fmtInt(r.votos)}${rm}</span>`;
+        })
+        .join("");
+      box.querySelectorAll("button[data-rm]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          selectedSq.delete(btn.getAttribute("data-rm"));
+          renderChips();
+          renderTable();
+        });
+      });
+    }
+
+    function renderTable() {
+      const mount = document.getElementById("tableMount");
+      const rows = orderedSelectedRows();
+      if (!rows.length) {
+        mount.className = "error";
+        mount.textContent = "Nenhum candidato seleccionado.";
+        return;
+      }
+      const maxV = Math.max(...rows.map((r) => Number(r.votos) || 0), 1);
+
+      const head = rows
+        .map((r) => {
+          const sq = String(r.sqCandidato);
+          const anchor = sq === ANCHOR_SQ;
+          const sub = `${r.municipio || "—"} · ${r.partido || "—"} · ${r.dsSitTotTurno || "—"}`;
+          return `<th scope="col" class="${anchor ? "cmp-col--anchor" : ""}"><span class="cmp-head-name">${escapeHtml(r.nomeUrna || "—")}</span><span class="cmp-head-sub">${escapeHtml(sub)}</span></th>`;
+        })
+        .join("");
+
+      function cellVal(html, anchor) {
+        return `<td class="${anchor ? "cmp-col--anchor" : ""}">${html}</td>`;
+      }
+
+      const lines = [];
+
+      lines.push(`
+        <tr>
+          <th scope="row">Votos (1.º turno)</th>
+          ${rows
+            .map((r) => {
+              const v = Number(r.votos) || 0;
+              const pct = Math.round((v / maxV) * 1000) / 10;
+              const sq = String(r.sqCandidato);
+              const anchor = sq === ANCHOR_SQ;
+              return cellVal(
+                `<div class="bar-wrap"><span class="mono">${fmtInt(v)}</span><div class="bar ${anchor ? "bar--anchor" : ""}" title="${pct}% da maior coluna desta tabela"><i style="width:${pct}%"></i></div><span class="muted">${pct}%</span></div>`,
+                anchor
+              );
+            })
+            .join("")}
+        </tr>
+      `);
+
+      lines.push(`
+        <tr>
+          <th scope="row">% do maior voto na mesma UE (ficheiro)</th>
+          ${rows
+            .map((r) => {
+              const sq = String(r.sqCandidato);
+              return cellVal(`<span class="mono">${pctVsMaxUe(r)}%</span>`, sq === ANCHOR_SQ);
+            })
+            .join("")}
+        </tr>
+      `);
+
+      lines.push(`
+        <tr>
+          <th scope="row">Número de urna</th>
+          ${rows
+            .map((r) => cellVal(`<span class="mono">${escapeHtml(String(r.numero ?? "—"))}</span>`, String(r.sqCandidato) === ANCHOR_SQ))
+            .join("")}
+        </tr>
+      `);
+
+      lines.push(`
+        <tr>
+          <th scope="row">Papel (agregado)</th>
+          ${rows
+            .map((r) =>
+              cellVal(`${escapeHtml(r.papelEleicao || "—")}`, String(r.sqCandidato) === ANCHOR_SQ)
+            )
+            .join("")}
+        </tr>
+      `);
+
+      lines.push(`
+        <tr>
+          <th scope="row">Mídias ao TSE (links / tipos / índice decl.)</th>
+          ${rows
+            .map((r) => {
+              const m = indiceMidiaticoDeclarado(r);
+              const tip = m.tipos.length ? m.tipos.join(", ") : "—";
+              const sq = String(r.sqCandidato);
+              return cellVal(
+                `<span class="mono">${m.nLinks}</span> links · <span class="mono">${m.nTipos}</span> tipos · índice <strong>${m.pct}%</strong><br><span class="muted zona-mini">${escapeHtml(tip)}</span>`,
+                sq === ANCHOR_SQ
+              );
+            })
+            .join("")}
+        </tr>
+      `);
+
+      lines.push(`
+        <tr>
+          <th scope="row">Principais URLs</th>
+          ${rows
+            .map((r) => {
+              const redes = [...(r.midiasSociais || []), ...(r.whatsapp || [])].filter((x) =>
+                /^https?:\/\//i.test(String(x.url || "").trim())
+              );
+              const sq = String(r.sqCandidato);
+              if (!redes.length) return cellVal('<span class="muted">—</span>', sq === ANCHOR_SQ);
+              const parts = redes.slice(0, 5).map((x) => {
+                const u = escapeHtml(String(x.url).trim());
+                const lb = escapeHtml(x.label || "link");
+                return `<a href="${u}" target="_blank" rel="noopener noreferrer">${lb}</a>`;
+              });
+              const more = redes.length > 5 ? ` <span class="muted">+${redes.length - 5}</span>` : "";
+              return cellVal(`<div class="link-stack">${parts.join("")}${more}</div>`, sq === ANCHOR_SQ);
+            })
+            .join("")}
+        </tr>
+      `);
+
+      lines.push(`
+        <tr>
+          <th scope="row">Zonas (votação mun-zona)</th>
+          ${rows
+            .map((r) => {
+              const sq = String(r.sqCandidato);
+              const z = zonaStats(sq);
+              if (!z || !z.nZonas)
+                return cellVal('<span class="muted">Sem agregado por zona</span>', sq === ANCHOR_SQ);
+              const topZ = z.top ? `Zona <span class="mono">${z.top.z}</span>: ${fmtInt(z.top.v)} (${z.topPct}% do total)` : "";
+              return cellVal(
+                `${z.nZonas} zonas com voto · total zonas ${fmtInt(z.tot)}<p class="zona-mini">Pico: ${topZ}</p>`,
+                sq === ANCHOR_SQ
+              );
+            })
+            .join("")}
+        </tr>
+      `);
+
+      mount.className = "";
+      mount.innerHTML = `
+        <div class="table-wrap">
+          <table class="cmp-table">
+            <thead><tr><th scope="col">Métrica</th>${head}</tr></thead>
+            <tbody>${lines.join("")}</tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top:0.85rem;font-size:0.8rem">Pacote gerado em: ${escapeHtml(geradoEm)}</p>
+      `;
+    }
+
+    async function init() {
+      const mount = document.getElementById("tableMount");
+      try {
+        const [rv, rz] = await Promise.all([
+          fetch(new URL(JSON_VER, window.location.href).toString(), { cache: "no-store" }),
+          fetch(new URL(JSON_ZONA, window.location.href).toString(), { cache: "no-store" }),
+        ]);
+        if (!rv.ok) throw new Error(JSON_VER + " HTTP " + rv.status);
+        if (!rz.ok) throw new Error(JSON_ZONA + " HTTP " + rz.status);
+        const dataV = await rv.json();
+        const dataZ = await rz.json();
+        vereadores = dataV.vereadores || [];
+        geradoEm = dataV.geradoEm || "—";
+        bySqZona = dataZ.bySq || {};
+        bySqVereador = new Map(vereadores.map((x) => [String(x.sqCandidato), x]));
+        for (const r of vereadores) {
+          const ue = String(r.sgUeTse || "");
+          const v = Number(r.votos) || 0;
+          if (!ue) continue;
+          const cur = maxByUe.get(ue) || 0;
+          if (v > cur) maxByUe.set(ue, v);
+        }
+        if (!bySqVereador.has(ANCHOR_SQ)) {
+          mount.className = "error";
+          mount.textContent =
+            "Heitor Queiroz (SQ " + ANCHOR_SQ + ") não foi encontrado em " + JSON_VER + ". Execute o build de vereadores.";
+          return;
+        }
+        selectedSq = new Set([ANCHOR_SQ, ...PRESET_PEER_SQS_CAXIAS]);
+        document.getElementById("filtroUe").addEventListener("change", (e) => {
+          refillAddSelect(e.target.value);
+        });
+        refillAddSelect("58335");
+        document.getElementById("btnAdd").addEventListener("click", () => {
+          const sq = document.getElementById("addCand").value;
+          if (sq) selectedSq.add(sq);
+          renderChips();
+          renderTable();
+        });
+        document.getElementById("btnPreset").addEventListener("click", () => {
+          selectedSq = new Set([ANCHOR_SQ, ...PRESET_PEER_SQS_CAXIAS]);
+          renderChips();
+          renderTable();
+        });
+        document.getElementById("btnTopRio").addEventListener("click", () => {
+          const rio = vereadores
+            .filter((x) => String(x.sgUeTse) === "60011")
+            .sort((a, b) => (Number(b.votos) || 0) - (Number(a.votos) || 0))
+            .slice(0, 5)
+            .map((x) => String(x.sqCandidato));
+          selectedSq = new Set([ANCHOR_SQ, ...rio]);
+          renderChips();
+          renderTable();
+        });
+        document.getElementById("btnClear").addEventListener("click", () => {
+          selectedSq = new Set([ANCHOR_SQ]);
+          renderChips();
+          renderTable();
+        });
+        renderChips();
+        renderTable();
+      } catch (e) {
+        console.error(e);
+        mount.className = "error";
+        mount.textContent = "Erro ao carregar dados. Confirme os ficheiros em /data e, se necessário, npm run build:vereadores-rj";
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
