@@ -949,9 +949,10 @@
     <section class="panel tab-panel" role="tabpanel" id="panel-crm" aria-labelledby="tab-crm" hidden>
       <h2>Base de apoio — interlocutores e redes</h2>
       <p class="note" style="margin-bottom:1rem">
-        Ferramenta para <strong>organizar contactos e perfis públicos</strong> que demonstram apoio a temas da campanha (direita, operações policiais, ações sociais, políticas públicas).
-        Os dados vêm do ficheiro editável <span class="mono">data/base-apoio-interlocutores.json</span> — inclua apenas informação obtida com <strong>base legal</strong> (consentimento, relação prévia, dado manifestamente público conforme LGPD) e respeite a <strong>legislação eleitoral</strong>
-        (<a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a>). Não há ligação às APIs das redes: não é possível “varrer” automaticamente quem comentou em posts alheios a partir desta página.
+        Ferramenta para <strong>organizar contactos e perfis públicos</strong> alinhados a eixos da campanha (direita, operações policiais, ações sociais, políticas públicas).
+        O ficheiro <span class="mono">data/base-apoio-interlocutores.json</span> inclui um <strong>conjunto inicial curado</strong> (órgãos de segurança, governo, partido, parlamentares com mandato, ONG e think tank) com <strong>URLs oficiais públicas</strong> — revisto em abril/2026; confirme handles antes de campanhas.
+        Para dados pessoais (telefone, e-mail direto) exija <strong>base legal</strong> (LGPD) e cumpra a <strong>legislação eleitoral</strong> (<a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a>).
+        Não há API de redes aqui: não é possível “varrer” automaticamente interações ou montar base de cidadãos privados só com esta página.
       </p>
 
       <div class="crm-toolbar">
@@ -2129,13 +2130,16 @@
       const matchEixo = eixosSel.some((e) => pe.includes(e));
       if (!matchEixo) return false;
       if (!q) return true;
+      const redesTxt = (Array.isArray(p.redes) ? p.redes : []).map((r) => [r.handle, r.url, r.plataforma].filter(Boolean).join(" "));
       const hay = [
         p.nome,
         p.cidade,
         p.papel,
         p.notas_internas,
         p.origem_dado,
+        p.tipo_entidade,
         ...pe.map((e) => CRM_EIXO_LABELS[e] || e),
+        ...redesTxt,
       ]
         .filter(Boolean)
         .join(" ")
@@ -2202,10 +2206,11 @@
           ? '<p class="note" style="margin:0">Sem redes no registo.</p>'
           : `<ul>${redesLi}</ul>`;
 
+      const tipo = p.tipo_entidade ? ` · ${escapeHtml(p.tipo_entidade.replace(/_/g, " "))}` : "";
       return `
         <article class="crm-card">
           <h3>${escapeHtml(p.nome || "—")}</h3>
-          <div class="crm-meta">${escapeHtml(p.papel || "")}${p.cidade ? ` · ${escapeHtml(p.cidade)}` : ""}</div>
+          <div class="crm-meta">${escapeHtml(p.papel || "")}${p.cidade ? ` · ${escapeHtml(p.cidade)}` : ""}${tipo}</div>
           <div class="crm-eixos">${eixos || '<span class="note">Sem eixos</span>'}</div>
           ${htmlCrmContatos(p.contatos || {})}
           <details class="crm-redes">
@@ -2272,14 +2277,14 @@
         return;
       }
       const list = crmGetFiltered();
-      const headers = ["nome", "cidade", "papel", "email", "telefone", "whatsapp", "eixos", "plataforma", "handle", "url_perfil", "origem_dado"];
+      const headers = ["nome", "cidade", "papel", "tipo_entidade", "email", "telefone", "whatsapp", "eixos", "plataforma", "handle", "url_perfil", "origem_dado"];
       const lines = [headers.join(";")];
       for (const p of list) {
         const c = p.contatos || {};
         const eixos = (Array.isArray(p.eixos) ? p.eixos : []).join("|");
         const redes = Array.isArray(p.redes) && p.redes.length ? p.redes : [{ plataforma: "", handle: "", url: "" }];
         for (const r of redes) {
-          const row = [p.nome || "", p.cidade || "", p.papel || "", c.email || "", c.telefone || "", c.whatsapp || "", eixos, r.plataforma || "", r.handle || "", r.url || "", p.origem_dado || ""].map((cell) => {
+          const row = [p.nome || "", p.cidade || "", p.papel || "", p.tipo_entidade || "", c.email || "", c.telefone || "", c.whatsapp || "", eixos, r.plataforma || "", r.handle || "", r.url || "", p.origem_dado || ""].map((cell) => {
             const s = String(cell).replace(/"/g, '""');
             return `"${s}"`;
           });

@@ -1,105 +1,256 @@
 {
-  "aviso": "Modelo de base para CRM político. Substitua exemplos por dados reais só com fundamento em LGPD e regras eleitorais. Perfis abaixo são fictícios para demonstração da UI.",
+  "aviso": "Curadoria com URLs públicas oficiais (abril/2026). Revise periodicamente — redes mudam de handle. Inclua dados pessoais (telefone, e-mail direto) só com base legal e consentimento (LGPD). Uso eleitoral: regras do TSE. Esta lista não classifica ‘apoio’ de terceiros; apenas organiza contactos públicos por eixo temático da campanha.",
   "atualizado": "2026-04-22",
+  "fonte_curadoria": "Sites institucionais, portais de governo e perfis públicos indicados como oficiais; sem varredura automatizada de redes.",
   "pessoas": [
     {
-      "id": "demo-01",
-      "nome": "Ana Costa (exemplo fictício)",
+      "id": "inst-pmerj",
+      "nome": "Polícia Militar do Estado do Rio de Janeiro (PMERJ)",
       "cidade": "Rio de Janeiro — RJ",
-      "papel": "Articuladora de bairro",
-      "eixos": ["direita", "politicas_publicas", "acoes_sociais"],
-      "origem_dado": "Demonstração — voluntário em evento de bairro (preencher origem real)",
+      "papel": "Corporação de segurança pública — comunicação institucional",
+      "tipo_entidade": "institucional",
+      "eixos": ["operacoes_policiais", "politicas_publicas"],
+      "origem_dado": "Canais oficiais públicos da PMERJ",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@pmerj", "url": "https://www.instagram.com/pmerj/" },
+        { "plataforma": "instagram", "handle": "@policiamilitar_rj", "url": "https://www.instagram.com/policiamilitar_rj/" },
+        { "plataforma": "x", "handle": "@pmerj", "url": "https://x.com/pmerj" },
+        { "plataforma": "web", "handle": "Linktree oficial", "url": "https://linktr.ee/policiamilitar_rj" },
+        { "plataforma": "web", "handle": "SEPM / institucional", "url": "https://sepm.rj.gov.br/institucional/" }
+      ],
+      "notas_internas": "Priorizar comunicados oficiais; não confundir perfil de fã ou impostor."
+    },
+    {
+      "id": "inst-bope",
+      "nome": "BOPE — Batalhão de Operações Policiais Especiais (PMERJ)",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Unidade de operações especiais — redes oficiais",
+      "tipo_entidade": "institucional",
+      "eixos": ["operacoes_policiais"],
+      "origem_dado": "Páginas públicas vinculadas à PMERJ",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@bope.oficial", "url": "https://www.instagram.com/bope.oficial/" },
+        { "plataforma": "facebook", "handle": "bopeoficial.pmerj", "url": "https://www.facebook.com/bopeoficial.pmerj/" }
+      ],
+      "notas_internas": "Confirmar selo e vínculo com PMERJ antes de republicar conteúdo operacional."
+    },
+    {
+      "id": "inst-pcerj",
+      "nome": "Polícia Civil do Estado do Rio de Janeiro (PCERJ)",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Corporação de polícia judiciária — comunicação institucional",
+      "tipo_entidade": "institucional",
+      "eixos": ["operacoes_policiais", "politicas_publicas"],
+      "origem_dado": "Site e redes oficiais da PCERJ",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@policiacivilrj", "url": "https://www.instagram.com/policiacivilrj/" },
+        { "plataforma": "threads", "handle": "@policiacivil_rj", "url": "https://www.threads.net/@policiacivil_rj" },
+        { "plataforma": "web", "handle": "Portal oficial", "url": "https://www.policiacivil.rj.gov.br/" }
+      ],
+      "notas_internas": "Ouvidoria e serviços no domínio policiacivil.rj.gov.br."
+    },
+    {
+      "id": "inst-ssp-rj",
+      "nome": "Secretaria de Estado de Polícia Militar / Segurança Pública (RJ)",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Órgão estadual — políticas de segurança",
+      "tipo_entidade": "governo",
+      "eixos": ["operacoes_policiais", "politicas_publicas"],
+      "origem_dado": "Portal do Governo do Estado do RJ",
       "contatos": {
-        "email": "",
+        "email": "ouvidoria@sesp.rj.gov.br",
         "telefone": "",
         "whatsapp": ""
       },
       "redes": [
-        {
-          "plataforma": "instagram",
-          "handle": "@exemplo_articuladora_rj",
-          "url": "https://www.instagram.com/"
-        },
-        {
-          "plataforma": "facebook",
-          "handle": "facebook.com/exemplo",
-          "url": "https://www.facebook.com/"
-        }
+        { "plataforma": "web", "handle": "Segurança RJ", "url": "https://www.rj.gov.br/seguranca/" },
+        { "plataforma": "web", "handle": "Canais de atendimento", "url": "https://www.rj.gov.br/seguranca/canais-de-atendimento" }
       ],
-      "notas_internas": "Substituir por notas internas após consentimento para tratamento de dados."
+      "notas_internas": "E-mail de ouvidoria público no site da secretaria; conferir página atualizada."
     },
     {
-      "id": "demo-02",
-      "nome": "Carlos Mendes (exemplo fictício)",
-      "cidade": "Duque de Caxias — RJ",
-      "papel": "Militante — segurança pública",
-      "eixos": ["operacoes_policiais", "direita"],
-      "origem_dado": "Demonstração — interação pública em post (sem API; registo manual)",
-      "contatos": {
-        "email": "",
-        "telefone": "",
-        "whatsapp": ""
-      },
+      "id": "gov-castro",
+      "nome": "Cláudio Castro",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Governador do Estado do Rio de Janeiro",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["direita", "politicas_publicas", "operacoes_policiais"],
+      "origem_dado": "Perfis públicos tratados como oficiais de campanha/governo",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
       "redes": [
-        {
-          "plataforma": "x",
-          "handle": "@exemplo_carlos_caxias",
-          "url": "https://x.com/"
-        }
+        { "plataforma": "instagram", "handle": "@claudiocastrorj", "url": "https://www.instagram.com/claudiocastrorj/" },
+        { "plataforma": "threads", "handle": "@claudiocastrorj", "url": "https://www.threads.com/@claudiocastrorj" }
       ],
-      "notas_internas": "Eixo operações: validar tom e contexto antes de qualquer abordagem."
+      "notas_internas": "Figura pública eleita; contato de campanha deve seguir legislação eleitoral vigente."
     },
     {
-      "id": "demo-03",
-      "nome": "Projeto Social Vila Esperança (exemplo)",
-      "cidade": "Niterói — RJ",
-      "papel": "ONG / ação social",
+      "id": "ver-carlos-bolsonaro",
+      "nome": "Carlos Bolsonaro",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Vereador da cidade do Rio de Janeiro",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["direita", "politicas_publicas"],
+      "origem_dado": "Redes públicas do parlamentar",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@carlosbolsonaro", "url": "https://www.instagram.com/carlosbolsonaro/" },
+        { "plataforma": "x", "handle": "@CarlosBolsonaro", "url": "https://x.com/CarlosBolsonaro" }
+      ],
+      "notas_internas": "Mandato municipal; verificar gabinete na Câmara Municipal para canal institucional."
+    },
+    {
+      "id": "dep-flavio-bolsonaro",
+      "nome": "Flávio Bolsonaro",
+      "cidade": "Rio de Janeiro — RJ (base eleitoral)",
+      "papel": "Senador da República",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["direita", "politicas_publicas", "operacoes_policiais"],
+      "origem_dado": "Redes públicas do parlamentar",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@flaviobolsonaro", "url": "https://www.instagram.com/flaviobolsonaro/" },
+        { "plataforma": "x", "handle": "@FlavioBolsonaro", "url": "https://x.com/FlavioBolsonaro" }
+      ],
+      "notas_internas": "Senado Federal — perfis pessoais/políticos; distinguir de comunicação institucional do Senado."
+    },
+    {
+      "id": "dep-eduardo-bolsonaro",
+      "nome": "Eduardo Bolsonaro",
+      "cidade": "São Paulo — SP (mandato federal)",
+      "papel": "Deputado federal",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["direita", "politicas_publicas"],
+      "origem_dado": "Redes públicas do parlamentar",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@bolsonarosp", "url": "https://www.instagram.com/bolsonarosp/" },
+        { "plataforma": "x", "handle": "@BolsonaroSP", "url": "https://x.com/BolsonaroSP" }
+      ],
+      "notas_internas": "Alcance nacional; útil para narrativa de campanha — sem inferir ‘apoio’ mútuo."
+    },
+    {
+      "id": "dep-otoni",
+      "nome": "Otoni de Paula",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Deputado federal (mandato na Câmara)",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["politicas_publicas", "direita"],
+      "origem_dado": "Portal da Câmara e redes públicas autodeclaradas",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@otonidepaularj", "url": "https://www.instagram.com/otonidepaularj/" },
+        { "plataforma": "x", "handle": "@OtoniDepFederal", "url": "https://x.com/OtoniDepFederal" },
+        { "plataforma": "web", "handle": "Página na Câmara", "url": "https://www.camara.leg.br/deputados/204441" }
+      ],
+      "notas_internas": "Conferir partido e posicionamento atual no portal da Câmara; eixos ajustáveis à realidade eleitoral."
+    },
+    {
+      "id": "inf-nikolas",
+      "nome": "Nikolas Ferreira",
+      "cidade": "Belo Horizonte — MG",
+      "papel": "Deputado federal — forte presença digital",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["direita", "politicas_publicas"],
+      "origem_dado": "Redes públicas do parlamentar",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@nikolasferreira", "url": "https://www.instagram.com/nikolasferreira/" },
+        { "plataforma": "x", "handle": "@nikolasferreira", "url": "https://x.com/nikolasferreira" }
+      ],
+      "notas_internas": "Alcance nacional; não é base eleitoral fluminense, mas útil para rede de apoio digital."
+    },
+    {
+      "id": "part-pl-rj",
+      "nome": "Partido Liberal — núcleo RJ (página pública)",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Organização partidária",
+      "tipo_entidade": "partido",
+      "eixos": ["direita", "politicas_publicas"],
+      "origem_dado": "Página pública do partido em rede social",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "facebook", "handle": "partidoliberalrj22", "url": "https://www.facebook.com/partidoliberalrj22/" }
+      ],
+      "notas_internas": "Confirmar junto ao diretório estadual handles ativos e convênios de campanha."
+    },
+    {
+      "id": "part-pl-nacional",
+      "nome": "Partido Liberal (PL) — comunicação nacional",
+      "cidade": "Brasil",
+      "papel": "Partido político",
+      "tipo_entidade": "partido",
+      "eixos": ["direita", "politicas_publicas"],
+      "origem_dado": "Rede social institucional do partido",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@partidoliberal", "url": "https://www.instagram.com/partidoliberal/" },
+        { "plataforma": "web", "handle": "Site", "url": "https://plpartido.org.br/" }
+      ],
+      "notas_internas": "Conferir domínio e perfis na TSE e no site nacional do partido."
+    },
+    {
+      "id": "pref-rio",
+      "nome": "Prefeitura da cidade do Rio de Janeiro",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Executivo municipal — políticas e serviços",
+      "tipo_entidade": "governo",
+      "eixos": ["politicas_publicas", "acoes_sociais"],
+      "origem_dado": "Canais oficiais da prefeitura",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "web", "handle": "prefeitura.rio", "url": "https://prefeitura.rio/" },
+        { "plataforma": "facebook", "handle": "PrefeituradoRio", "url": "https://www.facebook.com/PrefeituradoRio" }
+      ],
+      "notas_internas": "Administração municipal multipartidária; uso para cruzar obras, serviços e ouvidoria — sem rótulo ideológico automático."
+    },
+    {
+      "id": "pref-paes",
+      "nome": "Eduardo Paes",
+      "cidade": "Rio de Janeiro — RJ",
+      "papel": "Prefeito da cidade do Rio de Janeiro",
+      "tipo_entidade": "figura_publica",
+      "eixos": ["politicas_publicas", "acoes_sociais"],
+      "origem_dado": "Site e redes públicas do gestor",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
+      "redes": [
+        { "plataforma": "instagram", "handle": "@eduardopaes", "url": "https://www.instagram.com/eduardopaes/" },
+        { "plataforma": "x", "handle": "@eduardopaes", "url": "https://x.com/eduardopaes" },
+        { "plataforma": "web", "handle": "Site", "url": "https://www.eduardopaes.com.br/" }
+      ],
+      "notas_internas": "Figura pública; canais de campanha vs. gestão devem ser distinguidos conforme calendário eleitoral."
+    },
+    {
+      "id": "ong-cufa",
+      "nome": "CUFA — Central Única das Favelas",
+      "cidade": "Origem Rio — atuação nacional",
+      "papel": "ONG — cultura, esporte, cidadania em favelas",
+      "tipo_entidade": "ong",
       "eixos": ["acoes_sociais", "politicas_publicas"],
-      "origem_dado": "Demonstração — site ou página pública da entidade",
-      "contatos": {
-        "email": "contato@exemplo-ong.org.br",
-        "telefone": "",
-        "whatsapp": ""
-      },
+      "origem_dado": "Site e perfil oficial da organização",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
       "redes": [
-        {
-          "plataforma": "instagram",
-          "handle": "@exemplo_vila_esperanca",
-          "url": "https://www.instagram.com/"
-        },
-        {
-          "plataforma": "web",
-          "handle": "site",
-          "url": "https://prefeitura.rio/"
-        }
+        { "plataforma": "instagram", "handle": "@cufabrasil", "url": "https://www.instagram.com/cufabrasil/" },
+        { "plataforma": "web", "handle": "cufa.org.br", "url": "https://cufa.org.br/" },
+        { "plataforma": "threads", "handle": "@cufabrasil", "url": "https://www.threads.net/@cufabrasil" }
       ],
-      "notas_internas": "E-mail ilustrativo; troque por contacto validado da entidade."
+      "notas_internas": "ONG sem filiação partidária explícita; útil para eixo ‘ações sociais’ e parcerias locais."
     },
     {
-      "id": "demo-04",
-      "nome": "Beatriz Alves (exemplo fictício)",
+      "id": "think-millenium",
+      "nome": "Instituto Millenium",
       "cidade": "Rio de Janeiro — RJ",
-      "papel": "Produtora de conteúdo local",
-      "eixos": ["direita", "acoes_sociais"],
-      "origem_dado": "Demonstração",
-      "contatos": {
-        "email": "",
-        "telefone": "",
-        "whatsapp": ""
-      },
+      "papel": "Think tank — debate de políticas públicas",
+      "tipo_entidade": "institucional",
+      "eixos": ["politicas_publicas", "direita"],
+      "origem_dado": "Site institucional",
+      "contatos": { "email": "", "telefone": "", "whatsapp": "" },
       "redes": [
-        {
-          "plataforma": "threads",
-          "handle": "@exemplo_beatriz_threads",
-          "url": "https://www.threads.net/"
-        },
-        {
-          "plataforma": "youtube",
-          "handle": "CanalExemploRJ",
-          "url": "https://www.youtube.com/"
-        }
+        { "plataforma": "web", "handle": "institutomillenium.org.br", "url": "https://www.institutomillenium.org.br/" }
       ],
-      "notas_internas": "Inclua WhatsApp ou telefone só após opt-in explícito."
+      "notas_internas": "Associação sem fins lucrativos; agenda liberal-conservadora no debate público — ver ‘Quem somos’ no site."
     }
   ]
 }
