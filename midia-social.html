@@ -333,6 +333,98 @@
     }
     .perfil-links a:hover { text-decoration: underline; }
 
+    .coment-tab-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      padding: 0.65rem 0.85rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .coment-page-size {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .coment-page-size select {
+      font: inherit;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .coment-pager {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.75rem;
+    }
+    .coment-pager__btn {
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .coment-pager__btn:hover:not(:disabled) {
+      border-color: rgba(61, 139, 253, 0.45);
+      color: var(--accent);
+    }
+    .coment-pager__btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .coment-pager__meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-width: 8rem;
+    }
+
+    .seg-mini-pager {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 0.65rem;
+      margin-top: 0.65rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .seg-mini-pager__btn {
+      font: inherit;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.28rem 0.55rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .seg-mini-pager__btn:hover:not(:disabled) {
+      color: var(--accent);
+      border-color: rgba(61, 139, 253, 0.35);
+    }
+    .seg-mini-pager__btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .seg-mini-pager__meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
     .coment-grid {
       display: grid;
       gap: 1rem;
@@ -632,7 +724,19 @@
       <div class="subpanel" role="tabpanel" id="subpanel-coment" aria-labelledby="subtab-coment" hidden>
         <p class="note" style="margin:0 0 1rem">
           <strong>Sentimento positivo</strong> em relação à ação policial, dados ou prevenção. Cada cartão inclui <strong>link direto para o perfil</strong> na rede (X, Threads, Instagram ou Facebook), quando declarado no extracto — útil para auditoria e resposta institucional.
+          Lista mesclada do JSON + exemplos embutidos; use a paginação para navegar.
         </p>
+        <div class="coment-tab-toolbar">
+          <label class="coment-page-size" for="segComentPageSize"
+            >Comentários por página
+            <select id="segComentPageSize" aria-label="Itens por página">
+              <option value="6" selected>6</option>
+              <option value="9">9</option>
+              <option value="12">12</option>
+            </select>
+          </label>
+          <div class="coment-pager" id="segComentPager" aria-live="polite"></div>
+        </div>
         <div class="coment-grid" id="segComentRoot"></div>
       </div>
     </section>
@@ -1000,36 +1104,252 @@
      * Sempre disponível (não depende de fetch). Reddit e ficheiro local falham com frequência
      * (403, file://, deploy sem /data). Isto garante cartões visíveis em qualquer ambiente.
      */
+    let escutaPostsFull = [];
+    /** Comentadores por cartão de postagem (preenchido em renderSegPostCards). */
+    window.__segPostComentarios = [];
+    const COMENT_CARD_PAGE_SIZE = 4;
+
+    let segComentariosAll = [];
+    let segComentTabPage = 0;
+    let segComentTabPageSize = 6;
+
     const ESCUTA_EMBEDDED_POSTS = [
       {
-        titulo: "Boletim: séries de segurança — cruzar com fonte estadual antes de republicar",
-        corpo: "Demonstração embutida. Substitua por RSS, API de listening ou exportação auditável.",
-        fonte: "Politapp (embutido)",
-        url: "https://www.gov.br/pt-br",
-        badge: "evento",
-        tags: ["baseline", "oficial"],
+        titulo: "Thread no X (1/3): dúvidas sobre operação — usar só fonte oficial",
+        corpo: "Demonstração: publicação em fio. Substitua por dados reais do seu export (X API / listening).",
+        plataforma: "x",
+        fonte: "X — @ObsDemoRJ (embutido)",
+        url: "https://x.com/ObsDemoRJ/status/0000000000000000000",
+        badge: "operacao",
+        tags: ["thread", "operação", "comunicação"],
         plugin: "embutido",
         dataIso: new Date().toISOString(),
+        autor: {
+          nome: "Observatório Demo RJ",
+          handle: "ObsDemoRJ",
+          plataforma: "x",
+          perfilUrl: "https://x.com/ObsDemoRJ",
+        },
+        comentarios: [
+          {
+            nome: "Marina Comunitária",
+            handle: "marina_comu_demo",
+            plataforma: "threads",
+            perfilUrl: "https://www.threads.net/@marina_comu_demo",
+            trecho: "Obrigada pelo link da SSP — repassei no grupo do condomínio.",
+          },
+          {
+            nome: "Ricardo Lojista",
+            handle: "ricardo_loja_demo",
+            plataforma: "facebook",
+            perfilUrl: "https://www.facebook.com/ricardo.loja.demo",
+            trecho: "Aqui no comércio precisamos do horário certo da operação para abrir sem risco.",
+          },
+          {
+            nome: "Thiago",
+            handle: "thiago_seg_demo",
+            plataforma: "x",
+            perfilUrl: "https://x.com/thiago_seg_demo",
+            trecho: "Concordo: sem vídeo sem contexto.",
+          },
+          {
+            nome: "Juliana",
+            handle: "ju_democracia_demo",
+            plataforma: "instagram",
+            perfilUrl: "https://www.instagram.com/ju_democracia_demo/",
+            trecho: "Fixado: só compartilho após checar o site da PRF.",
+          },
+          {
+            nome: "Marcos",
+            handle: "marcos_bairro_demo",
+            plataforma: "facebook",
+            perfilUrl: "https://www.facebook.com/marcos.bairro.demo",
+            trecho: "Alguém sabe se a linha de ônibus 42 desviou?",
+          },
+          {
+            nome: "Lúcia",
+            handle: "lucia_obs_demo",
+            plataforma: "threads",
+            perfilUrl: "https://www.threads.net/@lucia_obs_demo",
+            trecho: "Thread útil — vou pedir pro síndico colar o comunicado na portaria.",
+          },
+          {
+            nome: "Pedro",
+            handle: "pedro_x_rj_demo",
+            plataforma: "x",
+            perfilUrl: "https://x.com/pedro_x_rj_demo",
+            trecho: "Screenshot do alerta oficial > áudio encaminhado 15 vezes.",
+          },
+          {
+            nome: "Fernanda",
+            handle: "fer_viz_demo",
+            plataforma: "instagram",
+            perfilUrl: "https://www.instagram.com/fer_viz_demo/",
+            trecho: "Marquei a página da prefeitura nos stories.",
+          },
+        ],
       },
       {
-        titulo: "Operação integrada: comunicação oficial reduz rumor em grupo de bairro",
-        corpo: "Checklist: horário, vias afetadas, canais da PM ou SSP. Evite repasse de vídeo sem contexto.",
-        fonte: "Politapp (embutido)",
-        url: "https://www12.senado.leg.br/noticias",
+        titulo: "Threads: prevenção e escuta em escolas — agenda municipal",
+        corpo: "Demonstração Meta Threads. Perfil e respostas com links clicáveis para auditoria.",
+        plataforma: "threads",
+        fonte: "Threads — @educacao_demo_caxias (embutido)",
+        url: "https://www.threads.net/@educacao_demo_caxias/post/DEMO0001",
+        badge: "evento",
+        tags: ["prevenção", "escola"],
+        plugin: "embutido",
+        dataIso: new Date(Date.now() - 3600000).toISOString(),
+        autor: {
+          nome: "Educação Demo Caxias",
+          handle: "educacao_demo_caxias",
+          plataforma: "threads",
+          perfilUrl: "https://www.threads.net/@educacao_demo_caxias",
+        },
+        comentarios: [
+          {
+            nome: "Prof. Ana",
+            handle: "prof_ana_demo",
+            plataforma: "instagram",
+            perfilUrl: "https://www.instagram.com/prof_ana_demo/",
+            trecho: "Podemos pautar encontro com a guarda municipal?",
+          },
+          {
+            nome: "Pais Unidos ZN",
+            handle: "pais_unidos_zn_demo",
+            plataforma: "facebook",
+            perfilUrl: "https://www.facebook.com/pais.unidos.zn.demo",
+            trecho: "Seguimos o calendário da prefeitura, obrigado.",
+          },
+          {
+            nome: "Renato",
+            handle: "renato_x_escola_demo",
+            plataforma: "x",
+            perfilUrl: "https://x.com/renato_x_escola_demo",
+            trecho: "Posso levar o projeto de mediação que usamos na escola municipal.",
+          },
+          {
+            nome: "Sara",
+            handle: "sara_threads_edu",
+            plataforma: "threads",
+            perfilUrl: "https://www.threads.net/@sara_threads_edu",
+            trecho: "Inclui adolescentes no painel? Eles puxam muito a conversa aqui.",
+          },
+          {
+            nome: "Vó Alzira",
+            handle: "alzira.fb.demo",
+            plataforma: "facebook",
+            perfilUrl: "https://www.facebook.com/alzira.fb.demo",
+            trecho: "Deus abençoe a escuta com a PM, minha neta estuda no turno da tarde.",
+          },
+        ],
+      },
+      {
+        titulo: "Instagram: Reels — «três perguntas antes de repassar vídeo de operação»",
+        corpo: "Demonstração Instagram. Legenda curta + CTA para perfis oficiais.",
+        plataforma: "instagram",
+        fonte: "Instagram — @seguranca_cidada_demo (embutido)",
+        url: "https://www.instagram.com/reel/DEMO0002/",
         badge: "operacao",
-        tags: ["operação", "comunicação"],
+        tags: ["reels", "desinformação"],
+        plugin: "embutido",
+        dataIso: new Date(Date.now() - 7200000).toISOString(),
+        autor: {
+          nome: "Segurança Cidadã Demo",
+          handle: "seguranca_cidada_demo",
+          plataforma: "instagram",
+          perfilUrl: "https://www.instagram.com/seguranca_cidada_demo/",
+        },
+        comentarios: [
+          {
+            nome: "João",
+            handle: "joao_x_demo",
+            plataforma: "x",
+            perfilUrl: "https://x.com/joao_x_demo",
+            trecho: "Salvei o post para mandar no Zap da rua.",
+          },
+          {
+            nome: "Lucia",
+            handle: "lucia_threads_demo",
+            plataforma: "threads",
+            perfilUrl: "https://www.threads.net/@lucia_threads_demo",
+            trecho: "Boa! Falta só o telefone da ouvidoria.",
+          },
+          {
+            nome: "Bia",
+            handle: "bia_reels_seg",
+            plataforma: "instagram",
+            perfilUrl: "https://www.instagram.com/bia_reels_seg/",
+            trecho: "Coloquei nos destaques da conta do conselho.",
+          },
+          {
+            nome: "Otávio",
+            handle: "otavio.face.demo",
+            plataforma: "facebook",
+            perfilUrl: "https://www.facebook.com/otavio.face.demo",
+            trecho: "Compartilhei na comunidade ‘Vizinhos unidos’.",
+          },
+          {
+            nome: "Nina",
+            handle: "nina_threads_demo",
+            plataforma: "threads",
+            perfilUrl: "https://www.threads.net/@nina_threads_demo",
+            trecho: "Dá pra fazer versão 15s só com as três perguntas?",
+          },
+        ],
+      },
+      {
+        titulo: "Facebook: post de comunidade — plantão de escuta com PM e associação",
+        corpo: "Demonstração Facebook. Comentários com links de perfil para resposta institucional.",
+        plataforma: "facebook",
+        fonte: "Facebook — página demo (embutido)",
+        url: "https://www.facebook.com/CampaignDemoRJ/posts/DEMO0003",
+        badge: "evento",
+        tags: ["comunidade", "escuta"],
         plugin: "embutido",
         dataIso: new Date(Date.now() - 86400000).toISOString(),
-      },
-      {
-        titulo: "Prevenção social e escolas — pauta para escuta comunitária",
-        corpo: "Destaque iniciativas com telefone ou site verificável de órgão público.",
-        fonte: "Politapp (embutido)",
-        url: "https://www.ibge.gov.br/",
-        badge: "evento",
-        tags: ["prevenção", "comunidade"],
-        plugin: "embutido",
-        dataIso: new Date(Date.now() - 172800000).toISOString(),
+        autor: {
+          nome: "Campanha Demo RJ",
+          handle: "CampaignDemoRJ",
+          plataforma: "facebook",
+          perfilUrl: "https://www.facebook.com/CampaignDemoRJ",
+        },
+        comentarios: [
+          {
+            nome: "Amanda",
+            handle: "amanda.ig.demo",
+            plataforma: "instagram",
+            perfilUrl: "https://www.instagram.com/amanda.ig.demo/",
+            trecho: "Confirmo presença — levo lista de demandas da praça.",
+          },
+          {
+            nome: "Carlos",
+            handle: "carlos_x_demo",
+            plataforma: "x",
+            perfilUrl: "https://x.com/carlos_x_demo",
+            trecho: "Há vaga para ouvir comerciantes do entorno?",
+          },
+          {
+            nome: "Dona Cleide",
+            handle: "cleide.assoc.demo",
+            plataforma: "facebook",
+            perfilUrl: "https://www.facebook.com/cleide.assoc.demo",
+            trecho: "A associação apoia — confirmo microfone para moradores.",
+          },
+          {
+            nome: "Igor",
+            handle: "igor_threads_bairro",
+            plataforma: "threads",
+            perfilUrl: "https://www.threads.net/@igor_threads_bairro",
+            trecho: "Posso transmitir um trecho pelo Threads se autorizarem.",
+          },
+          {
+            nome: "Tatiane",
+            handle: "tati_x_plantao",
+            plataforma: "x",
+            perfilUrl: "https://x.com/tati_x_plantao",
+            trecho: "Solicitei inclusão de libras no plantão — aguardando retorno.",
+          },
+        ],
       },
     ];
 
@@ -1037,16 +1357,164 @@
       {
         nome: "Marina L.",
         handle: "@marina_cidadania",
-        perfilDesc: "Professora · Zona Norte (demonstração embutida)",
+        plataforma: "instagram",
+        perfilUrl: "https://www.instagram.com/marina_cidadania/",
+        perfilDesc: "Professora · Zona Norte (demonstração — perfil fictício)",
         texto: "Bom ver dados oficiais separados de boatos. Peço link da SSP ou PRF antes de compartilhar vídeo de operação.",
-        ctx: "Discussão sobre desinformação em grupos de bairro",
+        ctx: "Comentário em post sobre desinformação",
       },
       {
         nome: "Ricardo Souza",
-        handle: "perfil ilustrativo",
-        perfilDesc: "Comerciante · Baixada (demonstração embutida)",
+        handle: "ricardo.baixada.demo",
+        plataforma: "facebook",
+        perfilUrl: "https://www.facebook.com/ricardo.baixada.demo",
+        perfilDesc: "Comerciante · Baixada (demonstração — perfil fictício)",
         texto: "Aqui no comércio a gente sente quando melhora o policiamento ostensivo; política social de médio prazo também importa.",
-        ctx: "Thread sobre segurança urbana",
+        ctx: "Resposta em discussão de segurança urbana",
+      },
+      {
+        nome: "Thiago Mendes",
+        handle: "@thiago_obs_demo",
+        plataforma: "threads",
+        perfilUrl: "https://www.threads.net/@thiago_obs_demo",
+        perfilDesc: "Estudante de direito (demonstração — perfil fictício)",
+        texto: "Parabéns pela transparência nos horários da operação — evita fake de ‘toque de recolher’.",
+        ctx: "Thread sobre comunicação policial",
+      },
+      {
+        nome: "Equipe Monitora",
+        handle: "@monitora_demo",
+        plataforma: "x",
+        perfilUrl: "https://x.com/monitora_demo",
+        perfilDesc: "Conta institucional demo",
+        texto: "Só reforçando: denúncias anônimas pelo canal oficial do estado, com print do protocolo.",
+        ctx: "Reply a publicação de órgão público",
+      },
+      {
+        nome: "Camila Duarte",
+        handle: "camila_duarte_ig",
+        plataforma: "instagram",
+        perfilUrl: "https://www.instagram.com/camila_duarte_ig/",
+        perfilDesc: "Jornalista local (fictício)",
+        texto: "Solicitei entrevista à assessoria — enquanto isso, não republico vídeo sem geolocalização verificável.",
+        ctx: "Stories sobre operação",
+      },
+      {
+        nome: "Jonas Freitas",
+        handle: "jonas_freitas_x",
+        plataforma: "x",
+        perfilUrl: "https://x.com/jonas_freitas_x",
+        perfilDesc: "Motorista app · ZO (fictício)",
+        texto: "Rotas alternativas ajudaram — vale mapa da PM no post fixado.",
+        ctx: "Reply em alerta de trânsito",
+      },
+      {
+        nome: "Patrícia Lúcio",
+        handle: "patricia.lucio.fb",
+        plataforma: "facebook",
+        perfilUrl: "https://www.facebook.com/patricia.lucio.fb",
+        perfilDesc: "Líder comunitária (fictício)",
+        texto: "Organizei lista de prioridades do bairro para entregar no plantão — obrigada pela escuta.",
+        ctx: "Comentário em evento de comunidade",
+      },
+      {
+        nome: "Eduardo Kim",
+        handle: "eduardo_kim_threads",
+        plataforma: "threads",
+        perfilUrl: "https://www.threads.net/@eduardo_kim_threads",
+        perfilDesc: "Advogado · direitos humanos (fictício)",
+        texto: "Reforço: menor e vítima não devem aparecer em vídeo compartilhado — lei e ética.",
+        ctx: "Thread sobre cobertura de ocorrência",
+      },
+      {
+        nome: "Letícia Mota",
+        handle: "leticia_mota_ig",
+        plataforma: "instagram",
+        perfilUrl: "https://www.instagram.com/leticia_mota_ig/",
+        perfilDesc: "Enfermeira · UPAb (fictício)",
+        texto: "Equipe de saúde precisou do corredor — comunicação integrada funcionou bem.",
+        ctx: "Comentário em live com secretário",
+      },
+      {
+        nome: "Gabriel A.",
+        handle: "gabriel_vol_demo",
+        plataforma: "facebook",
+        perfilUrl: "https://www.facebook.com/gabriel.vol.demo",
+        perfilDesc: "Voluntário · campanha solidária (fictício)",
+        texto: "Posso levar 10 kits higiene para o ponto de apoio anunciado pela defesa civil.",
+        ctx: "Post de mobilização",
+      },
+      {
+        nome: "Isabela Costa",
+        handle: "isa_costa_x",
+        plataforma: "x",
+        perfilUrl: "https://x.com/isa_costa_x",
+        perfilDesc: "UX writer · fiscalização cidadã (fictício)",
+        texto: "Sugestão: card com ‘3 passos antes de encaminhar’ — reduz pânico em grupo.",
+        ctx: "Sugestão em thread de prevenção",
+      },
+      {
+        nome: "Rodrigo Pacheco",
+        handle: "rodrigo_pacheco_th",
+        plataforma: "threads",
+        perfilUrl: "https://www.threads.net/@rodrigo_pacheco_th",
+        perfilDesc: "Síndico · condomínio médio (fictício)",
+        texto: "Vamos aderir ao protocolo: só áudio da portaria com carimbo de data do comunicado.",
+        ctx: "Discussão em condomínios",
+      },
+      {
+        nome: "Aline Rocha",
+        handle: "aline_rocha_ig",
+        plataforma: "instagram",
+        perfilUrl: "https://www.instagram.com/aline_rocha_ig/",
+        perfilDesc: "Educadora física · praça pública (fictício)",
+        texto: "A iluminação da praça melhorou depois da parceria com a guarda — parabéns à gestão.",
+        ctx: "Reels de antes/depois",
+      },
+      {
+        nome: "Felipe Nunes",
+        handle: "felipe_nunes_x",
+        plataforma: "x",
+        perfilUrl: "https://x.com/felipe_nunes_x",
+        perfilDesc: "Desenvolvedor · mapas abertos (fictício)",
+        texto: "Posso contribuir com camada OSM dos pontos de apoio se tiverem CSV oficial.",
+        ctx: "Oferta de dados abertos",
+      },
+      {
+        nome: "Vera Lúcia",
+        handle: "veralucia.fb.demo",
+        plataforma: "facebook",
+        perfilUrl: "https://www.facebook.com/veralucia.fb.demo",
+        perfilDesc: "Aposentada · conselho do idoso (fictício)",
+        texto: "Finalmente um número único claro para dúvidas — imprimi para o grupo da terceira idade.",
+        ctx: "Post de ouvidoria",
+      },
+      {
+        nome: "Henrique Dias",
+        handle: "henrique_dias_threads",
+        plataforma: "threads",
+        perfilUrl: "https://www.threads.net/@henrique_dias_threads",
+        perfilDesc: "Estudante · mobilidade (fictício)",
+        texto: "Integração com Bilhete Único no texto oficial ajudou quem vem da Baixada.",
+        ctx: "Debate sobre transporte em crise",
+      },
+      {
+        nome: "Priscila M.",
+        handle: "priscila_m_ig",
+        plataforma: "instagram",
+        perfilUrl: "https://www.instagram.com/priscila_m_ig/",
+        perfilDesc: "Psicóloga · voluntariado (fictício)",
+        texto: "Ofereço rodada de escuta psicológica gratuita após o plantão — DM aberta.",
+        ctx: "Carrossel de apoio pós-evento",
+      },
+      {
+        nome: "Otávio Lemos",
+        handle: "otavio_lemos_x",
+        plataforma: "x",
+        perfilUrl: "https://x.com/otavio_lemos_x",
+        perfilDesc: "Engenheiro civil (fictício)",
+        texto: "Fiscalizei a obra prometida — status bate com o portal da transparência, bom sinal.",
+        ctx: "Comentário em obra pública",
       },
     ];
 
@@ -1088,6 +1556,9 @@
           badge,
           tags: ["notícias", "Google News"],
           plugin: "google-news",
+          plataforma: "web",
+          autor: null,
+          comentarios: [],
           dataIso,
         };
       });
@@ -1117,6 +1588,9 @@
               badge: p.badge || "evento",
               tags: p.tags || [],
               plugin: p.plugin || "arquivo-local",
+              plataforma: p.plataforma || "web",
+              autor: p.autor || null,
+              comentarios: Array.isArray(p.comentarios) ? p.comentarios : [],
               dataIso: p.dataIso || null,
             }));
           } catch {
@@ -1154,6 +1628,139 @@
       return "evento";
     }
 
+    function normalizePlatform(p) {
+      const x = String(p || "web").toLowerCase().trim();
+      if (x === "twitter" || x === "x") return "x";
+      if (x === "threads" || x === "thread") return "threads";
+      if (x === "instagram" || x === "ig") return "instagram";
+      if (x === "facebook" || x === "fb") return "facebook";
+      return "web";
+    }
+
+    function platformLabel(p) {
+      const n = normalizePlatform(p);
+      const map = { x: "X", threads: "Threads", instagram: "Instagram", facebook: "Facebook", web: "Web / notícias" };
+      return map[n] || "Web / notícias";
+    }
+
+    function perfilUrlPlataforma(plataforma, handleRaw) {
+      const h = String(handleRaw || "")
+        .replace(/^@+/u, "")
+        .trim();
+      if (!h) return "";
+      const pf = normalizePlatform(plataforma);
+      if (pf === "x") return "https://x.com/" + encodeURIComponent(h);
+      if (pf === "threads") return "https://www.threads.net/@" + encodeURIComponent(h);
+      if (pf === "instagram") return "https://www.instagram.com/" + encodeURIComponent(h) + "/";
+      if (pf === "facebook") {
+        if (/^\d+$/.test(h)) return "https://www.facebook.com/profile.php?id=" + encodeURIComponent(h);
+        return "https://www.facebook.com/" + encodeURIComponent(h);
+      }
+      return "";
+    }
+
+    function renderAutorBlock(autor, plataformaPost) {
+      if (!autor || (!autor.nome && !autor.handle && !autor.perfilUrl)) return "";
+      const pf = normalizePlatform(autor.plataforma || plataformaPost);
+      const url = (autor.perfilUrl && String(autor.perfilUrl).trim()) || perfilUrlPlataforma(pf, autor.handle);
+      const nome = autor.nome || (autor.handle ? "@" + String(autor.handle).replace(/^@+/, "") : "");
+      const handleShow = autor.handle
+        ? escapeHtml(autor.handle.startsWith("@") ? autor.handle : "@" + autor.handle)
+        : "";
+      const plat = escapeHtml(platformLabel(pf));
+      if (url) {
+        return `<div class="seg-autor"><span class="seg-platform mini ${pf}">${plat}</span> Autor: <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(nome)}</a>${handleShow ? ` <span class="muted">(${handleShow})</span>` : ""}</div>`;
+      }
+      return `<div class="seg-autor">Autor: ${escapeHtml(nome)}</div>`;
+    }
+
+    function htmlComentadorLi(c, plataformaPost) {
+      const pf = normalizePlatform(c.plataforma || plataformaPost);
+      const url = (c.perfilUrl && String(c.perfilUrl).trim()) || perfilUrlPlataforma(pf, c.handle);
+      const nome = escapeHtml(c.nome || c.handle || "Perfil");
+      const handleTxt = c.handle
+        ? escapeHtml(c.handle.startsWith("@") ? c.handle : "@" + c.handle)
+        : "";
+      const rawTrecho = (c.trecho || c.texto || "").trim();
+      const trecho = rawTrecho ? escapeHtml(rawTrecho.length > 180 ? rawTrecho.slice(0, 180) + "…" : rawTrecho) : "";
+      const plat = escapeHtml(platformLabel(pf));
+      const linkPart = url
+        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${nome}${handleTxt ? ` <span class="muted">(${handleTxt})</span>` : ""}</a>`
+        : `<span>${nome}</span>`;
+      return `<li><span class="seg-platform mini ${pf}">${plat}</span> ${linkPart}${trecho ? `<p class="seg-coment-snippet">“${trecho}”</p>` : ""}</li>`;
+    }
+
+    function renderComentadoresBlockPaginated(list, plataformaPost, cardIdx) {
+      const buf = Array.isArray(list) ? list : [];
+      if (!buf.length) {
+        return `<div class="seg-comentadores"><h4>Perfis a comentar / responder</h4><p class="note" style="margin:0;font-size:0.78rem">Nenhum comentador neste extracto (comum em itens «web / notícias»).</p></div>`;
+      }
+      const per = COMENT_CARD_PAGE_SIZE;
+      const totalP = Math.max(1, Math.ceil(buf.length / per));
+      const slice = buf.slice(0, per);
+      const items = slice.map((c) => htmlComentadorLi(c, plataformaPost)).join("");
+      const pagerHidden = buf.length <= per;
+      const postPf = normalizePlatform(plataformaPost);
+      return `<div class="seg-comentadores seg-comentadores-paginated" data-seg-com-idx="${cardIdx}" data-seg-com-page="0" data-seg-post-pf="${postPf}">
+          <h4>Perfis a comentar / responder <span class="muted">(${buf.length})</span></h4>
+          <ul>${items}</ul>
+          <div class="seg-mini-pager"${pagerHidden ? " hidden" : ""}>
+            <button type="button" class="seg-mini-pager__btn" data-seg-com-prev disabled>Anterior</button>
+            <span class="seg-mini-pager__meta">Página 1 / ${totalP}</span>
+            <button type="button" class="seg-mini-pager__btn" data-seg-com-next${totalP <= 1 ? " disabled" : ""}>Próximo</button>
+          </div>
+        </div>`;
+    }
+
+    function applySegPlatformFilter(pf) {
+      const key = pf || "all";
+      const filtered =
+        key === "all" ? escutaPostsFull : escutaPostsFull.filter((row) => normalizePlatform(row.plataforma) === key);
+      document.querySelectorAll(".seg-filter-btn").forEach((b) => {
+        b.setAttribute("aria-pressed", String((b.getAttribute("data-pf") || "all") === key));
+      });
+      const filterEmpty = key !== "all" && !filtered.length && escutaPostsFull.length > 0;
+      renderSegPostCards(filtered, [], { skipStatus: true, filterEmpty });
+    }
+
+    function setupSegPlatformFilters() {
+      document.querySelectorAll(".seg-filter-btn").forEach((btn) => {
+        btn.addEventListener("click", () => applySegPlatformFilter(btn.getAttribute("data-pf")));
+      });
+    }
+
+    function setupSegComentadoresPagination() {
+      const panel = document.getElementById("panel-seg");
+      if (!panel || panel.dataset.segComPagerBound === "1") return;
+      panel.dataset.segComPagerBound = "1";
+      panel.addEventListener("click", (e) => {
+        const prev = e.target.closest("[data-seg-com-prev]");
+        const next = e.target.closest("[data-seg-com-next]");
+        if (!prev && !next) return;
+        const wrap = (prev || next).closest(".seg-comentadores-paginated");
+        if (!wrap) return;
+        const idx = Number(wrap.getAttribute("data-seg-com-idx"));
+        const buf = (window.__segPostComentarios && window.__segPostComentarios[idx]) || [];
+        if (!buf.length) return;
+        const per = COMENT_CARD_PAGE_SIZE;
+        const totalP = Math.max(1, Math.ceil(buf.length / per));
+        let page = Number(wrap.getAttribute("data-seg-com-page") || "0");
+        if (prev) page = Math.max(0, page - 1);
+        if (next) page = Math.min(totalP - 1, page + 1);
+        wrap.setAttribute("data-seg-com-page", String(page));
+        const ul = wrap.querySelector("ul");
+        const postPf = wrap.getAttribute("data-seg-post-pf") || "web";
+        const slice = buf.slice(page * per, page * per + per);
+        if (ul) ul.innerHTML = slice.map((c) => htmlComentadorLi(c, postPf)).join("");
+        const meta = wrap.querySelector(".seg-mini-pager__meta");
+        if (meta) meta.textContent = "Página " + (page + 1) + " / " + totalP;
+        const btPrev = wrap.querySelector("[data-seg-com-prev]");
+        const btNext = wrap.querySelector("[data-seg-com-next]");
+        if (btPrev) btPrev.disabled = page <= 0;
+        if (btNext) btNext.disabled = page >= totalP - 1;
+      });
+    }
+
     async function runEscutaPlugins() {
       const merged = [];
       const seen = new Set();
@@ -1181,47 +1788,65 @@
       return { posts: merged, errors };
     }
 
-    function renderSegPostCards(posts, errors) {
+    function renderSegPostCards(posts, errors, opts) {
+      opts = opts || {};
+      const skipStatus = !!opts.skipStatus;
+      const filterEmpty = !!opts.filterEmpty;
       const root = document.getElementById("segPostsRoot");
       const status = document.getElementById("segPostsStatus");
       if (!root) return;
 
       if (!posts.length) {
-        root.innerHTML =
-          '<p class="note err">Nenhuma postagem disponível. Verifique a rede, o ficheiro <span class="mono">data/escuta-social-seguranca.json</span> e tente «Atualizar».</p>';
-        if (status) {
-          status.className = "seg-status err";
-          status.textContent = errors.length ? errors.join(" · ") : "Sem dados.";
+        if (filterEmpty) {
+          root.innerHTML =
+            '<p class="note err">Nenhum item para esta plataforma neste lote. Escolha «Todas» ou «Atualizar postagens».</p>';
+        } else {
+          root.innerHTML =
+            '<p class="note err">Nenhuma postagem disponível. Verifique a rede, o ficheiro <span class="mono">data/escuta-social-seguranca.json</span> e tente «Atualizar».</p>';
+          if (status) {
+            status.className = "seg-status err";
+            status.textContent = errors.length ? errors.join(" · ") : "Sem dados.";
+          }
         }
         return;
       }
 
-      if (status) {
+      if (status && !skipStatus) {
         status.className = "seg-status";
         const errHint = errors.length ? ` · Avisos: ${errors.join("; ")}` : "";
-        status.textContent = `${posts.length} itens agregados (${ESCUTA_PLUGINS.length} fontes tentadas).${errHint}`;
+        status.textContent = `${posts.length} itens nesta vista · ${escutaPostsFull.length} no total (${ESCUTA_PLUGINS.length} fontes).${errHint}`;
       }
 
+      window.__segPostComentarios = posts.map((r) => (Array.isArray(r.comentarios) ? r.comentarios.slice() : []));
+
       root.innerHTML = posts
-        .map((row) => {
+        .map((row, idx) => {
           const bClass = badgeClass(row.badge);
+          const pf = normalizePlatform(row.plataforma);
+          const pfClass = pf;
           const tags = (row.tags || []).slice(0, 6).map((t) => `<span>${escapeHtml(t)}</span>`).join("");
           const when = row.dataIso
             ? new Date(row.dataIso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
             : "—";
           const plugin = escapeHtml(row.plugin || "—");
+          const platLabel = escapeHtml(platformLabel(row.plataforma));
+          const autorHtml = renderAutorBlock(row.autor, pf);
+          const comentHtml = renderComentadoresBlockPaginated(row.comentarios, pf, idx);
           return `
         <article class="seg-card">
           <div class="seg-kicker">
+            <span class="seg-platform ${pfClass}">${platLabel}</span>
             <span class="seg-badge ${bClass}">${escapeHtml(row.badge || "evento")}</span>
             <span>${escapeHtml(row.fonte || "")}</span>
             · <span class="mono">${plugin}</span>
           </div>
           <h3>${escapeHtml(row.titulo)}</h3>
           <div class="seg-meta">${escapeHtml(when)}</div>
+          ${autorHtml}
           <p class="seg-body">${escapeHtml(row.corpo || "").replace(/\n/g, " ") || "—"}</p>
           <div class="seg-tags">${tags}</div>
-          <a class="seg-link" href="${escapeHtml(row.url)}" target="_blank" rel="noopener noreferrer">Abrir fonte ↗</a>
+          <a class="seg-link" href="${escapeHtml(row.url)}" target="_blank" rel="noopener noreferrer">Abrir publicação ↗</a>
+          ${comentHtml}
         </article>`;
         })
         .join("");
@@ -1240,44 +1865,128 @@
 
       try {
         const { posts, errors } = await runEscutaPlugins();
+        escutaPostsFull = posts;
+        document.querySelectorAll(".seg-filter-btn").forEach((b) => {
+          b.setAttribute("aria-pressed", String((b.getAttribute("data-pf") || "") === "all"));
+        });
         renderSegPostCards(posts, errors);
       } catch (e) {
+        escutaPostsFull = [];
         renderSegPostCards([], [String(e.message || e)]);
       } finally {
         if (btn) btn.disabled = false;
       }
     }
 
-    async function loadSegComentarios() {
-      const root = document.getElementById("segComentRoot");
-      if (!root) return;
-      let comentarios = [];
-      try {
-        const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
-        if (r.ok) {
-          const j = await r.json();
-          comentarios = j.comentarios || [];
+    function comentarioDedupeKey(c) {
+      const h = String(c.handle || "")
+        .toLowerCase()
+        .replace(/^@+/, "");
+      return normalizePlatform(c.plataforma) + "|" + h;
+    }
+
+    function mergeComentariosLista(fromJson) {
+      const list = Array.isArray(fromJson) ? fromJson.slice() : [];
+      const keys = new Set(list.map(comentarioDedupeKey));
+      for (const c of ESCUTA_EMBEDDED_COMENTARIOS) {
+        const k = comentarioDedupeKey(c);
+        if (!keys.has(k)) {
+          list.push({ ...c });
+          keys.add(k);
         }
-      } catch {
-        /* fallback abaixo */
       }
-      if (!comentarios.length) {
-        comentarios = ESCUTA_EMBEDDED_COMENTARIOS.map((c) => ({ ...c }));
-      }
-      root.innerHTML = comentarios
-        .map(
-          (c) => `
+      return list;
+    }
+
+    function htmlComentarioPositivoCard(c) {
+      const pf = normalizePlatform(c.plataforma);
+      const url = (c.perfilUrl && String(c.perfilUrl).trim()) || "";
+      const linkRow = url
+        ? `<div class="perfil-links"><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"><span class="seg-platform mini ${pf}">${escapeHtml(platformLabel(pf))}</span> Perfil: ${escapeHtml(
+            c.handle || c.nome || "abrir"
+          )}</a></div>`
+        : `<div class="perfil-links note">Sem URL de perfil no extracto.</div>`;
+      return `
         <article class="coment-card">
           <div class="perfil">
             <strong>${escapeHtml(c.nome)}</strong>
             <span class="handle">${escapeHtml(c.handle)}</span>
-            <span class="perfil-desc">${escapeHtml(c.perfilDesc)}</span>
+            <span class="perfil-desc">${escapeHtml(c.perfilDesc || "")}</span>
+            ${linkRow}
           </div>
           <p class="coment-txt">“${escapeHtml(c.texto)}”</p>
           <p class="ctx">${escapeHtml(c.ctx)}</p>
-        </article>`
-        )
-        .join("");
+        </article>`;
+    }
+
+    function renderComentariosTabSlice() {
+      const root = document.getElementById("segComentRoot");
+      const pager = document.getElementById("segComentPager");
+      if (!root) return;
+      const total = segComentariosAll.length;
+      const size = Math.max(1, segComentTabPageSize);
+      const totalPages = Math.max(1, Math.ceil(total / size) || 1);
+      if (segComentTabPage > totalPages - 1) segComentTabPage = Math.max(0, totalPages - 1);
+      const start = segComentTabPage * size;
+      const slice = segComentariosAll.slice(start, start + size);
+      root.innerHTML = slice.map((c) => htmlComentarioPositivoCard(c)).join("");
+      if (pager) {
+        pager.innerHTML = `
+          <button type="button" class="coment-pager__btn" data-coment-prev ${segComentTabPage <= 0 ? "disabled" : ""}>Anterior</button>
+          <span class="coment-pager__meta">Página ${segComentTabPage + 1} de ${totalPages} · ${total} comentários / perfis</span>
+          <button type="button" class="coment-pager__btn" data-coment-next ${segComentTabPage >= totalPages - 1 ? "disabled" : ""}>Próximo</button>`;
+      }
+    }
+
+    function setupComentariosTabPagination() {
+      const pager = document.getElementById("segComentPager");
+      const sizeSel = document.getElementById("segComentPageSize");
+      if (pager && !pager.dataset.comentBound) {
+        pager.dataset.comentBound = "1";
+        pager.addEventListener("click", (e) => {
+          if (e.target.closest("[data-coment-prev]")) {
+            segComentTabPage = Math.max(0, segComentTabPage - 1);
+            renderComentariosTabSlice();
+            return;
+          }
+          if (e.target.closest("[data-coment-next]")) {
+            const size = Math.max(1, segComentTabPageSize);
+            const totalPages = Math.max(1, Math.ceil(segComentariosAll.length / size) || 1);
+            segComentTabPage = Math.min(totalPages - 1, segComentTabPage + 1);
+            renderComentariosTabSlice();
+          }
+        });
+      }
+      if (sizeSel && !sizeSel.dataset.comentBound) {
+        sizeSel.dataset.comentBound = "1";
+        sizeSel.addEventListener("change", () => {
+          segComentTabPageSize = Math.max(1, Number(sizeSel.value) || 6);
+          segComentTabPage = 0;
+          renderComentariosTabSlice();
+        });
+      }
+    }
+
+    async function loadSegComentarios() {
+      let fromJson = [];
+      try {
+        const r = await fetch(new URL(ESCUTA_JSON, window.location.href).toString(), { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          fromJson = j.comentarios || [];
+        }
+      } catch {
+        /* ignora */
+      }
+      segComentariosAll = mergeComentariosLista(fromJson).map((c) => {
+        const pf = normalizePlatform(c.plataforma || "web");
+        const url = (c.perfilUrl && String(c.perfilUrl).trim()) || perfilUrlPlataforma(pf, c.handle);
+        return { ...c, plataforma: pf, perfilUrl: url };
+      });
+      segComentTabPage = 0;
+      const sel = document.getElementById("segComentPageSize");
+      if (sel) segComentTabPageSize = Math.max(1, Number(sel.value) || 6);
+      renderComentariosTabSlice();
     }
 
     function bootMidiaSocialPage() {
@@ -1285,6 +1994,9 @@
       setupMainTabs();
       setupSegSubtabs();
       document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
+      setupSegPlatformFilters();
+      setupSegComentadoresPagination();
+      setupComentariosTabPagination();
       loadSegPosts();
       loadSegComentarios();
     }

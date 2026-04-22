@@ -1,5 +1,5 @@
 {
-  "descricao": "Camada offline / fallback para o painel «Escuta social — segurança» em midia-social.html. Substitua ou complemente com exportações do seu social listening.",
+  "descricao": "Dados para o painel «Escuta social — segurança» (midia-social.html). Campos opcionais: plataforma (x | threads | instagram | facebook | web), autor, comentarios[]. Use perfilUrl absoluto para cada comentador quando possível.",
   "atualizado": "2026-04-22",
   "postagens": [
     {
@@ -7,53 +7,133 @@
       "corpo": "Texto ilustrativo. Em produção, ligue a RSS de SSP, G1 Segurança ou API interna. Sempre cite fonte primária antes de republicar.",
       "fonte": "Exemplo — SSP estadual",
       "url": "https://www.gov.br/pt-br",
+      "plataforma": "web",
       "badge": "evento",
       "tags": ["dados oficiais", "série histórica"],
       "plugin": "arquivo-local",
-      "dataIso": "2026-04-20T12:00:00.000Z"
+      "dataIso": "2026-04-20T12:00:00.000Z",
+      "autor": null,
+      "comentarios": []
     },
     {
       "titulo": "Operação integrada: o que mudou no trânsito e no acesso a comunidades",
       "corpo": "Use para lembrar: operações geram impacto logístico; comunicação oficial reduz rumor.",
       "fonte": "Exemplo — imprensa local",
       "url": "https://www12.senado.leg.br/noticias",
+      "plataforma": "web",
       "badge": "operacao",
       "tags": ["operação", "comunicação"],
       "plugin": "arquivo-local",
-      "dataIso": "2026-04-18T09:30:00.000Z"
+      "dataIso": "2026-04-18T09:30:00.000Z",
+      "autor": null,
+      "comentarios": []
     },
     {
-      "titulo": "Prevenção: programas comunitários e escolas — agenda de participação social",
-      "corpo": "Eixo positivo para escuta: destacar iniciativas de prevenção com contato de órgão verificável.",
-      "fonte": "Exemplo — prefeitura / conselhos",
-      "url": "https://www.ibge.gov.br/",
-      "badge": "evento",
-      "tags": ["prevenção", "comunidade"],
+      "titulo": "Exemplo export social: Reels sobre checagem antes de repassar vídeo de operação",
+      "corpo": "Modelo de entrada com autor + comentadores e links de perfil (substitua por export real do listening).",
+      "fonte": "Instagram — @exemplo_escuta_demo (JSON)",
+      "url": "https://www.instagram.com/reel/EXEMPLO000/",
+      "plataforma": "instagram",
+      "badge": "operacao",
+      "tags": ["export", "perfil"],
       "plugin": "arquivo-local",
-      "dataIso": "2026-04-15T16:00:00.000Z"
+      "dataIso": "2026-04-17T14:00:00.000Z",
+      "autor": {
+        "nome": "Escuta Demo",
+        "handle": "exemplo_escuta_demo",
+        "plataforma": "instagram",
+        "perfilUrl": "https://www.instagram.com/exemplo_escuta_demo/"
+      },
+      "comentarios": [
+        {
+          "nome": "Paula",
+          "handle": "paula_x_demo",
+          "plataforma": "x",
+          "perfilUrl": "https://x.com/paula_x_demo",
+          "trecho": "Salvei para mandar no grupo da rua."
+        },
+        {
+          "nome": "Lucas",
+          "handle": "lucas_threads_demo",
+          "plataforma": "threads",
+          "perfilUrl": "https://www.threads.net/@lucas_threads_demo",
+          "trecho": "Faltou só o telefone da ouvidoria no carrossel."
+        }
+      ]
     }
   ],
   "comentarios": [
     {
       "nome": "Marina L.",
       "handle": "@marina_cidadania",
-      "perfilDesc": "Professora · Zona Norte (perfil público fictício para demonstração)",
+      "plataforma": "instagram",
+      "perfilUrl": "https://www.instagram.com/marina_cidadania/",
+      "perfilDesc": "Professora · Zona Norte (perfil fictício para demonstração)",
       "texto": "Bom ver dados oficiais separados de boatos. Peço sempre link da SSP ou da PRF antes de compartilhar vídeo de operação.",
       "ctx": "Discussão sobre desinformação em grupos de bairro"
     },
     {
       "nome": "Ricardo Souza",
-      "handle": "u/ric_souza_demo",
+      "handle": "ricardo.baixada.demo",
+      "plataforma": "facebook",
+      "perfilUrl": "https://www.facebook.com/ricardo.baixada.demo",
       "perfilDesc": "Comerciante · Baixada (ilustrativo)",
       "texto": "Aqui no comércio a gente sente quando melhora o policiamento ostensivo, mas precisa de política social de médio prazo também.",
       "ctx": "Thread sobre segurança urbana"
     },
     {
       "nome": "Anônimo verificado",
-      "handle": "comentário moderado",
-      "perfilDesc": "Conta com histórico público de participação em conselhos (exemplo)",
+      "handle": "ouvidoria_demo",
+      "plataforma": "x",
+      "perfilUrl": "https://x.com/ouvidoria_demo",
+      "perfilDesc": "Conta de exemplo — ouvidoria / transparência",
       "texto": "Parabéns à equipe por divulgar o canal oficial de ouvidoria — facilita denúncia com rastreio.",
       "ctx": "Post de órgão público"
+    },
+    {
+      "nome": "Luana Freire",
+      "handle": "luana_freire_threads",
+      "plataforma": "threads",
+      "perfilUrl": "https://www.threads.net/@luana_freire_threads",
+      "perfilDesc": "Arquiteta urbana (exemplo JSON)",
+      "texto": "Boa iniciativa combinar iluminação pública com presença da guarda — reduz pontos cegos.",
+      "ctx": "Threads sobre projeto de praça segura"
+    },
+    {
+      "nome": "Márcio Antunes",
+      "handle": "marcio_antunes_ig",
+      "plataforma": "instagram",
+      "perfilUrl": "https://www.instagram.com/marcio_antunes_ig/",
+      "perfilDesc": "Personal trainer · parque (exemplo JSON)",
+      "texto": "O corredor noturno voltou a encher depois que a PM passou a ronda fixa às 21h.",
+      "ctx": "Comentário em Reels de rotina esportiva"
+    },
+    {
+      "nome": "Selma Duarte",
+      "handle": "selma.duarte.fb",
+      "plataforma": "facebook",
+      "perfilUrl": "https://www.facebook.com/selma.duarte.fb",
+      "perfilDesc": "Artesã · feira local (exemplo JSON)",
+      "texto": "Feira fechou mais tarde com segurança reforçada — vendas melhoraram, obrigada.",
+      "ctx": "Post de prefeitura sobre feira livre"
+    },
+    {
+      "nome": "Diego Ramos",
+      "handle": "diego_ramos_x",
+      "plataforma": "x",
+      "perfilUrl": "https://x.com/diego_ramos_x",
+      "perfilDesc": "Cicloativista (exemplo JSON)",
+      "texto": "Sinalização da ciclovia após a operação ficou mais clara — pedido antigo atendido.",
+      "ctx": "Debate mobilidade e segurança viária"
+    },
+    {
+      "nome": "Cláudia Reis",
+      "handle": "claudia_reis_threads",
+      "plataforma": "threads",
+      "perfilUrl": "https://www.threads.net/@claudia_reis_threads",
+      "perfilDesc": "Enfermeira · UBS (exemplo JSON)",
+      "texto": "Equipe conseguiu chegar no tempo certo no mutirão — corredor funcionou.",
+      "ctx": "Relato em thread sobre saúde e trânsito"
     }
   ]
 }
