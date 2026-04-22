@@ -1,0 +1,4 @@
+{
+  "nota": "Contatos verificados manualmente (telefone e/ou WhatsApp). Chave: SQ_CANDIDATO (string), igual ao JSON gerado. Sobrescreve telefone do TSE e acrescenta entradas WhatsApp. Não incluir dados sem confirmação pública.",
+  "porSqCandidato": {}
+}

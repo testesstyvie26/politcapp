@@ -2,7 +2,9 @@
  * Gera lista de candidatos a vereador — Rio de Janeiro (capital) e Duque de Caxias — eleições municipais 2024 —
  * a partir de consulta_cand_2024_RJ.csv (TSE), opcionalmente enriquecida com:
  * - votos nominais (soma por zona): votacao_candidato_munzona_2024_RJ.csv, cargo 13, 1º turno;
- * - redes sociais e WhatsApp: rede_social_candidato_2024_RJ.csv (DS_URL por SQ_CANDIDATO).
+ * - redes sociais e WhatsApp: rede_social_candidato_2024_RJ.csv (DS_URL por SQ_CANDIDATO);
+ * - telefone em falta no CSV: inferido de URLs oficiais TSE (api.whatsapp.com / wa.me) na mesma tabela;
+ * - opcional: data/vereadores-contatos-suplemento.json (chave por SQ_CANDIDATO) para ligações verificadas manualmente.
  *
  * Fonte: ZIP em https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2024.zip
  *
@@ -18,6 +20,7 @@ const AdmZip = require("adm-zip");
 const iconv = require("iconv-lite");
 
 const OUT = path.join(__dirname, "../data/vereadores-rj-rio-2024.json");
+const CONTATOS_SUPP = path.join(__dirname, "../data/vereadores-contatos-suplemento.json");
 const ZIP_URL = "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2024.zip";
 const ENTRY_RX = /^consulta_cand_2024_RJ\.csv$/i;
 const VOT_ZIP_URL =
@@ -281,6 +284,24 @@ function enriquecerVereadores(rows, votosPorUeSq, redePorSq) {
       row.votos = votosPorUeSq.get(`${ue}|${sq}`);
     }
     const redes = sq ? redePorSq.get(sq) || [] : [];
+    if (!row.telefone) {
+      for (const { url } of redes) {
+        const tel = telefoneExibicaoDeUrlWhatsapp(url);
+        if (tel) {
+          row.telefone = tel;
+          break;
+        }
+      }
+    }
+    if (!row._waUrlCelular) {
+      for (const { url } of redes) {
+        const wu = waMeUrlCanonicoDeUrlWhatsapp(url);
+        if (wu) {
+          row._waUrlCelular = wu;
+          break;
+        }
+      }
+    }
     const { whatsapp: waRede, midiasSociais } = splitWhatsappEMidias(redes);
     let whatsapp = [...waRede];
     const waCel = row._waUrlCelular;
@@ -332,6 +353,42 @@ function mergeMidiasSuplemento(rows) {
   }
 }
 
+/**
+ * Contatos verificados manualmente (ficheiro opcional), chave: SQ_CANDIDATO.
+ * Isto não “raspa” redes: serve para anexar o que a equipa validar, além do TSE.
+ */
+function mergeContatosSuplemento(rows) {
+  if (!fs.existsSync(CONTATOS_SUPP)) return;
+  let sup;
+  try {
+    sup = JSON.parse(fs.readFileSync(CONTATOS_SUPP, "utf8"));
+  } catch (e) {
+    console.error("Aviso: vereadores-contatos-suplemento.json inválido ou ilegível:", e.message || e);
+    return;
+  }
+  const map = sup.porSqCandidato;
+  if (!map || typeof map !== "object") return;
+  for (const row of rows) {
+    const sq = row.sqCandidato != null ? String(row.sqCandidato).trim() : "";
+    if (!sq || !map[sq]) continue;
+    const o = map[sq];
+    if (o.telefone != null && String(o.telefone).trim() !== "") {
+      row.telefone = String(o.telefone).trim();
+    }
+    if (Array.isArray(o.whatsapp) && o.whatsapp.length) {
+      const cur = Array.isArray(row.whatsapp) ? [...row.whatsapp] : [];
+      for (const w of o.whatsapp) {
+        const u = w && w.url && String(w.url).trim();
+        if (!u || !/^https?:\/\//i.test(u)) continue;
+        if (!cur.some((x) => x.url === u)) {
+          cur.push({ label: (w && w.label) || "WhatsApp", url: u });
+        }
+      }
+      if (cur.length) row.whatsapp = dedupeWaEntries(cur);
+    }
+  }
+}
+
 function colIndex(header, name) {
   const i = header.indexOf(name);
   if (i < 0) throw new Error(`Coluna obrigatória ausente: ${name}. Cabeçalho: ${header.slice(0, 12).join(", ")}…`);
@@ -349,6 +406,43 @@ function exibirCelularBr(ddd, numSemDdd) {
   if (c.length === 9) return `(${ddd}) ${c.slice(0, 5)}-${c.slice(5)}`;
   if (c.length === 8) return `(${ddd}) ${c.slice(0, 4)}-${c.slice(4)}`;
   return c ? `(${ddd}) ${c}` : "";
+}
+
+/**
+ * Tira dígitos nacionais (DDD+número) de URLs oficiais TSE (rede_social_candidato) ou outras
+ * ligações wa.me / api.whatsapp.com quando o CSV principal não traz NR_DDD_CELULAR / NR_CELULAR.
+ */
+function telefoneExibicaoDeUrlWhatsapp(u) {
+  const s = String(u || "");
+  const m1 = s.match(/[?&]phone=\+?(\d{10,15})/i);
+  if (m1) {
+    let d = m1[1].replace(/\D/g, "");
+    if (d.startsWith("55") && d.length > 4) d = d.slice(2);
+    if (d.length >= 10) return exibirCelularBr(d.slice(0, 2), d.slice(2));
+  }
+  const m2 = s.match(/wa\.me\/\+?(\d{10,15})/i);
+  if (m2) {
+    let d = m2[1].replace(/\D/g, "");
+    if (d.startsWith("55") && d.length > 4) d = d.slice(2);
+    if (d.length >= 10) return exibirCelularBr(d.slice(0, 2), d.slice(2));
+  }
+  return null;
+}
+
+/** Normaliza para https://wa.me/55... (apenas dígitos após 55) para dedupe com _waUrlCelular. */
+function waMeUrlCanonicoDeUrlWhatsapp(u) {
+  const s = String(u || "");
+  const m1 = s.match(/[?&]phone=\+?(\d{10,15})/i);
+  if (m1) {
+    const d = m1[1].replace(/\D/g, "");
+    if (d.length >= 10) return `https://wa.me/${d.startsWith("55") ? d : "55" + d}`;
+  }
+  const m2 = s.match(/wa\.me\/\+?(\d{10,15})/i);
+  if (m2) {
+    const d = m2[1].replace(/\D/g, "");
+    if (d.length >= 10) return `https://wa.me/${d.startsWith("55") ? d : "55" + d}`;
+  }
+  return null;
 }
 
 function mainSync(csvText) {
@@ -472,10 +566,16 @@ async function main() {
   }
   enriquecerVereadores(vereadores, votosPorUeSq, redePorSq);
   mergeMidiasSuplemento(vereadores);
+  mergeContatosSuplemento(vereadores);
 
+  const temSupContatos = fs.existsSync(CONTATOS_SUPP);
   const payload = {
     fonte:
-      "TSE — consulta_cand (UF RJ, SG_UE 60011 Rio capital, 58335 Duque de Caxias, cargo 13), votacao_candidato_munzona (soma QT_VOTOS_NOMINAIS, 1º turno, cargo 13), rede_social_candidato (DS_URL) e DDD/celular em consulta_cand quando existirem; mais URLs de redes verificadas manualmente quando ausentes no TSE — eleições municipais 2024. Inclui eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).",
+      "TSE — consulta_cand (UF RJ, SG_UE 60011 Rio capital, 58335 Duque de Caxias, cargo 13), votacao_candidato_munzona (soma QT_VOTOS_NOMINAIS, 1º turno, cargo 13), rede_social_candidato (DS_URL) e DDD/celular em consulta_cand; quando faltar DDD/celular no CSV, o build infere exibição e link wa.me a partir de URLs oficiais TSE (api.whatsapp.com / wa.me). " +
+      (temSupContatos
+        ? "Contatos adicionais em data/vereadores-contatos-suplemento.json (verificados manualmente). "
+        : "Opcional: data/vereadores-contatos-suplemento.json para contatos manuais verificados. ") +
+      "Mais Instagram/sites verificados manualmente (MIDIAS_SUPLEMENTO) quando ausentes no TSE — eleições municipais 2024. Inclui eleitos, suplentes e demais participantes (DS_SIT_TOT_TURNO).",
     uf: "RJ",
     municipios: [
       { nome: "Rio de Janeiro", sgUeTse: "60011", ibge: "3304557" },
