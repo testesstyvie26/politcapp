@@ -2027,13 +2027,15 @@
     /** Respostas públicas nos primeiros toots Mastodon do lote (limite para não sobrecarregar a API). */
     async function escutaAttachMastodonRepliesToLoadedPosts(posts) {
       const list = Array.isArray(posts) ? posts : [];
-      const mastoRows = list.filter((p) => normalizePlatform(p.plataforma) === "mastodon" && String(p.url || "").trim());
+      const mastoRows = list.filter(
+        (p) => normalizePlatform(p.plataforma) === "mastodon" && String(p.url || p.uri || "").trim()
+      );
       let budget = 40;
       const maxPosts = 8;
       const perPost = 6;
       for (const p of mastoRows.slice(0, maxPosts)) {
         if (budget <= 0) break;
-        const u = String(p.url || "").trim();
+        const u = String(p.url || p.uri || "").trim();
         const parsed = parseMastodonStatusFromUrl(u);
         if (!parsed) continue;
         try {
