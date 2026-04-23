@@ -182,6 +182,13 @@
     .comercio-item h4 { margin: 0 0 0.35rem; font-size: 0.92rem; font-weight: 600; }
     .comercio-item .meta { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
     .comercio-item p { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
+    .comercio-item .comercio-nav-links {
+      margin: 0.45rem 0 0;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+    .comercio-item .comercio-nav-links a { color: var(--accent, #3d8bfd); }
+    .comercio-item .pico-ref { margin: 0.35rem 0 0; }
     .comercio-item .dias-feira {
       margin: 0.4rem 0 0;
       font-size: 0.78rem;
@@ -370,6 +377,8 @@
         Referência de <strong>locais com forte presença de comércio, feiras e associações</strong>, úteis para
         <strong>agenda de rua, escuta com lojistas e produtores</strong> e conteúdo de campanha regionalizado.
         Coordenadas são aproximadas (centro do equipamento ou polo); confirme endereço e horário antes da visita.
+        Os <strong>nomes dos pontos</strong> seguem formulações próximas das <strong>buscas e listas habituais no Google Maps</strong>, para localizar rápido o pin certo.
+        Cada quadro inclui ainda <strong>referência de horários de maior movimento</strong> (ilustrativa) e atalhos para <strong>trajeto no Google Maps e no Waze</strong>.
         Para <strong>feiras e mercados</strong>, cada ponto traz <strong>dias e faixa de horário de referência</strong> (podem mudar com feriados, clima ou decisão da gestão).
         <strong>Corridas, caminhadas e eventos beneficentes</strong> por município estão na base ilustrativa da seção
         <strong>Viagens entre municípios</strong> (filtro por período + proximidade à rota).
@@ -620,6 +629,7 @@
       "Centro urbano e comércio de rua": "#3d8bfd",
       "Turismo e comércio": "#9b86bd",
       "Associação e rede de negócios": "#81b29a",
+      "Shopping e grande varejo": "#c084fc",
     };
 
     /** Referência: municípios da Baixada Fluminense (IBGE: Baixadas Litorâneas) para filtro dedicado. */
@@ -640,7 +650,23 @@
     ];
 
     const POIS_COMERCIO = [
-      { nome: "Saara (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9045, lng: -43.1845, dica: "Alto fluxo, pequenos lojistas; boa janela para escuta sobre custos e logística urbana.", diasFuncionamento: "Lojas e galerias: em geral seg–sáb, horário comercial; domingos e feriados com parte do comércio fechada ou horário reduzido." },
+      { nome: "Saara (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9045, lng: -43.1845, dica: "Alto fluxo, pequenos lojistas; boa janela para escuta sobre custos e logística urbana.", diasFuncionamento: "Lojas e galerias: em geral seg–sáb, horário comercial; domingos e feriados com parte do comércio fechada ou horário reduzido.", picoMovimento: "Pico típico: dias úteis 9h–17h30 e sábado pela manhã; quadras próximas à Presidente Vargas e Uruguaiana costumam lotar no horário de almoço." },
+      { nome: "Rua Uruguaiana (polo popular)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9039, lng: -43.1794, dica: "Corredor de varejo popular no Centro; confirme trecho com comerciantes locais.", diasFuncionamento: "Em geral seg–sáb, horário comercial; domingo costuma ser mais fraco.", picoMovimento: "Pico típico: 10h–16h em dias úteis; sábado concentrado pela manhã." },
+      { nome: "Rua Buenos Aires (Centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Polo comercial popular", lat: -22.9032, lng: -43.1768, dica: "Galerias e lojas de variedades; bom para narrativa de comércio de rua no Centro.", picoMovimento: "Pico típico: dias úteis 10h–17h; evite chegada no rush da Av. Rio Branco (manhã e fim de tarde)." },
+      { nome: "Barra Shopping", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -23.0048, lng: -43.3217, dica: "Grande fluxo na Zona Oeste; útil para contraste entre varejo formal e bairros próximos.", diasFuncionamento: "Em geral diariamente; horário estendido em lojas âncora e praça de alimentação (confirme no site).", picoMovimento: "Pico típico: sábado e domingo à tarde; sextas após 18h e vésperas de datas comerciais." },
+      { nome: "Shopping Nova América", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.8804, lng: -43.2712, dica: "Polo de grande varejo na Zona Norte; conecta com feiras e comércio popular de bairros adjacentes.", picoMovimento: "Pico típico: sábado tarde e domingo; feriados escolares aumentam famílias na praça de alimentação." },
+      { nome: "Norte Shopping", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.8869, lng: -43.2832, dica: "Alto fluxo na transição Norte; bom para pauta de deslocamento e trabalho em shopping.", picoMovimento: "Pico típico: sábado e domingo; noite de sexta costuma subir com cinema e eventos." },
+      { nome: "Shopping Tijuca", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.9215, lng: -43.2385, dica: "Varejo em bairro denso; contraste com comércio de rua da Tijuca.", picoMovimento: "Pico típico: fim de semana à tarde; dias úteis 12h–14h e após 18h." },
+      { nome: "Rio Sul — Botafogo", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.9542, lng: -43.1789, dica: "Shopping em área de alto trânsito; combine com comércio de rua em Botafogo e Catete.", picoMovimento: "Pico típico: sábado tarde e horário de almoço em dias úteis; acesso costuma engarrafar no rush." },
+      { nome: "Shopping Leblon", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.9825, lng: -43.2185, dica: "Varejo de bairro de renda mais alta; útil para mix de público e serviços.", picoMovimento: "Pico típico: fim de semana e horário pós-trabalho (18h–21h) em dias úteis." },
+      { nome: "Bangu Shopping", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.8749, lng: -43.4658, dica: "Polo formal na Zona Oeste; vizinho a feiras e centros populares de Bangu.", picoMovimento: "Pico típico: sábado e domingo; feriados prolongados elevam famílias." },
+      { nome: "Plaza Shopping Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.8847, lng: -43.1028, dica: "Grande varejo na Região Oceânica; compare com centro e feiras tradicionais de Niterói.", picoMovimento: "Pico típico: sábado e domingo à tarde; noites de sexta com cinema e bares no entorno." },
+      { nome: "Shopping Bay Market — Niterói", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Shopping e grande varejo", lat: -22.8908, lng: -43.1242, dica: "Orla de São Francisco; fluxo turístico e de moradores.", picoMovimento: "Pico típico: fins de semana e feriados; entardecer na orla costuma concentrar passeio." },
+      { nome: "Partage Shopping Nova Iguaçu", cidade: "Nova Iguaçu", meso: "Baixada Fluminense", tipo: "Shopping e grande varejo", lat: -22.7558, lng: -43.4632, dica: "Um dos polos formais da Baixada; contraste direto com centro e feiras de Nova Iguaçu.", picoMovimento: "Pico típico: sábado e domingo; 13h–20h costuma ser o auge." },
+      { nome: "Shopping Grande Rio — São João de Meriti", cidade: "São João de Meriti", meso: "Baixada Fluminense", tipo: "Shopping e grande varejo", lat: -22.7987, lng: -43.3858, dica: "Grande fluxo na Baixada; útil para agenda metropolitana fora da capital.", picoMovimento: "Pico típico: fim de semana; vésperas de Natal e Dia das Mães concentram filas." },
+      { nome: "Park Lagos Shopping — Cabo Frio", cidade: "Cabo Frio", meso: "Sul Fluminense", tipo: "Shopping e grande varejo", lat: -22.8965, lng: -42.0348, dica: "Varejo na Região dos Lagos; sazonalidade de verão altera muito o movimento.", picoMovimento: "Pico típico: alta temporada (dez–mar) e fins de semana de sol; fora da temporada, sábado à tarde." },
+      { nome: "Boulevard Shopping Campos", cidade: "Campos dos Goytacazes", meso: "Norte Fluminense", tipo: "Shopping e grande varejo", lat: -21.7625, lng: -41.3125, dica: "Polo formal no Norte; compare com mercado municipal e centro histórico.", picoMovimento: "Pico típico: sábado e domingo; feriados regionais elevam visitação." },
+      { nome: "Mercado Popular da Penha", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8348, lng: -43.2765, dica: "Equipamento popular na Zona Norte; diálogo com permissionários e rotas de ônibus.", diasFuncionamento: "Em geral seg–sáb, com concentração matinal nas bancas; domingo e feriados variam.", picoMovimento: "Pico típico: manhã (7h–12h) em dias de feira cheia; sábado costuma ser o mais movimentado." },
       { nome: "Mercado Municipal de Madureira", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8732, lng: -43.3378, dica: "Referência de abastecimento e trabalho informal; priorize horários de menor tumulto e diálogo com permissionários.", diasFuncionamento: "Edifício do mercado: em geral seg–dom, cedo até a tarde (bancas de peixe/carnes costumam concentrar na madrugada e manhã). Confirme corredor." },
       { nome: "Centro Luiz Gonzaga (Feira de São Cristóvão)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.9015, lng: -43.2309, dica: "Cultura nordestina e economia criativa; visitas pedem alinhamento com a gestão do espaço e fornecedores.", diasFuncionamento: "Tradicionalmente qui–dom e feriados; horário costuma estender no fim de semana. Conferir programação e bilheteria no site do espaço." },
       { nome: "Mercado São Pedro", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8835, lng: -43.1062, dica: "Tradicional para peixes e banca; útil para agenda com produtores e consumidores da Baía.", diasFuncionamento: "Em geral todos os dias, com pico pela manhã (peixaria). Restaurantes e bancas podem ter folgas; confirme no local." },
@@ -717,7 +743,47 @@
       if (p.tipo === "Associação e rede de negócios") {
         return "Em geral horário comercial (seg–sex); confirme ACIs, sindicatos e entidades.";
       }
+      if (p.tipo === "Shopping e grande varejo") {
+        return "Em geral diariamente, horário estendido (lojas âncora e praça de alimentação variam); confirme no site do empreendimento.";
+      }
       return "Comércio de rua e galerias: tipicamente seg–sáb, horário comercial; domingos e feriados costumam ser mais fracos.";
+    }
+
+    /** Horários em que o local costuma estar mais movimentado (referência para agenda de rua). */
+    function comercioPicoRef(p) {
+      if (p.picoMovimento) return p.picoMovimento;
+      if (p.tipo === "Feira ou mercado municipal") {
+        return "Pico típico: manhã (7h–12h) no dia da feira; fins de semana costumam superar dias úteis em feiras abertas ao público.";
+      }
+      if (p.tipo === "Turismo e comércio") {
+        return "Pico típico: fins de semana, feriados prolongados e alta temporada; tardes e noites intensificam em polos turísticos.";
+      }
+      if (p.tipo === "Polo comercial popular") {
+        return "Pico típico: dias úteis 9h–17h e sábado de manhã; vésperas de data comercial (Natal etc.) concentram fluxo.";
+      }
+      if (p.tipo === "Shopping e grande varejo") {
+        return "Pico típico: sábado tarde, domingo e feriados; sexta após 18h costuma subir em shoppings urbanos.";
+      }
+      return "Pico típico: dias úteis ~10h–18h no entorno comercial; deslocamento: evite rush (7h30–9h30 e 17h30–19h30) nas vias de acesso.";
+    }
+
+    function wazeNavigateUrl(lat, lng) {
+      return `https://waze.com/ul?ll=${encodeURIComponent(`${lat},${lng}`)}&navigate=yes`;
+    }
+
+    function comercioNavegacaoLinksHtml(p) {
+      const gDir = googleMapsDirectionsToUrl(p.lat, p.lng);
+      const gSearch = googleMapsSearchPlaceUrl(p.nome, p.cidade);
+      const w = wazeNavigateUrl(p.lat, p.lng);
+      return `<p style="margin:0.55rem 0 0;font-size:0.8rem;line-height:1.55">
+        <a href="${escapeAttr(gDir)}" target="_blank" rel="noopener noreferrer">Trajeto no Google Maps</a>
+        <span style="opacity:0.4;margin:0 0.35rem">·</span>
+        <a href="${escapeAttr(w)}" target="_blank" rel="noopener noreferrer">Trajeto no Waze</a>
+      </p>
+      <p style="margin:0.35rem 0 0;font-size:0.76rem;line-height:1.5">
+        <a href="${escapeAttr(gSearch)}" target="_blank" rel="noopener noreferrer">Buscar local no Google Maps</a>
+      </p>
+      <p style="margin:0.35rem 0 0;font-size:0.72rem;opacity:0.85">Nomes alinhados a listas e buscas comuns no Google Maps; confirme o pin antes de navegar.</p>`;
     }
 
     /** Eventos ilustrativos (2026) — confirmar datas e locais em fontes oficiais. */
@@ -945,6 +1011,11 @@
       return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${lat},${lng}`);
     }
 
+    /** Direções até coordenadas (origem: posição atual ou entrada manual no Google Maps). */
+    function googleMapsDirectionsToUrl(lat, lng) {
+      return "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(`${lat},${lng}`);
+    }
+
     /** Pontos intermédios ao longo da geometria da rota (planeamento + link para o Google). */
     function addRouteCheckpoints(coordsLonLat, layerGroup) {
       layerGroup.clearLayers();
@@ -1148,14 +1219,14 @@
 
       function popupPoiRota(p, distKm) {
         const cor = TIPO_COMERCIO_COLORS[p.tipo] || "#888";
-        const gMaps = googleMapsSearchPlaceUrl(p.nome, p.cidade);
         return `
           <div class="popup-title">${escapeHtml(p.nome)}</div>
           <div class="popup-meso">~${distKm.toFixed(1)} km da rota · ${escapeHtml(p.cidade)}</div>
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
           <p style="margin:0.45rem 0 0"><strong>Dias / horário (referência):</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
+          <p style="margin:0.45rem 0 0"><strong>Movimento (referência):</strong> ${escapeHtml(comercioPicoRef(p))}</p>
           <p style="margin:0.45rem 0 0">${escapeHtml(p.dica)}</p>
-          <p style="margin:0.5rem 0 0"><a href="${escapeAttr(gMaps)}" target="_blank" rel="noopener noreferrer">Google Maps — local, avaliações e movimentação</a></p>
+          ${comercioNavegacaoLinksHtml(p)}
         `;
       }
 
@@ -1321,7 +1392,7 @@
             iconAnchor: [7, 7],
           });
           L.marker([p.lat, p.lng], { icon: ic })
-            .bindPopup(popupPoiRota(p, dist), { maxWidth: 300 })
+            .bindPopup(popupPoiRota(p, dist), { maxWidth: 340 })
             .addTo(poiLayer);
         }
 
@@ -1370,8 +1441,15 @@
               <div class="dist">~${dist.toFixed(1)} km da rota · ${escapeHtml(p.tipo)}</div>
               <strong>${escapeHtml(p.nome)}</strong> — ${escapeHtml(p.cidade)}
               <p class="note" style="margin:0.35rem 0 0"><strong>Dias / horário:</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
+              <p class="note" style="margin:0.35rem 0 0"><strong>Movimento:</strong> ${escapeHtml(comercioPicoRef(p))}</p>
               <p class="note" style="margin:0.35rem 0 0">${escapeHtml(p.dica)}</p>
-              <p class="note" style="margin:0.35rem 0 0"><a href="${escapeAttr(googleMapsSearchPlaceUrl(p.nome, p.cidade))}" target="_blank" rel="noopener noreferrer">Google Maps — local e movimentação</a></p>
+              <p class="note" style="margin:0.35rem 0 0">
+                <a href="${escapeAttr(googleMapsDirectionsToUrl(p.lat, p.lng))}" target="_blank" rel="noopener noreferrer">Trajeto Google Maps</a>
+                <span style="opacity:0.45"> · </span>
+                <a href="${escapeAttr(wazeNavigateUrl(p.lat, p.lng))}" target="_blank" rel="noopener noreferrer">Trajeto Waze</a>
+                <span style="opacity:0.45"> · </span>
+                <a href="${escapeAttr(googleMapsSearchPlaceUrl(p.nome, p.cidade))}" target="_blank" rel="noopener noreferrer">Busca Maps</a>
+              </p>
             `;
             poisRoot.appendChild(card);
           }
@@ -1508,7 +1586,9 @@
           <div class="popup-meso">${escapeHtml(p.cidade)} · ${escapeHtml(p.meso)}</div>
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
           <p style="margin:0.45rem 0 0"><strong>Dias / horário (referência):</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
+          <p style="margin:0.45rem 0 0"><strong>Movimento (referência):</strong> ${escapeHtml(comercioPicoRef(p))}</p>
           <p style="margin:0.5rem 0 0"><strong>Visita:</strong> ${escapeHtml(p.dica)}</p>
+          ${comercioNavegacaoLinksHtml(p)}
         `;
       }
 
@@ -1541,7 +1621,7 @@
             iconAnchor: [7, 7],
           });
           const mk = L.marker([p.lat, p.lng], { icon });
-          mk.bindPopup(popupComercio(p), { maxWidth: 300 });
+          mk.bindPopup(popupComercio(p), { maxWidth: 340 });
           if (matchesFilter(p)) {
             mk.addTo(markersLayer);
             visible.push(mk);
@@ -1562,11 +1642,22 @@
           art.className = "comercio-item";
           art.tabIndex = 0;
           art.style.cursor = "pointer";
+          const gDir = googleMapsDirectionsToUrl(p.lat, p.lng);
+          const gSearch = googleMapsSearchPlaceUrl(p.nome, p.cidade);
+          const wz = wazeNavigateUrl(p.lat, p.lng);
           art.innerHTML = `
             <div class="meta">${escapeHtml(p.cidade)} · ${escapeHtml(p.tipo)}</div>
             <h4>${escapeHtml(p.nome)}</h4>
             <p class="dias-feira"><strong>Dias / horário:</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
+            <p class="pico-ref"><strong>Movimento:</strong> ${escapeHtml(comercioPicoRef(p))}</p>
             <p>${escapeHtml(p.dica)}</p>
+            <p class="comercio-nav-links">
+              <a href="${escapeAttr(gDir)}" target="_blank" rel="noopener noreferrer">Trajeto Google Maps</a>
+              <span aria-hidden="true"> · </span>
+              <a href="${escapeAttr(wz)}" target="_blank" rel="noopener noreferrer">Trajeto Waze</a>
+              <span aria-hidden="true"> · </span>
+              <a href="${escapeAttr(gSearch)}" target="_blank" rel="noopener noreferrer">Busca Maps</a>
+            </p>
           `;
           const open = () => {
             const mk = markerByIndex[idx];
