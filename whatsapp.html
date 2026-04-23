@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WhatsApp — setup do bot | Politapp</title>
+  <title>WhatsApp â€” setup do bot | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -141,96 +141,96 @@
     }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
-  <link rel="stylesheet" href="css/site-theme.css?v=1" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="Navegação principal">
+    <nav class="site-nav" aria-label="NavegaÃ§Ã£o principal">
       <a href="index.html">Lista de candidatos</a>
-      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
-      <a href="executivo.html">Visão executiva</a>
+      <a href="eleicao-2022-deputado-federal.html">EleiÃ§Ã£o 2022 Â· DF</a>
+      <a href="executivo.html">VisÃ£o executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
       <a href="prefeituras-rj.html">Prefeituras RJ</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="transparencia.html">Transparência</a>
+      <a href="transparencia.html">TransparÃªncia</a>
       <details class="site-nav-dropdown" open>
-        <summary class="site-nav-dropdown__summary">Mídia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-          <a href="midia-social.html">Painel · escuta e conteúdo</a>
-          <a href="whatsapp.html" aria-current="page">WhatsApp · bot</a>
+        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
+          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
+          <a href="whatsapp.html" aria-current="page">WhatsApp Â· bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
-      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">DocumentaÃ§Ã£o da API</a>
     </nav>
 
     <header id="politapp-main" tabindex="-1">
-      <h1>Integração WhatsApp <span class="wa-badge">Bot &amp; sessão</span></h1>
+      <h1>IntegraÃ§Ã£o WhatsApp <span class="wa-badge">Bot &amp; sessÃ£o</span></h1>
       <p>
-        Painel de <strong>configuração e gestão</strong> para ligar o Politapp a um <strong>bot WhatsApp</strong> (oficial ou gateway próprio).
-        Os dados sensíveis abaixo ficam <strong>só neste navegador</strong> (<code class="mono">localStorage</code>) até você exportar —
-        em produção, guarde tokens no <strong>servidor</strong> e nunca os exponha em páginas estáticas públicas.
+        Painel de <strong>configuraÃ§Ã£o e gestÃ£o</strong> para ligar o Politapp a um <strong>bot WhatsApp</strong> (oficial ou gateway prÃ³prio).
+        Os dados sensÃ­veis abaixo ficam <strong>sÃ³ neste navegador</strong> (<code class="mono">localStorage</code>) atÃ© vocÃª exportar â€”
+        em produÃ§Ã£o, guarde tokens no <strong>servidor</strong> e nunca os exponha em pÃ¡ginas estÃ¡ticas pÃºblicas.
       </p>
     </header>
 
     <section class="panel" aria-labelledby="sessao-heading">
-      <h2 id="sessao-heading">Sessão e persistência</h2>
+      <h2 id="sessao-heading">SessÃ£o e persistÃªncia</h2>
       <p class="note">
-        Use <strong>Salvar</strong> após preencher cada bloco. <strong>Limpar sessão</strong> apaga só as definições desta página neste dispositivo.
+        Use <strong>Salvar</strong> apÃ³s preencher cada bloco. <strong>Limpar sessÃ£o</strong> apaga sÃ³ as definiÃ§Ãµes desta pÃ¡gina neste dispositivo.
       </p>
       <p id="statusLine" role="status"></p>
       <div class="actions" style="margin-top:0.75rem;padding-top:0;border:none">
-        <button type="button" class="btn btn-primary" id="btnSave">Salvar configuração</button>
+        <button type="button" class="btn btn-primary" id="btnSave">Salvar configuraÃ§Ã£o</button>
         <button type="button" class="btn btn-wa" id="btnExport">Exportar JSON</button>
         <label class="btn btn-ghost" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">
           Importar JSON
           <input type="file" id="importFile" accept="application/json" hidden />
         </label>
-        <button type="button" class="btn btn-danger" id="btnClear">Limpar sessão local</button>
+        <button type="button" class="btn btn-danger" id="btnClear">Limpar sessÃ£o local</button>
       </div>
     </section>
 
     <details class="setup-block" open>
-      <summary>1 · Provedor e modelo de integração</summary>
+      <summary>1 Â· Provedor e modelo de integraÃ§Ã£o</summary>
       <div class="inner">
-        <p class="note">Escolha como o seu backend vai falar com o WhatsApp. O fluxo recomendado pela Meta é a <strong>Cloud API</strong> com app no Meta for Developers.</p>
+        <p class="note">Escolha como o seu backend vai falar com o WhatsApp. O fluxo recomendado pela Meta Ã© a <strong>Cloud API</strong> com app no Meta for Developers.</p>
         <div class="grid-2">
           <label class="field">Provedor / stack
             <select id="provedor">
-              <option value="meta_cloud">Meta — WhatsApp Cloud API (oficial)</option>
-              <option value="meta_onprem">Meta — API On-Premise (legado / parceiro)</option>
+              <option value="meta_cloud">Meta â€” WhatsApp Cloud API (oficial)</option>
+              <option value="meta_onprem">Meta â€” API On-Premise (legado / parceiro)</option>
               <option value="evolution">Evolution API / Baileys (self-hosted)</option>
               <option value="twilio">Twilio / outro BSP</option>
               <option value="outro">Outro / personalizado</option>
             </select>
           </label>
-          <label class="field">Versão da Graph API (Cloud)
+          <label class="field">VersÃ£o da Graph API (Cloud)
             <input type="text" id="graphVersion" class="mono" placeholder="v21.0" autocomplete="off" />
           </label>
         </div>
-        <label class="field" style="margin-top:0.75rem">Notas internas (time, ambiente, URL do repositório do bot)
-          <textarea id="notasProvedor" placeholder="Ex.: repo github.com/org/bot — deploy Railway — staging"></textarea>
+        <label class="field" style="margin-top:0.75rem">Notas internas (time, ambiente, URL do repositÃ³rio do bot)
+          <textarea id="notasProvedor" placeholder="Ex.: repo github.com/org/bot â€” deploy Railway â€” staging"></textarea>
         </label>
       </div>
     </details>
 
     <details class="setup-block" open>
-      <summary>2 · Credenciais e app (nunca commitar em repositório público)</summary>
+      <summary>2 Â· Credenciais e app (nunca commitar em repositÃ³rio pÃºblico)</summary>
       <div class="inner">
         <p class="note warn">
-          Tokens vazados permitem enviar mensagens em nome do número. Rotacione chaves se suspeitar de exposição. Em campanha, respeite a legislação eleitoral e políticas da Meta.
+          Tokens vazados permitem enviar mensagens em nome do nÃºmero. Rotacione chaves se suspeitar de exposiÃ§Ã£o. Em campanha, respeite a legislaÃ§Ã£o eleitoral e polÃ­ticas da Meta.
         </p>
         <div class="grid-2">
           <label class="field">Access token (permanente ou de sistema)
             <input type="password" id="accessToken" class="mono" autocomplete="off" placeholder="EAAxxxx..." />
           </label>
-          <label class="field">App Secret (opcional, validação assinatura)
+          <label class="field">App Secret (opcional, validaÃ§Ã£o assinatura)
             <input type="password" id="appSecret" class="mono" autocomplete="off" />
           </label>
           <label class="field">Phone Number ID
@@ -243,19 +243,19 @@
             <input type="text" id="appId" class="mono" autocomplete="off" />
           </label>
           <label class="field">Verify token (webhook)
-            <input type="text" id="verifyToken" class="mono" autocomplete="off" placeholder="string que você define" />
+            <input type="text" id="verifyToken" class="mono" autocomplete="off" placeholder="string que vocÃª define" />
           </label>
         </div>
-        <h3>Variáveis de ambiente (.env) — referência</h3>
+        <h3>VariÃ¡veis de ambiente (.env) â€” referÃªncia</h3>
         <pre class="sample mono" id="envSample"></pre>
       </div>
     </details>
 
     <details class="setup-block" open>
-      <summary>3 · Webhook e URLs públicas</summary>
+      <summary>3 Â· Webhook e URLs pÃºblicas</summary>
       <div class="inner">
         <p class="note">O Meta envia eventos <code class="mono">POST</code> para o seu servidor. O endpoint deve responder ao challenge <code class="mono">GET</code> com o <code class="mono">hub.verify_token</code>.</p>
-        <label class="field">URL pública do webhook (HTTPS)
+        <label class="field">URL pÃºblica do webhook (HTTPS)
           <input type="url" id="webhookUrl" placeholder="https://api.seudominio.com/webhooks/whatsapp" autocomplete="off" />
         </label>
         <div class="grid-2" style="margin-top:0.75rem">
@@ -273,7 +273,7 @@
     "changes": [{
       "value": {
         "messaging_product": "whatsapp",
-        "messages": [{ "from": "5511...", "type": "text", "text": { "body": "Olá" } }]
+        "messages": [{ "from": "5511...", "type": "text", "text": { "body": "OlÃ¡" } }]
       }
     }]
   }]
@@ -282,21 +282,21 @@
     </details>
 
     <details class="setup-block" open>
-      <summary>4 · Conta comercial e identidade</summary>
+      <summary>4 Â· Conta comercial e identidade</summary>
       <div class="inner">
         <div class="grid-2">
-          <label class="field">Nome de exibição aprovado (perfil comercial)
-            <input type="text" id="displayName" placeholder="Nome visível no WhatsApp" autocomplete="organization" />
+          <label class="field">Nome de exibiÃ§Ã£o aprovado (perfil comercial)
+            <input type="text" id="displayName" placeholder="Nome visÃ­vel no WhatsApp" autocomplete="organization" />
           </label>
-          <label class="field">Número em formato E.164 (sem + no campo, opcional)
+          <label class="field">NÃºmero em formato E.164 (sem + no campo, opcional)
             <input type="text" id="e164" class="mono" placeholder="5521999990000" autocomplete="off" />
           </label>
-          <label class="field">Idioma padrão das mensagens automáticas
+          <label class="field">Idioma padrÃ£o das mensagens automÃ¡ticas
             <select id="locale">
-              <option value="pt_BR">Português (Brasil)</option>
-              <option value="pt_PT">Português (Portugal)</option>
+              <option value="pt_BR">PortuguÃªs (Brasil)</option>
+              <option value="pt_PT">PortuguÃªs (Portugal)</option>
               <option value="en_US">English (US)</option>
-              <option value="es">Español</option>
+              <option value="es">EspaÃ±ol</option>
             </select>
           </label>
           <label class="field">Timezone do servidor / agendamentos
@@ -304,19 +304,19 @@
           </label>
         </div>
         <p class="note" style="margin-top:0.75rem">
-          Lembrete: mensagens fora da <strong>janela de atendimento</strong> (24h após última msg do usuário, salvo templates aprovados) exigem <strong>template</strong> pela Meta.
+          Lembrete: mensagens fora da <strong>janela de atendimento</strong> (24h apÃ³s Ãºltima msg do usuÃ¡rio, salvo templates aprovados) exigem <strong>template</strong> pela Meta.
         </p>
       </div>
     </details>
 
     <details class="setup-block" open>
-      <summary>5 · Comportamento do bot e handoff humano</summary>
+      <summary>5 Â· Comportamento do bot e handoff humano</summary>
       <div class="inner">
         <label class="field">Mensagem de boas-vindas (primeiro contato / menu)
-          <textarea id="welcomeMsg" placeholder="Olá! Sou o assistente virtual. Digite 1 para propostas, 2 para atendimento..."></textarea>
+          <textarea id="welcomeMsg" placeholder="OlÃ¡! Sou o assistente virtual. Digite 1 para propostas, 2 para atendimento..."></textarea>
         </label>
-        <label class="field" style="margin-top:0.75rem">Palavras-chave ? respostas rápidas (uma por linha: chave | resposta)
-          <textarea id="keywordMap" class="mono" placeholder="oi|Olá! Como posso ajudar?&#10;ajuda|Encaminhei para um atendente em breve." style="min-height:100px"></textarea>
+        <label class="field" style="margin-top:0.75rem">Palavras-chave ? respostas rÃ¡pidas (uma por linha: chave | resposta)
+          <textarea id="keywordMap" class="mono" placeholder="oi|OlÃ¡! Como posso ajudar?&#10;ajuda|Encaminhei para um atendente em breve." style="min-height:100px"></textarea>
         </label>
         <div class="grid-2" style="margin-top:0.75rem">
           <label class="field">Filas / etiquetas CRM (opcional)
@@ -330,28 +330,28 @@
     </details>
 
     <details class="setup-block">
-      <summary>6 · Checklist de sessão e go-live</summary>
+      <summary>6 Â· Checklist de sessÃ£o e go-live</summary>
       <div class="inner">
-        <p class="note">Marque o que já está validado com a sua equipa. Os dados ficam neste browser para acompanhamento.</p>
+        <p class="note">Marque o que jÃ¡ estÃ¡ validado com a sua equipa. Os dados ficam neste browser para acompanhamento.</p>
         <ul class="checklist" id="checklist">
           <li><label><input type="checkbox" data-key="chk_app" /> App criado no Meta for Developers e modo Live</label></li>
-          <li><label><input type="checkbox" data-key="chk_waba" /> WABA verificada e número associado</label></li>
-          <li><label><input type="checkbox" data-key="chk_token" /> Token com permissões de WhatsApp Business Messaging</label></li>
-          <li><label><input type="checkbox" data-key="chk_webhook" /> Webhook assinado e challenge OK em produção</label></li>
-          <li><label><input type="checkbox" data-key="chk_tls" /> HTTPS válido (certificado) no endpoint público</label></li>
-          <li><label><input type="checkbox" data-key="chk_templates" /> Templates de utilidade/marketing submetidos (se necessário)</label></li>
-          <li><label><input type="checkbox" data-key="chk_optin" /> Fluxo de opt-in e política de privacidade alinhados</label></li>
+          <li><label><input type="checkbox" data-key="chk_waba" /> WABA verificada e nÃºmero associado</label></li>
+          <li><label><input type="checkbox" data-key="chk_token" /> Token com permissÃµes de WhatsApp Business Messaging</label></li>
+          <li><label><input type="checkbox" data-key="chk_webhook" /> Webhook assinado e challenge OK em produÃ§Ã£o</label></li>
+          <li><label><input type="checkbox" data-key="chk_tls" /> HTTPS vÃ¡lido (certificado) no endpoint pÃºblico</label></li>
+          <li><label><input type="checkbox" data-key="chk_templates" /> Templates de utilidade/marketing submetidos (se necessÃ¡rio)</label></li>
+          <li><label><input type="checkbox" data-key="chk_optin" /> Fluxo de opt-in e polÃ­tica de privacidade alinhados</label></li>
           <li><label><input type="checkbox" data-key="chk_logs" /> Logs e rate limit configurados no backend</label></li>
         </ul>
       </div>
     </details>
 
     <section class="panel">
-      <h2>Documentação útil</h2>
+      <h2>DocumentaÃ§Ã£o Ãºtil</h2>
       <ul class="note" style="padding-left:1.2rem;margin:0;line-height:1.65">
-        <li><a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener">Meta — Get started (Cloud API)</a></li>
-        <li><a href="https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/components" target="_blank" rel="noopener">Meta — Webhooks</a></li>
-        <li><a href="https://www.whatsapp.com/legal/business-policy" target="_blank" rel="noopener">Política comercial WhatsApp</a></li>
+        <li><a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener">Meta â€” Get started (Cloud API)</a></li>
+        <li><a href="https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/components" target="_blank" rel="noopener">Meta â€” Webhooks</a></li>
+        <li><a href="https://www.whatsapp.com/legal/business-policy" target="_blank" rel="noopener">PolÃ­tica comercial WhatsApp</a></li>
       </ul>
     </section>
 
@@ -359,8 +359,8 @@
       <p>
         Criado por
         <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
-        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
-        ·
+        <span class="site-credit-role">â€” Especialista em SeguranÃ§a da InformaÃ§Ã£o &amp; DevSecOps</span>
+        Â·
         <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </p>
     </footer>
@@ -443,9 +443,9 @@
 
     function refreshEnvSample() {
       const s = collectState();
-      const mask = (v) => (v ? `${String(v).slice(0, 6)}…` : "");
+      const mask = (v) => (v ? `${String(v).slice(0, 6)}â€¦` : "");
       const lines = [
-        "# Copie para o .env do servidor — não use estes valores no cliente público",
+        "# Copie para o .env do servidor â€” nÃ£o use estes valores no cliente pÃºblico",
         `WHATSAPP_ACCESS_TOKEN=${s.accessToken ? mask(s.accessToken) + " (definido)" : ""}`,
         `WHATSAPP_PHONE_NUMBER_ID=${s.phoneNumberId || ""}`,
         `WHATSAPP_WABA_ID=${s.wabaId || ""}`,
@@ -462,10 +462,10 @@
       try {
         const state = collectState();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        setStatus("Configuração guardada neste navegador.", "ok");
+        setStatus("ConfiguraÃ§Ã£o guardada neste navegador.", "ok");
         refreshEnvSample();
       } catch (e) {
-        setStatus("Não foi possível guardar (armazenamento cheio ou privado).", "err");
+        setStatus("NÃ£o foi possÃ­vel guardar (armazenamento cheio ou privado).", "err");
       }
     }
 
@@ -479,9 +479,9 @@
           return;
         }
         applyState(JSON.parse(raw));
-        setStatus("Sessão carregada do armazenamento local.", "ok");
+        setStatus("SessÃ£o carregada do armazenamento local.", "ok");
       } catch (e) {
-        setStatus("Ficheiro guardado corrompido — use Limpar e recomece.", "err");
+        setStatus("Ficheiro guardado corrompido â€” use Limpar e recomece.", "err");
       }
     }
 
@@ -496,7 +496,7 @@
       $("graphVersion").value = "v21.0";
       $("timezone").value = "America/Sao_Paulo";
       refreshEnvSample();
-      setStatus("Sessão local limpa.", "ok");
+      setStatus("SessÃ£o local limpa.", "ok");
     }
 
     function exportJson() {
@@ -506,12 +506,12 @@
       a.download = "politapp-whatsapp-setup.json";
       a.click();
       URL.revokeObjectURL(a.href);
-      setStatus("Exportação iniciada.", "ok");
+      setStatus("ExportaÃ§Ã£o iniciada.", "ok");
     }
 
     $("btnSave").addEventListener("click", saveLocal);
     $("btnClear").addEventListener("click", () => {
-      if (confirm("Apagar toda a configuração WhatsApp guardada neste navegador?")) clearLocal();
+      if (confirm("Apagar toda a configuraÃ§Ã£o WhatsApp guardada neste navegador?")) clearLocal();
     });
     $("btnExport").addEventListener("click", exportJson);
     $("importFile").addEventListener("change", (e) => {
@@ -525,7 +525,7 @@
           saveLocal();
           setStatus("Importado e guardado.", "ok");
         } catch (err) {
-          setStatus("JSON inválido.", "err");
+          setStatus("JSON invÃ¡lido.", "err");
         }
       };
       r.readAsText(f);

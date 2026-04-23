@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Unidades — Admin | Politapp</title>
+  <title>Unidades â€” Admin | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -72,29 +72,29 @@
     .hint { font-size: 0.82rem; color: var(--muted); margin: 0.35rem 0 0; }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
-  <link rel="stylesheet" href="css/site-theme.css?v=1" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap" id="root" hidden>
-    <nav class="site-nav" aria-label="Navegação">
+    <nav class="site-nav" aria-label="NavegaÃ§Ã£o">
       <a href="admin.html">Painel admin</a>
       <a href="admin-aprovacoes.html">Aprovar contas</a>
       <a href="conta.html">Conta</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">Mídia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-          <a href="midia-social.html">Painel · escuta e conteúdo</a>
-          <a href="whatsapp.html">WhatsApp · bot</a>
+        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
+          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
+          <a href="whatsapp.html">WhatsApp Â· bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
-      <a href="index.html">Início</a>
+      <a href="index.html">InÃ­cio</a>
     </nav>
     <h1 id="politapp-main" tabindex="-1">Unidades</h1>
-    <p class="lede">Cada unidade tem um <strong>slug</strong> único (URL-friendly). Se deixar o slug em branco, ele é gerado a partir do nome.</p>
+    <p class="lede">Cada unidade tem um <strong>slug</strong> Ãºnico (URL-friendly). Se deixar o slug em branco, ele Ã© gerado a partir do nome.</p>
     <p id="err" class="err" hidden></p>
 
     <section class="panel">
@@ -102,12 +102,12 @@
       <form id="formNova">
         <div class="row">
           <label for="nome">Nome</label>
-          <input type="text" id="nome" name="nome" maxlength="120" placeholder="Ex.: Operações — SP" autocomplete="organization" required />
+          <input type="text" id="nome" name="nome" maxlength="120" placeholder="Ex.: OperaÃ§Ãµes â€” SP" autocomplete="organization" required />
         </div>
         <div class="row">
           <label for="slug">Slug <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
           <input type="text" id="slug" name="slug" maxlength="80" placeholder="ex.: operacoes-sp" autocomplete="off" />
-          <p class="hint" id="slugHint">—</p>
+          <p class="hint" id="slugHint">â€”</p>
         </div>
         <button type="submit" class="primary">Criar unidade</button>
       </form>
@@ -125,7 +125,7 @@
             </tr>
           </thead>
           <tbody id="tbody">
-            <tr><td colspan="3" class="empty">A carregar…</td></tr>
+            <tr><td colspan="3" class="empty">A carregarâ€¦</td></tr>
           </tbody>
         </table>
       </div>

@@ -2,7 +2,7 @@
 import path from "path";
 
 const root = path.join(import.meta.dirname, "..");
-const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />\n  <link rel="stylesheet" href="css/site-theme.css?v=1" />\n`;
+const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />\n  <link rel="stylesheet" href="css/site-theme.css?v=2" />\n`;
 const SKIP = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 const SKIP_LOGIN = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 

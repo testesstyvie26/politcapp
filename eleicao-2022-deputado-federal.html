@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EleiÁıes 2022 ó Deputado federal (histÛrico TSE) | Politapp</title>
+  <title>Elei√ß√µes 2022 ‚Äî Deputado federal (hist√≥rico TSE) | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -199,42 +199,42 @@
     .pager-meta strong { color: var(--text); font-family: "JetBrains Mono", monospace; }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
-  <link rel="stylesheet" href="css/site-theme.css?v=1" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conte˙do</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conte√∫do</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="NavegaÁ„o principal">
+    <nav class="site-nav" aria-label="Navega√ß√£o principal">
       <a href="index.html">Lista de candidatos</a>
-      <a href="eleicao-2022-deputado-federal.html" aria-current="page">EleiÁ„o 2022 ∑ DF</a>
-      <a href="executivo.html">Vis„o executiva</a>
+      <a href="eleicao-2022-deputado-federal.html" aria-current="page">Elei√ß√£o 2022 ¬∑ DF</a>
+      <a href="executivo.html">Vis√£o executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
       <a href="prefeituras-rj.html">Prefeituras RJ</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="transparencia.html">TransparÍncia</a>
+      <a href="transparencia.html">Transpar√™ncia</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">MÌdia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÌdia social">
-          <a href="midia-social.html">Painel ∑ escuta e conte˙do</a>
-          <a href="whatsapp.html">WhatsApp ∑ bot</a>
+        <summary class="site-nav-dropdown__summary">M√≠dia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu M√≠dia social">
+          <a href="midia-social.html">Painel ¬∑ escuta e conte√∫do</a>
+          <a href="whatsapp.html">WhatsApp ¬∑ bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
-      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">DocumentaÁ„o da API</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documenta√ß√£o da API</a>
     </nav>
 
     <header id="politapp-main" tabindex="-1">
-      <h1>HistÛrico ó EleiÁıes gerais 2022 ∑ Deputado federal</h1>
+      <h1>Hist√≥rico ‚Äî Elei√ß√µes gerais 2022 ¬∑ Deputado federal</h1>
       <p>
-        NÛmina e votaÁ„o nominal do <strong>1∫ turno</strong> (outubro de 2022), cargo cÛdigo <span class="mono">c0006</span>,
-        eleiÁ„o TSE <span class="mono">546</span>, por UF. Fonte oficial:
-        <a href="https://resultados.tse.jus.br/oficial/ele2022/546/dados-simplificados/" target="_blank" rel="noopener">resultados TSE ó dados simplificados</a>.
-        Para mandato atual e redes na C‚mara, use a <a href="index.html">lista de deputados</a> (API Dados Abertos).
+        N√≥mina e vota√ß√£o nominal do <strong>1¬∫ turno</strong> (outubro de 2022), cargo c√≥digo <span class="mono">c0006</span>,
+        elei√ß√£o TSE <span class="mono">546</span>, por UF. Fonte oficial:
+        <a href="https://resultados.tse.jus.br/oficial/ele2022/546/dados-simplificados/" target="_blank" rel="noopener">resultados TSE ‚Äî dados simplificados</a>.
+        Para mandato atual e redes na C√¢mara, use a <a href="index.html">lista de deputados</a> (API Dados Abertos).
       </p>
     </header>
 
@@ -243,20 +243,20 @@
       <div class="filters">
         <label>
           UF
-          <select id="siglaUf" aria-label="Unidade da FederaÁ„o">
+          <select id="siglaUf" aria-label="Unidade da Federa√ß√£o">
             <option value="">Brasil inteiro (27 arquivos)</option>
           </select>
         </label>
         <label>
           Busca (nome)
-          <input type="search" id="nome" placeholder="Parte do nome de urnaÖ" autocomplete="off" />
+          <input type="search" id="nome" placeholder="Parte do nome de urna‚Ä¶" autocomplete="off" />
         </label>
         <label>
           Partido (sigla)
           <input type="text" id="siglaPartido" placeholder="Ex.: PSOL" maxlength="12" />
         </label>
         <label>
-          Por p·gina
+          Por p√°gina
           <select id="porPagina">
             <option value="25">25</option>
             <option value="50" selected>50</option>
@@ -265,7 +265,7 @@
         </label>
         <label class="check-line">
           <input type="checkbox" id="excluirSuplentes" />
-          <span>Ocultar candidatos cuja <strong>situaÁ„o</strong> indica suplÍncia (filtro textual TSE)</span>
+          <span>Ocultar candidatos cuja <strong>situa√ß√£o</strong> indica supl√™ncia (filtro textual TSE)</span>
         </label>
         <div class="actions">
           <button type="button" id="btnCarregar">Carregar / atualizar dados</button>
@@ -273,19 +273,19 @@
         </div>
       </div>
       <p class="note">
-        Na primeira visita, apenas a UF <strong>RJ</strong> È baixada. ìBrasil inteiroî dispara 27 requisiÁıes aos JSON do TSE (pode levar um minuto).
-        O bot„o <strong>Perfil</strong> abre <span class="mono">candidato.html</span> com o sequencial TSE quando n„o houver id da C‚mara.
+        Na primeira visita, apenas a UF <strong>RJ</strong> √© baixada. ‚ÄúBrasil inteiro‚Äù dispara 27 requisi√ß√µes aos JSON do TSE (pode levar um minuto).
+        O bot√£o <strong>Perfil</strong> abre <span class="mono">candidato.html</span> com o sequencial TSE quando n√£o houver id da C√¢mara.
       </p>
       <div class="stats" id="stats" hidden>
-        <span>UF: <strong id="statUf">ó</strong></span>
-        <span>ApÛs filtros: <strong id="statTotal">0</strong></span>
-        <span>Nesta p·gina: <strong id="statFiltrados">0</strong></span>
-        <span>P·gina: <strong id="statPagina">1</strong> / <strong id="statPaginas">1</strong></span>
+        <span>UF: <strong id="statUf">‚Äî</strong></span>
+        <span>Ap√≥s filtros: <strong id="statTotal">0</strong></span>
+        <span>Nesta p√°gina: <strong id="statFiltrados">0</strong></span>
+        <span>P√°gina: <strong id="statPagina">1</strong> / <strong id="statPaginas">1</strong></span>
       </div>
     </section>
 
     <div id="content">
-      <div class="loading"><div class="spinner"></div>Escolha a UF e clique em Carregar, ou aguarde o carregamento inicial do RJÖ</div>
+      <div class="loading"><div class="spinner"></div>Escolha a UF e clique em Carregar, ou aguarde o carregamento inicial do RJ‚Ä¶</div>
     </div>
 
     <div class="pager" id="pager" hidden>
@@ -293,8 +293,8 @@
       <div class="pager-row">
         <button type="button" class="secondary" id="first">Primeira</button>
         <button type="button" class="secondary" id="prev">Anterior</button>
-        <button type="button" class="secondary" id="next">PrÛxima</button>
-        <button type="button" class="secondary" id="last">⁄ltima</button>
+        <button type="button" class="secondary" id="next">Pr√≥xima</button>
+        <button type="button" class="secondary" id="last">√öltima</button>
       </div>
     </div>
   </div>
@@ -302,15 +302,15 @@
   <script src="tse-votos-2022.js?v=20260420"></script>
   <script>
     const ESTADOS_BR = [
-      { sigla: "AC", nome: "Acre" }, { sigla: "AL", nome: "Alagoas" }, { sigla: "AP", nome: "Amap·" },
-      { sigla: "AM", nome: "Amazonas" }, { sigla: "BA", nome: "Bahia" }, { sigla: "CE", nome: "Cear·" },
-      { sigla: "DF", nome: "Distrito Federal" }, { sigla: "ES", nome: "EspÌrito Santo" }, { sigla: "GO", nome: "Goi·s" },
-      { sigla: "MA", nome: "Maranh„o" }, { sigla: "MT", nome: "Mato Grosso" }, { sigla: "MS", nome: "Mato Grosso do Sul" },
-      { sigla: "MG", nome: "Minas Gerais" }, { sigla: "PA", nome: "Par·" }, { sigla: "PB", nome: "ParaÌba" },
-      { sigla: "PR", nome: "Paran·" }, { sigla: "PE", nome: "Pernambuco" }, { sigla: "PI", nome: "PiauÌ" },
+      { sigla: "AC", nome: "Acre" }, { sigla: "AL", nome: "Alagoas" }, { sigla: "AP", nome: "Amap√°" },
+      { sigla: "AM", nome: "Amazonas" }, { sigla: "BA", nome: "Bahia" }, { sigla: "CE", nome: "Cear√°" },
+      { sigla: "DF", nome: "Distrito Federal" }, { sigla: "ES", nome: "Esp√≠rito Santo" }, { sigla: "GO", nome: "Goi√°s" },
+      { sigla: "MA", nome: "Maranh√£o" }, { sigla: "MT", nome: "Mato Grosso" }, { sigla: "MS", nome: "Mato Grosso do Sul" },
+      { sigla: "MG", nome: "Minas Gerais" }, { sigla: "PA", nome: "Par√°" }, { sigla: "PB", nome: "Para√≠ba" },
+      { sigla: "PR", nome: "Paran√°" }, { sigla: "PE", nome: "Pernambuco" }, { sigla: "PI", nome: "Piau√≠" },
       { sigla: "RJ", nome: "Rio de Janeiro" }, { sigla: "RN", nome: "Rio Grande do Norte" },
-      { sigla: "RS", nome: "Rio Grande do Sul" }, { sigla: "RO", nome: "RondÙnia" }, { sigla: "RR", nome: "Roraima" },
-      { sigla: "SC", nome: "Santa Catarina" }, { sigla: "SP", nome: "S„o Paulo" }, { sigla: "SE", nome: "Sergipe" },
+      { sigla: "RS", nome: "Rio Grande do Sul" }, { sigla: "RO", nome: "Rond√¥nia" }, { sigla: "RR", nome: "Roraima" },
+      { sigla: "SC", nome: "Santa Catarina" }, { sigla: "SP", nome: "S√£o Paulo" }, { sigla: "SE", nome: "Sergipe" },
       { sigla: "TO", nome: "Tocantins" },
     ];
 
@@ -332,7 +332,7 @@
     }
 
     function fmtInt(n) {
-      if (n == null || !Number.isFinite(n)) return "ó";
+      if (n == null || !Number.isFinite(n)) return "‚Äî";
       return n.toLocaleString("pt-BR");
     }
 
@@ -351,7 +351,7 @@
       [...ESTADOS_BR].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).forEach(({ sigla, nome }) => {
         const o = document.createElement("option");
         o.value = sigla;
-        o.textContent = `${sigla} ó ${nome}`;
+        o.textContent = `${sigla} ‚Äî ${nome}`;
         sel.appendChild(o);
       });
       sel.value = "RJ";
@@ -403,34 +403,34 @@
       const thead = `
         <thead><tr>
           ${ufAmpla ? "<th>UF</th>" : ""}
-          <th>N∫</th>
+          <th>N¬∫</th>
           <th>Nome de urna</th>
           <th>Partido</th>
-          <th>ColigaÁ„o / chapa (TSE)</th>
+          <th>Coliga√ß√£o / chapa (TSE)</th>
           <th class="mono">Votos</th>
-          <th class="mono">% v·lidos</th>
-          <th>SituaÁ„o</th>
+          <th class="mono">% v√°lidos</th>
+          <th>Situa√ß√£o</th>
           <th>Perfil</th>
         </tr></thead>`;
 
       const body = fatia
         .map((r) => {
-          const uf = r.uf || "ó";
-          const sig = window.TSE2022DF ? TSE2022DF.siglaFromCc(r.cc) : "ó";
-          const ccFull = r.cc || "ó";
-          const pv = r.pvap != null && r.pvap !== "" ? `${escapeHtml(r.pvap)}%` : "ó";
+          const uf = r.uf || "‚Äî";
+          const sig = window.TSE2022DF ? TSE2022DF.siglaFromCc(r.cc) : "‚Äî";
+          const ccFull = r.cc || "‚Äî";
+          const pv = r.pvap != null && r.pvap !== "" ? `${escapeHtml(r.pvap)}%` : "‚Äî";
           const perfil = `candidato.html?tse=${encodeURIComponent(r.sqcand)}&uf=${encodeURIComponent(uf)}`;
           return `<tr>
             ${ufAmpla ? `<td><span class="badge">${escapeHtml(uf)}</span></td>` : ""}
-            <td class="mono">${escapeHtml(r.n != null ? String(r.n) : "ó")}</td>
-            <td><strong>${escapeHtml(r.nm || "ó")}</strong>
+            <td class="mono">${escapeHtml(r.n != null ? String(r.n) : "‚Äî")}</td>
+            <td><strong>${escapeHtml(r.nm || "‚Äî")}</strong>
               <div class="muted mono" style="font-size:0.75rem">sqcand ${escapeHtml(r.sqcand)}</div>
             </td>
             <td><span class="badge">${escapeHtml(sig)}</span></td>
             <td style="font-size:0.8rem;max-width:14rem">${escapeHtml(ccFull)}</td>
             <td class="mono">${escapeHtml(fmtInt(r.vap))}</td>
             <td class="mono">${pv}</td>
-            <td style="font-size:0.8rem;max-width:10rem">${escapeHtml(r.st || "ó")}</td>
+            <td style="font-size:0.8rem;max-width:10rem">${escapeHtml(r.st || "‚Äî")}</td>
             <td><a class="social-mini" href="${escapeHtml(perfil)}">Perfil</a></td>
           </tr>`;
         })
@@ -448,7 +448,7 @@
       el("pager").hidden = totalPag <= 1;
       el("pagerMeta").innerHTML =
         totalPag > 1
-          ? `Mostrando <strong>${ini + 1}</strong>ñ<strong>${Math.min(ini + fatia.length, total)}</strong> de <strong>${total}</strong>`
+          ? `Mostrando <strong>${ini + 1}</strong>‚Äì<strong>${Math.min(ini + fatia.length, total)}</strong> de <strong>${total}</strong>`
           : "";
       el("first").disabled = pagina <= 1;
       el("prev").disabled = pagina <= 1;
@@ -464,12 +464,12 @@
 
     async function carregar() {
       if (!window.TSE2022DF) {
-        el("content").innerHTML = '<p class="error">Script TSE2022DF n„o carregou (tse-votos-2022.js).</p>';
+        el("content").innerHTML = '<p class="error">Script TSE2022DF n√£o carregou (tse-votos-2022.js).</p>';
         return;
       }
       const ufSel = el("siglaUf").value.trim().toUpperCase();
       el("content").innerHTML =
-        `<div class="loading"><div class="spinner"></div>Carregando JSON do TSEÖ<br/>
+        `<div class="loading"><div class="spinner"></div>Carregando JSON do TSE‚Ä¶<br/>
         <span class="muted" style="font-size:0.85rem">${ufSel ? "UF " + escapeHtml(ufSel) : "Todas as UFs (27 arquivos)"}</span></div>`;
       el("pager").hidden = true;
       el("stats").hidden = true;
@@ -490,8 +490,8 @@
         console.error(e);
         const msg = e && e.message ? e.message : String(e);
         el("content").innerHTML =
-          `<p class="error">N„o foi possÌvel carregar os dados do TSE. ${escapeHtml(msg)}</p>
-          <p class="note">Se estiver em <span class="mono">file://</span>, abra o site por um servidor HTTP local (ex.: extens„o Live Server no VS Code ou <span class="mono">npx serve</span>).</p>`;
+          `<p class="error">N√£o foi poss√≠vel carregar os dados do TSE. ${escapeHtml(msg)}</p>
+          <p class="note">Se estiver em <span class="mono">file://</span>, abra o site por um servidor HTTP local (ex.: extens√£o Live Server no VS Code ou <span class="mono">npx serve</span>).</p>`;
       }
     }
 

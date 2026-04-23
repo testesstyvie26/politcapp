@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Candidatos — Deputados federais | Dados Abertos Câmara</title>
+  <title>Candidatos ï¿½?? Deputados federais | Dados Abertos CÃ¢mara</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -452,43 +452,43 @@
     }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
-  <link rel="stylesheet" href="css/site-theme.css?v=1" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="Navegação principal">
+    <nav class="site-nav" aria-label="NavegaÃ§Ã£o principal">
       <a href="index.html" aria-current="page">Lista de candidatos</a>
-      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
-      <a href="executivo.html">Visão executiva</a>
+      <a href="eleicao-2022-deputado-federal.html">EleiÃ§Ã£o 2022 Â· DF</a>
+      <a href="executivo.html">VisÃ£o executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
       <a href="prefeituras-rj.html">Prefeituras RJ</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="transparencia.html">Transparência</a>
+      <a href="transparencia.html">TransparÃªncia</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">Mídia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-          <a href="midia-social.html">Painel · escuta e conteúdo</a>
-          <a href="whatsapp.html">WhatsApp · bot</a>
+        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
+          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
+          <a href="whatsapp.html">WhatsApp Â· bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
-      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">DocumentaÃ§Ã£o da API</a>
     </nav>
     <header id="politapp-main" tabindex="-1">
       <div class="header-top">
         <h1>Candidatos a deputado federal</h1>
       </div>
       <p>
-        Lista paginada com base nos deputados em exercício na
-        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API v2 da Câmara</a>
-        (mandato / legislatura atual). A página abre com filtro <strong>RJ</strong> e votação TSE 2022 só para o Rio;
-        altere a UF ou limpe os filtros para ampliar. Use a paginação para navegar.
+        Lista paginada com base nos deputados em exercÃ­cio na
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API v2 da CÃ¢mara</a>
+        (mandato / legislatura atual). A pÃ¡gina abre com filtro <strong>RJ</strong> e votaÃ§Ã£o TSE 2022 sÃ³ para o Rio;
+        altere a UF ou limpe os filtros para ampliar. Use a paginaÃ§Ã£o para navegar.
       </p>
     </header>
 
@@ -508,18 +508,18 @@
             type="search"
             class="uf-busca"
             id="ufListaBusca"
-            placeholder="Buscar estado (nome ou sigla)…"
+            placeholder="Buscar estado (nome ou sigla)ï¿½?ï¿½"
             autocomplete="off"
             aria-label="Filtrar lista de estados"
           />
-          <select id="siglaUf" aria-label="Unidade da Federação"></select>
+          <select id="siglaUf" aria-label="Unidade da FederaÃ§Ã£o"></select>
         </label>
         <label>
           Legislatura
           <input type="number" id="idLegislatura" placeholder="Ex.: 57" min="1" />
         </label>
         <label>
-          Por página
+          Por pÃ¡gina
           <select id="itens">
             <option value="10">10</option>
             <option value="20" selected>20</option>
@@ -528,7 +528,7 @@
         </label>
         <label class="check-line">
           <input type="checkbox" id="incluirSuplentesTse" checked />
-          <span>Listar suplentes (TSE 2022) sem ficha na Câmara — use filtro <strong>UF</strong></span>
+          <span>Listar suplentes (TSE 2022) sem ficha na CÃ¢mara ï¿½?? use filtro <strong>UF</strong></span>
         </label>
         <div class="actions">
           <button type="button" id="buscar">Buscar</button>
@@ -536,17 +536,17 @@
         </div>
       </div>
       <div class="stats" id="stats" hidden>
-        <span><strong id="statPagina">0</strong> candidatos nesta página</span>
-        <span>Total de páginas: <strong id="statTotalPaginas">—</strong></span>
-        <span>Partido: <strong id="statPartido">—</strong> · UF: <strong id="statUf">—</strong></span>
+        <span><strong id="statPagina">0</strong> candidatos nesta pÃ¡gina</span>
+        <span>Total de pÃ¡ginas: <strong id="statTotalPaginas">ï¿½??</strong></span>
+        <span>Partido: <strong id="statPartido">ï¿½??</strong> Â· UF: <strong id="statUf">ï¿½??</strong></span>
       </div>
       <p class="note">
-        <strong>Votos 2022</strong> (deputado federal, 1º turno) vêm dos JSON oficiais do TSE (eleição 546). Na abertura, só o arquivo da <strong>UF selecionada</strong> (RJ) é baixado; sem filtro de UF, todos os estados. Suplentes extras aparecem quando há <strong>UF</strong> no filtro e a opção acima está marcada.
+        <strong>Votos 2022</strong> (deputado federal, 1Âº turno) vÃªm dos JSON oficiais do TSE (eleiÃ§Ã£o 546). Na abertura, sÃ³ o arquivo da <strong>UF selecionada</strong> (RJ) Ã© baixado; sem filtro de UF, todos os estados. Suplentes extras aparecem quando hÃ¡ <strong>UF</strong> no filtro e a opÃ§Ã£o acima estÃ¡ marcada.
       </p>
     </section>
 
     <div id="content">
-      <div class="loading"><div class="spinner"></div>Carregando candidatos…</div>
+      <div class="loading"><div class="spinner"></div>Carregando candidatosï¿½?ï¿½</div>
     </div>
 
     <div class="pager" id="pager" hidden>
@@ -554,12 +554,12 @@
       <div class="pager-row">
         <button type="button" class="secondary" id="first">Primeira</button>
         <button type="button" class="secondary" id="prev">Anterior</button>
-        <button type="button" class="secondary" id="next">Próxima</button>
-        <button type="button" class="secondary" id="last">Última</button>
+        <button type="button" class="secondary" id="next">PrÃ³xima</button>
+        <button type="button" class="secondary" id="last">ï¿½?ltima</button>
       </div>
       <div class="pager-goto">
-        <span>Ir para a página</span>
-        <input type="number" id="gotoPage" min="1" value="1" aria-label="Número da página" />
+        <span>Ir para a pÃ¡gina</span>
+        <input type="number" id="gotoPage" min="1" value="1" aria-label="NÃºmero da pÃ¡gina" />
         <button type="button" class="secondary" id="gotoBtn">Ir</button>
       </div>
     </div>
@@ -570,8 +570,8 @@
       <p>
         Criado por
         <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
-        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
-        ·
+        <span class="site-credit-role">ï¿½?? Especialista em SeguranÃ§a da InformaÃ§Ã£o &amp; DevSecOps</span>
+        Â·
         <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </p>
     </footer>
@@ -587,29 +587,29 @@
     const ESTADOS_BR = [
       { sigla: "AC", nome: "Acre" },
       { sigla: "AL", nome: "Alagoas" },
-      { sigla: "AP", nome: "Amapá" },
+      { sigla: "AP", nome: "AmapÃ¡" },
       { sigla: "AM", nome: "Amazonas" },
       { sigla: "BA", nome: "Bahia" },
-      { sigla: "CE", nome: "Ceará" },
+      { sigla: "CE", nome: "CearÃ¡" },
       { sigla: "DF", nome: "Distrito Federal" },
-      { sigla: "ES", nome: "Espírito Santo" },
-      { sigla: "GO", nome: "Goiás" },
-      { sigla: "MA", nome: "Maranhão" },
+      { sigla: "ES", nome: "EspÃ­rito Santo" },
+      { sigla: "GO", nome: "GoiÃ¡s" },
+      { sigla: "MA", nome: "MaranhÃ£o" },
       { sigla: "MT", nome: "Mato Grosso" },
       { sigla: "MS", nome: "Mato Grosso do Sul" },
       { sigla: "MG", nome: "Minas Gerais" },
-      { sigla: "PA", nome: "Pará" },
-      { sigla: "PB", nome: "Paraíba" },
-      { sigla: "PR", nome: "Paraná" },
+      { sigla: "PA", nome: "ParÃ¡" },
+      { sigla: "PB", nome: "ParaÃ­ba" },
+      { sigla: "PR", nome: "ParanÃ¡" },
       { sigla: "PE", nome: "Pernambuco" },
-      { sigla: "PI", nome: "Piauí" },
+      { sigla: "PI", nome: "PiauÃ­" },
       { sigla: "RJ", nome: "Rio de Janeiro" },
       { sigla: "RN", nome: "Rio Grande do Norte" },
       { sigla: "RS", nome: "Rio Grande do Sul" },
-      { sigla: "RO", nome: "Rondônia" },
+      { sigla: "RO", nome: "RondÃ´nia" },
       { sigla: "RR", nome: "Roraima" },
       { sigla: "SC", nome: "Santa Catarina" },
-      { sigla: "SP", nome: "São Paulo" },
+      { sigla: "SP", nome: "SÃ£o Paulo" },
       { sigla: "SE", nome: "Sergipe" },
       { sigla: "TO", nome: "Tocantins" },
     ];
@@ -635,7 +635,7 @@
 
       const sorted = [...ESTADOS_BR].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
       for (const { sigla, nome } of sorted) {
-        const text = `${sigla} — ${nome}`;
+        const text = `${sigla} ï¿½?? ${nome}`;
         const matches =
           !q ||
           normalizaBuscaUf(text).includes(q) ||
@@ -705,7 +705,7 @@
       return new Promise((r) => setTimeout(r, ms));
     }
 
-    /** Evita queda total da página quando uma das muitas requisições paralelas falha (rede instável, limite do navegador, etc.). */
+    /** Evita queda total da pÃ¡gina quando uma das muitas requisiÃ§Ãµes paralelas falha (rede instÃ¡vel, limite do navegador, etc.). */
     async function fetchJson(url, options = {}) {
       const retries = options.retries ?? 4;
       const baseDelayMs = options.baseDelayMs ?? 500;
@@ -748,7 +748,7 @@
       return results;
     }
 
-    /** Respostas da API v2 da Câmara encapsulam o recurso em `.dados`. */
+    /** Respostas da API v2 da CÃ¢mara encapsulam o recurso em `.dados`. */
     function unwrapCamaraDados(pack) {
       if (!pack || typeof pack !== "object") return {};
       return pack.dados != null ? pack.dados : pack;
@@ -758,7 +758,7 @@
       const e = (email || "").trim();
       return e
         ? `<a href="mailto:${escapeHtml(e)}">${escapeHtml(e)}</a>`
-        : '<span class="muted">Não informado</span>';
+        : '<span class="muted">NÃ£o informado</span>';
     }
 
     function extractRedesUrls(raw) {
@@ -790,7 +790,7 @@
 
     function labelRede(url) {
       const u = url.toLowerCase();
-      if (u.includes("twitter.com") || u.includes("x.com")) return "??";
+      if (u.includes("twitter.com") || u.includes("x.com")) return "X";
       if (u.includes("instagram.com")) return "IG";
       if (u.includes("facebook.com")) return "FB";
       if (u.includes("youtube.com") || u.includes("youtu.be")) return "YT";
@@ -801,7 +801,7 @@
     }
 
     function renderRedesCell(urls) {
-      if (!urls || !urls.length) return '<span class="muted">—</span>';
+      if (!urls || !urls.length) return '<span class="muted">ï¿½??</span>';
       const max = 4;
       const slice = urls.slice(0, max);
       const links = slice
@@ -817,7 +817,7 @@
     }
 
     function fmtInt(n) {
-      if (n == null || !Number.isFinite(n)) return "—";
+      if (n == null || !Number.isFinite(n)) return "ï¿½??";
       return n.toLocaleString("pt-BR");
     }
 
@@ -828,25 +828,25 @@
         <tr>
           <td>
             <strong>${escapeHtml(t.nm)}</strong>
-            <div class="muted mono" style="font-size:0.8rem">nº ${escapeHtml(t.n)} · TSE ${escapeHtml(t.sqcand)}</div>
+            <div class="muted mono" style="font-size:0.8rem">nÂº ${escapeHtml(t.n)} Â· TSE ${escapeHtml(t.sqcand)}</div>
           </td>
-          <td><span class="badge">${escapeHtml(window.TSE2022DF ? TSE2022DF.siglaFromCc(t.cc) : "—")}</span></td>
+          <td><span class="badge">${escapeHtml(window.TSE2022DF ? TSE2022DF.siglaFromCc(t.cc) : "ï¿½??")}</span></td>
           <td class="mono">${fmtInt(t.vap)}</td>
-          <td class="mono">${t.pvap != null ? escapeHtml(t.pvap) + "%" : "—"}</td>
-          <td>${escapeHtml(t.st || "—")}</td>
+          <td class="mono">${t.pvap != null ? escapeHtml(t.pvap) + "%" : "ï¿½??"}</td>
+          <td>${escapeHtml(t.st || "ï¿½??")}</td>
           <td><a class="social-mini" href="candidato.html?tse=${encodeURIComponent(t.sqcand)}&uf=${encodeURIComponent(uf)}">Perfil</a></td>
         </tr>`
         )
         .join("");
       return `
         <section class="panel" style="margin-top:1.25rem">
-          <h2 style="margin:0 0 0.5rem;font-size:1.05rem">Suplentes e candidatos somente no TSE — ${escapeHtml(uf)}</h2>
+          <h2 style="margin:0 0 0.5rem;font-size:1.05rem">Suplentes e candidatos somente no TSE ï¿½?? ${escapeHtml(uf)}</h2>
           <p class="note" style="margin-bottom:0.75rem">
-            Registros da eleição federal de 2022 em que a situação indica suplente (ou equivalente) e o nome não aparece entre os deputados da legislatura filtrada na API da Câmara.
+            Registros da eleiÃ§Ã£o federal de 2022 em que a situaÃ§Ã£o indica suplente (ou equivalente) e o nome nÃ£o aparece entre os deputados da legislatura filtrada na API da CÃ¢mara.
           </p>
           <div class="table-wrap"><table>
             <thead><tr>
-              <th>Nome</th><th>Partido</th><th>Votos</th><th>% UF</th><th>Situação</th><th>Perfil</th>
+              <th>Nome</th><th>Partido</th><th>Votos</th><th>% UF</th><th>SituaÃ§Ã£o</th><th>Perfil</th>
             </tr></thead>
             <tbody>${body}</tbody>
           </table></div>
@@ -873,10 +873,10 @@
           <tr>
             <th>Candidato(a)</th>
             <th>Partido</th>
-            <th>Condição</th>
+            <th>CondiÃ§Ã£o</th>
             <th>Votos 2022</th>
             <th>% UF</th>
-            <th>Situação urna</th>
+            <th>SituaÃ§Ã£o urna</th>
             <th>#</th>
             <th>Redes</th>
             <th>Perfil</th>
@@ -889,22 +889,22 @@
         .map(
           (r, i) => {
             const tse = r.tse;
-            const vcell = tse && tse.vap != null ? fmtInt(tse.vap) : '<span class="muted">—</span>';
-            const pcell = tse && tse.pvap != null && tse.pvap !== "" ? escapeHtml(tse.pvap) + "%" : "—";
-            const stcell = tse && tse.st ? escapeHtml(tse.st) : '<span class="muted">—</span>';
+            const vcell = tse && tse.vap != null ? fmtInt(tse.vap) : '<span class="muted">ï¿½??</span>';
+            const pcell = tse && tse.pvap != null && tse.pvap !== "" ? escapeHtml(tse.pvap) + "%" : "ï¿½??";
+            const stcell = tse && tse.st ? escapeHtml(tse.st) : '<span class="muted">ï¿½??</span>';
             return `
         <tr>
           <td>
             <div class="cand">
               <img src="${escapeHtml(r.urlFoto || "")}" alt="" width="40" height="40" loading="lazy" onerror="this.style.opacity=0" />
               <div>
-                <a class="cand-link" href="candidato.html?id=${encodeURIComponent(r.id)}">${escapeHtml(r.nome || "—")}</a>
-                <div class="muted mono" style="font-size:0.8rem">${escapeHtml(r.siglaUf || "")} · leg. ${r.idLegislatura ?? "—"}</div>
+                <a class="cand-link" href="candidato.html?id=${encodeURIComponent(r.id)}">${escapeHtml(r.nome || "ï¿½??")}</a>
+                <div class="muted mono" style="font-size:0.8rem">${escapeHtml(r.siglaUf || "")} Â· leg. ${r.idLegislatura ?? "ï¿½??"}</div>
               </div>
             </div>
           </td>
-          <td><span class="badge">${escapeHtml(r.siglaPartido || "—")}</span></td>
-          <td>${escapeHtml(r.condicao || "—")}</td>
+          <td><span class="badge">${escapeHtml(r.siglaPartido || "ï¿½??")}</span></td>
+          <td>${escapeHtml(r.condicao || "ï¿½??")}</td>
           <td class="mono">${vcell}</td>
           <td class="mono">${pcell}</td>
           <td style="font-size:0.82rem;max-width:12rem">${stcell}</td>
@@ -937,8 +937,8 @@
       if (isNetwork) {
         return (
           escapeHtml(msg) +
-          ". Possíveis causas: conexão instável, firewall, VPN, bloqueio da API ou extensão do navegador. " +
-          "Se você abriu este HTML direto do disco (endereço file://), use um servidor local na pasta do projeto " +
+          ". PossÃ­veis causas: conexÃ£o instÃ¡vel, firewall, VPN, bloqueio da API ou extensÃ£o do navegador. " +
+          "Se vocÃª abriu este HTML direto do disco (endereÃ§o file://), use um servidor local na pasta do projeto " +
           "(por exemplo: <code>npx --yes serve .</code> no terminal) e acesse via http://localhost."
         );
       }
@@ -948,7 +948,7 @@
     function updatePagerControls() {
       el("pager").hidden = false;
       el("pagerMeta").innerHTML =
-        `Página <strong>${pagination.current}</strong> de <strong>${pagination.total}</strong>`;
+        `PÃ¡gina <strong>${pagination.current}</strong> de <strong>${pagination.total}</strong>`;
       el("first").disabled = !pageLinks.first || pagination.current <= 1;
       el("prev").disabled = !pageLinks.prev;
       el("next").disabled = !pageLinks.next;
@@ -960,10 +960,10 @@
     async function loadPage(url) {
       const ufTse = el("siglaUf").value.trim().toUpperCase();
       const tseHint = ufTse
-        ? `Primeira vez nesta UF: também baixamos o JSON de votação 2022 do TSE só para <strong>${escapeHtml(ufTse)}</strong>.`
-        : `Primeira carga sem UF: baixamos os JSONs de votação 2022 do TSE (27 UFs).`;
+        ? `Primeira vez nesta UF: tambÃ©m baixamos o JSON de votaÃ§Ã£o 2022 do TSE sÃ³ para <strong>${escapeHtml(ufTse)}</strong>.`
+        : `Primeira carga sem UF: baixamos os JSONs de votaÃ§Ã£o 2022 do TSE (27 UFs).`;
       el("content").innerHTML =
-        '<div class="loading"><div class="spinner"></div>Buscando…<br/><span class="muted" style="font-size:0.85rem">' +
+        '<div class="loading"><div class="spinner"></div>Buscandoï¿½?ï¿½<br/><span class="muted" style="font-size:0.85rem">' +
         tseHint +
         "</span></div>";
       el("pager").hidden = true;
@@ -1015,7 +1015,7 @@
           const redes = [...new Set([...extractRedesUrls(det.redeSocial), ...(site ? [site] : [])])];
           const email = (item.email || u.email || (u.gabinete && u.gabinete.email) || "").trim();
           const nomeEleitoral = (u.nomeEleitoral || "").trim();
-          const condicao = (u.condicaoEleitoral || "—").trim();
+          const condicao = (u.condicaoEleitoral || "ï¿½??").trim();
           let tse = null;
           if (tseCache && window.TSE2022DF) {
             tse = TSE2022DF.lookupVote(tseCache, item.siglaUf, [item.nome, nomeEleitoral, u.nome]);
@@ -1059,8 +1059,8 @@
         el("stats").hidden = false;
         el("statPagina").textContent = String(rows.length);
         el("statTotalPaginas").textContent = String(pagination.total);
-        el("statPartido").textContent = el("siglaPartido").value.trim().toUpperCase() || "—";
-        el("statUf").textContent = ufFiltro || "—";
+        el("statPartido").textContent = el("siglaPartido").value.trim().toUpperCase() || "ï¿½??";
+        el("statUf").textContent = ufFiltro || "ï¿½??";
 
         updatePagerControls();
       } catch (e) {

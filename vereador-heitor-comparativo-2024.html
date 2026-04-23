@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Heitor Queiroz — relatório comparativo 2024 | Politapp</title>
+  <title>Heitor Queiroz â€” relatÃ³rio comparativo 2024 | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -210,55 +210,55 @@
     [hidden] { display: none !important; }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
-  <link rel="stylesheet" href="css/site-theme.css?v=1" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="Navegação principal">
+    <nav class="site-nav" aria-label="NavegaÃ§Ã£o principal">
       <a href="index.html">Lista de candidatos</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="vereador-heitor-queiroz-2024.html">Heitor Queiroz — análise</a>
+      <a href="vereador-heitor-queiroz-2024.html">Heitor Queiroz â€” anÃ¡lise</a>
       <a href="vereador-heitor-comparativo-2024.html" aria-current="page">Comparativo</a>
-      <a href="executivo.html">Visão executiva</a>
+      <a href="executivo.html">VisÃ£o executiva</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">Mídia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-          <a href="midia-social.html">Painel · escuta e conteúdo</a>
-          <a href="whatsapp.html">WhatsApp · bot</a>
+        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
+          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
+          <a href="whatsapp.html">WhatsApp Â· bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
     </nav>
 
     <header id="politapp-main" tabindex="-1">
-      <h1>Relatório comparativo — Professor Heitor Queiroz (2024)</h1>
+      <h1>RelatÃ³rio comparativo â€” Professor Heitor Queiroz (2024)</h1>
       <p class="lede">
-        Quadro para contrastar <strong>votação nominal</strong>, <strong>declarações de mídia ao TSE</strong> e
-        <strong>distribuição por zona</strong> (quando disponível no agregado Politapp) entre Heitor Queiroz e outros
-        vereadores do mesmo ficheiro municipal. Útil para leitura estratégica; não substitui auditoria interna de campanha.
+        Quadro para contrastar <strong>votaÃ§Ã£o nominal</strong>, <strong>declaraÃ§Ãµes de mÃ­dia ao TSE</strong> e
+        <strong>distribuiÃ§Ã£o por zona</strong> (quando disponÃ­vel no agregado Politapp) entre Heitor Queiroz e outros
+        vereadores do mesmo ficheiro municipal. Ãštil para leitura estratÃ©gica; nÃ£o substitui auditoria interna de campanha.
       </p>
     </header>
 
     <p class="disclaimer">
       <strong>Fontes:</strong> <span class="mono">data/vereadores-rj-rio-2024.json</span> e
-      <span class="mono">data/vereadores-votos-zona-2024-rj.json</span> (TSE, 1.º turno, vereador).
-      Métricas de rede refletem apenas <em>URLs declaradas</em>, não seguidores nem alcance.
-      <strong>Deputados federais/estaduais</strong> não entram neste pacote — apenas candidatos a vereador RJ/Caxias agregados no projeto.
+      <span class="mono">data/vereadores-votos-zona-2024-rj.json</span> (TSE, 1.Âº turno, vereador).
+      MÃ©tricas de rede refletem apenas <em>URLs declaradas</em>, nÃ£o seguidores nem alcance.
+      <strong>Deputados federais/estaduais</strong> nÃ£o entram neste pacote â€” apenas candidatos a vereador RJ/Caxias agregados no projeto.
     </p>
 
     <section class="panel" aria-labelledby="cmp-title">
-      <h2 id="cmp-title">Painel de comparação</h2>
+      <h2 id="cmp-title">Painel de comparaÃ§Ã£o</h2>
       <p>
-        Heitor permanece como referência. Adicione ou remova colunas com o seletor. A barra de votos usa como 100% o maior voto
+        Heitor permanece como referÃªncia. Adicione ou remova colunas com o seletor. A barra de votos usa como 100% o maior voto
         entre os candidatos <em>nesta tabela</em> (para leitura relativa imediata).
       </p>
       <div class="controls">
         <div class="field">
-          <label for="filtroUe">Município (lista de adição)</label>
-          <select id="filtroUe" aria-label="Filtrar município para adicionar candidato">
+          <label for="filtroUe">MunicÃ­pio (lista de adiÃ§Ã£o)</label>
+          <select id="filtroUe" aria-label="Filtrar municÃ­pio para adicionar candidato">
             <option value="58335" selected>Duque de Caxias</option>
             <option value="60011">Rio de Janeiro (capital)</option>
             <option value="">Todos (RJ neste ficheiro)</option>
@@ -266,25 +266,25 @@
         </div>
         <div class="field">
           <label for="addCand">Adicionar vereador</label>
-          <select id="addCand" aria-label="Escolher vereador para adicionar à comparação"></select>
+          <select id="addCand" aria-label="Escolher vereador para adicionar Ã  comparaÃ§Ã£o"></select>
         </div>
         <div class="btn-row">
           <button type="button" class="btn btn--primary" id="btnAdd">Adicionar</button>
         </div>
       </div>
       <div class="btn-row">
-        <button type="button" class="btn" id="btnPreset" title="Referência + líderes de voto e PL eleito em Caxias">Cenário sugerido (Caxias)</button>
-        <button type="button" class="btn" id="btnTopRio">Top 5 votos — Rio capital</button>
-        <button type="button" class="btn" id="btnClear">Só Heitor</button>
+        <button type="button" class="btn" id="btnPreset" title="ReferÃªncia + lÃ­deres de voto e PL eleito em Caxias">CenÃ¡rio sugerido (Caxias)</button>
+        <button type="button" class="btn" id="btnTopRio">Top 5 votos â€” Rio capital</button>
+        <button type="button" class="btn" id="btnClear">SÃ³ Heitor</button>
       </div>
       <div class="chips" id="chipList" aria-live="polite"></div>
-      <div id="tableMount" class="loading">A carregar dados…</div>
+      <div id="tableMount" class="loading">A carregar dadosâ€¦</div>
     </section>
   </div>
 
   <script>
     const ANCHOR_SQ = "190001956959";
-    /** Cenário inicial: referência local forte + bancada PL eleita. */
+    /** CenÃ¡rio inicial: referÃªncia local forte + bancada PL eleita. */
     const PRESET_PEER_SQS_CAXIAS = [
       "190002000014",
       "190002000029",
@@ -298,7 +298,7 @@
     let bySqVereador = new Map();
     let bySqZona = {};
     let maxByUe = new Map();
-    let geradoEm = "—";
+    let geradoEm = "â€”";
 
     function escapeHtml(s) {
       return String(s ?? "")
@@ -309,9 +309,9 @@
     }
 
     function fmtInt(n) {
-      if (n == null || n === "") return "—";
+      if (n == null || n === "") return "â€”";
       const x = Number(n);
-      return Number.isFinite(x) ? x.toLocaleString("pt-BR") : "—";
+      return Number.isFinite(x) ? x.toLocaleString("pt-BR") : "â€”";
     }
 
     function redeTipoFromUrl(rawUrl, label) {
@@ -396,7 +396,7 @@
         if (sq === ANCHOR_SQ) continue;
         const opt = document.createElement("option");
         opt.value = sq;
-        opt.textContent = `${r.nomeUrna} · ${fmtInt(r.votos)} votos · ${r.partido || "—"}`;
+        opt.textContent = `${r.nomeUrna} Â· ${fmtInt(r.votos)} votos Â· ${r.partido || "â€”"}`;
         sel.appendChild(opt);
       }
       if (prev && [...sel.options].some((o) => o.value === prev)) sel.value = prev;
@@ -412,8 +412,8 @@
           const cls = isA ? "chip chip--anchor" : "chip";
           const rm = isA
             ? ""
-            : `<button type="button" aria-label="Remover ${escapeHtml(r.nomeUrna)}" data-rm="${escapeHtml(sq)}">×</button>`;
-          return `<span class="${cls}"><strong>${escapeHtml(r.nomeUrna)}</strong> · ${fmtInt(r.votos)}${rm}</span>`;
+            : `<button type="button" aria-label="Remover ${escapeHtml(r.nomeUrna)}" data-rm="${escapeHtml(sq)}">Ã—</button>`;
+          return `<span class="${cls}"><strong>${escapeHtml(r.nomeUrna)}</strong> Â· ${fmtInt(r.votos)}${rm}</span>`;
         })
         .join("");
       box.querySelectorAll("button[data-rm]").forEach((btn) => {
@@ -439,8 +439,8 @@
         .map((r) => {
           const sq = String(r.sqCandidato);
           const anchor = sq === ANCHOR_SQ;
-          const sub = `${r.municipio || "—"} · ${r.partido || "—"} · ${r.dsSitTotTurno || "—"}`;
-          return `<th scope="col" class="${anchor ? "cmp-col--anchor" : ""}"><span class="cmp-head-name">${escapeHtml(r.nomeUrna || "—")}</span><span class="cmp-head-sub">${escapeHtml(sub)}</span></th>`;
+          const sub = `${r.municipio || "â€”"} Â· ${r.partido || "â€”"} Â· ${r.dsSitTotTurno || "â€”"}`;
+          return `<th scope="col" class="${anchor ? "cmp-col--anchor" : ""}"><span class="cmp-head-name">${escapeHtml(r.nomeUrna || "â€”")}</span><span class="cmp-head-sub">${escapeHtml(sub)}</span></th>`;
         })
         .join("");
 
@@ -452,7 +452,7 @@
 
       lines.push(`
         <tr>
-          <th scope="row">Votos (1.º turno)</th>
+          <th scope="row">Votos (1.Âº turno)</th>
           ${rows
             .map((r) => {
               const v = Number(r.votos) || 0;
@@ -482,9 +482,9 @@
 
       lines.push(`
         <tr>
-          <th scope="row">Número de urna</th>
+          <th scope="row">NÃºmero de urna</th>
           ${rows
-            .map((r) => cellVal(`<span class="mono">${escapeHtml(String(r.numero ?? "—"))}</span>`, String(r.sqCandidato) === ANCHOR_SQ))
+            .map((r) => cellVal(`<span class="mono">${escapeHtml(String(r.numero ?? "â€”"))}</span>`, String(r.sqCandidato) === ANCHOR_SQ))
             .join("")}
         </tr>
       `);
@@ -494,7 +494,7 @@
           <th scope="row">Papel (agregado)</th>
           ${rows
             .map((r) =>
-              cellVal(`${escapeHtml(r.papelEleicao || "—")}`, String(r.sqCandidato) === ANCHOR_SQ)
+              cellVal(`${escapeHtml(r.papelEleicao || "â€”")}`, String(r.sqCandidato) === ANCHOR_SQ)
             )
             .join("")}
         </tr>
@@ -502,14 +502,14 @@
 
       lines.push(`
         <tr>
-          <th scope="row">Mídias ao TSE (links / tipos / índice decl.)</th>
+          <th scope="row">MÃ­dias ao TSE (links / tipos / Ã­ndice decl.)</th>
           ${rows
             .map((r) => {
               const m = indiceMidiaticoDeclarado(r);
-              const tip = m.tipos.length ? m.tipos.join(", ") : "—";
+              const tip = m.tipos.length ? m.tipos.join(", ") : "â€”";
               const sq = String(r.sqCandidato);
               return cellVal(
-                `<span class="mono">${m.nLinks}</span> links · <span class="mono">${m.nTipos}</span> tipos · índice <strong>${m.pct}%</strong><br><span class="muted zona-mini">${escapeHtml(tip)}</span>`,
+                `<span class="mono">${m.nLinks}</span> links Â· <span class="mono">${m.nTipos}</span> tipos Â· Ã­ndice <strong>${m.pct}%</strong><br><span class="muted zona-mini">${escapeHtml(tip)}</span>`,
                 sq === ANCHOR_SQ
               );
             })
@@ -526,7 +526,7 @@
                 /^https?:\/\//i.test(String(x.url || "").trim())
               );
               const sq = String(r.sqCandidato);
-              if (!redes.length) return cellVal('<span class="muted">—</span>', sq === ANCHOR_SQ);
+              if (!redes.length) return cellVal('<span class="muted">â€”</span>', sq === ANCHOR_SQ);
               const parts = redes.slice(0, 5).map((x) => {
                 const u = escapeHtml(String(x.url).trim());
                 const lb = escapeHtml(x.label || "link");
@@ -541,7 +541,7 @@
 
       lines.push(`
         <tr>
-          <th scope="row">Zonas (votação mun-zona)</th>
+          <th scope="row">Zonas (votaÃ§Ã£o mun-zona)</th>
           ${rows
             .map((r) => {
               const sq = String(r.sqCandidato);
@@ -550,7 +550,7 @@
                 return cellVal('<span class="muted">Sem agregado por zona</span>', sq === ANCHOR_SQ);
               const topZ = z.top ? `Zona <span class="mono">${z.top.z}</span>: ${fmtInt(z.top.v)} (${z.topPct}% do total)` : "";
               return cellVal(
-                `${z.nZonas} zonas com voto · total zonas ${fmtInt(z.tot)}<p class="zona-mini">Pico: ${topZ}</p>`,
+                `${z.nZonas} zonas com voto Â· total zonas ${fmtInt(z.tot)}<p class="zona-mini">Pico: ${topZ}</p>`,
                 sq === ANCHOR_SQ
               );
             })
@@ -562,7 +562,7 @@
       mount.innerHTML = `
         <div class="table-wrap">
           <table class="cmp-table">
-            <thead><tr><th scope="col">Métrica</th>${head}</tr></thead>
+            <thead><tr><th scope="col">MÃ©trica</th>${head}</tr></thead>
             <tbody>${lines.join("")}</tbody>
           </table>
         </div>
@@ -582,7 +582,7 @@
         const dataV = await rv.json();
         const dataZ = await rz.json();
         vereadores = dataV.vereadores || [];
-        geradoEm = dataV.geradoEm || "—";
+        geradoEm = dataV.geradoEm || "â€”";
         bySqZona = dataZ.bySq || {};
         bySqVereador = new Map(vereadores.map((x) => [String(x.sqCandidato), x]));
         for (const r of vereadores) {
@@ -595,7 +595,7 @@
         if (!bySqVereador.has(ANCHOR_SQ)) {
           mount.className = "error";
           mount.textContent =
-            "Heitor Queiroz (SQ " + ANCHOR_SQ + ") não foi encontrado em " + JSON_VER + ". Execute o build de vereadores.";
+            "Heitor Queiroz (SQ " + ANCHOR_SQ + ") nÃ£o foi encontrado em " + JSON_VER + ". Execute o build de vereadores.";
           return;
         }
         selectedSq = new Set([ANCHOR_SQ, ...PRESET_PEER_SQS_CAXIAS]);
@@ -634,7 +634,7 @@
       } catch (e) {
         console.error(e);
         mount.className = "error";
-        mount.textContent = "Erro ao carregar dados. Confirme os ficheiros em /data e, se necessário, npm run build:vereadores-rj";
+        mount.textContent = "Erro ao carregar dados. Confirme os ficheiros em /data e, se necessÃ¡rio, npm run build:vereadores-rj";
       }
     }
 

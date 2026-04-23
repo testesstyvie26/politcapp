@@ -147,45 +147,45 @@
     }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
-  <link rel="stylesheet" href="css/site-theme.css?v=1" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="Navegação">
+    <nav class="site-nav" aria-label="NavegaÃ§Ã£o">
       <a href="index.html">Lista de candidatos</a>
-      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
-      <a href="executivo.html">Visão executiva</a>
+      <a href="eleicao-2022-deputado-federal.html">EleiÃ§Ã£o 2022 Â· DF</a>
+      <a href="executivo.html">VisÃ£o executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
       <a href="prefeituras-rj.html">Prefeituras RJ</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="transparencia.html">Transparência</a>
+      <a href="transparencia.html">TransparÃªncia</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">Mídia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-          <a href="midia-social.html">Painel · escuta e conteúdo</a>
-          <a href="whatsapp.html">WhatsApp · bot</a>
+        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
+          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
+          <a href="whatsapp.html">WhatsApp Â· bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
-      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API Câmara</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API CÃ¢mara</a>
     </nav>
     <div id="politapp-main" tabindex="-1">
-    <a class="back" href="index.html">? Voltar à lista</a>
-    <div id="app"><div class="loading"><div class="spinner"></div>Carregando perfil…</div>
+    <a class="back" href="index.html">? Voltar Ã  lista</a>
+    <div id="app"><div class="loading"><div class="spinner"></div>Carregando perfilâ€¦</div>
     </div>
 
     <footer class="site-credit" role="contentinfo">
       <p>
         Criado por
         <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
-        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
-        ·
+        <span class="site-credit-role">â€” Especialista em SeguranÃ§a da InformaÃ§Ã£o &amp; DevSecOps</span>
+        Â·
         <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </p>
     </footer>
@@ -210,25 +210,25 @@
     }
 
     function fmtInt(n) {
-      if (n == null || !Number.isFinite(n)) return "—";
+      if (n == null || !Number.isFinite(n)) return "â€”";
       return n.toLocaleString("pt-BR");
     }
 
     function renderPainelTse(tv) {
       if (!tv) {
-        return `<div class="panel"><h2>Resultado eleitoral 2022</h2><p class="note">Não foi possível localizar este nome na votação nominal de deputado federal (TSE) para a UF informada.</p></div>`;
+        return `<div class="panel"><h2>Resultado eleitoral 2022</h2><p class="note">NÃ£o foi possÃ­vel localizar este nome na votaÃ§Ã£o nominal de deputado federal (TSE) para a UF informada.</p></div>`;
       }
       return `
           <div class="panel">
-            <h2>Eleições 2022 — Deputado Federal (1º turno)</h2>
-            <p class="note" style="margin-bottom:0.75rem">Fonte: <code>resultados.tse.jus.br</code>, eleição 546, arquivo dados-simplificados por UF.</p>
+            <h2>EleiÃ§Ãµes 2022 â€” Deputado Federal (1Âº turno)</h2>
+            <p class="note" style="margin-bottom:0.75rem">Fonte: <code>resultados.tse.jus.br</code>, eleiÃ§Ã£o 546, arquivo dados-simplificados por UF.</p>
             <dl class="grid">
               <dt>Votos nominais (na UF)</dt><dd><strong>${fmtInt(tv.vap)}</strong></dd>
-              <dt>Percentual (válidos UF)</dt><dd>${tv.pvap != null ? escapeHtml(tv.pvap) + "%" : "—"}</dd>
-              <dt>Situação</dt><dd>${escapeHtml(tv.st || "—")}</dd>
-              <dt>Número de urna</dt><dd class="mono">${escapeHtml(tv.n || "—")}</dd>
-              <dt>Coligação / legenda</dt><dd>${escapeHtml(tv.cc || "—")}</dd>
-              <dt>Sequencial TSE</dt><dd class="mono">${escapeHtml(tv.sqcand || "—")}</dd>
+              <dt>Percentual (vÃ¡lidos UF)</dt><dd>${tv.pvap != null ? escapeHtml(tv.pvap) + "%" : "â€”"}</dd>
+              <dt>SituaÃ§Ã£o</dt><dd>${escapeHtml(tv.st || "â€”")}</dd>
+              <dt>NÃºmero de urna</dt><dd class="mono">${escapeHtml(tv.n || "â€”")}</dd>
+              <dt>ColigaÃ§Ã£o / legenda</dt><dd>${escapeHtml(tv.cc || "â€”")}</dd>
+              <dt>Sequencial TSE</dt><dd class="mono">${escapeHtml(tv.sqcand || "â€”")}</dd>
             </dl>
           </div>`;
     }
@@ -289,13 +289,13 @@
     }
 
     function fmt(s) {
-      if (s == null || s === "") return "—";
+      if (s == null || s === "") return "â€”";
       return escapeHtml(String(s));
     }
 
     function renderHistorico(rows) {
       if (!rows.length) {
-        return '<p class="note">Não há registros de histórico ou o endpoint não retornou dados.</p>';
+        return '<p class="note">NÃ£o hÃ¡ registros de histÃ³rico ou o endpoint nÃ£o retornou dados.</p>';
       }
       const sorted = [...rows].sort((a, b) => {
         const la = parseInt(a.idLegislatura ?? a.legislatura?.id ?? 0, 10) || 0;
@@ -304,14 +304,14 @@
       });
       const body = sorted
         .map((h) => {
-          const leg = h.idLegislatura ?? h.legislatura?.id ?? "—";
-          const ini = h.dataInicio ?? h.dataInicioLegislatura ?? "—";
-          const fim = h.dataFim ?? h.dataFimLegislatura ?? "—";
-          const sit = h.situacao ?? h.descricaoSituacao ?? "—";
-          const part = h.siglaPartido ?? "—";
-          const uf = h.siglaUf ?? "—";
-          const cond = h.condicaoEleitoral ?? "—";
-          const nome = h.nomeEleitoral ?? h.nomeParlamentar ?? h.nome ?? "—";
+          const leg = h.idLegislatura ?? h.legislatura?.id ?? "â€”";
+          const ini = h.dataInicio ?? h.dataInicioLegislatura ?? "â€”";
+          const fim = h.dataFim ?? h.dataFimLegislatura ?? "â€”";
+          const sit = h.situacao ?? h.descricaoSituacao ?? "â€”";
+          const part = h.siglaPartido ?? "â€”";
+          const uf = h.siglaUf ?? "â€”";
+          const cond = h.condicaoEleitoral ?? "â€”";
+          const nome = h.nomeEleitoral ?? h.nomeParlamentar ?? h.nome ?? "â€”";
           return `<tr>
             <td class="mono">${fmt(leg)}</td>
             <td>${fmt(ini)} ? ${fmt(fim)}</td>
@@ -325,7 +325,7 @@
         .join("");
       return `<div style="overflow-x:auto"><table>
         <thead><tr>
-          <th>Leg.</th><th>Período</th><th>Situação</th><th>Partido</th><th>UF</th><th>Condição</th><th>Nome parlamentar</th>
+          <th>Leg.</th><th>PerÃ­odo</th><th>SituaÃ§Ã£o</th><th>Partido</th><th>UF</th><th>CondiÃ§Ã£o</th><th>Nome parlamentar</th>
         </tr></thead><tbody>${body}</tbody></table></div>`;
     }
 
@@ -336,7 +336,7 @@
 
       if (!id && !tseQ) {
         app.innerHTML =
-          '<p class="error">Use <code>candidato.html?id=204379</code> (Câmara) ou <code>candidato.html?tse=SEQUENCIAL&uf=SP</code> (somente TSE).</p>';
+          '<p class="error">Use <code>candidato.html?id=204379</code> (CÃ¢mara) ou <code>candidato.html?tse=SEQUENCIAL&uf=SP</code> (somente TSE).</p>';
         return;
       }
 
@@ -356,19 +356,19 @@
                   <span class="badge">${escapeHtml(tseQ.uf)}</span>
                   <span class="badge">Somente registro TSE</span>
                 </p>
-                <p class="note" style="margin-top:0.75rem">Sem ficha de deputado na API da Câmara — perfil montado a partir do resultado nominal de 2022.</p>
+                <p class="note" style="margin-top:0.75rem">Sem ficha de deputado na API da CÃ¢mara â€” perfil montado a partir do resultado nominal de 2022.</p>
               </div>
             </div>
             ${renderPainelTse(tv)}
             <div class="panel">
-              <h2>Prestação de contas e candidatura</h2>
+              <h2>PrestaÃ§Ã£o de contas e candidatura</h2>
               <p class="note">Consulte o <a href="https://divulgacandcontas.tse.jus.br/divulga/#/home" target="_blank" rel="noopener">DivulgaCandContas</a> com o nome e a UF.</p>
             </div>`;
         } catch (e) {
           console.error(e);
           const msg =
             e && String(e.message || e).includes("fetch")
-              ? "Não foi possível obter os dados do TSE (rede ou bloqueio do navegador). Tente de novo ou abra a página em HTTPS; se persistir, o domínio resultados.tse.jus.br pode estar inacessível."
+              ? "NÃ£o foi possÃ­vel obter os dados do TSE (rede ou bloqueio do navegador). Tente de novo ou abra a pÃ¡gina em HTTPS; se persistir, o domÃ­nio resultados.tse.jus.br pode estar inacessÃ­vel."
               : String(e.message || e);
           app.innerHTML = `<p class="error">${escapeHtml(msg)}</p>`;
         }
@@ -389,13 +389,13 @@
         const g = u.gabinete || {};
         const hist = histRes.status === "fulfilled" ? histRes.value.dados || histRes.value : [];
 
-        const nome = u.nome || d.nomeCivil || "—";
+        const nome = u.nome || d.nomeCivil || "â€”";
         const nomeUrna = u.nomeEleitoral || nome;
-        const partido = u.siglaPartido || "—";
-        const uf = u.siglaUf || "—";
-        const leg = u.idLegislatura ?? "—";
-        const situacao = u.situacao || "—";
-        const cond = u.condicaoEleitoral || "—";
+        const partido = u.siglaPartido || "â€”";
+        const uf = u.siglaUf || "â€”";
+        const leg = u.idLegislatura ?? "â€”";
+        const situacao = u.situacao || "â€”";
+        const cond = u.condicaoEleitoral || "â€”";
         const email = (u.email || g.email || d.email || "").trim();
         const tel = (g.telefone || "").trim();
         const foto = u.urlFoto || "";
@@ -409,7 +409,7 @@
             ? cpfDigits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
             : d.cpf
               ? String(d.cpf)
-              : "—";
+              : "â€”";
 
         let redesHtml = "";
         if (redes.length) {
@@ -422,7 +422,7 @@
             )
             .join("")}</div>`;
         } else {
-          redesHtml = '<p class="note">Redes e site não cadastrados na API para este parlamentar.</p>';
+          redesHtml = '<p class="note">Redes e site nÃ£o cadastrados na API para este parlamentar.</p>';
         }
 
         const tseNome = encodeURIComponent(nomeUrna);
@@ -461,10 +461,10 @@
           <div class="panel">
             <h2>Contato e gabinete</h2>
             <dl class="grid">
-              <dt>E-mail</dt><dd>${email ? `<a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>` : "—"}</dd>
-              <dt>Telefone</dt><dd>${tel ? escapeHtml(tel) : "—"}</dd>
-              <dt>Gabinete</dt><dd>${[g.predio && `Prédio ${g.predio}`, g.andar && `${g.andar}º andar`, g.sala && `Sala ${g.sala}`].filter(Boolean).join(" · ") || "—"}</dd>
-              <dt>Página na Câmara</dt><dd><a href="https://www.camara.leg.br/deputados/${id}" target="_blank" rel="noopener">camara.leg.br/deputados/${id}</a></dd>
+              <dt>E-mail</dt><dd>${email ? `<a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>` : "â€”"}</dd>
+              <dt>Telefone</dt><dd>${tel ? escapeHtml(tel) : "â€”"}</dd>
+              <dt>Gabinete</dt><dd>${[g.predio && `PrÃ©dio ${g.predio}`, g.andar && `${g.andar}Âº andar`, g.sala && `Sala ${g.sala}`].filter(Boolean).join(" Â· ") || "â€”"}</dd>
+              <dt>PÃ¡gina na CÃ¢mara</dt><dd><a href="https://www.camara.leg.br/deputados/${id}" target="_blank" rel="noopener">camara.leg.br/deputados/${id}</a></dd>
             </dl>
           </div>
 
@@ -486,9 +486,9 @@
           </div>
 
           <div class="panel">
-            <h2>Histórico na Câmara (mandatos e filiações)</h2>
+            <h2>HistÃ³rico na CÃ¢mara (mandatos e filiaÃ§Ãµes)</h2>
             <p class="note" style="margin-bottom:0.75rem">
-              Evolução de partido, situação e condição eleitoral ao longo das legislaturas — útil para contextualizar <strong>trajetória política</strong> junto a dados de campanha.
+              EvoluÃ§Ã£o de partido, situaÃ§Ã£o e condiÃ§Ã£o eleitoral ao longo das legislaturas â€” Ãºtil para contextualizar <strong>trajetÃ³ria polÃ­tica</strong> junto a dados de campanha.
             </p>
             ${renderHistorico(Array.isArray(hist) ? hist : [])}
           </div>
@@ -496,15 +496,15 @@
           ${painelTse}
 
           <div class="panel">
-            <h2>Campanhas, prestação de contas e outras fontes</h2>
+            <h2>Campanhas, prestaÃ§Ã£o de contas e outras fontes</h2>
             <p class="note">
               Para detalhes de campanha, doadores e despesas, use o <a href="${divulga}" target="_blank" rel="noopener">DivulgaCandContas (TSE)</a>
               e o <a href="${dadosTse}" target="_blank" rel="noopener">portal de dados abertos do TSE</a>.
-              Busque pelo <strong>nome de urna</strong> (${escapeHtml(nomeUrna)}), <strong>UF</strong> (${escapeHtml(uf)}) e pela <strong>eleição de 2022</strong>.
+              Busque pelo <strong>nome de urna</strong> (${escapeHtml(nomeUrna)}), <strong>UF</strong> (${escapeHtml(uf)}) e pela <strong>eleiÃ§Ã£o de 2022</strong>.
             </p>
             <p class="note" style="margin-top:0.75rem">
               Pesquisa na web:
-              <a href="https://www.google.com/search?q=${tseNome}+deputado+federal+${tseUf}+2022+votação" target="_blank" rel="noopener">notícias e contexto sobre votação</a>
+              <a href="https://www.google.com/search?q=${tseNome}+deputado+federal+${tseUf}+2022+votaÃ§Ã£o" target="_blank" rel="noopener">notÃ­cias e contexto sobre votaÃ§Ã£o</a>
             </p>
           </div>
         `;
@@ -513,9 +513,9 @@
         const em = e && e.message != null ? String(e.message) : String(e);
         const extra =
           /fetch/i.test(em) && !/TSE/i.test(em)
-            ? " Verifique rede, extensões que bloqueiam APIs ou tente outro navegador."
+            ? " Verifique rede, extensÃµes que bloqueiam APIs ou tente outro navegador."
             : "";
-        app.innerHTML = `<p class="error">Não foi possível carregar o deputado: ${escapeHtml(em)}${escapeHtml(extra)}</p>`;
+        app.innerHTML = `<p class="error">NÃ£o foi possÃ­vel carregar o deputado: ${escapeHtml(em)}${escapeHtml(extra)}</p>`;
       }
     }
 
