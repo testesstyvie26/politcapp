@@ -202,10 +202,184 @@
     @media (max-width: 520px) {
       .apoio-row { grid-template-columns: 1fr; }
     }
+
+    /* ——— Calendário (topo) ——— */
+    .cal-hero {
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .cal-hero::before {
+      content: "";
+      position: absolute;
+      inset: -40% -20% auto;
+      height: 120%;
+      background: radial-gradient(ellipse at 50% 0%, rgba(61, 139, 253, 0.12), transparent 55%);
+      pointer-events: none;
+      animation: calGlow 8s ease-in-out infinite alternate;
+    }
+    @keyframes calGlow {
+      from { opacity: 0.6; transform: translateX(-2%); }
+      to { opacity: 1; transform: translateX(2%); }
+    }
+    .cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cal-head h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-align: center;
+      flex: 1;
+      letter-spacing: -0.02em;
+    }
+    .cal-nav {
+      font-family: inherit;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .cal-nav:hover {
+      background: var(--accent-soft);
+      transform: scale(1.06);
+    }
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.25rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+    .cal-weekdays span { text-align: center; }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.35rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cal-cell {
+      aspect-ratio: 1;
+      min-height: 2.65rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0.25rem 0.15rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      opacity: 0;
+      animation: calCellIn 0.5s ease forwards;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .cal-cell:nth-child(7n + 1) { animation-delay: 0.02s; }
+    .cal-cell:nth-child(7n + 2) { animation-delay: 0.04s; }
+    .cal-cell:nth-child(7n + 3) { animation-delay: 0.06s; }
+    .cal-cell:nth-child(7n + 4) { animation-delay: 0.08s; }
+    .cal-cell:nth-child(7n + 5) { animation-delay: 0.1s; }
+    .cal-cell:nth-child(7n + 6) { animation-delay: 0.12s; }
+    .cal-cell:nth-child(7n) { animation-delay: 0.14s; }
+    @keyframes calCellIn {
+      from { opacity: 0; transform: translateY(6px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .cal-cell.out {
+      opacity: 0.35;
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .cal-cell.today {
+      border-color: rgba(61, 139, 253, 0.65);
+      box-shadow: 0 0 0 1px rgba(61, 139, 253, 0.25);
+      color: var(--text);
+      animation: calCellIn 0.5s ease forwards, calTodayPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes calTodayPulse {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(61, 139, 253, 0.25); }
+      50% { box-shadow: 0 0 12px rgba(61, 139, 253, 0.35); }
+    }
+    .cal-cell.feriado {
+      border-color: rgba(244, 162, 97, 0.35);
+      background: rgba(244, 162, 97, 0.08);
+      color: var(--text);
+    }
+    .cal-day-num { line-height: 1.2; }
+    .cal-icon {
+      font-size: 0.95rem;
+      line-height: 1;
+      margin-top: 0.1rem;
+      display: block;
+      animation: calIconFloat 2.8s ease-in-out infinite;
+    }
+    .cal-cell:nth-child(odd) .cal-icon { animation-delay: 0.3s; }
+    @keyframes calIconFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .cal-legend {
+      margin: 1rem 0 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <section class="panel cal-hero" aria-label="Calendário — mês corrente e feriados nacionais">
+      <div class="cal-head">
+        <button type="button" class="cal-nav" id="calPrev" aria-label="Mês anterior">‹</button>
+        <h2 id="calMonthTitle"></h2>
+        <button type="button" class="cal-nav" id="calNext" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-weekdays" role="row">
+        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span>🎉 Feriado ou data nacional</span>
+        <span>📍 Dia de hoje</span>
+        <span title="Inclui datas móveis (Páscoa, Carnaval, etc.)">📅 Calendário Brasil</span>
+      </div>
+    </section>
+
     <nav class="site-nav" aria-label="Navegação">
       <a href="index.html">Início (dados)</a>
       <a href="transparencia.html">Transparência</a>
@@ -215,7 +389,7 @@
       <h1>Agenda pública e canal com a comunidade</h1>
       <p class="lead">
         Página para visão do público em geral: compromissos divulgados, pedido de reunião, envio de sugestões e solicitação de apoio.
-        As mensagens são encaminhadas pelo <strong>seu aplicativo de e-mail</strong> para o endereço indicado abaixo.
+        As mensagens são encaminhadas pelo <strong>seu aplicativo de e-mail</strong> para o <strong>canal institucional da equipe</strong> (endereço não exibido nesta página).
       </p>
     </header>
 
@@ -252,7 +426,7 @@
       <div class="contact-grid">
         <div class="card">
           <h3>Marcar reunião</h3>
-          <p class="sub">Proposta de encontro presencial ou por vídeo com <span class="mono">heitorqfilho@gmail.com</span>.</p>
+          <p class="sub">Proposta de encontro presencial ou por vídeo. O convite abre no seu e-mail para o canal oficial da equipe.</p>
           <form id="formReuniao" novalidate>
             <label for="r_nome">Nome completo</label>
             <input type="text" id="r_nome" name="nome" autocomplete="name" placeholder="Seu nome" />
@@ -317,14 +491,12 @@
         </div>
       </div>
 
-      <p class="email-inline">
-        E-mail de destino:
-        <a id="mailtoPublico" href="mailto:heitorqfilho@gmail.com">heitorqfilho@gmail.com</a>
-        —
-        <button type="button" class="btn secondary" id="btnCopiarEmail" style="width:auto;display:inline-flex;padding:0.35rem 0.75rem;margin:0 0 0 0.35rem;font-size:0.82rem">
-          Copiar e-mail
+      <div class="contact-actions">
+        <button type="button" class="btn secondary" id="btnCopiarEmail" style="width:auto;display:inline-flex;padding:0.35rem 0.85rem;font-size:0.82rem" title="Copia o endereço de contato para a área de transferência">
+          Copiar endereço de contato
         </button>
-      </p>
+        <span class="mail-note" style="margin:0">O endereço não é mostrado na tela por privacidade.</span>
+      </div>
       <p class="mail-note">
         Não armazenamos mensagens neste site: o envio depende do seu cliente de correio. Em dispositivos móveis, confira se a app de e-mail está configurada.
       </p>
@@ -337,6 +509,176 @@
 
   <script>
     const PUBLIC_EMAIL = "heitorqfilho@gmail.com";
+
+    function pad2(n) {
+      return String(n).padStart(2, "0");
+    }
+
+    function isoKeyFromParts(y, mo, day) {
+      return `${y}-${pad2(mo)}-${pad2(day)}`;
+    }
+
+    function isoKeyDate(d) {
+      return isoKeyFromParts(d.getFullYear(), d.getMonth() + 1, d.getDate());
+    }
+
+    /** Domingo de Páscoa (algoritmo de Meeus/Jones/Butcher). */
+    function easterSunday(y) {
+      const a = y % 19;
+      const b = Math.floor(y / 100);
+      const c = y % 100;
+      const d = Math.floor(b / 4);
+      const e = b % 4;
+      const f = Math.floor((b + 8) / 25);
+      const g = Math.floor((b - f + 1) / 3);
+      const h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4);
+      const k = c % 4;
+      const l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const n = Math.floor((h + l - 7 * m + 114) / 31);
+      const p = (h + l - 7 * m + 114) % 31;
+      return new Date(y, n - 1, p + 1);
+    }
+
+    function addDays(d, n) {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      x.setDate(x.getDate() + n);
+      return x;
+    }
+
+    /** Feriados nacionais e datas móveis (referência Brasil). */
+    function feriadosNacionaisBr(y) {
+      const map = new Map();
+      const put = (d, label, icon) => {
+        map.set(isoKeyDate(d), { label, icon });
+      };
+      put(new Date(y, 0, 1), "Ano Novo", "🎊");
+      put(new Date(y, 3, 21), "Tiradentes", "🏛️");
+      put(new Date(y, 4, 1), "Dia do Trabalho", "👷");
+      put(new Date(y, 8, 7), "Independência", "🇧🇷");
+      put(new Date(y, 9, 12), "Nossa Senhora Aparecida", "🙏");
+      put(new Date(y, 10, 2), "Finados", "🌼");
+      put(new Date(y, 10, 15), "Proclamação da República", "📜");
+      put(new Date(y, 10, 20), "Dia da Consciência Negra", "✊");
+      put(new Date(y, 11, 25), "Natal", "🎄");
+      const p = easterSunday(y);
+      put(addDays(p, -47), "Carnaval (terça)", "🎭");
+      put(addDays(p, -2), "Sexta-feira Santa", "✝️");
+      put(addDays(p, 60), "Corpus Christi", "🕊️");
+      return map;
+    }
+
+    const MESES_PT = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+    ];
+
+    let calViewYear;
+    let calViewMonth;
+
+    function renderCalGrid() {
+      const grid = document.getElementById("calGrid");
+      const title = document.getElementById("calMonthTitle");
+      if (!grid || !title) return;
+
+      title.textContent = `${MESES_PT[calViewMonth]} ${calViewYear}`;
+
+      const hoje = new Date();
+      const y = calViewYear;
+      const m = calViewMonth;
+      const first = new Date(y, m, 1);
+      const startPad = first.getDay();
+      const daysIn = new Date(y, m + 1, 0).getDate();
+      const prevDays = new Date(y, m, 0).getDate();
+
+      const feriados = feriadosNacionaisBr(y);
+      grid.innerHTML = "";
+
+      const totalCells = 42;
+      for (let i = 0; i < totalCells; i++) {
+        let cellDay;
+        let cellMonth = m;
+        let cellYear = y;
+        let out = false;
+
+        if (i < startPad) {
+          cellDay = prevDays - startPad + i + 1;
+          cellMonth = m - 1;
+          if (cellMonth < 0) {
+            cellMonth = 11;
+            cellYear = y - 1;
+          }
+          out = true;
+        } else if (i < startPad + daysIn) {
+          cellDay = i - startPad + 1;
+        } else {
+          cellDay = i - startPad - daysIn + 1;
+          cellMonth = m + 1;
+          if (cellMonth > 11) {
+            cellMonth = 0;
+            cellYear = y + 1;
+          }
+          out = true;
+        }
+
+        const key = isoKeyFromParts(cellYear, cellMonth + 1, cellDay);
+        const fh = feriados.get(key);
+        const isToday =
+          cellYear === hoje.getFullYear() &&
+          cellMonth === hoje.getMonth() &&
+          cellDay === hoje.getDate();
+
+        const el = document.createElement("div");
+        el.className = "cal-cell" + (out ? " out" : "") + (isToday ? " today" : "") + (fh && !out ? " feriado" : "");
+        el.style.animationDelay = `${(i % 7) * 0.02}s`;
+
+        const num = document.createElement("span");
+        num.className = "cal-day-num";
+        num.textContent = String(cellDay);
+        el.appendChild(num);
+
+        if (fh && (!out || feriados.has(key))) {
+          const ic = document.createElement("span");
+          ic.className = "cal-icon";
+          ic.textContent = fh.icon;
+          ic.title = fh.label;
+          el.appendChild(ic);
+          el.setAttribute("title", `${cellDay}/${cellMonth + 1} — ${fh.label}`);
+        } else if (isToday) {
+          const ic = document.createElement("span");
+          ic.className = "cal-icon";
+          ic.textContent = "📍";
+          ic.title = "Hoje";
+          el.appendChild(ic);
+        }
+
+        grid.appendChild(el);
+      }
+    }
+
+    function initCalendar() {
+      const now = new Date();
+      calViewYear = now.getFullYear();
+      calViewMonth = now.getMonth();
+      renderCalGrid();
+      document.getElementById("calPrev")?.addEventListener("click", () => {
+        calViewMonth--;
+        if (calViewMonth < 0) {
+          calViewMonth = 11;
+          calViewYear--;
+        }
+        renderCalGrid();
+      });
+      document.getElementById("calNext")?.addEventListener("click", () => {
+        calViewMonth++;
+        if (calViewMonth > 11) {
+          calViewMonth = 0;
+          calViewYear++;
+        }
+        renderCalGrid();
+      });
+    }
 
     function buildMailto(subject, body) {
       return (
@@ -413,11 +755,17 @@
         const b = document.getElementById("btnCopiarEmail");
         const t = b.textContent;
         b.textContent = "Copiado";
-        setTimeout(() => { b.textContent = t; }, 2000);
+        setTimeout(() => {
+          b.textContent = t;
+        }, 2000);
       } catch {
-        prompt("Copie o e-mail:", PUBLIC_EMAIL);
+        alert(
+          "Não foi possível copiar automaticamente. Use os botões dos formulários acima — o destinatário já vem definido ao abrir o seu e-mail."
+        );
       }
     });
+
+    initCalendar();
   </script>
 </body>
 </html>
