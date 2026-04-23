@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Agenda pública, contato, sugestões e solicitação de apoio — canal direto com a equipe." />
+  <title>Agenda pública e contato | Visão geral</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --accent-soft: rgba(61, 139, 253, 0.18);
+      --ok: #2ec4b6;
+      --radius: 12px;
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -25%, rgba(61, 139, 253, 0.16), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    header { margin-bottom: 2rem; }
+    header h1 {
+      font-size: clamp(1.55rem, 4vw, 2.05rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+      line-height: 1.2;
+    }
+    header .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 62ch;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem 1.4rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 {
+      font-size: 1.1rem;
+      margin: 0 0 0.35rem;
+      font-weight: 600;
+    }
+    .panel > .hint {
+      margin: 0 0 1rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .agenda-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .agenda-list li {
+      display: grid;
+      gap: 0.15rem 1rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+      grid-template-columns: auto 1fr;
+      align-items: baseline;
+    }
+    .agenda-list li:last-child { border-bottom: none; padding-bottom: 0; }
+    .agenda-list .when {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ok);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .agenda-list .what { font-size: 0.95rem; }
+    .agenda-list .where { font-size: 0.82rem; color: var(--muted); grid-column: 1 / -1; }
+    .contact-grid {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .contact-grid { grid-template-columns: 1fr 1fr; }
+      .contact-grid .card-wide { grid-column: 1 / -1; }
+    }
+    .card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.15rem 1.2rem;
+    }
+    .card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .card .sub {
+      margin: 0 0 1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      margin-bottom: 0.75rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.92rem;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid rgba(61, 139, 253, 0.45);
+      outline-offset: 1px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.6rem 1.1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(61, 139, 253, 0.5);
+      background: var(--accent-soft);
+      color: #b8d4ff;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+    .btn:hover { background: rgba(61, 139, 253, 0.28); color: var(--text); }
+    .btn.secondary {
+      border-color: var(--border);
+      background: transparent;
+      color: var(--muted);
+    }
+    .btn.secondary:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.2); }
+    .mail-note {
+      margin: 0.75rem 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .email-inline {
+      font-size: 0.88rem;
+      margin-top: 0.75rem;
+      word-break: break-all;
+    }
+    .email-inline a { color: var(--accent); }
+    footer {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .apoio-row {
+      display: grid;
+      gap: 0 1rem;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 520px) {
+      .apoio-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação">
+      <a href="index.html">Início (dados)</a>
+      <a href="transparencia.html">Transparência</a>
+    </nav>
+
+    <header>
+      <h1>Agenda pública e canal com a comunidade</h1>
+      <p class="lead">
+        Página para visão do público em geral: compromissos divulgados, pedido de reunião, envio de sugestões e solicitação de apoio.
+        As mensagens são encaminhadas pelo <strong>seu aplicativo de e-mail</strong> para o endereço indicado abaixo.
+      </p>
+    </header>
+
+    <section class="panel" id="agenda" aria-labelledby="agenda-titulo">
+      <h2 id="agenda-titulo">Agenda pública</h2>
+      <p class="hint">
+        Atualize os itens diretamente neste ficheiro HTML quando houver novos compromissos oficiais. Horários e locais são exemplificativos até substituir pela agenda real.
+      </p>
+      <ul class="agenda-list">
+        <li>
+          <span class="when">A definir</span>
+          <span class="what">Audiência pública ou plenária (tema a anunciar)</span>
+          <span class="where">Local e horário serão publicados nos canais oficiais.</span>
+        </li>
+        <li>
+          <span class="when">Sábados</span>
+          <span class="what">Plantão de escuta com moradores — agenda regional</span>
+          <span class="where">Confirme bairro e horário pelas redes ou pelo contato abaixo.</span>
+        </li>
+        <li>
+          <span class="when">Sob demanda</span>
+          <span class="what">Reuniões com entidades e lideranças comunitárias</span>
+          <span class="where">Use o formulário «Marcar reunião» para propor data e pauta.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" id="contato" aria-labelledby="contato-titulo">
+      <h2 id="contato-titulo">Fale com a equipe</h2>
+      <p class="hint">
+        Ao clicar em enviar, abrimos uma mensagem pré-preenchida no seu e-mail. Confira o texto e pressione enviar no seu Gmail, Outlook, etc.
+      </p>
+
+      <div class="contact-grid">
+        <div class="card">
+          <h3>Marcar reunião</h3>
+          <p class="sub">Proposta de encontro presencial ou por vídeo com <span class="mono">heitorqfilho@gmail.com</span>.</p>
+          <form id="formReuniao" novalidate>
+            <label for="r_nome">Nome completo</label>
+            <input type="text" id="r_nome" name="nome" autocomplete="name" placeholder="Seu nome" />
+            <label for="r_contato">Telefone ou WhatsApp</label>
+            <input type="tel" id="r_contato" name="contato" autocomplete="tel" placeholder="(00) 00000-0000" />
+            <label for="r_tema">Tema da reunião</label>
+            <input type="text" id="r_tema" name="tema" placeholder="Ex.: saúde no bairro X" />
+            <label for="r_quando">Preferência de data / horário</label>
+            <input type="text" id="r_quando" name="quando" placeholder="Ex.: manhãs de terça, ou 15/04 à tarde" />
+            <label for="r_msg">Mensagem (opcional)</label>
+            <textarea id="r_msg" name="msg" placeholder="Contexto, número de participantes, necessidade de intérprete…"></textarea>
+            <button type="submit" class="btn">Abrir e-mail para marcar reunião</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>Enviar sugestão</h3>
+          <p class="sub">Ideias, melhorias ou pautas para a atuação parlamentar ou comunitária.</p>
+          <form id="formSugestao" novalidate>
+            <label for="s_nome">Nome (opcional)</label>
+            <input type="text" id="s_nome" name="nome" autocomplete="name" />
+            <label for="s_email">Seu e-mail (para resposta)</label>
+            <input type="email" id="s_email" name="email" autocomplete="email" placeholder="seu@email.com" />
+            <label for="s_assunto">Assunto</label>
+            <input type="text" id="s_assunto" name="assunto" placeholder="Resumo em uma linha" />
+            <label for="s_texto">Sugestão</label>
+            <textarea id="s_texto" name="texto" required placeholder="Descreva sua sugestão com o máximo de clareza."></textarea>
+            <button type="submit" class="btn">Enviar sugestão por e-mail</button>
+          </form>
+        </div>
+
+        <div class="card card-wide">
+          <h3>Solicitar apoio</h3>
+          <p class="sub">
+            Pedidos de apoio institucional, articulação com órgãos públicos, ofícios ou encaminhamentos. A mensagem será direcionada ao mesmo e-mail para triagem.
+          </p>
+          <form id="formApoio" novalidate>
+            <div class="apoio-row">
+              <div>
+                <label for="a_nome">Nome completo</label>
+                <input type="text" id="a_nome" name="nome" autocomplete="name" required placeholder="Obrigatório" />
+              </div>
+              <div>
+                <label for="a_local">Cidade / bairro</label>
+                <input type="text" id="a_local" name="local" placeholder="Onde o apoio se aplica" />
+              </div>
+            </div>
+            <label for="a_email">Seu e-mail</label>
+            <input type="email" id="a_email" name="email" autocomplete="email" required placeholder="para eventual retorno" />
+            <label for="a_tipo">Tipo de apoio</label>
+            <select id="a_tipo" name="tipo">
+              <option value="">Selecione…</option>
+              <option value="Ofício / encaminhamento">Ofício ou encaminhamento a órgão público</option>
+              <option value="Articulação com secretaria">Articulação com secretaria ou autarquia</option>
+              <option value="Mobilização / visita">Mobilização, visita in loco ou agenda conjunta</option>
+              <option value="Outro">Outro (descreva na mensagem)</option>
+            </select>
+            <label for="a_texto">Descreva o pedido</label>
+            <textarea id="a_texto" name="texto" required placeholder="Fatos, prazos, documentos já protocolados e o que espera do apoio."></textarea>
+            <button type="submit" class="btn">Solicitar apoio por e-mail</button>
+          </form>
+        </div>
+      </div>
+
+      <p class="email-inline">
+        E-mail de destino:
+        <a id="mailtoPublico" href="mailto:heitorqfilho@gmail.com">heitorqfilho@gmail.com</a>
+        —
+        <button type="button" class="btn secondary" id="btnCopiarEmail" style="width:auto;display:inline-flex;padding:0.35rem 0.75rem;margin:0 0 0 0.35rem;font-size:0.82rem">
+          Copiar e-mail
+        </button>
+      </p>
+      <p class="mail-note">
+        Não armazenamos mensagens neste site: o envio depende do seu cliente de correio. Em dispositivos móveis, confira se a app de e-mail está configurada.
+      </p>
+    </section>
+
+    <footer>
+      Canal institucional de contato. Para propaganda eleitoral vigente, observe a legislação aplicável (TSE) e canais oficiais de campanha.
+    </footer>
+  </div>
+
+  <script>
+    const PUBLIC_EMAIL = "heitorqfilho@gmail.com";
+
+    function buildMailto(subject, body) {
+      return (
+        "mailto:" +
+        PUBLIC_EMAIL +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body)
+      );
+    }
+
+    function trimVal(el) {
+      return (el && el.value ? el.value : "").trim();
+    }
+
+    document.getElementById("formReuniao").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const body =
+        "Pedido de reunião\n" +
+        "================\n\n" +
+        "Nome: " + (fd.get("nome") || "—") + "\n" +
+        "Contato: " + (fd.get("contato") || "—") + "\n" +
+        "Tema: " + (fd.get("tema") || "—") + "\n" +
+        "Preferência de data/horário: " + (fd.get("quando") || "—") + "\n\n" +
+        "Mensagem:\n" + (fd.get("msg") || "—") + "\n";
+      window.location.href = buildMailto("Pedido de reunião — contato site público", body);
+    });
+
+    document.getElementById("formSugestao").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const texto = trimVal(document.getElementById("s_texto"));
+      if (!texto) {
+        alert("Por favor, preencha o campo de sugestão.");
+        return;
+      }
+      const body =
+        "Sugestão enviada pelo site (público geral)\n" +
+        "=====================================\n\n" +
+        "Nome: " + (fd.get("nome") || "—") + "\n" +
+        "E-mail para resposta: " + (fd.get("email") || "—") + "\n\n" +
+        "Sugestão:\n" + texto + "\n";
+      const assunto = fd.get("assunto") || "Sugestão — site público";
+      window.location.href = buildMailto(assunto, body);
+    });
+
+    document.getElementById("formApoio").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const nome = trimVal(document.getElementById("a_nome"));
+      const email = trimVal(document.getElementById("a_email"));
+      const texto = trimVal(document.getElementById("a_texto"));
+      if (!nome || !email || !texto) {
+        alert("Preencha nome, e-mail e a descrição do pedido de apoio.");
+        return;
+      }
+      const tipo = fd.get("tipo") || "Não especificado";
+      const body =
+        "SOLICITAÇÃO DE APOIO — site público\n" +
+        "==================================\n\n" +
+        "Nome: " + nome + "\n" +
+        "E-mail: " + email + "\n" +
+        "Cidade / bairro: " + (fd.get("local") || "—") + "\n" +
+        "Tipo de apoio: " + tipo + "\n\n" +
+        "Descrição:\n" + texto + "\n";
+      window.location.href = buildMailto("Solicitação de apoio — " + nome, body);
+    });
+
+    document.getElementById("btnCopiarEmail").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(PUBLIC_EMAIL);
+        const b = document.getElementById("btnCopiarEmail");
+        const t = b.textContent;
+        b.textContent = "Copiado";
+        setTimeout(() => { b.textContent = t; }, 2000);
+      } catch {
+        prompt("Copie o e-mail:", PUBLIC_EMAIL);
+      }
+    });
+  </script>
+</body>
+</html>
