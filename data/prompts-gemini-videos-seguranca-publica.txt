@@ -1,0 +1,179 @@
+================================================================================
+10 ROTEIROS / PROMPTS — VÍDEOS CURTOS (SEGURANÇA PÚBLICA) PARA REDES SOCIAIS
+Uso: copie cada bloco para o Gemini e peça, por exemplo:
+«Transforme este roteiro em prompt detalhado para gerar vídeo vertical 30–45s,
+tom sério mas acessível, público Brasil, sem sangue nem armas em prime plano,
+com legendas grandes e CTA final.»
+================================================================================
+
+--- ROTEIRO 1 · “ANTES DE COMPARTILHAR O VÍDEO DA OPERAÇÃO” ---
+Tema atual: circulação de imagens de operações policiais sem contexto; fake news em grupos.
+
+Gancho (0–2s): «Parou 3 segundos antes de encaminhar esse vídeo?»
+
+Corpo:
+- Por que desinformação sobre segurança coloca inocentes e policiais em risco.
+- 3 perguntas rápidas: tem data e local? saiu em veículo confiável? expõe rosto de menor ou morador?
+- Fechamento: «Se não sabe, não compartilha. Denúncia: disque oficial da sua UF.»
+
+Texto na tela (sugestão): PERGUNTA 1 · PERGUNTA 2 · PERGUNTA 3 · FONTE OFICIAL
+
+CTA: Salvar | Seguir para parte 2 sobre direitos na abordagem
+Hashtags: #segurançapública #checagem #cidadania
+
+Tom: professoral, zero sensacionalismo. Evitar nomes de facções.
+
+
+--- ROTEIRO 2 · “O QUE É PREVENÇÃO DE VERDADE” ---
+Tema atual: debate crime x política social; promessas vazias nas eleições.
+
+Gancho: «Segurança não é só polícia na rua — e não é só discurso bonito.»
+
+Corpo:
+- Prevenção em 3 camadas: urbanismo (luz, mobilidade), políticas sociais (escola, trabalho), polícia e justiça.
+- Um dado genérico: «efeito demora anos» (sem inventar número; dizer «dados do IPEA/FBSP quando disponíveis»).
+- Desafio: cobrar projeto com meta e prazo, não só slogan.
+
+Texto na tela: 3 CAMADAS · COBRE PLANO, NÃO SÓ FRASE
+
+CTA: Comenta uma política pública que funciona na tua cidade
+Hashtags: #prevenção #políticapública #segurança
+
+
+--- ROTEIRO 3 · “ROTINA QUE SALVA — ILUMINAÇÃO E COMÉRCIO” ---
+Tema atual: comércio pedindo segurança; medidas baratas que prefeitura pode fazer.
+
+Gancho: «O comércio pede polícia, mas às vezes falta lâmpada.»
+
+Corpo:
+- Exemplo de corredor comercial: iluminação, câmera comunitária com aviso, horário de recolhimento de lixo.
+- «Isso não substitui polícia — mas muda o jogo no dia a dia.»
+- Pergunta ao público: qual rua precisa disso aí?
+
+Texto na tela: LUZ · VISIBILIDADE · ACORDO COM PREFeitura
+
+CTA: Marca a prefeitura com educação
+Hashtags: #centro #comércio #cidades
+
+
+--- ROTEIRO 4 · “ABORDAGEM POLICIAL — O QUE A LEI MANDA LEMBRAR” ---
+Tema atual: abusos e medo; desinformação sobre direitos.
+
+Gancho: «Se pararam você: calma. Direito não é desafio — é proteção.»
+
+Corpo:
+- Direito a identificação da corporação, motivo da abordagem (quando aplicável), não ser humilhado.
+- Filmar pode ser legítimo; não obstruir.
+- Se houve abuso: ouvidoria da polícia, Ministério Público, Defensoria (avisar que varia por caso).
+
+Texto na tela: IDENTIFICAÇÃO · RESPEITO · CANAIS DE DENÚNCIA
+
+CTA: Salva para o grupo da família
+Aviso legal no rodapé: «Conteúdo educativo — não substitui advogado.»
+
+Hashtags: #direitocivil #abordagem #cidadania
+
+
+--- ROTEIRO 5 · “HOMICÍDIO CAIU OU SUBIU? LEIA O GRÁFICO CERTO” ---
+Tema atual: políticos e influenciadores citam estatística sem fonte.
+
+Gancho: «Esse gráfico viral pode estar errado.»
+
+Corpo:
+- Diferença entre taxa por 100 mil e número absoluto; comparar mesmo recorte (estado x estado).
+- Onde buscar: IBGE, Fórum Brasileiro de Segurança Pública, SSP do estado — sempre com ano.
+- «Se não tem fonte na última tela, desconfia.»
+
+Texto na tela: FONTE · ANO · RECORTE (UF / país)
+
+CTA: Partilha com quem adora print sem link
+Hashtags: #dados #estatística #segurança
+
+
+--- ROTEIRO 6 · “MULHERES E SEGURANÇA — ALÉM DO DISQUE 180” ---
+Tema atual: violência doméstica e medo de denunciar.
+
+Gancho: «180 não é a única porta — mas é uma que funciona 24h.»
+
+Corpo:
+- 180, delegacia da mulher, abrigos (mencionar busca por rede municipal).
+- «Violência não é briga de casal» — crime.
+- Reforço: não expor vítima; não pedir detalhes nos comentários.
+
+Texto na tela: 180 · DELEGACIA · AJUDA PSICOLÓGICA
+
+CTA: Fixar nos stories com trigger warning
+Hashtags: #leiMariaDaPenha #180 #segurançadamulher
+
+
+--- ROTEIRO 7 · “TRAFFO DE DROGAS NÃO É SÉRIE DA NETFLIX” ---
+Tema atual: glamourização de facção em funk e conteúdo de crime.
+
+Gancho: «Romantizar o crime empobrece o mesmo bairro que você defende.»
+
+Corpo:
+- Quem lucra com tráfico não mora na sua rua.
+- Conteúdo que viraliza com fuzil atrai mais repressão e menos investimento em escola.
+- Alternativa: destaque quem faz cultura, esporte, trabalho honesto no território.
+
+Texto na tela: CRIME NÃO É CULTURA · QUEM GANHA COM ISSO?
+
+CTA: Marca um projeto social real da região
+Hashtags: #comunidade #cultura #paz
+
+
+--- ROTEIRO 8 · “PM OU PC — QUEM FAZ O QUÊ?” ---
+Tema atual: confusão entre polícias; cobrança errada do órgão.
+
+Gancho: «Você está cobrando a polícia errada no Twitter?»
+
+Corpo:
+- Diferença simples: patrulhamento ostensivo x investigação (varia por estado; usar RJ como exemplo só se for o caso).
+- Crime em flagrante x investigação longa.
+- «Canal certo = resposta mais rápida.»
+
+Texto na tela: OSTENSIVO · INVESTIGAÇÃO · DELEGACIA
+
+CTA: Comenta qual confusão você mais vê
+Hashtags: #polícia #cidadania #instituições
+
+
+--- ROTEIRO 9 · “SEGURANÇA NO TRANSPORTE — ÔNIBUS E APP” ---
+Tema atual: assaltos em corredor de ônibus; medo de Uber/99.
+
+Gancho: «O roubo no celular começou antes do motorista.»
+
+Corpo:
+- Hábitos: não mostrar o telefone na janela, horários de pico, pontos de embarque movimentados.
+- Denúncia: 190; salvar número da segurança do município se existir.
+- Política: cobrar iluminação em terminal não é mimimi — é prevenção.
+
+Texto na tela: ATENÇÃO NO CELULAR · HORÁRIO · PONTO MOVIMENTADO
+
+CTA: Manda para o grupo do condomínio
+Hashtags: #transporte #mobilidade #segurança
+
+
+--- ROTEIRO 10 · “E SE A NOTÍCIA FOR SOBRE O SEU BAIRRO?” ---
+Tema atual: algoritmo mostra só violência; sensação de insegurança maior que dado.
+
+Gancho: «Seu bairro virou “zona de guerra” no Zap ou na vida real?»
+
+Corpo:
+- Diferença entre medo legítimo e sensacionalismo de grupo.
+- Como checar: boletins da PM/PC, conselho comunitário, ouvidoria.
+- Proposta: reunião com vereador com pauta escrita — não só post estourado.
+
+Texto na tela: MEDO REAL X RUMOR · CHECAR FONTE · PAUTA CLARA
+
+CTA: Pede a ata da última reunião de segurança da região
+Hashtags: #participação #bairro #transparência
+
+
+================================================================================
+NOTAS ÉTICAS (use no final do prompt ao Gemini)
+- Não incitar violência nem discriminação; evitar etnia/religião como “causa” de crime.
+- Não mostrar corpos, tortura ou menores identificáveis.
+- Citar dados só com fonte; se não houver, dizer “busque no site oficial”.
+- Respeitar período eleitoral (TSE) se for conteúdo de candidatura.
+================================================================================
