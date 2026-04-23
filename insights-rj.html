@@ -807,7 +807,9 @@
     }
 
     /**
-     * Delegacias / DPs da PCERJ (ou equivalente) como referência de saída e chegada — coordenadas ilustrativas para busca no mapa.
+     * Delegacias / DPs da PCERJ (ou equivalente) como referência de saída e chegada.
+     * Coordenadas conferidas com o cadastro público OpenStreetMap (amenity=police / vias) e endereços oficiais quando indicados;
+     * confirme sempre o pin no Google Maps antes de deslocar.
      * Onde não há cadastro, usa-se entorno da prefeitura (buildPrefeituraCoordsPorCidade) ou o centróide IBGE com aviso.
      */
     const DP_DPO_SAIDA_POR_CIDADE = {
@@ -833,6 +835,12 @@
       "Barra Mansa": { nome: "Delegacia — Barra Mansa (centro)", lat: -22.5483, lng: -44.1757 },
       "Resende": { nome: "Delegacia — Resende (centro)", lat: -22.469, lng: -44.4468 },
       "Campos dos Goytacazes": { nome: "Delegacia — Campos dos Goytacazes (centro)", lat: -21.7545, lng: -41.3236 },
+      /** 112ª DP — OSM «112ª Delegacia Policial do Carmo» (amenity=police); end. referência R. Alceu Matos, 99, Bela Vista, 28640-000. */
+      "Carmo": {
+        nome: "112ª DP — Carmo (R. Alceu Matos, 99 — Bela Vista, 28640-000)",
+        lat: -21.930137,
+        lng: -42.609191,
+      },
       "Macaé": { nome: "Delegacia — Macaé (centro)", lat: -22.3727, lng: -41.7869 },
       "Angra dos Reis": { nome: "Delegacia — Angra dos Reis (centro)", lat: -23.0069, lng: -44.3191 },
       "Cabo Frio": { nome: "Delegacia — Cabo Frio (centro)", lat: -22.8881, lng: -42.0264 },
