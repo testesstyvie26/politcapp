@@ -1,26 +1,28 @@
 /**
- * Navegação global (layout, acessibilidade, visual moderno).
+ * Navegação global — estilo contido (superfície leve, links em texto + estado suave).
  * Ficheiro: site-shell-nav.css — carregar por último no <head>.
  */
 
 :root {
-  --politapp-nav-accent: #3d8bfd;
-  --politapp-nav-accent-glow: rgba(61, 139, 253, 0.45);
-  --politapp-nav-surface: rgba(18, 22, 30, 0.92);
-  --politapp-nav-border: rgba(255, 255, 255, 0.1);
-  --politapp-nav-text: #8b95a8;
-  --politapp-nav-text-hover: #e8ecf2;
-  --politapp-nav-pill-bg: rgba(255, 255, 255, 0.06);
-  --politapp-nav-pill-bg-hover: rgba(61, 139, 253, 0.18);
-  --politapp-nav-radius: 999px;
-  --politapp-nav-bar-radius: 16px;
-  --politapp-nav-duration: 0.22s;
-  --politapp-nav-ease: cubic-bezier(0.33, 1, 0.68, 1);
+  --nav-accent: #5b9cf8;
+  --nav-accent-muted: rgba(91, 156, 248, 0.22);
+  --nav-accent-ring: rgba(91, 156, 248, 0.35);
+  --nav-border: rgba(255, 255, 255, 0.09);
+  --nav-border-hover: rgba(255, 255, 255, 0.14);
+  --nav-text: #9aa3b2;
+  --nav-text-strong: #eef1f6;
+  --nav-surface: rgba(17, 21, 29, 0.78);
+  --nav-chip: rgba(255, 255, 255, 0.045);
+  --nav-chip-hover: rgba(255, 255, 255, 0.08);
+  --nav-radius-bar: 12px;
+  --nav-radius-link: 8px;
+  --nav-duration: 0.18s;
+  --nav-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --politapp-nav-duration: 0.01ms;
+    --nav-duration: 0.01ms;
   }
 }
 
@@ -30,29 +32,26 @@
   top: 0;
   left: 0;
   z-index: 10000;
-  padding: 0.65rem 1.15rem;
-  font: 600 0.88rem "DM Sans", system-ui, sans-serif;
-  background: linear-gradient(135deg, #3d8bfd, #2563eb);
-  color: #041018;
+  padding: 0.55rem 1rem;
+  font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
+  background: var(--nav-accent);
+  color: #0a0e14;
   border: none;
-  border-radius: 0 0 12px 0;
+  border-radius: 0 0 10px 0;
   text-decoration: none;
   transform: translateY(-130%);
-  transition: transform var(--politapp-nav-duration) var(--politapp-nav-ease),
-    box-shadow var(--politapp-nav-duration) ease;
-  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.35);
+  transition: transform var(--nav-duration) var(--nav-ease);
 }
 .politapp-skip:focus {
   transform: translateY(0);
-  outline: 2px solid #e8ecf2;
+  outline: 2px solid var(--nav-text-strong);
   outline-offset: 2px;
-  box-shadow: 0 8px 28px rgba(61, 139, 253, 0.45);
 }
 .politapp-skip:focus:not(:focus-visible) {
   outline: none;
 }
 
-/* ——— Barra principal (dentro de .wrap) ——— */
+/* ——— Barra principal ——— */
 nav.site-nav {
   position: sticky;
   top: 0.5rem;
@@ -61,39 +60,29 @@ nav.site-nav {
   flex-wrap: wrap;
   align-items: center;
   align-content: center;
-  gap: 0.4rem 0.5rem;
-  margin: 0 0 1.25rem !important;
-  padding: 0.5rem 0.6rem !important;
+  gap: 0.15rem 0.2rem;
+  margin: 0 0 1.35rem !important;
+  padding: 0.35rem 0.4rem !important;
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
 
-  background: linear-gradient(
-    165deg,
-    rgba(28, 36, 51, 0.94) 0%,
-    rgba(16, 20, 28, 0.92) 100%
-  );
-  border: 1px solid var(--politapp-nav-border);
-  border-radius: var(--politapp-nav-bar-radius);
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.15),
-    0 18px 40px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  background: var(--nav-surface);
+  border: 1px solid var(--nav-border);
+  border-radius: var(--nav-radius-bar);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px) saturate(1.05);
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
 
-  /* Animação de entrada suave (uma vez) */
-  animation: politapp-nav-enter 0.55s var(--politapp-nav-ease) both;
+  animation: nav-fade-in 0.4s var(--nav-ease) both;
 }
 
-@keyframes politapp-nav-enter {
+@keyframes nav-fade-in {
   from {
     opacity: 0;
-    transform: translateY(-8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -108,112 +97,86 @@ nav.site-nav a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.42rem 0.9rem !important;
+  padding: 0.4rem 0.72rem !important;
   margin: 0 !important;
-  min-height: 2.25rem;
-  font-size: 0.82rem !important;
+  min-height: 2.125rem;
+  font-size: 0.8125rem !important;
   font-weight: 500 !important;
-  color: var(--politapp-nav-text) !important;
+  letter-spacing: 0.01em;
+  color: var(--nav-text) !important;
   text-decoration: none !important;
   white-space: nowrap;
-  border-radius: var(--politapp-nav-radius);
-  background: var(--politapp-nav-pill-bg);
+  border-radius: var(--nav-radius-link);
+  background: transparent;
   border: 1px solid transparent;
   transition:
-    color var(--politapp-nav-duration) var(--politapp-nav-ease),
-    background var(--politapp-nav-duration) var(--politapp-nav-ease),
-    border-color var(--politapp-nav-duration) ease,
-    transform var(--politapp-nav-duration) var(--politapp-nav-ease),
-    box-shadow var(--politapp-nav-duration) ease;
-}
-
-nav.site-nav a::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, var(--politapp-nav-accent), transparent 55%);
-  opacity: 0;
-  z-index: -1;
-  transition: opacity var(--politapp-nav-duration) ease;
-  filter: blur(8px);
-  pointer-events: none;
+    color var(--nav-duration) var(--nav-ease),
+    background var(--nav-duration) var(--nav-ease),
+    border-color var(--nav-duration) ease;
 }
 
 nav.site-nav a:hover {
-  color: var(--politapp-nav-text-hover) !important;
-  background: var(--politapp-nav-pill-bg-hover);
-  border-color: rgba(61, 139, 253, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-nav.site-nav a:hover::after {
-  opacity: 0.35;
+  color: var(--nav-text-strong) !important;
+  background: var(--nav-chip-hover);
+  border-color: var(--nav-border-hover);
 }
 
 nav.site-nav a:active {
-  transform: translateY(0);
-  transition-duration: 0.08s;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 nav.site-nav a:focus-visible {
   outline: none;
-  color: var(--politapp-nav-text-hover) !important;
-  border-color: var(--politapp-nav-accent);
-  box-shadow: 0 0 0 3px var(--politapp-nav-accent-glow);
+  color: var(--nav-text-strong) !important;
+  border-color: var(--nav-accent);
+  box-shadow: 0 0 0 2px var(--nav-accent-ring);
 }
 
 nav.site-nav a[aria-current="page"] {
-  color: #fff !important;
+  color: var(--nav-text-strong) !important;
   font-weight: 600 !important;
-  background: linear-gradient(135deg, rgba(61, 139, 253, 0.35), rgba(37, 99, 235, 0.22)) !important;
-  border-color: rgba(61, 139, 253, 0.55) !important;
-  box-shadow:
-    0 0 20px rgba(61, 139, 253, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: var(--nav-accent-muted) !important;
+  border-color: rgba(91, 156, 248, 0.35) !important;
   text-decoration: none !important;
 }
-nav.site-nav a[aria-current="page"]::after {
-  opacity: 0.5;
-}
 
-/* ——— Telemóvel: fila única com scroll + indicador de mais conteúdo ——— */
+/* ——— Telemóvel ——— */
 @media (max-width: 768px) {
   nav.site-nav {
     flex-wrap: nowrap !important;
     justify-content: flex-start;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.45rem 0.5rem !important;
-    gap: 0.35rem;
+    padding: 0.3rem 0.35rem !important;
+    gap: 0.1rem;
     scroll-snap-type: x proximity;
-    scroll-padding-inline: 0.5rem;
+    scroll-padding-inline: 0.35rem;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
 
     mask-image: linear-gradient(
       to right,
       transparent,
-      #000 12px,
-      #000 calc(100% - 12px),
+      #000 10px,
+      #000 calc(100% - 10px),
       transparent
     );
     -webkit-mask-image: linear-gradient(
       to right,
       transparent,
-      #000 12px,
-      #000 calc(100% - 12px),
+      #000 10px,
+      #000 calc(100% - 10px),
       transparent
     );
     scrollbar-width: thin;
-    scrollbar-color: rgba(61, 139, 253, 0.45) transparent;
+    scrollbar-color: rgba(91, 156, 248, 0.3) transparent;
   }
 
   nav.site-nav::-webkit-scrollbar {
-    height: 5px;
+    height: 4px;
   }
   nav.site-nav::-webkit-scrollbar-thumb {
-    background: rgba(61, 139, 253, 0.4);
+    background: rgba(91, 156, 248, 0.28);
     border-radius: 99px;
   }
 
@@ -221,11 +184,11 @@ nav.site-nav a[aria-current="page"]::after {
     flex: 0 0 auto;
     scroll-snap-align: start;
     min-height: 44px;
-    padding-inline: 0.85rem !important;
+    padding-inline: 0.78rem !important;
   }
 }
 
-/* ——— Login: topo marca + menu ——— */
+/* ——— Login ——— */
 header.top-bar {
   position: sticky;
   top: 0;
@@ -236,26 +199,22 @@ header.top-bar {
   justify-content: space-between;
   gap: 0.85rem 1rem;
   margin: -0.35rem -0.25rem 1.5rem;
-  padding: 0.65rem 0.85rem;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 14, 22, 0.96) 0%,
-    rgba(7, 10, 15, 0.88) 100%
-  );
-  border: 1px solid var(--politapp-nav-border);
-  border-radius: var(--politapp-nav-bar-radius);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  animation: politapp-nav-enter 0.5s var(--politapp-nav-ease) both;
+  padding: 0.6rem 0.8rem;
+  background: var(--nav-surface);
+  border: 1px solid var(--nav-border);
+  border-radius: var(--nav-radius-bar);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: nav-fade-in 0.35s var(--nav-ease) both;
 }
 
 header.top-bar .brand {
   flex: 0 0 auto;
-  transition: color var(--politapp-nav-duration) ease, transform var(--politapp-nav-duration) var(--politapp-nav-ease);
+  transition: color var(--nav-duration) ease, opacity var(--nav-duration) ease;
 }
 header.top-bar .brand:hover {
-  transform: scale(1.02);
+  opacity: 0.92;
 }
 
 header.top-bar nav.site-nav {
@@ -265,10 +224,10 @@ header.top-bar nav.site-nav {
   justify-content: flex-end;
   min-width: min(100%, 0);
   margin: 0 !important;
-  padding: 0.35rem 0.4rem !important;
-  background: rgba(0, 0, 0, 0.2);
+  padding: 0.28rem 0.32rem !important;
+  background: rgba(0, 0, 0, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: none;
   animation: none;
 }
 
@@ -290,42 +249,44 @@ header.top-bar nav.site-nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem 0.55rem;
-  font-size: 0.82rem;
+  gap: 0.2rem 0.35rem;
+  font-size: 0.8125rem;
   margin-bottom: 1rem !important;
-  padding: 0.45rem 0.55rem !important;
-  background: rgba(18, 22, 30, 0.75);
-  border: 1px solid var(--politapp-nav-border);
-  border-radius: 12px;
-  transition: border-color var(--politapp-nav-duration) ease;
+  padding: 0.35rem 0.4rem !important;
+  background: var(--nav-surface);
+  border: 1px solid var(--nav-border);
+  border-radius: var(--nav-radius-bar);
+  transition: border-color var(--nav-duration) ease;
 }
 .vereador-sub:hover {
-  border-color: rgba(61, 139, 253, 0.2);
+  border-color: var(--nav-border-hover);
 }
 .vereador-sub a {
-  color: var(--politapp-nav-text) !important;
+  color: var(--nav-text) !important;
   text-decoration: none !important;
   font-weight: 500;
-  padding: 0.35rem 0.75rem !important;
-  border-radius: var(--politapp-nav-radius);
-  background: var(--politapp-nav-pill-bg);
+  padding: 0.32rem 0.68rem !important;
+  border-radius: var(--nav-radius-link);
+  background: transparent;
+  border: 1px solid transparent;
   transition:
-    color var(--politapp-nav-duration) ease,
-    background var(--politapp-nav-duration) ease,
-    transform var(--politapp-nav-duration) var(--politapp-nav-ease);
+    color var(--nav-duration) ease,
+    background var(--nav-duration) ease,
+    border-color var(--nav-duration) ease;
 }
 .vereador-sub a:hover {
-  color: var(--politapp-nav-text-hover) !important;
-  background: var(--politapp-nav-pill-bg-hover);
-  transform: translateY(-1px);
+  color: var(--nav-text-strong) !important;
+  background: var(--nav-chip-hover);
+  border-color: var(--nav-border-hover);
 }
 .vereador-sub a[aria-current="page"] {
-  color: #fff !important;
-  background: linear-gradient(135deg, rgba(61, 139, 253, 0.35), rgba(37, 99, 235, 0.2)) !important;
-  border: 1px solid rgba(61, 139, 253, 0.45);
+  color: var(--nav-text-strong) !important;
+  font-weight: 600 !important;
+  background: var(--nav-accent-muted) !important;
+  border: 1px solid rgba(91, 156, 248, 0.35);
 }
 .vereador-sub .sep {
-  color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.14);
   user-select: none;
   flex-shrink: 0;
 }
@@ -339,15 +300,15 @@ header.top-bar nav.site-nav {
     mask-image: linear-gradient(
       to right,
       transparent,
-      #000 10px,
-      #000 calc(100% - 10px),
+      #000 8px,
+      #000 calc(100% - 8px),
       transparent
     );
     -webkit-mask-image: linear-gradient(
       to right,
       transparent,
-      #000 10px,
-      #000 calc(100% - 10px),
+      #000 8px,
+      #000 calc(100% - 8px),
       transparent
     );
   }
@@ -365,5 +326,5 @@ header.top-bar nav.site-nav {
   outline: none;
 }
 #politapp-main {
-  scroll-margin-top: 6rem;
+  scroll-margin-top: 5.5rem;
 }
