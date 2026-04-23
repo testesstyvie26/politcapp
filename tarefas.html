@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tarefas e anotaÃ§Ãµes | Politapp</title>
+  <title>Tarefas e anotações | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -161,7 +161,7 @@
     .site-credit a { color: var(--accent); text-decoration: none; font-weight: 600; }
     .site-credit a:hover { text-decoration: underline; }
     .site-credit-role { font-weight: 400; opacity: 0.92; }
-    /* Post-it lateral (admin) â€” mensagem do anÃºncio */
+    /* Post-it lateral (admin) — mensagem do anúncio */
     .anuncio-alert.anuncio-alert--postit {
       position: fixed;
       z-index: 200;
@@ -227,39 +227,39 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=4" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
   <link rel="stylesheet" href="css/site-theme.css?v=1" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="NavegaÃ§Ã£o principal">
+    <nav class="site-nav" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
-      <a href="eleicao-2022-deputado-federal.html">EleiÃ§Ã£o 2022 Â· DF</a>
-      <a href="executivo.html">VisÃ£o executiva</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
       <a href="prefeituras-rj.html">Prefeituras RJ</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="transparencia.html">TransparÃªncia</a>
+      <a href="transparencia.html">Transparência</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
-          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
-          <a href="whatsapp.html">WhatsApp Â· bot</a>
+        <summary class="site-nav-dropdown__summary">Mídia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+          <a href="midia-social.html">Painel · escuta e conteúdo</a>
+          <a href="whatsapp.html">WhatsApp · bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html" aria-current="page">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
-      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">DocumentaÃ§Ã£o da API</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
     <header id="politapp-main" tabindex="-1">
-      <h1>Tarefas e anotaÃ§Ãµes do dia</h1>
-      <p>Checklist com concluÃ­do e bloco de notas por data. <strong>Os dados sÃ£o salvos no banco</strong> (Supabase), por unidade â€” acessÃ­veis ao time da mesma unidade, nÃ£o apenas neste navegador.</p>
+      <h1>Tarefas e anotações do dia</h1>
+      <p>Checklist com concluído e bloco de notas por data. <strong>Os dados são salvos no banco</strong> (Supabase), por unidade — acessíveis ao time da mesma unidade, não apenas neste navegador.</p>
     </header>
 
     <p id="modeBanner" class="mode-banner" hidden></p>
@@ -288,18 +288,18 @@
         Data
         <input type="date" id="dia" />
       </label>
-      <p class="progress" id="progress" aria-live="polite"><strong>0</strong> / 0 concluÃ­das</p>
+      <p class="progress" id="progress" aria-live="polite"><strong>0</strong> / 0 concluídas</p>
     </div>
 
-    <div class="tabs" role="tablist" aria-label="SeÃ§Ãµes">
+    <div class="tabs" role="tablist" aria-label="Seções">
       <button type="button" role="tab" id="tab-t" aria-selected="true" aria-controls="panel-t">Checklist</button>
-      <button type="button" role="tab" id="tab-n" aria-selected="false" aria-controls="panel-n">AnotaÃ§Ãµes</button>
+      <button type="button" role="tab" id="tab-n" aria-selected="false" aria-controls="panel-n">Anotações</button>
     </div>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-t" aria-labelledby="tab-t">
       <h2>Tarefas</h2>
       <div class="add-row">
-        <input type="text" id="novaTarefa" placeholder="Nova tarefaâ€¦ (Enter para adicionar)" maxlength="500" autocomplete="off" />
+        <input type="text" id="novaTarefa" placeholder="Nova tarefa… (Enter para adicionar)" maxlength="500" autocomplete="off" />
         <button type="button" id="btnAdd">Adicionar</button>
       </div>
       <ul class="task-list" id="lista" aria-label="Lista de tarefas"></ul>
@@ -307,17 +307,17 @@
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-n" aria-labelledby="tab-n" hidden>
-      <h2>AnotaÃ§Ãµes</h2>
-      <textarea class="notes" id="notas" placeholder="ReuniÃµes, ideias, contatos, lembretes de campanhaâ€¦"></textarea>
-      <p class="hint">Grava no banco (Supabase) ao sair do campo, apÃ³s uma pausa na digitaÃ§Ã£o ou ao trocar a data.</p>
+      <h2>Anotações</h2>
+      <textarea class="notes" id="notas" placeholder="Reuniões, ideias, contatos, lembretes de campanha…"></textarea>
+      <p class="hint">Grava no banco (Supabase) ao sair do campo, após uma pausa na digitação ou ao trocar a data.</p>
     </section>
 
     <footer class="site-credit" role="contentinfo">
       <p>
         Criado por
         <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
-        <span class="site-credit-role">â€” Especialista em SeguranÃ§a da InformaÃ§Ã£o &amp; DevSecOps</span>
-        Â·
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
         <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </p>
     </footer>

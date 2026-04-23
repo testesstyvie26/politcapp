@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mapa de votos (zona e seÃ§Ã£o) â€” Vereadores RJ 2024 | Politapp</title>
+  <title>Mapa de votos (zona e seção) — Vereadores RJ 2024 | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -109,28 +109,28 @@
       #panelTabelaVotos td, #panelTabelaVotos th { border-color: #333 !important; }
     }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=4" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
   <link rel="stylesheet" href="css/site-theme.css?v=1" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav no-print" aria-label="NavegaÃ§Ã£o principal">
+    <nav class="site-nav no-print" aria-label="Navegação principal">
       <a href="index.html">Lista de candidatos</a>
-      <a href="eleicao-2022-deputado-federal.html">EleiÃ§Ã£o 2022 Â· DF</a>
-      <a href="executivo.html">VisÃ£o executiva</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
       <a href="insights-rj.html">Insights RJ</a>
       <a href="prefeituras-rj.html">Prefeituras RJ</a>
       <a href="vereadores-rj.html">Vereadores RJ</a>
-      <a href="vereador-heitor-queiroz-2024.html">AnÃ¡lise Heitor Queiroz</a>
-      <a href="transparencia.html">TransparÃªncia</a>
+      <a href="vereador-heitor-queiroz-2024.html">Análise Heitor Queiroz</a>
+      <a href="transparencia.html">Transparência</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
-          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
-          <a href="whatsapp.html">WhatsApp Â· bot</a>
+        <summary class="site-nav-dropdown__summary">Mídia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+          <a href="midia-social.html">Painel · escuta e conteúdo</a>
+          <a href="whatsapp.html">WhatsApp · bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
@@ -138,37 +138,37 @@
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
     </nav>
-    <nav class="vereador-sub no-print" aria-label="NavegaÃ§Ã£o â€” Vereadores RJ">
+    <nav class="vereador-sub no-print" aria-label="Navegação — Vereadores RJ">
       <a href="vereadores-rj.html">Lista e filtros</a>
       <span class="sep" aria-hidden="true">|</span>
-      <a href="vereadores-caxias-ordem-votos.html">Caxias â€” votos crescentes</a>
+      <a href="vereadores-caxias-ordem-votos.html">Caxias — votos crescentes</a>
       <span class="sep" aria-hidden="true">|</span>
-      <a href="vereadores-rj-mapa-votos.html" aria-current="page">Mapa de votos (zona e seÃ§Ã£o)</a>
+      <a href="vereadores-rj-mapa-votos.html" aria-current="page">Mapa de votos (zona e seção)</a>
     </nav>
 
     <header id="politapp-main" tabindex="-1" class="no-print">
-      <h1>Mapa de votos â€” eleiÃ§Ãµes 2024 (vereador)</h1>
+      <h1>Mapa de votos — eleições 2024 (vereador)</h1>
       <p>
-        VisualizaÃ§Ã£o dos <strong>votos nominais</strong> (1.Âº turno) por <strong>zona eleitoral</strong> (agregado oficial TSE
-        <span class="mono">votacao_candidato_munzona</span>) e, em modo de demonstraÃ§Ã£o, por <strong>seÃ§Ã£o eleitoral</strong>
-        (cada ponto = local de votaÃ§Ã£o por seÃ§Ã£o, ficheiro <span class="mono">votacao_secao</span>).
-        Em <strong>modo zona</strong> cada ponto usa a <strong>morada de referÃªncia TSE</strong> dessa zona
-        (ficheiro <span class="mono">vereadores-zona-local-2024-rj.json</span>, geocodificaÃ§Ã£o Photon ou
+        Visualização dos <strong>votos nominais</strong> (1.º turno) por <strong>zona eleitoral</strong> (agregado oficial TSE
+        <span class="mono">votacao_candidato_munzona</span>) e, em modo de demonstração, por <strong>seção eleitoral</strong>
+        (cada ponto = local de votação por seção, ficheiro <span class="mono">votacao_secao</span>).
+        Em <strong>modo zona</strong> cada ponto usa a <strong>morada de referência TSE</strong> dessa zona
+        (ficheiro <span class="mono">vereadores-zona-local-2024-rj.json</span>, geocodificação Photon ou
         <span class="mono">lat</span>/<span class="mono">lon</span> se tiver sido gerado com
-        <span class="mono">--geocode</span>); sÃ³ recai em posiÃ§Ã£o esquemÃ¡tica se nÃ£o houver morada.
-        Em <strong>modo seÃ§Ã£o</strong> o mapa usa o endereÃ§o TSE com geocodificaÃ§Ã£o (Photon / OpenStreetMap) ou
+        <span class="mono">--geocode</span>); só recai em posição esquemática se não houver morada.
+        Em <strong>modo seção</strong> o mapa usa o endereço TSE com geocodificação (Photon / OpenStreetMap) ou
         <span class="mono">lat</span>/<span class="mono">lon</span> no JSON se o ficheiro tiver sido gerado com
-        <span class="mono">--geocode</span>; vÃ¡rios pontos no mesmo endereÃ§o recebem um micro-desvio estÃ¡vel.
+        <span class="mono">--geocode</span>; vários pontos no mesmo endereço recebem um micro-desvio estável.
         Rio de Janeiro (UE <span class="mono">60011</span>) e Duque de Caxias (UE <span class="mono">58335</span>).
       </p>
     </header>
 
     <section class="panel no-print" id="panelControloMapa">
       <h2>Controlo do mapa</h2>
-      <p class="note" id="mapStatus">A carregar dadosâ€¦</p>
+      <p class="note" id="mapStatus">A carregar dados…</p>
       <div class="map-toolbar">
         <label>
-          MunicÃ­pio
+          Município
           <select id="selUe">
             <option value="">Ambos (ligeiro)</option>
             <option value="60011">Rio de Janeiro</option>
@@ -181,15 +181,15 @@
         </label>
       </div>
       <div class="row-tools">
-        <fieldset class="radio" aria-label="NÃ­vel de detalhe">
-          <span style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:var(--muted)">NÃ­vel</span>
+        <fieldset class="radio" aria-label="Nível de detalhe">
+          <span style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:var(--muted)">Nível</span>
           <label><input type="radio" name="nivel" value="zona" checked /> Por zona (todos os candidatos)</label>
-          <label id="lblSec" style="opacity:0.5"><input type="radio" name="nivel" value="secao" id="radSec" disabled /> Por seÃ§Ã£o (ficheiro de exemplo; um SQ)</label>
+          <label id="lblSec" style="opacity:0.5"><input type="radio" name="nivel" value="secao" id="radSec" disabled /> Por seção (ficheiro de exemplo; um SQ)</label>
         </fieldset>
       </div>
-      <p class="note" id="notaSec">No modo <strong>seÃ§Ã£o</strong>, o repositÃ³rio inclui o detalhe para o <span class="mono">SQ_CANDIDATO</span> do ficheiro de exemplo (gerado com <span class="mono">npm run build:vereadores-secao-exemplo</span>). Coordenadas exactas no mapa: opcionalmente <span class="mono">npm run build:vereadores-secao-exemplo -- --geocode</span> (Nominatim, ~1 s por morada Ãºnica).</p>
+      <p class="note" id="notaSec">No modo <strong>seção</strong>, o repositório inclui o detalhe para o <span class="mono">SQ_CANDIDATO</span> do ficheiro de exemplo (gerado com <span class="mono">npm run build:vereadores-secao-exemplo</span>). Coordenadas exactas no mapa: opcionalmente <span class="mono">npm run build:vereadores-secao-exemplo -- --geocode</span> (Nominatim, ~1 s por morada única).</p>
       <div class="map-wrap">
-        <div id="mapVotos" role="application" aria-label="Mapa de calor de votos por zona ou seÃ§Ã£o"></div>
+        <div id="mapVotos" role="application" aria-label="Mapa de calor de votos por zona ou seção"></div>
       </div>
     </section>
 
@@ -226,7 +226,7 @@
     const UE_CAX = "58335";
     const CENTER = { [UE_RIO]: [-22.91, -43.19], [UE_CAX]: [-22.787, -43.32] };
     const UE_MUN = { [UE_RIO]: "Rio de Janeiro", [UE_CAX]: "Duque de Caxias" };
-    /** minLon, minLat, maxLon, maxLat â€” apertar a Ã¡rea de pesquisa (Photon) por municÃ­pio. */
+    /** minLon, minLat, maxLon, maxLat — apertar a área de pesquisa (Photon) por município. */
     const PHOTON_BBOX = {
       [UE_RIO]: [-43.88, -23.1, -43.02, -22.75],
       [UE_CAX]: [-43.45, -22.95, -43.0, -22.55],
@@ -245,7 +245,7 @@
     let zonaLocal = null;
     let secExemplo = null;
     const candBySq = new Map();
-    /** Ãšltima matriz exportÃ¡vel (cabeÃ§alhos + linhas), para PDF/impressÃ£o mesmo antes do mapa terminar ou se o DOM falhar. */
+    /** Última matriz exportável (cabeçalhos + linhas), para PDF/impressão mesmo antes do mapa terminar ou se o DOM falhar. */
     let lastExportMatrix = null;
 
     function escapeHtml(s) {
@@ -262,7 +262,7 @@
       return h;
     }
 
-    /** Dois valores em [0,1) estÃ¡veis a partir da seed (evita grelha 1000Ã—1000 do % 1000). */
+    /** Dois valores em [0,1) estáveis a partir da seed (evita grelha 1000×1000 do % 1000). */
     function stableUnitPair(seed) {
       const h1 = hashSeed(String(seed));
       const h2 = Math.imul(h1, 1597334677) + hashSeed(String(seed) + "\0b") | 0;
@@ -275,12 +275,12 @@
         .trim();
     }
 
-    /** Chave Ãºnica por local de votaÃ§Ã£o (TSE: vÃ¡rias seÃ§Ãµes=mesma morada). */
+    /** Chave única por local de votação (TSE: várias seções=mesma morada). */
     function geocodeDedupKey(x) {
       const e = normStr(x.endereco);
       const l = normStr(x.local);
-      if (e && e !== "â€”" && e.length > 0) return String(x.ue) + "\t" + e.toLowerCase();
-      if (l && l !== "â€”" && l.length > 0) return String(x.ue) + "\tL:" + l.toLowerCase();
+      if (e && e !== "—" && e.length > 0) return String(x.ue) + "\t" + e.toLowerCase();
+      if (l && l !== "—" && l.length > 0) return String(x.ue) + "\tL:" + l.toLowerCase();
       return String(x.ue) + "\t" + (x.z || 0) + "\t" + (x.s || 0);
     }
 
@@ -308,8 +308,8 @@
     }
 
     /**
-     * Texto de pesquisa: endereÃ§o (via + n.Âº) antes do nome da escola â€” o TSE dÃ¡ a via em endereco
-     * e pÃ´r a escola primeiro desvia o Photon para o homÃ³nimo noutro estado.
+     * Texto de pesquisa: endereço (via + n.º) antes do nome da escola — o TSE dá a via em endereco
+     * e pôr a escola primeiro desvia o Photon para o homónimo noutro estado.
      */
     function photonQueryCandidates(x) {
       const mun = UE_MUN[x.ue] || "Rio de Janeiro";
@@ -317,10 +317,10 @@
       const l = normStr(x.local);
       const tail = ", " + mun + ", RJ, Brasil";
       const out = [];
-      if (e && e !== "â€”" && e.length > 1) {
+      if (e && e !== "—" && e.length > 1) {
         out.push(e + tail);
-        if (l && l !== "â€”" && l.length > 0) out.push(e + ", " + l + tail);
-      } else if (l && l !== "â€”") {
+        if (l && l !== "—" && l.length > 0) out.push(e + ", " + l + tail);
+      } else if (l && l !== "—") {
         out.push(l + tail);
       } else {
         out.push(mun + ", RJ, Brasil");
@@ -328,7 +328,7 @@
       return [...new Set(out)];
     }
 
-    /** Micro-desvio estÃ¡vel (vÃ¡rias secÃ§Ãµes no mesmo edifÃ­cio). */
+    /** Micro-desvio estável (várias secções no mesmo edifício). */
     function jitterSec(lat, lon, ue, z, s) {
       const [a, b] = stableUnitPair(String(ue) + "|z" + z + "|s" + s);
       const u1 = a - 0.5;
@@ -348,7 +348,7 @@
       const u = new URL("https://photon.komoot.io/api/");
       u.searchParams.set("q", q);
       u.searchParams.set("limit", "1");
-      /* Photon pÃºblico sÃ³ aceita lang default, de, en, fr â€” lang=pt devolve erro JSON sem features. */
+      /* Photon público só aceita lang default, de, en, fr — lang=pt devolve erro JSON sem features. */
       if (opts.bbox && opts.bbox.length === 4) u.searchParams.set("bbox", opts.bbox.join(","));
       if (Number.isFinite(opts.lat) && Number.isFinite(opts.lon)) {
         u.searchParams.set("lat", String(opts.lat));
@@ -393,7 +393,7 @@
       await Promise.all(Array.from({ length: wn }, () => worker()));
     }
 
-    /** PosiÃ§Ã£o no mapa: esquemÃ¡tica, estÃ¡vel, sÃ³ para fallback (sem morada / geocode falhou). */
+    /** Posição no mapa: esquemática, estável, só para fallback (sem morada / geocode falhou). */
     function posEsquematica(ue, z, s) {
       const c = CENTER[ue] || CENTER[UE_RIO];
       const seed = s != null && s > 0 ? `${ue}|z${z}|s${s}` : `${ue}|z${z}`;
@@ -436,7 +436,7 @@
         .map((r) => {
           const sq = String(r.sqCandidato || "");
           if (!sq) return "";
-          const n = (r.nomeUrna || "â€”") + " Â· " + (r.partido || "â€”") + " Â· " + (r.votos != null ? r.votos.toLocaleString("pt-BR") + " votos" : "â€”");
+          const n = (r.nomeUrna || "—") + " · " + (r.partido || "—") + " · " + (r.votos != null ? r.votos.toLocaleString("pt-BR") + " votos" : "—");
           return "<option value=\"" + escapeHtml(sq) + "\">" + escapeHtml(n) + "</option>";
         })
         .filter(Boolean)
@@ -474,7 +474,7 @@
     }
 
     /**
-     * jsPDF-AutoTable regista em jsPDF.API.autoTable; reforÃ§a applyPlugin se necessÃ¡rio.
+     * jsPDF-AutoTable regista em jsPDF.API.autoTable; reforça applyPlugin se necessário.
      */
     function ensureJspdfAutoTable() {
       const ctor = getJspdfConstructor();
@@ -505,11 +505,11 @@
 
     function storeExportMatrixSecao(filtradoSorted) {
       if (!filtradoSorted.length) {
-        lastExportMatrix = { headers: ["UE", "Zona", "SeÃ§Ã£o", "Local", "EndereÃ§o (TSE)", "Votos"], body: [] };
+        lastExportMatrix = { headers: ["UE", "Zona", "Seção", "Local", "Endereço (TSE)", "Votos"], body: [] };
         return;
       }
       lastExportMatrix = {
-        headers: ["UE", "Zona", "SeÃ§Ã£o", "Local", "EndereÃ§o (TSE)", "Votos"],
+        headers: ["UE", "Zona", "Seção", "Local", "Endereço (TSE)", "Votos"],
         body: filtradoSorted.map((x) => [
           String(x.ue),
           String(x.z),
@@ -551,7 +551,7 @@
         .map((row) => "<tr>" + row.map((c) => "<td>" + escapeHtml(c) + "</td>").join("") + "</tr>")
         .join("");
       w.document.write(
-        "<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"/><title>Politapp â€” tabela</title>" +
+        "<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"/><title>Politapp — tabela</title>" +
           "<style>body{font-family:system-ui,sans-serif;padding:16px}table{border-collapse:collapse;width:100%;font-size:12px}" +
           "th,td{border:1px solid #333;padding:6px}th{background:#1c2433;color:#fff}</style></head><body>" +
           "<table><thead><tr>" +
@@ -559,7 +559,7 @@
           "</tr></thead><tbody>" +
           bodyRows +
           "</tbody></table>" +
-          "<p style=\"font:11px system-ui;margin-top:12px\">No diÃ¡logo de impressÃ£o escolha <strong>Guardar como PDF</strong> se quiser.</p>" +
+          "<p style=\"font:11px system-ui;margin-top:12px\">No diálogo de impressão escolha <strong>Guardar como PDF</strong> se quiser.</p>" +
           "</body></html>"
       );
       w.document.close();
@@ -573,7 +573,7 @@
       }, 200);
     }
 
-    /** Sem jsPDF: abre janela com a tabela para Imprimir â†’ Guardar como PDF. */
+    /** Sem jsPDF: abre janela com a tabela para Imprimir ? Guardar como PDF. */
     function exportTableToPdfPrintFallback() {
       const tbl = document.getElementById("tabelaVotosMapa");
       if (lastExportMatrix && lastExportMatrix.body.length && (!tbl || !document.querySelector("#tbodyr tr"))) {
@@ -581,27 +581,27 @@
         return;
       }
       if (!tbl || !document.querySelector("#tbodyr tr")) {
-        alert("NÃ£o hÃ¡ linhas na tabela para exportar.");
+        alert("Não há linhas na tabela para exportar.");
         return;
       }
       const selCand = document.getElementById("selCand");
       const selUe = document.getElementById("selUe");
       const meta = document.getElementById("tableMeta");
-      const nivel = getNivel() === "secao" ? "Por seÃ§Ã£o eleitoral" : "Por zona eleitoral";
-      const title = "Mapa de votos â€” " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "") + " â€” " + nivel;
+      const nivel = getNivel() === "secao" ? "Por seção eleitoral" : "Por zona eleitoral";
+      const title = "Mapa de votos — " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "") + " — " + nivel;
       const w = window.open("", "_blank");
       if (!w) {
         alert("O navegador bloqueou a janela. Permita pop-ups para imprimir / guardar em PDF.");
         return;
       }
       const headBlock =
-        "<h1 style=\"font:600 16px system-ui,sans-serif;margin:0 0 8px\">Mapa de votos â€” filtro aplicado</h1>" +
+        "<h1 style=\"font:600 16px system-ui,sans-serif;margin:0 0 8px\">Mapa de votos — filtro aplicado</h1>" +
         "<p style=\"font:12px system-ui,sans-serif;margin:0 0 6px;color:#333\">" +
         "Candidato: " +
-        escapeHtml(selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "â€”") +
-        "<br/>MunicÃ­pio: " +
-        escapeHtml(selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "â€”") +
-        "<br/>NÃ­vel: " +
+        escapeHtml(selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "—") +
+        "<br/>Município: " +
+        escapeHtml(selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "—") +
+        "<br/>Nível: " +
         escapeHtml(nivel) +
         "<br/>SQ: " +
         escapeHtml(getSelSq()) +
@@ -616,7 +616,7 @@
       );
       w.document.write(headBlock);
       w.document.write(tbl.outerHTML);
-      w.document.write("<p style=\"font:11px system-ui;margin-top:12px;color:#555\">Use o diÃ¡logo de impressÃ£o do navegador e escolha <strong>Guardar como PDF</strong>.</p></body></html>");
+      w.document.write("<p style=\"font:11px system-ui;margin-top:12px;color:#555\">Use o diálogo de impressão do navegador e escolha <strong>Guardar como PDF</strong>.</p></body></html>");
       w.document.close();
       w.focus();
       setTimeout(function () {
@@ -628,14 +628,14 @@
       }, 250);
     }
 
-    /** ImpressÃ£o na prÃ³pria pÃ¡gina (sem pop-up): esconde mapa/nav via .no-print e abre o diÃ¡logo do sistema. */
+    /** Impressão na própria página (sem pop-up): esconde mapa/nav via .no-print e abre o diálogo do sistema. */
     function printTabelaVotosInPage() {
       if (!document.querySelector("#tbodyr tr") && lastExportMatrix && lastExportMatrix.body.length) {
         openPrintWindowFromMatrix(lastExportMatrix);
         return;
       }
       if (!document.querySelector("#tbodyr tr")) {
-        alert("NÃ£o hÃ¡ linhas na tabela para imprimir.");
+        alert("Não há linhas na tabela para imprimir.");
         return;
       }
       window.print();
@@ -643,7 +643,7 @@
 
     function syncTabelaExportUi() {
       const n = hasExportableRows() ? 1 : 0;
-      const hint = n === 0 ? "Aguarde o mapa carregar a tabela ou altere candidato / municÃ­pio." : "";
+      const hint = n === 0 ? "Aguarde o mapa carregar a tabela ou altere candidato / município." : "";
       ["btnExportPdf", "btnPrintTable"].forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.title = hint;
@@ -653,7 +653,7 @@
     function exportTableToPdf() {
       const { headers, body } = getTableMatrixForPdf();
       if (!body.length) {
-        alert("NÃ£o hÃ¡ linhas na tabela para exportar.");
+        alert("Não há linhas na tabela para exportar.");
         return;
       }
       if (!getJspdfConstructor()) {
@@ -663,30 +663,30 @@
       }
       try {
         const JsPDF = getJspdfConstructor();
-        if (!JsPDF) throw new Error("jsPDF nÃ£o encontrado em window.jspdf.jsPDF");
+        if (!JsPDF) throw new Error("jsPDF não encontrado em window.jspdf.jsPDF");
         ensureJspdfAutoTable();
         const landscape = getNivel() === "secao";
         const doc = new JsPDF({ orientation: landscape ? "landscape" : "portrait", unit: "mm", format: "a4" });
         if (typeof doc.autoTable !== "function") {
-          throw new Error("AutoTable nÃ£o ligado ao jsPDF (falhou o script jspdf-autotable?)");
+          throw new Error("AutoTable não ligado ao jsPDF (falhou o script jspdf-autotable?)");
         }
         const pageW = doc.internal.pageSize.getWidth();
         const margin = 14;
         const textW = pageW - margin * 2;
         let y = 12;
         doc.setFontSize(14);
-        doc.text("Mapa de votos â€” filtro aplicado", margin, y);
+        doc.text("Mapa de votos — filtro aplicado", margin, y);
         y += 8;
         doc.setFontSize(9);
         const selCand = document.getElementById("selCand");
         const selUe = document.getElementById("selUe");
-        const nivel = getNivel() === "secao" ? "Por seÃ§Ã£o eleitoral" : "Por zona eleitoral";
+        const nivel = getNivel() === "secao" ? "Por seção eleitoral" : "Por zona eleitoral";
         const meta = document.getElementById("tableMeta");
         const st = document.getElementById("mapStatus");
         const blocos = [
-          "Candidato: " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "â€”"),
-          "MunicÃ­pio: " + (selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "â€”"),
-          "NÃ­vel: " + nivel,
+          "Candidato: " + (selCand.selectedOptions[0] ? selCand.selectedOptions[0].textContent : "—"),
+          "Município: " + (selUe.selectedOptions[0] ? selUe.selectedOptions[0].textContent : "—"),
+          "Nível: " + nivel,
           "SQ: " + getSelSq(),
         ];
         if (meta && meta.textContent) blocos.push(meta.textContent);
@@ -741,7 +741,7 @@
       const ueFiltro = document.getElementById("selUe").value;
       const nivel = getNivel();
       if (!row) {
-        st.innerHTML = "<span class='error'>Candidato invÃ¡lido.</span>";
+        st.innerHTML = "<span class='error'>Candidato inválido.</span>";
         lastExportMatrix = null;
         document.getElementById("theadr").innerHTML = "";
         document.getElementById("tbodyr").innerHTML = "";
@@ -793,7 +793,7 @@
       syncTabelaExportUi();
 
       layerMarkers.clearLayers();
-      st.textContent = zonaLocal ? "A preparar pontos por morada (zona)â€¦" : "A posicionar zonas (sem ficheiro de moradas)â€¦";
+      st.textContent = zonaLocal ? "A preparar pontos por morada (zona)…" : "A posicionar zonas (sem ficheiro de moradas)…";
 
       const keyToRows = new Map();
       for (const x of filtrado) {
@@ -802,8 +802,8 @@
           ue: x.ue,
           z: x.z,
           s: 0,
-          endereco: zl && zl.endereco != null ? zl.endereco : "â€”",
-          local: zl && zl.local != null ? zl.local : "â€”",
+          endereco: zl && zl.endereco != null ? zl.endereco : "—",
+          local: zl && zl.local != null ? zl.local : "—",
         };
         const gk = geocodeDedupKey(syn);
         if (!keyToRows.has(gk)) keyToRows.set(gk, []);
@@ -820,8 +820,8 @@
         const zl = first.zl;
         const x0 = first.syn;
         const hasAddr =
-          (normStr(x0.endereco) && normStr(x0.endereco) !== "â€”") ||
-          (normStr(x0.local) && normStr(x0.local) !== "â€”");
+          (normStr(x0.endereco) && normStr(x0.endereco) !== "—") ||
+          (normStr(x0.local) && normStr(x0.local) !== "—");
         if (zl && Number.isFinite(Number(zl.lat)) && Number.isFinite(Number(zl.lon))) {
           coordByKey.set(key, { pt: [Number(zl.lat), Number(zl.lon)], src: "json" });
           continue;
@@ -841,7 +841,7 @@
       let fetchDone = 0;
       const nFetch = needFetch.length;
       if (nFetch) {
-        st.textContent = "GeocodificaÃ§Ã£o (Photon) â€” zonasâ€¦ 0/" + nFetch;
+        st.textContent = "Geocodificação (Photon) — zonas… 0/" + nFetch;
         await runPoolItems(needFetch, async (item) => {
           if (gen !== zonaRenderGen) return;
           const c = CENTER[item.ue] || CENTER[UE_RIO];
@@ -860,7 +860,7 @@
           }
           fetchDone++;
           if (gen === zonaRenderGen) {
-            st.textContent = "GeocodificaÃ§Ã£o (Photon) â€” zonasâ€¦ " + fetchDone + "/" + nFetch;
+            st.textContent = "Geocodificação (Photon) — zonas… " + fetchDone + "/" + nFetch;
           }
         });
       }
@@ -876,8 +876,8 @@
           ue: x.ue,
           z: x.z,
           s: 0,
-          endereco: zl && zl.endereco != null ? zl.endereco : "â€”",
-          local: zl && zl.local != null ? zl.local : "â€”",
+          endereco: zl && zl.endereco != null ? zl.endereco : "—",
+          local: zl && zl.local != null ? zl.local : "—",
         };
         const gk = geocodeDedupKey(syn);
         let la;
@@ -911,7 +911,7 @@
         const locLine = zl && (zl.local || zl.endereco) ? "<br/><small>" + escapeHtml(zl.local || "") + "<br/>" + escapeHtml(zl.endereco || "") + "</small>" : "";
         m.bindPopup(
           "<strong>" + escapeHtml(row.nomeUrna || "") + "</strong><br/>UE " +
-            escapeHtml(x.ue) + " Â· Zona " + x.z + "<br/>" + x.v.toLocaleString("pt-BR") + " votos (zona)" + locLine
+            escapeHtml(x.ue) + " · Zona " + x.z + "<br/>" + x.v.toLocaleString("pt-BR") + " votos (zona)" + locLine
         );
         m.addTo(layerMarkers);
       }
@@ -922,19 +922,19 @@
       if (nEmb) bits.push(nEmb + " com coord. no JSON");
       if (nCache) bits.push(nCache + " do cache");
       if (nPhoton) bits.push(nPhoton + " via Photon");
-      if (nFallback) bits.push(nFallback + " sÃ³ esquemÃ¡tico (sem morada ou geocode falhou)");
+      if (nFallback) bits.push(nFallback + " só esquemático (sem morada ou geocode falhou)");
       st.textContent =
         (filtrado.length
-          ? filtrado.length + " zona(s) no mapa" + (bits.length ? " Â· " + bits.join(" Â· ") : "")
+          ? filtrado.length + " zona(s) no mapa" + (bits.length ? " · " + bits.join(" · ") : "")
           : "Nenhum ponto (verifique ficheiro de zona)") +
-        " Â· Soma nas zonas mostradas: " +
+        " · Soma nas zonas mostradas: " +
         sum.toLocaleString("pt-BR") +
         (tAg != null && Number.isFinite(tAg)
-          ? " â€” total geral (ficheiro candidatos): " + tAg.toLocaleString("pt-BR")
+          ? " — total geral (ficheiro candidatos): " + tAg.toLocaleString("pt-BR")
           : "");
 
-      let metaZ = "Modo zona Â· " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
-      if (zonaLocal && zonaLocal.geradoEm) metaZ += " Â· Moradas zona: " + zonaLocal.geradoEm;
+      let metaZ = "Modo zona · " + (bySqZona.geradoEm ? "Dados: " + bySqZona.geradoEm : "");
+      if (zonaLocal && zonaLocal.geradoEm) metaZ += " · Moradas zona: " + zonaLocal.geradoEm;
       document.getElementById("tableMeta").textContent = metaZ;
       } finally {
         syncTabelaExportUi();
@@ -954,7 +954,7 @@
       const filtradoSortedS = filtrado.slice().sort((a, b) => a.ue.localeCompare(b.ue) || a.z - b.z || a.s - b.s);
       storeExportMatrixSecao(filtradoSortedS);
       document.getElementById("theadr").innerHTML =
-        "<th>UE</th><th class='num'>Zona</th><th class='num'>SeÃ§Ã£o</th><th>Local</th><th>EndereÃ§o (TSE)</th><th class='num'>Votos</th>";
+        "<th>UE</th><th class='num'>Zona</th><th class='num'>Seção</th><th>Local</th><th>Endereço (TSE)</th><th class='num'>Votos</th>";
       document.getElementById("tbodyr").innerHTML = filtradoSortedS
         .map(
           (x) =>
@@ -966,7 +966,7 @@
       syncTabelaExportUi();
 
       layerMarkers.clearLayers();
-      st.textContent = "A preparar pontos por moradaâ€¦";
+      st.textContent = "A preparar pontos por morada…";
 
       const keyToRows = new Map();
       for (const x of filtrado) {
@@ -1000,7 +1000,7 @@
       let fetchDone = 0;
       const nFetch = needFetch.length;
       if (nFetch) {
-        st.textContent = "GeocodificaÃ§Ã£o (Photon)â€¦ 0/" + nFetch + " (em paralelo; 1.Âª carga lenta, depois cache)";
+        st.textContent = "Geocodificação (Photon)… 0/" + nFetch + " (em paralelo; 1.ª carga lenta, depois cache)";
         await runPoolItems(needFetch, async (item) => {
           if (gen !== secaoRenderGen) return;
           const c = CENTER[item.ue] || CENTER[UE_RIO];
@@ -1019,7 +1019,7 @@
           }
           fetchDone++;
           if (gen === secaoRenderGen) {
-            st.textContent = "GeocodificaÃ§Ã£o (Photon)â€¦ " + fetchDone + "/" + nFetch;
+            st.textContent = "Geocodificação (Photon)… " + fetchDone + "/" + nFetch;
           }
         });
       }
@@ -1064,7 +1064,7 @@
         });
         m.bindPopup(
           "<strong>" + escapeHtml(row.nomeUrna || "") + "</strong><br/>" +
-            "Zona " + x.z + " Â· SeÃ§Ã£o " + x.s + "<br/>" + x.v.toLocaleString("pt-BR") + " votos<br/><small class='muted'>" +
+            "Zona " + x.z + " · Seção " + x.s + "<br/>" + x.v.toLocaleString("pt-BR") + " votos<br/><small class='muted'>" +
             escapeHtml(x.local) + "<br/>" + escapeHtml(x.endereco) + "</small>"
         );
         m.addTo(layerMarkers);
@@ -1072,21 +1072,21 @@
       if (layerMarkers.getLayers().length) map.fitBounds(layerMarkers.getBounds(), { padding: [28, 28], maxZoom: 14 });
       const bits = [];
       if (nEmb) bits.push(nEmb + " com coord. no JSON");
-      if (nCache) bits.push(nCache + " do cache (mesmo sÃ­tio)");
-      if (nPhoton) bits.push(nPhoton + " via Photon (1.Âª visita / sem cache)");
-      if (nFallback) bits.push(nFallback + " esquemÃ¡tico (morada nÃ£o encontrada)");
+      if (nCache) bits.push(nCache + " do cache (mesmo sítio)");
+      if (nPhoton) bits.push(nPhoton + " via Photon (1.ª visita / sem cache)");
+      if (nFallback) bits.push(nFallback + " esquemático (morada não encontrada)");
       st.textContent =
         filtrado.length +
-        " seÃ§Ã£o(Ãµes) Â· soma: " +
+        " seção(ões) · soma: " +
         sum.toLocaleString("pt-BR") +
-        " Â· " +
-        (bits.length ? bits.join(" Â· ") + " Â· " : "") +
+        " · " +
+        (bits.length ? bits.join(" · ") + " · " : "") +
         "exemplo TSE " +
         (secExemplo.sqCandidato || "");
       document.getElementById("tableMeta").textContent =
-        "Modo seÃ§Ã£o (demonstraÃ§Ã£o) Â· " +
+        "Modo seção (demonstração) · " +
         (secExemplo.geradoEm || "") +
-        (secExemplo.nota ? " Â· " + secExemplo.nota : "");
+        (secExemplo.nota ? " · " + secExemplo.nota : "");
       } finally {
         syncTabelaExportUi();
       }
@@ -1094,7 +1094,7 @@
 
     async function start() {
       const st = document.getElementById("mapStatus");
-      st.textContent = "A carregar ficheirosâ€¦";
+      st.textContent = "A carregar ficheiros…";
       try {
         const [r1, r2, r3, r4] = await Promise.all([
           fetch(new URL(CAND_URL, location.href), { cache: "no-store" }),
@@ -1114,14 +1114,14 @@
         }
       } catch (e) {
         console.error(e);
-        st.innerHTML = "<span class='error'>Erro: " + escapeHtml(e.message) + " â€” execute <span class='mono'>npm run build:vereadores-votos-zona</span> e <span class='mono'>npm run build:vereadores-rj</span>.</span>";
+        st.innerHTML = "<span class='error'>Erro: " + escapeHtml(e.message) + " — execute <span class='mono'>npm run build:vereadores-votos-zona</span> e <span class='mono'>npm run build:vereadores-rj</span>.</span>";
         lastExportMatrix = null;
         document.getElementById("theadr").innerHTML = "";
         document.getElementById("tbodyr").innerHTML = "";
         syncTabelaExportUi();
         return;
       }
-      st.textContent = "A inicializar mapaâ€¦";
+      st.textContent = "A inicializar mapa…";
       map = L.map("mapVotos", { scrollWheelZoom: true }).setView(CENTER[UE_RIO], ZOOM0);
       L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         attribution: "&copy; OpenStreetMap &copy; CARTO",

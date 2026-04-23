@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AdministraÃ§Ã£o | Politapp</title>
+  <title>Administração | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -85,53 +85,53 @@
     .anuncio-msg { font-size: 0.85rem; margin: 0.75rem 0 0; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=4" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
   <link rel="stylesheet" href="css/site-theme.css?v=1" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap" id="root" hidden>
-    <nav class="site-nav" aria-label="NavegaÃ§Ã£o">
-      <a href="index.html">InÃ­cio</a>
+    <nav class="site-nav" aria-label="Navegação">
+      <a href="index.html">Início</a>
       <a href="conta.html">Conta</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
-          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
-          <a href="whatsapp.html">WhatsApp Â· bot</a>
+        <summary class="site-nav-dropdown__summary">Mídia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+          <a href="midia-social.html">Painel · escuta e conteúdo</a>
+          <a href="whatsapp.html">WhatsApp · bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
     </nav>
     <header id="politapp-main" tabindex="-1">
-      <h1>AdministraÃ§Ã£o</h1>
+      <h1>Administração</h1>
       <p class="lede">Ferramentas para quem tem perfil <strong>admin</strong> no Politapp.</p>
     </header>
     <div class="cards">
       <a class="card" href="admin-unidades.html">
         <h2>Unidades</h2>
-        <p>Criar unidades organizacionais (nome e identificador Ãºnico). Novos utilizadores sÃ£o associados Ã  primeira unidade por padrÃ£o atÃ© alteraÃ§Ã£o manual em Perfis.</p>
+        <p>Criar unidades organizacionais (nome e identificador único). Novos utilizadores são associados à primeira unidade por padrão até alteração manual em Perfis.</p>
       </a>
       <a class="card" href="admin-aprovacoes.html">
         <h2>Aprovar contas</h2>
-        <p>Lista pedidos de registo pendentes e permite aprovar ou recusar o acesso Ã  aplicaÃ§Ã£o.</p>
+        <p>Lista pedidos de registo pendentes e permite aprovar ou recusar o acesso à aplicação.</p>
       </a>
     </div>
 
     <section class="panel-anuncio" aria-labelledby="anuncio-heading">
-      <h2 id="anuncio-heading">AnÃºncio na pÃ¡gina Tarefas</h2>
+      <h2 id="anuncio-heading">Anúncio na página Tarefas</h2>
       <p class="hint">
         Mensagem em destaque no topo de <a href="tarefas.html">tarefas.html</a> para toda a equipa com acesso.
         Deixe em branco e publique para ocultar o aviso.
       </p>
-      <label class="visually-hidden" for="anuncioTexto">Texto do anÃºncio</label>
-      <textarea id="anuncioTexto" maxlength="2000" placeholder="Ex.: ReuniÃ£o geral amanhÃ£ Ã s 10h â€” sala 2."></textarea>
+      <label class="visually-hidden" for="anuncioTexto">Texto do anúncio</label>
+      <textarea id="anuncioTexto" maxlength="2000" placeholder="Ex.: Reunião geral amanhã às 10h — sala 2."></textarea>
       <div class="anuncio-actions">
         <button type="button" id="anuncioSalvar">Publicar</button>
-        <button type="button" id="anuncioLimpar" class="secondary">Limpar anÃºncio</button>
+        <button type="button" id="anuncioLimpar" class="secondary">Limpar anúncio</button>
       </div>
       <p id="anuncioMsg" class="anuncio-msg" hidden></p>
     </section>

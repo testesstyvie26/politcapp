@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aprovar contas â€” Politapp</title>
+  <title>Aprovar contas — Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -41,35 +41,35 @@
     .help-box strong { color: var(--text); }
     .help-box code { font-size: 0.78rem; background: var(--bg); padding: 0.1rem 0.35rem; border-radius: 4px; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=4" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=5" />
   <link rel="stylesheet" href="css/site-theme.css?v=1" />
 </head>
 <body>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteÃºdo</a>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
-    <nav class="site-nav" aria-label="NavegaÃ§Ã£o">
+    <nav class="site-nav" aria-label="Navegação">
       <a href="admin.html">Painel admin</a>
       <a href="admin-unidades.html">Unidades</a>
       <a href="conta.html">Conta</a>
       <details class="site-nav-dropdown">
-        <summary class="site-nav-dropdown__summary">MÃ­dia social</summary>
-        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu MÃ­dia social">
-          <a href="midia-social.html">Painel Â· escuta e conteÃºdo</a>
-          <a href="whatsapp.html">WhatsApp Â· bot</a>
+        <summary class="site-nav-dropdown__summary">Mídia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+          <a href="midia-social.html">Painel · escuta e conteúdo</a>
+          <a href="whatsapp.html">WhatsApp · bot</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
-      <a href="index.html">InÃ­cio</a>
+      <a href="index.html">Início</a>
     </nav>
     <h1 id="politapp-main" tabindex="-1">Pedidos de conta pendentes</h1>
-    <p class="lede">Aprove ou recuse novos utilizadores. Quem for aprovado passa a aceder ao Politapp; quem for recusado vÃª uma mensagem de acesso negado.</p>
+    <p class="lede">Aprove ou recuse novos utilizadores. Quem for aprovado passa a aceder ao Politapp; quem for recusado vê uma mensagem de acesso negado.</p>
     <div class="help-box">
-      <strong>As aprovaÃ§Ãµes nÃ£o funcionam?</strong> SÃ³ contas com <code>grupo = 'admin'</code> na tabela
-      <code>profiles</code> podem alterar o estado dos outros (regra de seguranÃ§a no Supabase).
-      O primeiro utilizador entra como <code>operacoes</code> â€” promova alguÃ©m a admin no SQL Editor:
-      ficheiro <code>sql/promover-admin.sql</code> (copie o UUID em Authentication â†’ Users).
+      <strong>As aprovações não funcionam?</strong> Só contas com <code>grupo = 'admin'</code> na tabela
+      <code>profiles</code> podem alterar o estado dos outros (regra de segurança no Supabase).
+      O primeiro utilizador entra como <code>operacoes</code> — promova alguém a admin no SQL Editor:
+      ficheiro <code>sql/promover-admin.sql</code> (copie o UUID em Authentication ? Users).
     </div>
     <p id="err" class="err" hidden></p>
     <section class="panel">
@@ -79,11 +79,11 @@
             <th>E-mail</th>
             <th>Grupo</th>
             <th>Unidade</th>
-            <th>AÃ§Ãµes</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="4" class="empty">A carregarâ€¦</td></tr>
+          <tr><td colspan="4" class="empty">A carregar…</td></tr>
         </tbody>
       </table>
     </section>

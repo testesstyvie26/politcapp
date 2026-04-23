@@ -58,15 +58,39 @@ html body nav.site-nav[aria-label] {
   z-index: 100;
   isolation: isolate;
   display: flex !important;
-  flex-wrap: wrap;
-  align-items: stretch;
-  align-content: center;
-  gap: 0.35rem 0.45rem !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.3rem 0.4rem !important;
   margin: 0 0 1.4rem !important;
-  padding: 0.7rem 0.6rem 0.55rem !important;
+  padding: 0.55rem 0.5rem !important;
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 0.45rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--shell-nav-accent-dim) transparent;
+
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent
+  );
 
   background: var(--shell-nav-bg) !important;
   border: 1px solid var(--shell-nav-border) !important;
@@ -78,6 +102,14 @@ html body nav.site-nav[aria-label] {
   -webkit-backdrop-filter: blur(12px) saturate(1.08);
 
   animation: shell-nav-in 0.45s var(--shell-nav-ease) both;
+}
+
+html body nav.site-nav[aria-label]::-webkit-scrollbar {
+  height: 5px;
+}
+html body nav.site-nav[aria-label]::-webkit-scrollbar-thumb {
+  background: var(--shell-nav-accent-dim);
+  border-radius: 99px;
 }
 
 html body nav.site-nav[aria-label]::before {
@@ -119,12 +151,13 @@ html body nav.site-nav[aria-label] a {
   position: relative;
   z-index: 1;
   display: inline-flex !important;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  padding: 0.45rem 0.78rem !important;
+  padding: 0.38rem 0.62rem !important;
   margin: 0 !important;
-  min-height: 2.35rem;
-  font-size: 0.8125rem !important;
+  min-height: 2.2rem;
+  font-size: 0.78rem !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em;
   color: var(--shell-nav-text) !important;
@@ -134,6 +167,7 @@ html body nav.site-nav[aria-label] a {
   background: var(--shell-nav-chip) !important;
   border: 1px solid var(--shell-nav-border-soft) !important;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  scroll-snap-align: start;
   transition:
     color var(--shell-nav-dur) var(--shell-nav-ease),
     background var(--shell-nav-dur) var(--shell-nav-ease),
@@ -177,51 +211,24 @@ html body nav.site-nav[aria-label] a:active {
   }
 }
 
-/* ——— Telemóvel ——— */
+/* ——— Telemóvel (alvos de toque maiores) ——— */
 @media (max-width: 768px) {
   html body nav.site-nav[aria-label] {
-    flex-wrap: nowrap !important;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 0.5rem 0.5rem !important;
-    gap: 0.3rem !important;
-    scroll-snap-type: x proximity;
-    scroll-padding-inline: 0.45rem;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 10px,
-      #000 calc(100% - 10px),
-      transparent
-    );
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 10px,
-      #000 calc(100% - 10px),
-      transparent
-    );
-    scrollbar-width: thin;
-    scrollbar-color: var(--shell-nav-accent-dim) transparent;
-  }
-
-  html body nav.site-nav[aria-label]::-webkit-scrollbar {
-    height: 4px;
-  }
-  html body nav.site-nav[aria-label]::-webkit-scrollbar-thumb {
-    background: var(--shell-nav-accent-dim);
-    border-radius: 99px;
+    padding: 0.5rem 0.45rem !important;
+    gap: 0.28rem !important;
   }
 
   html body nav.site-nav[aria-label] a {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
     min-height: 44px;
-    padding-inline: 0.82rem !important;
+    padding-inline: 0.72rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
+    min-height: 44px;
+    padding-inline: 0.72rem !important;
+    padding-inline-end: 1.75rem !important;
+    font-size: 0.8rem !important;
   }
 }
 
@@ -258,9 +265,19 @@ html body header.top-bar nav.site-nav[aria-label] {
   top: auto;
   flex: 1 1 auto;
   justify-content: flex-end;
-  min-width: min(100%, 0);
+  min-width: 0;
+  max-width: 100%;
   margin: 0 !important;
   padding: 0.4rem 0.45rem !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--shell-nav-accent-dim) transparent;
+  mask-image: none;
+  -webkit-mask-image: none;
   background: rgba(0, 0, 0, 0.22) !important;
   border: 1px solid var(--shell-nav-border-soft) !important;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
@@ -374,8 +391,9 @@ html body nav.site-nav[aria-label] .site-nav-dropdown {
   flex-direction: column;
   align-items: stretch;
   flex: 0 0 auto;
-  align-self: stretch;
+  align-self: center;
   z-index: 20;
+  scroll-snap-align: start;
 }
 
 html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
@@ -386,11 +404,11 @@ html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  padding: 0.45rem 0.78rem !important;
-  padding-inline-end: 1.85rem !important;
+  padding: 0.38rem 0.62rem !important;
+  padding-inline-end: 1.65rem !important;
   margin: 0 !important;
-  min-height: 2.35rem;
-  font-size: 0.8125rem !important;
+  min-height: 2.2rem;
+  font-size: 0.78rem !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em;
   color: var(--shell-nav-text) !important;
