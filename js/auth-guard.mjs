@@ -23,6 +23,13 @@ function currentPageFile() {
   return parts.length ? parts[parts.length - 1] : "index.html";
 }
 
+/** Páginas 100% públicas: sem sessão Supabase e sem redirecionar ao login. */
+const AUTH_GUARD_PUBLIC_PAGES = new Set(["landing-publico.html"]);
+
+function isPublicHtmlPage() {
+  return AUTH_GUARD_PUBLIC_PAGES.has(currentPageFile().toLowerCase());
+}
+
 function isAguardePage() {
   return location.pathname.toLowerCase().includes("aguarde-aprovacao.html");
 }
@@ -39,6 +46,11 @@ function isRecusadaPage() {
 })();
 
 (async function guard() {
+  if (isPublicHtmlPage()) {
+    resolveReady({ session: null, profile: null });
+    return;
+  }
+
   document.documentElement.classList.add("auth-pending");
 
   try {
