@@ -85,8 +85,10 @@
     .anuncio-msg { font-size: 0.85rem; margin: 0.75rem 0 0; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap" id="root" hidden>
@@ -94,9 +96,10 @@
       <a href="index.html">Início</a>
       <a href="conta.html">Conta</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
     </nav>
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Administração</h1>
       <p class="lede">Ferramentas para quem tem perfil <strong>admin</strong> no Politapp.</p>
     </header>

@@ -146,8 +146,10 @@
       .wrap { padding: 1rem 0.9rem 2.5rem; }
     }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -161,13 +163,14 @@
       <a href="transparencia.html">Transparência</a>
       <a href="midia-social.html">Mídia social</a>
       <a href="whatsapp.html" aria-current="page">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Integração WhatsApp <span class="wa-badge">Bot &amp; sessão</span></h1>
       <p>
         Painel de <strong>configuração e gestão</strong> para ligar o Politapp a um <strong>bot WhatsApp</strong> (oficial ou gateway próprio).

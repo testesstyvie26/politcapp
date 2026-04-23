@@ -41,8 +41,10 @@
     .help-box strong { color: var(--text); }
     .help-box code { font-size: 0.78rem; background: var(--bg); padding: 0.1rem 0.35rem; border-radius: 4px; }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -51,9 +53,10 @@
       <a href="admin-unidades.html">Unidades</a>
       <a href="conta.html">Conta</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="index.html">Início</a>
     </nav>
-    <h1>Pedidos de conta pendentes</h1>
+    <h1 id="politapp-main" tabindex="-1">Pedidos de conta pendentes</h1>
     <p class="lede">Aprove ou recuse novos utilizadores. Quem for aprovado passa a aceder ao Politapp; quem for recusado vê uma mensagem de acesso negado.</p>
     <div class="help-box">
       <strong>As aprovações não funcionam?</strong> Só contas com <code>grupo = 'admin'</code> na tabela

@@ -949,8 +949,10 @@
       min-width: 140px;
     }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -964,13 +966,14 @@
       <a href="transparencia.html">Transparência</a>
       <a href="midia-social.html" aria-current="page">Mídia social</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Mídia social e agenda pública</h1>
       <p>
         Dicas e <strong>sugestões de conteúdo</strong> alinhadas a <strong>termômetros de assuntos públicos</strong>: leitura da temperatura

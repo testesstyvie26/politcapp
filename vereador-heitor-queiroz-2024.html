@@ -441,12 +441,94 @@
       padding-top: 0.85rem;
       border-top: 1px solid var(--border);
     }
+
+    .rivais-panel h2 { margin-bottom: 0.45rem; }
+    .rivais-lead {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin: 0 0 0.65rem;
+      line-height: 1.55;
+      max-width: 72ch;
+    }
+    .rivais-link-comparativo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .rivais-link-comparativo:hover { text-decoration: underline; }
+    .rivais-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0 0 0.85rem;
+      padding: 0.65rem 0.75rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .rivais-meta strong { color: var(--text); }
+    .rivais-table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .rivais-table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .rivais-table th,
+    .rivais-table td {
+      padding: 0.55rem 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .rivais-table thead th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .rivais-table tbody tr:last-child td { border-bottom: none; }
+    .rivais-table tbody tr:hover td { background: rgba(61, 139, 253, 0.06); }
+    .rivais-table .nome { font-weight: 600; color: var(--text); }
+    .rivais-table .gap { font-variant-numeric: tabular-nums; color: var(--caution); font-weight: 600; }
+    .rivais-table .pct-heitor { font-variant-numeric: tabular-nums; color: var(--muted); }
+    .rivais-bar-wrap {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      min-width: 72px;
+    }
+    .rivais-bar {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #2563eb, #3d8bfd);
+      max-width: 100%;
+    }
+    .rivais-foot {
+      margin-top: 0.85rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .termo-fill { animation: none; transition: height 0.3s ease; }
     }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -458,9 +540,10 @@
       <a href="executivo.html">Visão executiva</a>
       <a href="transparencia.html">Transparência</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>PROFESSOR HEITOR QUEIROZ — eleições 2024</h1>
       <p class="lede">
         Página de <strong>acompanhamento e reflexão estratégica</strong> sobre o resultado da campanha a vereador em
@@ -474,6 +557,19 @@
       <em>análise orientativa</em>, cruzando o perfil público do candidato com boas práticas comuns em campanhas municipais.
       Os números oficiais (votos, situação no pleito) vêm do ficheiro gerado pelo projeto a partir do TSE.
     </p>
+
+    <section class="panel rivais-panel" aria-labelledby="rivais-title">
+      <h2 id="rivais-title">Comparação com vereadores — sete rivais de referência (Duque de Caxias)</h2>
+      <p class="rivais-lead">
+        Os <strong>sete nomes com maior votação nominal</strong> na mesma unidade eleitoral (UE TSE 58335), em 2024,
+        funcionam como <strong>alvos numéricos</strong> para calibrar esforço de campanha: quantos votos faltam para
+        aproximar ou superar cada patamar. «Rival» aqui é <strong>só referência de desempenho eleitoral</strong>, não juízo político.
+      </p>
+      <a class="rivais-link-comparativo" href="vereador-heitor-comparativo-2024.html">
+        Relatório comparativo — Professor Heitor Queiroz (quadro alargado com outros vereadores)
+      </a>
+      <div id="rivaisBox" class="loading" role="region" aria-live="polite" aria-label="Tabela dos sete rivais de votação">A carregar ranking…</div>
+    </section>
 
     <section class="panel termo-panel" aria-labelledby="termo-title">
       <h2 id="termo-title">Termómetro de popularidade</h2>
@@ -856,6 +952,89 @@
       return { pct, max, votos: v };
     }
 
+    /** Sete vereadores com mais votos na mesma UE (exclui Heitor) — referência para metas numéricas. */
+    function renderRivais(heitorRow, list) {
+      const box = document.getElementById("rivaisBox");
+      if (!box) return;
+      const ue = String(heitorRow.sgUeTse || "");
+      const mySq = String(heitorRow.sqCandidato || "");
+      const myVotos = Number(heitorRow.votos);
+      if (!ue || !Number.isFinite(myVotos)) {
+        box.className = "error";
+        box.textContent = "Dados insuficientes para montar a comparação de rivais.";
+        return;
+      }
+      const rivals = list
+        .filter(
+          (x) =>
+            String(x.sgUeTse || "") === ue &&
+            String(x.sqCandidato || "") !== mySq &&
+            x.votos != null &&
+            Number(x.votos) > 0
+        )
+        .sort((a, b) => Number(b.votos) - Number(a.votos))
+        .slice(0, 7);
+
+      if (!rivals.length) {
+        box.className = "error";
+        box.textContent = "Não foi possível listar rivais nesta UE.";
+        return;
+      }
+
+      const rows = rivals
+        .map((r, i) => {
+          const rv = Number(r.votos);
+          const gap = Math.max(0, Math.round(rv - myVotos));
+          const pct = rv > 0 ? Math.min(100, Math.round((myVotos / rv) * 1000) / 10) : 0;
+          const barW = rv > 0 ? Math.min(100, Math.round((myVotos / rv) * 1000) / 10) : 0;
+          return `
+          <tr>
+            <td>${i + 1}</td>
+            <td class="nome">${escapeHtml(r.nomeUrna || "—")}</td>
+            <td>${escapeHtml(r.partido || "—")}</td>
+            <td style="font-variant-numeric:tabular-nums">${fmtInt(rv)}</td>
+            <td>${escapeHtml(r.dsSitTotTurno || "—")}</td>
+            <td class="gap">+${fmtInt(gap)}</td>
+            <td class="pct-heitor">${pct}%</td>
+            <td>
+              <div class="rivais-bar-wrap" title="Heitor (${fmtInt(myVotos)}) face a ${fmtInt(rv)} votos do rival">
+                <div class="rivais-bar" style="width:${barW}%"></div>
+              </div>
+            </td>
+          </tr>`;
+        })
+        .join("");
+
+      box.className = "";
+      box.innerHTML = `
+        <p class="rivais-meta">
+          <strong>Professor Heitor Queiroz</strong> — <span class="mono">${fmtInt(myVotos)}</span> votos válidos (1.º turno) ·
+          <strong>Situação:</strong> ${escapeHtml(heitorRow.dsSitTotTurno || "—")}
+        </p>
+        <div class="rivais-table-wrap">
+          <table class="rivais-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nome de urna</th>
+                <th scope="col">Partido</th>
+                <th scope="col">Votos</th>
+                <th scope="col">Situação (TSE)</th>
+                <th scope="col">Votos a recuperar</th>
+                <th scope="col">Heitor / rival</th>
+                <th scope="col">Escala</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <p class="rivais-foot">
+          «Votos a recuperar» = diferença até igualar o total nominal do rival (não substitui simulação de quociente nem projeção de vagas).
+          Coluna «Heitor / rival» e a barra são a mesma razão em percentagem. Fonte: <span class="mono">vereadores-rj-rio-2024.json</span>.
+        </p>
+      `;
+    }
+
     function renderTermometro(row, list) {
       const m = indiceMidiaticoDeclarado(row);
       const v = pctVotosNaUe(row, list);
@@ -916,8 +1095,14 @@
             "Registo não encontrado no JSON. Gere os dados com: npm run build:vereadores-rj";
           termo.className = "error";
           termo.textContent = "Não foi possível calcular o termómetro: candidato em falta no JSON.";
+          const riv = document.getElementById("rivaisBox");
+          if (riv) {
+            riv.className = "error";
+            riv.textContent = "Comparação com rivais indisponível: candidato em falta no JSON.";
+          }
           return;
         }
+        renderRivais(row, list);
         termo.className = "";
         termo.innerHTML = renderTermometro(row, list);
         const mT = indiceMidiaticoDeclarado(row);
@@ -971,6 +1156,11 @@
           termo.style.padding = "1rem";
           termo.textContent =
             "Termómetro indisponível: não foi possível ler " + JSON_URL + ". Execute na raiz: npm run build:vereadores-rj";
+        }
+        const riv = document.getElementById("rivaisBox");
+        if (riv) {
+          riv.className = "error";
+          riv.textContent = "Comparação com rivais indisponível: erro ao ler " + JSON_URL + ".";
         }
       }
     }

@@ -264,8 +264,10 @@
     .site-credit a { color: var(--accent); font-weight: 600; text-decoration: none; }
     .site-credit a:hover { text-decoration: underline; }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <div class="login-bg" aria-hidden="true"></div>
   <div class="page">
     <header class="top-bar">
@@ -274,13 +276,14 @@
         <a href="index.html">Candidatos</a>
         <a href="transparencia.html">Transparência</a>
         <a href="whatsapp.html">WhatsApp</a>
+        <a href="guia-uso.html">Guia de uso</a>
         <a href="tarefas.html">Tarefas</a>
         <a href="conta.html">Conta</a>
         <a href="login.html" aria-current="page">Entrar</a>
       </nav>
     </header>
 
-    <main class="login-grid">
+    <main id="politapp-main" class="login-grid" tabindex="-1">
       <section class="hero" aria-labelledby="auth-hero-title">
         <p class="pill">Conta Politapp</p>
         <h1 id="auth-hero-title">Entre ou <em>crie sua conta</em> com Google</h1>
@@ -300,6 +303,7 @@
             <li><strong>Gestão pública e accountability</strong> — painéis e rotas de transparência para acompanhar órgãos, despesas e compromissos com dados auditáveis.</li>
             <li><strong>Inteligência assistida</strong> — priorização e síntese a partir de dados abertos (TSE, portais, bases integradas), sem substituir parecer jurídico nem pesquisa de campo.</li>
             <li><strong>Tarefas e colaboração</strong> — fluxo de trabalho integrado para o que a equipe precisa acompanhar depois de entrar na plataforma.</li>
+            <li><strong>Guia de uso</strong> — mapa das páginas e fluxos; abra <a href="guia-uso.html">guia-uso.html</a> após entrar.</li>
           </ul>
         </div>
       </section>

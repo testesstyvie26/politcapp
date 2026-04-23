@@ -1,0 +1,166 @@
+/**
+ * Politapp — navegação responsiva e acessível (complementa estilos inline das páginas).
+ * Incluir após meta viewport / favicon: <link rel="stylesheet" href="css/politapp-nav.css" />
+ */
+
+/* Skip link — visível ao focar (teclado) */
+.politapp-skip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  padding: 0.6rem 1rem;
+  font: 600 0.88rem "DM Sans", system-ui, sans-serif;
+  background: #3d8bfd;
+  color: #041018;
+  border: none;
+  border-radius: 0 0 10px 0;
+  text-decoration: none;
+  transform: translateY(-130%);
+  transition: transform 0.18s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+.politapp-skip:focus {
+  transform: translateY(0);
+  outline: 2px solid #e8ecf2;
+  outline-offset: 2px;
+}
+
+/* Barra principal: fixa no topo com fundo legível ao rolar */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 0.45rem 0 0.75rem;
+  margin: -0.15rem 0 1.1rem;
+  background: rgba(12, 15, 20, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  scroll-padding-top: 3rem;
+}
+
+.site-nav a {
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.site-nav a:hover {
+  text-decoration: none;
+}
+.site-nav a:focus-visible {
+  outline: 2px solid #3d8bfd;
+  outline-offset: 3px;
+}
+.site-nav a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;
+}
+
+/* Login: topo com marca + menu */
+header.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 0.35rem 0 0.85rem;
+  margin: -0.25rem 0 1.5rem;
+  background: rgba(7, 10, 15, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+header.top-bar .site-nav {
+  position: static;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: none;
+}
+
+/* Em ecrãs estreitos: fila horizontal com scroll (evita “parede” de links quebrados) */
+@media (max-width: 768px) {
+  .site-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 0.35rem 0.85rem;
+    padding-bottom: 0.55rem;
+    margin-left: -0.35rem;
+    margin-right: -0.35rem;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .site-nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0.4rem 0.35rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* Sub-navegação (ex.: vereadores RJ) */
+.vereador-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.65rem;
+  font-size: 0.84rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.vereador-sub a {
+  color: #8b95a8;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.3rem 0.25rem;
+}
+.vereador-sub a:hover {
+  color: #3d8bfd;
+}
+.vereador-sub a[aria-current="page"] {
+  color: #3d8bfd;
+  font-weight: 600;
+}
+.vereador-sub .sep {
+  color: rgba(255, 255, 255, 0.2);
+  user-select: none;
+}
+@media (max-width: 768px) {
+  .vereador-sub {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.65rem;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.35rem 0.5rem;
+  }
+  .vereador-sub .sep {
+    flex-shrink: 0;
+  }
+  .vereador-sub a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-height: 44px;
+    align-items: center;
+    display: inline-flex;
+  }
+}
+
+/* Âncora de conteúdo (pode ficar vazio, só para foco do skip) */
+#politapp-main:focus {
+  outline: none;
+}
+
+/* Ancoragem e skip: conteúdo não fica colado sob a barra fixa */
+#politapp-main {
+  scroll-margin-top: 4.5rem;
+}

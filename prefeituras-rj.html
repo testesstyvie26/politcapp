@@ -217,8 +217,10 @@
     .site-credit a:hover { text-decoration: underline; }
     .site-credit-role { font-weight: 400; opacity: 0.92; }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -232,13 +234,14 @@
       <a href="transparencia.html">Transparência</a>
       <a href="midia-social.html">Mídia social</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Candidaturas a prefeituras — Rio de Janeiro (2024 e 2025)</h1>
       <p>
         Referências para <strong>pleitos municipais no RJ</strong>: <strong>2024</strong> (ordinárias) e <strong>2025</strong>

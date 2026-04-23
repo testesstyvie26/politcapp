@@ -257,8 +257,10 @@
       min-width: 140px;
     }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script src="js/portal-transparencia-config.js?v=7"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
@@ -273,12 +275,13 @@
       <a href="transparencia.html" aria-current="page">Transparência</a>
       <a href="midia-social.html">Mídia social</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Partidos, verbas eleitorais e orçamento federal</h1>
       <p>
         Esta página organiza duas famílias de dados públicos: <strong>verbas eleitorais</strong> (Fundo Partidário, Fundo Eleitoral,

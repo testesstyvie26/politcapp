@@ -209,8 +209,10 @@
     .link-stack a:hover { text-decoration: underline; }
     [hidden] { display: none !important; }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -221,9 +223,10 @@
       <a href="vereador-heitor-comparativo-2024.html" aria-current="page">Comparativo</a>
       <a href="executivo.html">Visão executiva</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Relatório comparativo — Professor Heitor Queiroz (2024)</h1>
       <p class="lede">
         Quadro para contrastar <strong>votação nominal</strong>, <strong>declarações de mídia ao TSE</strong> e

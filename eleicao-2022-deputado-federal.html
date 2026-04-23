@@ -198,8 +198,10 @@
     .pager-meta { font-size: 0.9rem; color: var(--muted); }
     .pager-meta strong { color: var(--text); font-family: "JetBrains Mono", monospace; }
   </style>
+  <link rel="stylesheet" href="css/politapp-nav.css" />
 </head>
 <body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/auth-guard.mjs"></script>
   <div class="wrap">
@@ -213,13 +215,14 @@
       <a href="transparencia.html">Transparência</a>
       <a href="midia-social.html">Mídia social</a>
       <a href="whatsapp.html">WhatsApp</a>
+      <a href="guia-uso.html">Guia de uso</a>
       <a href="tarefas.html">Tarefas</a>
       <a href="login.html">Entrar</a>
       <a href="conta.html">Conta</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
-    <header>
+    <header id="politapp-main" tabindex="-1">
       <h1>Histórico — Eleições gerais 2022 · Deputado federal</h1>
       <p>
         Nómina e votação nominal do <strong>1º turno</strong> (outubro de 2022), cargo código <span class="mono">c0006</span>,
