@@ -1,0 +1,596 @@
+{
+  "municipios": {
+    "Angra dos Reis": {
+      "nome": "Angra dos Reis — Angra dos Reis",
+      "lat": -23.0063966,
+      "lng": -44.316326,
+      "osm": "relation/14602655"
+    },
+    "Aperibé": {
+      "nome": "Aperibé — Aperibé",
+      "lat": -21.6211928,
+      "lng": -42.1028167,
+      "osm": "relation/2215535"
+    },
+    "Araruama": {
+      "nome": "118ª Delegacia Policial — Araruama",
+      "lat": -22.8667574,
+      "lng": -42.3376639,
+      "osm": "way/976496943"
+    },
+    "Areal": {
+      "nome": "Areal — Areal",
+      "lat": -22.2314922,
+      "lng": -43.1056264,
+      "osm": "relation/2215537"
+    },
+    "Armação dos Búzios": {
+      "nome": "127ª Delegacia Policial — Armação dos Búzios",
+      "lat": -22.7626547,
+      "lng": -41.8892848,
+      "osm": "way/552235775"
+    },
+    "Arraial do Cabo": {
+      "nome": "132ª Delegacia Policial — Arraial do Cabo",
+      "lat": -22.9649638,
+      "lng": -42.0289872,
+      "osm": "way/970635864"
+    },
+    "Barra do Piraí": {
+      "nome": "Barra do Piraí — Barra do Piraí",
+      "lat": -22.4703403,
+      "lng": -43.8263256,
+      "osm": "relation/14596907"
+    },
+    "Barra Mansa": {
+      "nome": "Barra Mansa — Barra Mansa",
+      "lat": -22.5427739,
+      "lng": -44.1691871,
+      "osm": "relation/14599548"
+    },
+    "Belford Roxo": {
+      "nome": "Belford Roxo — Belford Roxo",
+      "lat": -22.7636,
+      "lng": -43.3996,
+      "osm": "relation/20273637"
+    },
+    "Bom Jardim": {
+      "nome": "Bom Jardim — Bom Jardim",
+      "lat": -22.1515328,
+      "lng": -42.4186683,
+      "osm": "relation/14550435"
+    },
+    "Bom Jesus do Itabapoana": {
+      "nome": "Bom Jesus do Itabapoana — Bom Jesus do Itabapoana",
+      "lat": -21.090552,
+      "lng": -41.7808736,
+      "osm": "relation/2213687"
+    },
+    "Cabo Frio": {
+      "nome": "126ª Delegacia Policial — Cabo Frio",
+      "lat": -22.8899554,
+      "lng": -42.0342494,
+      "osm": "way/970308830"
+    },
+    "Cachoeiras de Macacu": {
+      "nome": "Cachoeiras de Macacu — Cachoeiras de Macacu",
+      "lat": -22.4626861,
+      "lng": -42.6534414,
+      "osm": "relation/2219086"
+    },
+    "Cambuci": {
+      "nome": "Cambuci — Cambuci",
+      "lat": -21.5762274,
+      "lng": -41.912293,
+      "osm": "relation/14591586"
+    },
+    "Campos dos Goytacazes": {
+      "nome": "Campos dos Goytacazes — Campos dos Goytacazes",
+      "lat": -21.7546,
+      "lng": -41.3242,
+      "osm": "relation/2211795"
+    },
+    "Cantagalo": {
+      "nome": "Cantagalo — Cantagalo",
+      "lat": -21.9815,
+      "lng": -42.3645,
+      "osm": "relation/14553552"
+    },
+    "Carapebus": {
+      "nome": "Carapebus — Carapebus",
+      "lat": -22.1869969,
+      "lng": -41.6633764,
+      "osm": "relation/2212558"
+    },
+    "Cardoso Moreira": {
+      "nome": "Cardoso Moreira — Cardoso Moreira",
+      "lat": -21.5366664,
+      "lng": -41.5029962,
+      "osm": "relation/2211796"
+    },
+    "Carmo": {
+      "nome": "112ª Delegacia Policial do Carmo — Carmo",
+      "lat": -21.9301366,
+      "lng": -42.6091907,
+      "osm": "way/543748124"
+    },
+    "Casimiro de Abreu": {
+      "nome": "Casimiro de Abreu — Casimiro de Abreu",
+      "lat": -22.485,
+      "lng": -42.2026,
+      "osm": "relation/14551596"
+    },
+    "Comendador Levy Gasparian": {
+      "nome": "Comendador Levy Gasparian — Comendador Levy Gasparian",
+      "lat": -22.0534699,
+      "lng": -43.2511049,
+      "osm": "relation/2215546"
+    },
+    "Conceição de Macabu": {
+      "nome": "122 Delegacia Policial — Conceição de Macabu",
+      "lat": -22.0831066,
+      "lng": -41.8692363,
+      "osm": "node/4226770691"
+    },
+    "Cordeiro": {
+      "nome": "Cordeiro — Cordeiro",
+      "lat": -22.0282236,
+      "lng": -42.3614094,
+      "osm": "relation/20576200"
+    },
+    "Duas Barras": {
+      "nome": "Duas Barras — Duas Barras",
+      "lat": -22.0522519,
+      "lng": -42.5194705,
+      "osm": "relation/14593100"
+    },
+    "Duque de Caxias": {
+      "nome": "Duque de Caxias — Duque de Caxias",
+      "lat": -22.7896225,
+      "lng": -43.309929,
+      "osm": "relation/14600192"
+    },
+    "Engenheiro Paulo de Frontin": {
+      "nome": "Engenheiro Paulo de Frontin — Engenheiro Paulo de Frontin",
+      "lat": -22.5504556,
+      "lng": -43.6783403,
+      "osm": "relation/14596823"
+    },
+    "Guapimirim": {
+      "nome": "Guapimirim — Guapimirim",
+      "lat": -22.5266308,
+      "lng": -42.9790687,
+      "osm": "relation/20576348"
+    },
+    "Iguaba Grande": {
+      "nome": "Iguaba Grande — Iguaba Grande",
+      "lat": -22.8388498,
+      "lng": -42.2286746,
+      "osm": "relation/2215549"
+    },
+    "Itaboraí": {
+      "nome": "71ª Delegacia Policial de Itaboraí — Itaboraí",
+      "lat": -22.7456343,
+      "lng": -42.855345,
+      "osm": "way/549158283"
+    },
+    "Itaguaí": {
+      "nome": "Itaguaí — Itaguaí",
+      "lat": -22.8629597,
+      "lng": -43.775322,
+      "osm": "relation/14603909"
+    },
+    "Italva": {
+      "nome": "Italva — Italva",
+      "lat": -21.4221815,
+      "lng": -41.6912044,
+      "osm": "relation/2213765"
+    },
+    "Itaocara": {
+      "nome": "Itaocara — Itaocara",
+      "lat": -21.7289291,
+      "lng": -42.0897294,
+      "osm": "relation/2215550"
+    },
+    "Itaperuna": {
+      "nome": "Itaperuna — Itaperuna",
+      "lat": -21.215816,
+      "lng": -41.879813,
+      "osm": "relation/2213766"
+    },
+    "Itatiaia": {
+      "nome": "Itatiaia — Itatiaia",
+      "lat": -22.4955278,
+      "lng": -44.5633108,
+      "osm": "relation/20576202"
+    },
+    "Japeri": {
+      "nome": "63º DP - Japeri — Japeri",
+      "lat": -22.6494067,
+      "lng": -43.6051508,
+      "osm": "way/389430892"
+    },
+    "Laje do Muriaé": {
+      "nome": "Laje do Muriaé — Laje do Muriaé",
+      "lat": -21.2082595,
+      "lng": -42.1226959,
+      "osm": "relation/2213767"
+    },
+    "Macaé": {
+      "nome": "126ª Delegacia Policial — Macaé",
+      "lat": -22.8899554,
+      "lng": -42.0342494,
+      "osm": "way/970308830"
+    },
+    "Macuco": {
+      "nome": "Macuco — Macuco",
+      "lat": -21.9849747,
+      "lng": -42.2539464,
+      "osm": "relation/20576131"
+    },
+    "Magé": {
+      "nome": "Delegacia 65ª DP — Magé",
+      "lat": -22.6550018,
+      "lng": -43.038106,
+      "osm": "node/3851934507"
+    },
+    "Mangaratiba": {
+      "nome": "165ª Delegacia Policial — Mangaratiba",
+      "lat": -22.939132,
+      "lng": -44.0362743,
+      "osm": "node/2232610249"
+    },
+    "Maricá": {
+      "nome": "82ª DP Maricá (Delegacia) — Maricá",
+      "lat": -22.9167389,
+      "lng": -42.8196689,
+      "osm": "way/1201566536"
+    },
+    "Mendes": {
+      "nome": "Mendes — Mendes",
+      "lat": -22.5269113,
+      "lng": -43.7332604,
+      "osm": "relation/20576350"
+    },
+    "Mesquita": {
+      "nome": "Mesquita — Mesquita",
+      "lat": -22.783092,
+      "lng": -43.4293599,
+      "osm": "relation/14602908"
+    },
+    "Miguel Pereira": {
+      "nome": "Miguel Pereira — Miguel Pereira",
+      "lat": -22.4539417,
+      "lng": -43.4691978,
+      "osm": "relation/14596807"
+    },
+    "Miracema": {
+      "nome": "Miracema — Miracema",
+      "lat": -21.3899864,
+      "lng": -42.1404096,
+      "osm": "relation/2215552"
+    },
+    "Natividade": {
+      "nome": "Natividade — Natividade",
+      "lat": -21.0426488,
+      "lng": -41.9409815,
+      "osm": "relation/2213768"
+    },
+    "Nilópolis": {
+      "nome": "Nilópolis — Nilópolis",
+      "lat": -22.8080114,
+      "lng": -43.4138222,
+      "osm": "relation/20576267"
+    },
+    "Niterói": {
+      "nome": "78a Delegacia Policial — Niterói",
+      "lat": -22.8808078,
+      "lng": -43.0916582,
+      "osm": "way/1375080087"
+    },
+    "Nova Friburgo": {
+      "nome": "112ª Delegacia Policial do Carmo — Nova Friburgo",
+      "lat": -21.9301366,
+      "lng": -42.6091907,
+      "osm": "way/543748124"
+    },
+    "Nova Iguaçu": {
+      "nome": "52ª Delegacia Policial — Nova Iguaçu",
+      "lat": -22.7564877,
+      "lng": -43.4557779,
+      "osm": "way/453366201"
+    },
+    "Paracambi": {
+      "nome": "Paracambi — Paracambi",
+      "lat": -22.6109158,
+      "lng": -43.7096912,
+      "osm": "relation/20576268"
+    },
+    "Paraíba do Sul": {
+      "nome": "Paraíba do Sul — Paraíba do Sul",
+      "lat": -22.1873955,
+      "lng": -43.3034613,
+      "osm": "relation/2215554"
+    },
+    "Paraty": {
+      "nome": "Paraty — Paraty",
+      "lat": -23.2196461,
+      "lng": -44.7154196,
+      "osm": "relation/1277591"
+    },
+    "Paty do Alferes": {
+      "nome": "Paty do Alferes — Paty do Alferes",
+      "lat": -22.4272703,
+      "lng": -43.4219523,
+      "osm": "relation/14596427"
+    },
+    "Petrópolis": {
+      "nome": "105º Delegacia Policial — Petrópolis",
+      "lat": -22.4783732,
+      "lng": -43.1732792,
+      "osm": "way/992335365"
+    },
+    "Pinheiral": {
+      "nome": "Pinheiral — Pinheiral",
+      "lat": -22.5129436,
+      "lng": -44.001435,
+      "osm": "relation/20576347"
+    },
+    "Piraí": {
+      "nome": "94º DP Delegacia Piraí — Piraí",
+      "lat": -22.6329898,
+      "lng": -43.9006016,
+      "osm": "node/5309237380"
+    },
+    "Porciúncula": {
+      "nome": "Porciúncula — Porciúncula",
+      "lat": -20.9632862,
+      "lng": -42.0400358,
+      "osm": "relation/14589829"
+    },
+    "Porto Real": {
+      "nome": "Porto Real — Porto Real",
+      "lat": -22.4195607,
+      "lng": -44.2896491,
+      "osm": "relation/2217376"
+    },
+    "Quatis": {
+      "nome": "Quatis — Quatis",
+      "lat": -22.4066444,
+      "lng": -44.2577453,
+      "osm": "relation/14599160"
+    },
+    "Queimados": {
+      "nome": "55° Delegacia de Polícial Queimados — Queimados",
+      "lat": -22.7063808,
+      "lng": -43.5650592,
+      "osm": "node/13523153201"
+    },
+    "Quissamã": {
+      "nome": "130 DP - Delegacia Policial de Quissamã — Quissamã",
+      "lat": -22.1128832,
+      "lng": -41.4764795,
+      "osm": "node/4231984690"
+    },
+    "Resende": {
+      "nome": "Resende — Resende",
+      "lat": -22.4683626,
+      "lng": -44.4463494,
+      "osm": "relation/14599280"
+    },
+    "Rio Bonito": {
+      "nome": "119a DP - Rio Bonito — Rio Bonito",
+      "lat": -22.7075137,
+      "lng": -42.6484305,
+      "osm": "way/1481586479"
+    },
+    "Rio Claro": {
+      "nome": "Rio Claro — Rio Claro",
+      "lat": -22.7229997,
+      "lng": -44.1359986,
+      "osm": "relation/14601927"
+    },
+    "Rio das Flores": {
+      "nome": "92ª DP - Rio das Flores — Rio das Flores",
+      "lat": -22.1688694,
+      "lng": -43.5804361,
+      "osm": "node/12424695396"
+    },
+    "Rio das Ostras": {
+      "nome": "126ª Delegacia Policial — Rio das Ostras",
+      "lat": -22.8899554,
+      "lng": -42.0342494,
+      "osm": "way/970308830"
+    },
+    "Rio de Janeiro": {
+      "nome": "28ª Delegacia Policial - Campinho — Rio de Janeiro",
+      "lat": -22.8892895,
+      "lng": -43.3459745,
+      "osm": "way/673653346"
+    },
+    "Santa Maria Madalena": {
+      "nome": "156ª DP — Santa Maria Madalena",
+      "lat": -21.9577066,
+      "lng": -42.0092956,
+      "osm": "node/2633553715"
+    },
+    "Santo Antônio de Pádua": {
+      "nome": "Santo Antônio de Pádua — Santo Antônio de Pádua",
+      "lat": -21.5711641,
+      "lng": -42.2014373,
+      "osm": "relation/2215557"
+    },
+    "São Fidélis": {
+      "nome": "São Fidélis — São Fidélis",
+      "lat": -21.6712726,
+      "lng": -41.7888835,
+      "osm": "relation/2211797"
+    },
+    "São Francisco de Itabapoana": {
+      "nome": "São Francisco de Itabapoana — São Francisco de Itabapoana",
+      "lat": -21.4743,
+      "lng": -41.1172,
+      "osm": "relation/2211798"
+    },
+    "São Gonçalo": {
+      "nome": "73° Delegacia Policial — São Gonçalo",
+      "lat": -22.8528819,
+      "lng": -43.0974838,
+      "osm": "way/260208079"
+    },
+    "São João da Barra": {
+      "nome": "São João da Barra — São João da Barra",
+      "lat": -21.63439,
+      "lng": -41.0499142,
+      "osm": "relation/2211799"
+    },
+    "São João de Meriti": {
+      "nome": "64a DP — São João de Meriti",
+      "lat": -22.8050791,
+      "lng": -43.3786245,
+      "osm": "node/2913716101"
+    },
+    "São José de Ubá": {
+      "nome": "São José de Ubá — São José de Ubá",
+      "lat": -21.3595365,
+      "lng": -41.9389905,
+      "osm": "relation/2215561"
+    },
+    "São José do Vale do Rio Preto": {
+      "nome": "São José do Vale do Rio Preto — São José do Vale do Rio Preto",
+      "lat": -22.1509994,
+      "lng": -42.9239986,
+      "osm": "relation/20576277"
+    },
+    "São Pedro da Aldeia": {
+      "nome": "São Pedro da Aldeia — São Pedro da Aldeia",
+      "lat": -22.8384835,
+      "lng": -42.1031604,
+      "osm": "relation/2215562"
+    },
+    "São Sebastião do Alto": {
+      "nome": "São Sebastião do Alto — São Sebastião do Alto",
+      "lat": -21.9555,
+      "lng": -42.1347,
+      "osm": "relation/14592793"
+    },
+    "Sapucaia": {
+      "nome": "Sapucaia — Sapucaia",
+      "lat": -22.0196881,
+      "lng": -42.840827,
+      "osm": "relation/2215558"
+    },
+    "Saquarema": {
+      "nome": "Saquarema — Saquarema",
+      "lat": -22.9257974,
+      "lng": -42.507633,
+      "osm": "relation/2215573"
+    },
+    "Seropédica": {
+      "nome": "48ª DP — Seropédica",
+      "lat": -22.8029232,
+      "lng": -43.6422843,
+      "osm": "way/622165423"
+    },
+    "Silva Jardim": {
+      "nome": "Silva Jardim — Silva Jardim",
+      "lat": -22.6509706,
+      "lng": -42.3947353,
+      "osm": "relation/14550171"
+    },
+    "Sumidouro": {
+      "nome": "Sumidouro — Sumidouro",
+      "lat": -22.0455,
+      "lng": -42.6735,
+      "osm": "relation/14593130"
+    },
+    "Tanguá": {
+      "nome": "Tanguá — Tanguá",
+      "lat": -22.7353777,
+      "lng": -42.7202272,
+      "osm": "relation/2220794"
+    },
+    "Teresópolis": {
+      "nome": "Teresópolis — Teresópolis",
+      "lat": -22.4164578,
+      "lng": -42.975194,
+      "osm": "relation/14451130"
+    },
+    "Trajano de Moraes": {
+      "nome": "Trajano de Moraes — Trajano de Moraes",
+      "lat": -22.0637596,
+      "lng": -42.0648701,
+      "osm": "relation/14550357"
+    },
+    "Três Rios": {
+      "nome": "Três Rios — Três Rios",
+      "lat": -22.1201732,
+      "lng": -43.1072134,
+      "osm": "relation/2215565"
+    },
+    "Valença": {
+      "nome": "91ª Delegacia Policial — Valença",
+      "lat": -22.2382243,
+      "lng": -43.692266,
+      "osm": "way/557357390"
+    },
+    "Varre-Sai": {
+      "nome": "Varre-Sai — Varre-Sai",
+      "lat": -20.9311337,
+      "lng": -41.8677946,
+      "osm": "relation/2213689"
+    },
+    "Vassouras": {
+      "nome": "Vassouras — Vassouras",
+      "lat": -22.4093928,
+      "lng": -43.6609318,
+      "osm": "relation/14596846"
+    },
+    "Volta Redonda": {
+      "nome": "91ª Delegacia Policial — Volta Redonda",
+      "lat": -22.2382243,
+      "lng": -43.692266,
+      "osm": "way/557357390"
+    }
+  },
+  "meta": {
+    "failedDp": [],
+    "failedPref": [
+      "Aperibé",
+      "Areal",
+      "Armação dos Búzios",
+      "Bom Jardim",
+      "Cachoeiras de Macacu",
+      "Cantagalo",
+      "Carapebus",
+      "Casimiro de Abreu",
+      "Duas Barras",
+      "Engenheiro Paulo de Frontin",
+      "Guapimirim",
+      "Itaocara",
+      "Japeri",
+      "Laje do Muriaé",
+      "Mangaratiba",
+      "Mesquita",
+      "Nilópolis",
+      "Niterói",
+      "Nova Iguaçu",
+      "Paracambi",
+      "Paraíba do Sul",
+      "Paty do Alferes",
+      "Pinheiral",
+      "Quatis",
+      "Queimados",
+      "Rio Claro",
+      "Santa Maria Madalena",
+      "Santo Antônio de Pádua",
+      "São João de Meriti",
+      "São Sebastião do Alto",
+      "Sapucaia",
+      "Silva Jardim",
+      "Tanguá",
+      "Trajano de Moraes",
+      "Vassouras"
+    ]
+  }
+}

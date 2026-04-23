@@ -637,6 +637,28 @@
       gap: 1rem;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     }
+    .exemplo-bloco {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .exemplos-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.65rem;
+    }
+    .exemplos-head h2 { margin: 0 0 0.4rem; }
+    .exemplos-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
     .exemplo-bloco h3 {
       margin: 0 0 0.5rem;
       font-size: 0.95rem;
@@ -1259,72 +1281,19 @@
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-exemplos" aria-labelledby="tab-exemplos" hidden>
-      <h2>Modelos de post no estilo do que costuma viralizar</h2>
-      <p class="note" style="margin-bottom:1rem">
-        Textos <strong>fictícios</strong> para você adaptar (bairro, cargo, números e fontes reais). Estrutura inspirada em ganchos comuns em Reels, TikTok, Threads e carrosséis de perfis de política e educação cívica no Brasil.
-      </p>
-      <div class="exemplos-grid">
-        <article class="exemplo-bloco">
-          <div class="meta">Reels / TikTok · voz + legenda na tela</div>
-          <h3>“POV: você precisa do SUS amanhã”</h3>
-          <div class="post-sample">
-            <div class="ps-label">0–2 s (gancho na tela)</div>
-            <span class="ps-quote">POV: acordou mal e não sabe por onde começar no SUS.</span>
-            <p><strong>2–12 s:</strong> “Primeiro: busque a UBS do seu território — é porta de entrada. Segundo: leve documento com foto e CPF. Terceiro: se for urgência grave, vá ao pronto-socorro, mas saiba que nem tudo é emergência.”</p>
-            <p><strong>12–22 s:</strong> “Se te mandaram voltar: pergunta em que posto fica a regulação e anota o protocolo.”</p>
-            <p><strong>Fechamento + CTA:</strong> “Salva pra lembrar. Fonte: orientação do Ministério da Saúde sobre atenção primária — confere no site antes de repassar.”</p>
-          </div>
-        </article>
-        <article class="exemplo-bloco">
-          <div class="meta">Carrossel · 5 slides</div>
-          <h3>“Inflação subiu: o que muda no seu bolso?”</h3>
-          <div class="post-sample">
-            <p><strong>Slide 1:</strong> Título grande — “3 efeitos práticos quando o custo de vida sobe” + sua cidade/UF.</p>
-            <p><strong>Slide 2:</strong> “Aluguel e financiamento: pressão nos juros e no orçamento familiar.” (ícone casa)</p>
-            <p><strong>Slide 3:</strong> “Cesta básica e transporte: onde as famílias mais sentem no mês.”</p>
-            <p><strong>Slide 4:</strong> “O que o poder público pode fazer na sua esfera” — 2 linhas realistas, sem promessa mágica.</p>
-            <p><strong>Slide 5:</strong> “Fontes: IBGE IPCA [mês/ano] · Banco Central” + seu site ou link da matéria oficial.</p>
-          </div>
-        </article>
-        <article class="exemplo-bloco">
-          <div class="meta">Thread · X</div>
-          <h3>Segurança sem sensacionalismo</h3>
-          <div class="post-sample">
-            <p><strong>1/5</strong> Ontem rolou debate forte sobre segurança aqui em [cidade]. Quero separar três coisas que às vezes misturam no mesmo post 🧵</p>
-            <p><strong>2/5</strong> <strong>Prevenção social</strong> — escola no contraturno, iluminação, emprego. Efeito é médio prazo, mas muda o jogo.</p>
-            <p><strong>3/5</strong> <strong>Polícia e justiça</strong> — resposta a crime e investigação. Dados de [fonte estadual/federal], não achismo.</p>
-            <p><strong>4/5</strong> Se alguém te mandar vídeo de suposta facção sem contexto: não compartilha. Desinformação coloca gente inocente em risco.</p>
-            <p><strong>5/5</strong> Proposta: [uma linha]. Como acompanhar: [órgão + canal oficial].</p>
-          </div>
-        </article>
-        <article class="exemplo-bloco">
-          <div class="meta">Stories · sequência 3 telas</div>
-          <h3>Obra ou promessa na cidade</h3>
-          <div class="post-sample">
-            <p><strong>Tela 1 (foto ampla):</strong> sticker “ANTES” + data no canto.</p>
-            <p><strong>Tela 2 (mesmo ângulo):</strong> sticker “HOJE” + o que mudou em uma frase.</p>
-            <p><strong>Tela 3:</strong> caixa de pergunta “O que ainda falta aí?” + link para portal da transparência da prefeitura/estado.</p>
-          </div>
-        </article>
-        <article class="exemplo-bloco">
-          <div class="meta">Legenda Instagram / vídeo longo</div>
-          <h3>Educação — direito do estudante</h3>
-          <div class="post-sample">
-            <span class="ps-quote">Três direitos do estudante da rede pública que vale mandar no grupo da escola 👇</span>
-            <p>1) Transporte escolar quando a lei prever no seu caso.<br>2) Merenda e cantinho seguro para denúncia de violência.<br>3) Conselho escolar aberto pra pais ouvidos.</p>
-            <p>Se algo não tá sendo cumprido, o caminho é protocolo na secretaria + conselho tutelar quando for caso de violência. Compartilha com quem precisa.</p>
-            <p><strong>Hashtags (use poucas e relevantes):</strong> #educação #direitodocidadão #[cidade] (evite lista gigante).</p>
-          </div>
-        </article>
-        <article class="exemplo-bloco">
-          <div class="meta">WhatsApp · card simples</div>
-          <h3>Reunião ou plantão</h3>
-          <div class="post-sample">
-            <span class="ps-quote">📍 [Bairro] — quinta, 19h, [local público].<br>Vamos ouvir demandas de saúde e transporte. Entrada gratuita.<br>Confirma no reply se leva 1 minuto pra falar de [tema].</span>
-            <p class="note" style="margin-top:0.5rem">Sem promessa de benefício em troca de voto; texto só de convocação e escuta.</p>
-          </div>
-        </article>
+      <div class="exemplos-head">
+        <div>
+          <h2>Modelos de post no estilo do que costuma viralizar</h2>
+          <p class="note" style="margin:0">
+            Textos <strong>fictícios</strong> para você adaptar (bairro, cargo, números e fontes reais). Estrutura inspirada em ganchos comuns em Reels, TikTok, Threads e carrosséis de perfis de política e educação cívica no Brasil.
+          </p>
+        </div>
+        <div class="exemplos-toolbar">
+          <button type="button" class="btn-seg" id="exemplosRefresh" title="Sorteia um novo lote: modelos fixos + combinações dos termômetros temáticos">Atualizar</button>
+        </div>
       </div>
+      <p class="note" id="exemplosRefreshHint" aria-live="polite" style="margin:0 0 1rem">Carregue ou clique em «Atualizar» para gerar um lote de modelos.</p>
+      <div class="exemplos-grid" id="exemplosGrid"></div>
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-check" aria-labelledby="tab-check" hidden>
@@ -1499,6 +1468,109 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+    }
+
+    function shuffleInPlace(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    /** Modelos fixos (HTML de confiança — editar aqui se mudar o texto). */
+    const EXEMPLOS_POSTAGENS_FIXOS_HTML = [
+      `<article class="exemplo-bloco">
+          <div class="meta">Reels / TikTok · voz + legenda na tela</div>
+          <h3>“POV: você precisa do SUS amanhã”</h3>
+          <div class="post-sample">
+            <div class="ps-label">0–2 s (gancho na tela)</div>
+            <span class="ps-quote">POV: acordou mal e não sabe por onde começar no SUS.</span>
+            <p><strong>2–12 s:</strong> “Primeiro: busque a UBS do seu território — é porta de entrada. Segundo: leve documento com foto e CPF. Terceiro: se for urgência grave, vá ao pronto-socorro, mas saiba que nem tudo é emergência.”</p>
+            <p><strong>12–22 s:</strong> “Se te mandaram voltar: pergunta em que posto fica a regulação e anota o protocolo.”</p>
+            <p><strong>Fechamento + CTA:</strong> “Salva pra lembrar. Fonte: orientação do Ministério da Saúde sobre atenção primária — confere no site antes de repassar.”</p>
+          </div>
+        </article>`,
+      `<article class="exemplo-bloco">
+          <div class="meta">Carrossel · 5 slides</div>
+          <h3>“Inflação subiu: o que muda no seu bolso?”</h3>
+          <div class="post-sample">
+            <p><strong>Slide 1:</strong> Título grande — “3 efeitos práticos quando o custo de vida sobe” + sua cidade/UF.</p>
+            <p><strong>Slide 2:</strong> “Aluguel e financiamento: pressão nos juros e no orçamento familiar.” (ícone casa)</p>
+            <p><strong>Slide 3:</strong> “Cesta básica e transporte: onde as famílias mais sentem no mês.”</p>
+            <p><strong>Slide 4:</strong> “O que o poder público pode fazer na sua esfera” — 2 linhas realistas, sem promessa mágica.</p>
+            <p><strong>Slide 5:</strong> “Fontes: IBGE IPCA [mês/ano] · Banco Central” + seu site ou link da matéria oficial.</p>
+          </div>
+        </article>`,
+      `<article class="exemplo-bloco">
+          <div class="meta">Thread · X</div>
+          <h3>Segurança sem sensacionalismo</h3>
+          <div class="post-sample">
+            <p><strong>1/5</strong> Ontem rolou debate forte sobre segurança aqui em [cidade]. Quero separar três coisas que às vezes misturam no mesmo post 🧵</p>
+            <p><strong>2/5</strong> <strong>Prevenção social</strong> — escola no contraturno, iluminação, emprego. Efeito é médio prazo, mas muda o jogo.</p>
+            <p><strong>3/5</strong> <strong>Polícia e justiça</strong> — resposta a crime e investigação. Dados de [fonte estadual/federal], não achismo.</p>
+            <p><strong>4/5</strong> Se alguém te mandar vídeo de suposta facção sem contexto: não compartilha. Desinformação coloca gente inocente em risco.</p>
+            <p><strong>5/5</strong> Proposta: [uma linha]. Como acompanhar: [órgão + canal oficial].</p>
+          </div>
+        </article>`,
+      `<article class="exemplo-bloco">
+          <div class="meta">Stories · sequência 3 telas</div>
+          <h3>Obra ou promessa na cidade</h3>
+          <div class="post-sample">
+            <p><strong>Tela 1 (foto ampla):</strong> sticker “ANTES” + data no canto.</p>
+            <p><strong>Tela 2 (mesmo ângulo):</strong> sticker “HOJE” + o que mudou em uma frase.</p>
+            <p><strong>Tela 3:</strong> caixa de pergunta “O que ainda falta aí?” + link para portal da transparência da prefeitura/estado.</p>
+          </div>
+        </article>`,
+      `<article class="exemplo-bloco">
+          <div class="meta">Legenda Instagram / vídeo longo</div>
+          <h3>Educação — direito do estudante</h3>
+          <div class="post-sample">
+            <span class="ps-quote">Três direitos do estudante da rede pública que vale mandar no grupo da escola 👇</span>
+            <p>1) Transporte escolar quando a lei prever no seu caso.<br>2) Merenda e cantinho seguro para denúncia de violência.<br>3) Conselho escolar aberto pra pais ouvidos.</p>
+            <p>Se algo não tá sendo cumprido, o caminho é protocolo na secretaria + conselho tutelar quando for caso de violência. Compartilha com quem precisa.</p>
+            <p><strong>Hashtags (use poucas e relevantes):</strong> #educação #direitodocidadão #[cidade] (evite lista gigante).</p>
+          </div>
+        </article>`,
+      `<article class="exemplo-bloco">
+          <div class="meta">WhatsApp · card simples</div>
+          <h3>Reunião ou plantão</h3>
+          <div class="post-sample">
+            <span class="ps-quote">📍 [Bairro] — quinta, 19h, [local público].<br>Vamos ouvir demandas de saúde e transporte. Entrada gratuita.<br>Confirma no reply se leva 1 minuto pra falar de [tema].</span>
+            <p class="note" style="margin-top:0.5rem">Sem promessa de benefício em troca de voto; texto só de convocação e escuta.</p>
+          </div>
+        </article>`,
+    ];
+
+    function exemploBlocoFromTermometro(t) {
+      const ideia = t.ideias[Math.floor(Math.random() * t.ideias.length)];
+      const ex = t.exemplo;
+      const tagsHtml = t.tags.map((g) => `<span>${escapeHtml(g)}</span>`).join("");
+      return `<article class="exemplo-bloco">
+      <div class="meta">Combinação nova · ${escapeHtml(t.titulo)}</div>
+      <h3>Roteiro curto a partir do termômetro</h3>
+      <div class="post-sample">
+        <div class="ps-label">Uma ideia de pauta</div>
+        <p>${escapeHtml(ideia)}</p>
+        <div class="ps-label">Gancho</div>
+        <span class="ps-quote">${escapeHtml(ex.gancho)}</span>
+        <p><strong>Desenvolvimento:</strong> ${escapeHtml(ex.meio)}</p>
+        <p><strong>Fechamento / CTA:</strong> ${escapeHtml(ex.fechamento)}</p>
+      </div>
+      <div class="seg-tags">${tagsHtml}</div>
+    </article>`;
+    }
+
+    function renderExemplosGrid() {
+      const grid = document.getElementById("exemplosGrid");
+      if (!grid) return;
+      const din = TERMOMETROS.map((t) => exemploBlocoFromTermometro(t));
+      const pool = shuffleInPlace([...EXEMPLOS_POSTAGENS_FIXOS_HTML, ...din]);
+      grid.innerHTML = pool.slice(0, 6).join("");
+      const hint = document.getElementById("exemplosRefreshHint");
+      if (hint) {
+        hint.textContent = `Lote com 6 sugestões — atualizado às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`;
+      }
     }
 
     function renderTermometros() {
@@ -3536,6 +3608,8 @@
 
     function bootMidiaSocialPage() {
       renderTermometros();
+      renderExemplosGrid();
+      document.getElementById("exemplosRefresh")?.addEventListener("click", renderExemplosGrid);
       setupMainTabs();
       setupSegSubtabs();
       setupEscutaApiUi();

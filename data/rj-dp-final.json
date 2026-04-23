@@ -1,0 +1,507 @@
+{
+  "municipios": {
+    "Angra dos Reis": {
+      "nome": "166ª Delegacia de Polícia — Angra dos Reis",
+      "lat": -23.0067875,
+      "lng": -44.314176
+    },
+    "Aperibé": {
+      "nome": "Delegacia de Polícia — Aperibé (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.6211928,
+      "lng": -42.1028167
+    },
+    "Araruama": {
+      "nome": "118ª Delegacia Policial — Araruama",
+      "lat": -22.8667574,
+      "lng": -42.3376639
+    },
+    "Areal": {
+      "nome": "Delegacia de Polícia — Areal (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.2314922,
+      "lng": -43.1056264
+    },
+    "Armação dos Búzios": {
+      "nome": "127ª Delegacia Policial — Armação dos Búzios",
+      "lat": -22.7626547,
+      "lng": -41.8892848
+    },
+    "Arraial do Cabo": {
+      "nome": "132ª Delegacia Policial — Arraial do Cabo",
+      "lat": -22.9649638,
+      "lng": -42.0289872
+    },
+    "Barra do Piraí": {
+      "nome": "Delegacia de Polícia — Barra do Piraí (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.4242691,
+      "lng": -43.8935244
+    },
+    "Barra Mansa": {
+      "nome": "Delegacia de Polícia — Barra Mansa (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.488595495495495,
+      "lng": -44.188336936936935
+    },
+    "Belford Roxo": {
+      "nome": "64ª DP — Belford Roxo",
+      "lat": -22.7644,
+      "lng": -43.3996
+    },
+    "Bom Jardim": {
+      "nome": "Delegacia de Polícia — Bom Jardim (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.206108,
+      "lng": -42.3797574
+    },
+    "Bom Jesus do Itabapoana": {
+      "nome": "144º Delegacia de Polícia Civil de Bom Jesus do Itabapoana",
+      "lat": -21.1368412,
+      "lng": -41.6758416
+    },
+    "Cabo Frio": {
+      "nome": "126ª Delegacia Policial — Cabo Frio (OSM; confirme plantão / número no PCERJ)",
+      "lat": -22.889955,
+      "lng": -42.034249
+    },
+    "Cachoeiras de Macacu": {
+      "nome": "Delegacia de Polícia — Cachoeiras de Macacu (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.4626861,
+      "lng": -42.6534414
+    },
+    "Cambuci": {
+      "nome": "142º Delegacia de Polícia de Cambuci-RJ",
+      "lat": -21.5786482,
+      "lng": -41.9146801
+    },
+    "Campos dos Goytacazes": {
+      "nome": "134º Delegacia de Polícia Civil de Campos dos Goytacazes",
+      "lat": -21.758846,
+      "lng": -41.3284089
+    },
+    "Cantagalo": {
+      "nome": "Delegacia de Polícia — Cantagalo (ref. centro urbano — confirme unidade no mapa)",
+      "lat": -21.9811,
+      "lng": -42.3672
+    },
+    "Carapebus": {
+      "nome": "Delegacia de Polícia — Carapebus (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.1869969,
+      "lng": -41.6633764
+    },
+    "Cardoso Moreira": {
+      "nome": "Delegacia de Polícia — Cardoso Moreira (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -21.530337209302324,
+      "lng": -41.48799534883722
+    },
+    "Carmo": {
+      "nome": "112ª DP — Carmo (R. Alceu Matos, 99 — Bela Vista, 28640-000)",
+      "lat": -21.930137,
+      "lng": -42.609191
+    },
+    "Casimiro de Abreu": {
+      "nome": "Delegacia de Polícia — Casimiro de Abreu (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.4756154,
+      "lng": -42.1522235
+    },
+    "Comendador Levy Gasparian": {
+      "nome": "Delegacia de Polícia — Comendador Levy Gasparian (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.0534699,
+      "lng": -43.2511049
+    },
+    "Conceição de Macabu": {
+      "nome": "122 Delegacia Policial — Conceição de Macabu",
+      "lat": -22.0831066,
+      "lng": -41.8692363
+    },
+    "Cordeiro": {
+      "nome": "Delegacia de Polícia — Cordeiro (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.0282236,
+      "lng": -42.3614094
+    },
+    "Duas Barras": {
+      "nome": "Delegacia de Polícia — Duas Barras (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.0351374,
+      "lng": -42.4901782
+    },
+    "Duque de Caxias": {
+      "nome": "61ª DP — Duque de Caxias",
+      "lat": -22.7855,
+      "lng": -43.3116
+    },
+    "Engenheiro Paulo de Frontin": {
+      "nome": "Delegacia de Polícia — Engenheiro Paulo de Frontin (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.5201423,
+      "lng": -43.6348984
+    },
+    "Guapimirim": {
+      "nome": "Delegacia de Polícia — Guapimirim (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.5266308,
+      "lng": -42.9790687
+    },
+    "Iguaba Grande": {
+      "nome": "129º Delegacia de Policia — Iguaba Grande",
+      "lat": -22.8358063,
+      "lng": -42.2233492
+    },
+    "Itaboraí": {
+      "nome": "71ª Delegacia Policial de Itaboraí",
+      "lat": -22.7456343,
+      "lng": -42.855345
+    },
+    "Itaguaí": {
+      "nome": "Delegacia de Polícia — Itaguaí (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.8122697,
+      "lng": -43.823563
+    },
+    "Italva": {
+      "nome": "148a. Delegacia de Polícia — Italva",
+      "lat": -21.4314419,
+      "lng": -41.6907751
+    },
+    "Itaocara": {
+      "nome": "Delegacia de Polícia — Itaocara (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.7289291,
+      "lng": -42.0897294
+    },
+    "Itaperuna": {
+      "nome": "143ª Delegacia de Polícia Civil de Itaperuna",
+      "lat": -21.2049588,
+      "lng": -41.8908231
+    },
+    "Itatiaia": {
+      "nome": "Delegacia de Polícia — Itatiaia (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.4955278,
+      "lng": -44.5633108
+    },
+    "Japeri": {
+      "nome": "Delegacia de Polícia — Japeri (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.6427642,
+      "lng": -43.6533831
+    },
+    "Laje do Muriaé": {
+      "nome": "Delegacia de Polícia — Laje do Muriaé (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.2513259,
+      "lng": -42.1153822
+    },
+    "Macaé": {
+      "nome": "Delegacia de Polícia — Macaé (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.30542268907565,
+      "lng": -42.0039445378151
+    },
+    "Macuco": {
+      "nome": "Delegacia de Polícia — Macuco (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.0325431,
+      "lng": -42.2690669
+    },
+    "Magé": {
+      "nome": "Delegacia de Polícia — Magé (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.6042779,
+      "lng": -43.1081091
+    },
+    "Mangaratiba": {
+      "nome": "165ª Delegacia Policial — Mangaratiba",
+      "lat": -22.939132,
+      "lng": -44.0362743
+    },
+    "Maricá": {
+      "nome": "Delegacia de Polícia — Maricá (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.9088759,
+      "lng": -42.8171914
+    },
+    "Mendes": {
+      "nome": "Delegacia de Polícia — Mendes (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.5269113,
+      "lng": -43.7332604
+    },
+    "Mesquita": {
+      "nome": "67ª DP — Mesquita",
+      "lat": -22.7838,
+      "lng": -43.4294
+    },
+    "Miguel Pereira": {
+      "nome": "Delegacia de Polícia — Miguel Pereira (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.5309482,
+      "lng": -43.5166051
+    },
+    "Miracema": {
+      "nome": "137ª Delegacia de Polícia — Miracema",
+      "lat": -21.4181954,
+      "lng": -42.2016615
+    },
+    "Natividade": {
+      "nome": "140º Delegacia de Polícia Civil de Natividade",
+      "lat": -21.0399033,
+      "lng": -41.9807758
+    },
+    "Nilópolis": {
+      "nome": "66ª DP — Nilópolis",
+      "lat": -22.8074,
+      "lng": -43.4138
+    },
+    "Niterói": {
+      "nome": "76ª DP — Centro (Niterói)",
+      "lat": -22.8848,
+      "lng": -43.1035
+    },
+    "Nova Friburgo": {
+      "nome": "Delegacia de Polícia — Nova Friburgo (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.3371961904762,
+      "lng": -42.492303809523804
+    },
+    "Nova Iguaçu": {
+      "nome": "62ª DP — Nova Iguaçu",
+      "lat": -22.7598,
+      "lng": -43.4512
+    },
+    "Paracambi": {
+      "nome": "Delegacia de Polícia — Paracambi (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.6109158,
+      "lng": -43.7096912
+    },
+    "Paraíba do Sul": {
+      "nome": "107ª Delegacia de Polícia Civil de Paraíba do Sul",
+      "lat": -22.1637731,
+      "lng": -43.2911077
+    },
+    "Paraty": {
+      "nome": "Delegacia de Polícia — Paraty (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -23.2196461,
+      "lng": -44.7154196
+    },
+    "Paty do Alferes": {
+      "nome": "Delegacia de Polícia — Paty do Alferes (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.3775383,
+      "lng": -43.3970506
+    },
+    "Petrópolis": {
+      "nome": "Delegacia de Polícia — Petrópolis (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.382359803921577,
+      "lng": -43.15304803921568
+    },
+    "Pinheiral": {
+      "nome": "Delegacia de Polícia — Pinheiral (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.5129436,
+      "lng": -44.001435
+    },
+    "Piraí": {
+      "nome": "Delegacia de Polícia — Piraí (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.6550812,
+      "lng": -43.9193061
+    },
+    "Porciúncula": {
+      "nome": "139ª Delegacia de Polícia Civil de Porciúcula — Porciúncula",
+      "lat": -20.9645874,
+      "lng": -42.0403498
+    },
+    "Porto Real": {
+      "nome": "100ª Delegacia de Polícia Civil — Porto Real",
+      "lat": -22.4237588,
+      "lng": -44.292603
+    },
+    "Quatis": {
+      "nome": "Delegacia de Polícia — Quatis (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.3625932,
+      "lng": -44.2495086
+    },
+    "Queimados": {
+      "nome": "65ª DP — Queimados",
+      "lat": -22.716,
+      "lng": -43.5552
+    },
+    "Quissamã": {
+      "nome": "Delegacia de Polícia — Quissamã (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.11039807692308,
+      "lng": -41.4448903846154
+    },
+    "Resende": {
+      "nome": "89  Delegacia de Polícia — Resende",
+      "lat": -22.4626084,
+      "lng": -44.4570799
+    },
+    "Rio Bonito": {
+      "nome": "Delegacia de Polícia — Rio Bonito (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.7368566,
+      "lng": -42.5702111
+    },
+    "Rio Claro": {
+      "nome": "Delegacia de Polícia — Rio Claro (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.7857402,
+      "lng": -44.0742668
+    },
+    "Rio das Flores": {
+      "nome": "Delegacia de Polícia — Rio das Flores (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.1699171,
+      "lng": -43.540995
+    },
+    "Rio das Ostras": {
+      "nome": "Delegacia de Polícia — Rio das Ostras (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.448766666666675,
+      "lng": -41.954884313725486
+    },
+    "Rio de Janeiro": {
+      "nome": "4ª DP — Saara / Centro (PCERJ)",
+      "lat": -22.9035,
+      "lng": -43.1785
+    },
+    "Santa Maria Madalena": {
+      "nome": "Delegacia de Polícia — Santa Maria Madalena (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.9518563,
+      "lng": -41.9000248
+    },
+    "Santo Antônio de Pádua": {
+      "nome": "Delegacia de Polícia — Santo Antônio de Pádua (OSM amenity=police)",
+      "lat": -21.538189,
+      "lng": -42.181132
+    },
+    "São Fidélis": {
+      "nome": "Delegacia de Polícia — São Fidélis (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.6712726,
+      "lng": -41.7888835
+    },
+    "São Francisco de Itabapoana": {
+      "nome": "147° Delegacia de Polícia — São Francisco de Itabapoana",
+      "lat": -21.4740106,
+      "lng": -41.1205558
+    },
+    "São Gonçalo": {
+      "nome": "72ª DP — São Gonçalo",
+      "lat": -22.8266,
+      "lng": -43.0536
+    },
+    "São João da Barra": {
+      "nome": "Delegacia de Polícia — São João da Barra (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.63439,
+      "lng": -41.0499142
+    },
+    "São João de Meriti": {
+      "nome": "63ª DP — São João de Meriti",
+      "lat": -22.8044,
+      "lng": -43.373
+    },
+    "São José de Ubá": {
+      "nome": "Delegacia de Polícia — São José de Ubá (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.3886117,
+      "lng": -41.9653881
+    },
+    "São José do Vale do Rio Preto": {
+      "nome": "Delegacia de Polícia — São José do Vale do Rio Preto",
+      "lat": -22.1478294,
+      "lng": -42.9166237
+    },
+    "São Pedro da Aldeia": {
+      "nome": "125ª Delegacia de Polícia — São Pedro da Aldeia",
+      "lat": -22.8336976,
+      "lng": -42.1328256
+    },
+    "São Sebastião do Alto": {
+      "nome": "Delegacia de Polícia — São Sebastião do Alto (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -21.8765871,
+      "lng": -42.1115232
+    },
+    "Sapucaia": {
+      "nome": "Delegacia de Polícia — Sapucaia (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.0196881,
+      "lng": -42.840827
+    },
+    "Saquarema": {
+      "nome": "Delegacia de Saquarema",
+      "lat": -22.9342979,
+      "lng": -42.4950387
+    },
+    "Seropédica": {
+      "nome": "Delegacia de Polícia — Seropédica (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.751834,
+      "lng": -43.7082554
+    },
+    "Silva Jardim": {
+      "nome": "Delegacia de Polícia — Silva Jardim (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.5687871,
+      "lng": -42.3915444
+    },
+    "Sumidouro": {
+      "nome": "Delegacia de Polícia — Sumidouro (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.1179452,
+      "lng": -42.6807717
+    },
+    "Tanguá": {
+      "nome": "Delegacia de Polícia — Tanguá (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.7353777,
+      "lng": -42.7202272
+    },
+    "Teresópolis": {
+      "nome": "Delegacia de Polícia — Teresópolis (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.31809795918367,
+      "lng": -42.87219183673469
+    },
+    "Trajano de Moraes": {
+      "nome": "Delegacia de Polícia Civil de Trajano de Maraes — Trajano de Moraes",
+      "lat": -22.0629666,
+      "lng": -42.0615221
+    },
+    "Três Rios": {
+      "nome": "108 Delegacia de Polícia - Três Rios",
+      "lat": -22.1057784,
+      "lng": -43.2108336
+    },
+    "Valença": {
+      "nome": "Antiga Delegacia de Polícia — Valença",
+      "lat": -22.2473872,
+      "lng": -43.699972
+    },
+    "Varre-Sai": {
+      "nome": "Delegacia de Polícia — Varre-Sai (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -20.9311337,
+      "lng": -41.8677946
+    },
+    "Vassouras": {
+      "nome": "Delegacia de Polícia — Vassouras (ref. centro urbano OSM — confirmar unidade no mapa)",
+      "lat": -22.3706473,
+      "lng": -43.592331
+    },
+    "Volta Redonda": {
+      "nome": "Delegacia de Polícia — Volta Redonda (ref. centróide IBGE — confirme a unidade no Google Maps)",
+      "lat": -22.5034282051282,
+      "lng": -44.07764358974359
+    }
+  },
+  "meta": {
+    "dpReplaced": [
+      {
+        "nome": "Barra Mansa",
+        "reason": "dist 27.8 km"
+      },
+      {
+        "nome": "Cardoso Moreira",
+        "reason": "rótulo/homônimo"
+      },
+      {
+        "nome": "Macaé",
+        "reason": "dist 60.2 km"
+      },
+      {
+        "nome": "Nova Friburgo",
+        "reason": "dist 53.8 km"
+      },
+      {
+        "nome": "Petrópolis",
+        "reason": "dist 35.7 km"
+      },
+      {
+        "nome": "Quissamã",
+        "reason": "rótulo/homônimo"
+      },
+      {
+        "nome": "Rio das Ostras",
+        "reason": "dist 46.5 km"
+      },
+      {
+        "nome": "Teresópolis",
+        "reason": "dist 19.5 km"
+      },
+      {
+        "nome": "Volta Redonda",
+        "reason": "dist 39.2 km"
+      }
+    ],
+    "prefReplaced": [
+      "Valença"
+    ]
+  }
+}

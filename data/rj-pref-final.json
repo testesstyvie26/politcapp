@@ -1,0 +1,507 @@
+{
+  "municipios": {
+    "Angra dos Reis": {
+      "nome": "Prefeitura Municipal de Angra dos Reis — Angra dos Reis",
+      "lat": -23.0088944,
+      "lng": -44.3194216
+    },
+    "Aperibé": {
+      "nome": "Prefeitura Municipal — Aperibé (ref. centro urbano OSM)",
+      "lat": -21.6211928,
+      "lng": -42.1028167
+    },
+    "Araruama": {
+      "nome": "Prefeitura Municipal de Araruama — Araruama",
+      "lat": -22.8771756,
+      "lng": -42.3402394
+    },
+    "Areal": {
+      "nome": "Prefeitura Municipal — Areal (ref. centro urbano OSM)",
+      "lat": -22.2314922,
+      "lng": -43.1056264
+    },
+    "Armação dos Búzios": {
+      "nome": "Prefeitura Municipal — Armação dos Búzios (ref. centro urbano OSM)",
+      "lat": -22.7597805,
+      "lng": -41.8875267
+    },
+    "Arraial do Cabo": {
+      "nome": "Prefeitura Municipal de Arraial do Cabo — Arraial do Cabo",
+      "lat": -22.9692725,
+      "lng": -42.0260508
+    },
+    "Barra do Piraí": {
+      "nome": "Prefeitura Municipal Barra do Piraí — Barra do Piraí",
+      "lat": -22.4670318,
+      "lng": -43.8275233
+    },
+    "Barra Mansa": {
+      "nome": "Prefeitura Municipal de Barra Mansa — Barra Mansa",
+      "lat": -22.5482,
+      "lng": -44.1758
+    },
+    "Belford Roxo": {
+      "nome": "Prefeitura Municipal de Belford Roxo — Belford Roxo",
+      "lat": -22.7373436,
+      "lng": -43.3851244
+    },
+    "Bom Jardim": {
+      "nome": "Prefeitura Municipal — Bom Jardim (ref. centro urbano OSM)",
+      "lat": -22.206108,
+      "lng": -42.3797574
+    },
+    "Bom Jesus do Itabapoana": {
+      "nome": "Prefeitura Municipal de Bom Jesus do Itabapoana — Bom Jesus do Itabapoana",
+      "lat": -21.1368452,
+      "lng": -41.676707
+    },
+    "Cabo Frio": {
+      "nome": "Prefeitura Municipal de Cabo Frio — Cabo Frio",
+      "lat": -22.8771949,
+      "lng": -42.0139757
+    },
+    "Cachoeiras de Macacu": {
+      "nome": "Prefeitura Municipal — Cachoeiras de Macacu (ref. centro urbano OSM)",
+      "lat": -22.4626861,
+      "lng": -42.6534414
+    },
+    "Cambuci": {
+      "nome": "Prefeitura Municipal — Cambuci (ref. centro urbano OSM)",
+      "lat": -21.4835902,
+      "lng": -41.907113
+    },
+    "Campos dos Goytacazes": {
+      "nome": "Centro Administrativo José Alves de Azevedo — Campos dos Goytacazes",
+      "lat": -21.7640057,
+      "lng": -41.3353742
+    },
+    "Cantagalo": {
+      "nome": "Prefeitura Municipal — Cantagalo (ref. centro urbano OSM)",
+      "lat": -21.8673976,
+      "lng": -42.3062367
+    },
+    "Carapebus": {
+      "nome": "Prefeitura Municipal — Carapebus (ref. centro urbano OSM)",
+      "lat": -22.1869969,
+      "lng": -41.6633764
+    },
+    "Cardoso Moreira": {
+      "nome": "Prefeitura Municipal de Cardoso Moreira — Cardoso Moreira",
+      "lat": -21.4869692,
+      "lng": -41.6096046
+    },
+    "Carmo": {
+      "nome": "Prefeitura Municipal do Carmo — Carmo",
+      "lat": -21.9327129,
+      "lng": -42.6101558
+    },
+    "Casimiro de Abreu": {
+      "nome": "Prefeitura Municipal — Casimiro de Abreu (ref. centro urbano OSM)",
+      "lat": -22.4756154,
+      "lng": -42.1522235
+    },
+    "Comendador Levy Gasparian": {
+      "nome": "Prefeitura Municipal de Comendador Levy Gasparian — Comendador Levy Gasparian",
+      "lat": -22.0543645,
+      "lng": -43.2059761
+    },
+    "Conceição de Macabu": {
+      "nome": "Prefeitura Municipal — Conceição de Macabu (ref. centro urbano OSM)",
+      "lat": -22.1618951,
+      "lng": -41.8806433
+    },
+    "Cordeiro": {
+      "nome": "Prefeitura Municipal de Cordeiro — Cordeiro",
+      "lat": -22.027356,
+      "lng": -42.3613322
+    },
+    "Duas Barras": {
+      "nome": "Prefeitura Municipal — Duas Barras (ref. centro urbano OSM)",
+      "lat": -22.0351374,
+      "lng": -42.4901782
+    },
+    "Duque de Caxias": {
+      "nome": "Prefeitura Municipal — Duque de Caxias (ref. centro urbano OSM)",
+      "lat": -22.6429163,
+      "lng": -43.3021266
+    },
+    "Engenheiro Paulo de Frontin": {
+      "nome": "Prefeitura Municipal — Engenheiro Paulo de Frontin (ref. centro urbano OSM)",
+      "lat": -22.5201423,
+      "lng": -43.6348984
+    },
+    "Guapimirim": {
+      "nome": "Prefeitura Municipal — Guapimirim (ref. centro urbano OSM)",
+      "lat": -22.5266308,
+      "lng": -42.9790687
+    },
+    "Iguaba Grande": {
+      "nome": "Prefeitura Municipal de Iguaba Grande — Iguaba Grande",
+      "lat": -22.840566,
+      "lng": -42.2123855
+    },
+    "Itaboraí": {
+      "nome": "Prefeitura Municipal de Itaboraí — Itaboraí",
+      "lat": -22.7457003,
+      "lng": -42.8581526
+    },
+    "Itaguaí": {
+      "nome": "Prefeitura Municipal de Itaguaí — Itaguaí",
+      "lat": -22.8641057,
+      "lng": -43.7773397
+    },
+    "Italva": {
+      "nome": "Prefeitura Municipal de Italva — Italva",
+      "lat": -21.4340002,
+      "lng": -41.6827301
+    },
+    "Itaocara": {
+      "nome": "Prefeitura Municipal — Itaocara (ref. centro urbano OSM)",
+      "lat": -21.7289291,
+      "lng": -42.0897294
+    },
+    "Itaperuna": {
+      "nome": "Prefeitura Municipal de Itaperuna — Itaperuna",
+      "lat": -21.1988555,
+      "lng": -41.9045473
+    },
+    "Itatiaia": {
+      "nome": "Prefeitura Municipal — Itatiaia (ref. centro urbano OSM)",
+      "lat": -22.4955278,
+      "lng": -44.5633108
+    },
+    "Japeri": {
+      "nome": "Prefeitura Municipal — Japeri (ref. centro urbano OSM)",
+      "lat": -22.6427642,
+      "lng": -43.6533831
+    },
+    "Laje do Muriaé": {
+      "nome": "Prefeitura Municipal — Laje do Muriaé (ref. centro urbano OSM)",
+      "lat": -21.2513259,
+      "lng": -42.1153822
+    },
+    "Macaé": {
+      "nome": "Prefeitura Municipal de Macaé — Macaé",
+      "lat": -22.3746892,
+      "lng": -41.7767487
+    },
+    "Macuco": {
+      "nome": "Prefeitura Municipal de Macuco — Macuco",
+      "lat": -21.986883,
+      "lng": -42.2546398
+    },
+    "Magé": {
+      "nome": "Prefeitura Municipal de Magé — Magé",
+      "lat": -22.6568806,
+      "lng": -43.0385983
+    },
+    "Mangaratiba": {
+      "nome": "Prefeitura Municipal — Mangaratiba (ref. centro urbano OSM)",
+      "lat": -22.9415964,
+      "lng": -44.1181916
+    },
+    "Maricá": {
+      "nome": "Prefeitura Municipal de Maricá — Maricá",
+      "lat": -22.919852,
+      "lng": -42.82106
+    },
+    "Mendes": {
+      "nome": "Prefeitura Municipal de Mendes — Mendes",
+      "lat": -22.5265887,
+      "lng": -43.7333702
+    },
+    "Mesquita": {
+      "nome": "Prefeitura Municipal — Mesquita (ref. centro urbano OSM)",
+      "lat": -22.802535,
+      "lng": -43.460259
+    },
+    "Miguel Pereira": {
+      "nome": "Prefeitura Municipal de Miguel Pereira — Miguel Pereira",
+      "lat": -22.456348,
+      "lng": -43.4730688
+    },
+    "Miracema": {
+      "nome": "Prefeitura Municipal de Miracema — Miracema",
+      "lat": -21.4149397,
+      "lng": -42.1955997
+    },
+    "Natividade": {
+      "nome": "Prefeitura Municipal de Natividade — Natividade",
+      "lat": -21.0442251,
+      "lng": -41.973063
+    },
+    "Nilópolis": {
+      "nome": "Prefeitura Municipal — Nilópolis (ref. centro urbano OSM)",
+      "lat": -22.8080114,
+      "lng": -43.4138222
+    },
+    "Niterói": {
+      "nome": "Prefeitura de Niterói — Niterói",
+      "lat": -22.8839,
+      "lng": -43.1034
+    },
+    "Nova Friburgo": {
+      "nome": "Prefeitura Municipal de Nova Friburgo — Nova Friburgo",
+      "lat": -22.2877128,
+      "lng": -42.5314669
+    },
+    "Nova Iguaçu": {
+      "nome": "Prefeitura Municipal — Nova Iguaçu (ref. centro urbano OSM)",
+      "lat": -22.7592175,
+      "lng": -43.4508728
+    },
+    "Paracambi": {
+      "nome": "Prefeitura Municipal — Paracambi (ref. centro urbano OSM)",
+      "lat": -22.6109158,
+      "lng": -43.7096912
+    },
+    "Paraíba do Sul": {
+      "nome": "Prefeitura Municipal — Paraíba do Sul (ref. centro urbano OSM)",
+      "lat": -22.1873955,
+      "lng": -43.3034613
+    },
+    "Paraty": {
+      "nome": "Prefeitura Municipal de Paraty — Paraty",
+      "lat": -23.2157607,
+      "lng": -44.7135993
+    },
+    "Paty do Alferes": {
+      "nome": "Prefeitura Municipal — Paty do Alferes (ref. centro urbano OSM)",
+      "lat": -22.3775383,
+      "lng": -43.3970506
+    },
+    "Petrópolis": {
+      "nome": "Prefeitura Municipal de Petrópolis — Petrópolis",
+      "lat": -22.507384,
+      "lng": -43.1815111
+    },
+    "Pinheiral": {
+      "nome": "Prefeitura Municipal — Pinheiral (ref. centro urbano OSM)",
+      "lat": -22.5129436,
+      "lng": -44.001435
+    },
+    "Piraí": {
+      "nome": "Prefeitura Municipal de Piraí — Piraí",
+      "lat": -22.628444,
+      "lng": -43.898246
+    },
+    "Porciúncula": {
+      "nome": "Prefeitura Municipal de Porciúncula — Porciúncula",
+      "lat": -20.9637395,
+      "lng": -42.0385577
+    },
+    "Porto Real": {
+      "nome": "Prefeitura Municipal de Porto Real — Porto Real",
+      "lat": -22.4192217,
+      "lng": -44.3024243
+    },
+    "Quatis": {
+      "nome": "Prefeitura Municipal — Quatis (ref. centro urbano OSM)",
+      "lat": -22.3625932,
+      "lng": -44.2495086
+    },
+    "Queimados": {
+      "nome": "Prefeitura Municipal — Queimados (ref. centro urbano OSM)",
+      "lat": -22.7313419,
+      "lng": -43.5913151
+    },
+    "Quissamã": {
+      "nome": "Prefeitura Municipal de Quissamã — Quissamã",
+      "lat": -22.1069545,
+      "lng": -41.4711713
+    },
+    "Resende": {
+      "nome": "Prefeitura Municipal de Resende — Resende",
+      "lat": -22.463251,
+      "lng": -44.4550048
+    },
+    "Rio Bonito": {
+      "nome": "Prefeitura Municipal de Rio Bonito — Rio Bonito",
+      "lat": -22.7108066,
+      "lng": -42.6483508
+    },
+    "Rio Claro": {
+      "nome": "Prefeitura Municipal — Rio Claro (ref. centro urbano OSM)",
+      "lat": -22.7857402,
+      "lng": -44.0742668
+    },
+    "Rio das Flores": {
+      "nome": "Prefeitura Municipal de Rio das Flores — Rio das Flores",
+      "lat": -22.1652192,
+      "lng": -43.5847251
+    },
+    "Rio das Ostras": {
+      "nome": "Prefeitura Municipal de Rio das Ostras — Rio das Ostras",
+      "lat": -22.4986692,
+      "lng": -41.9217338
+    },
+    "Rio de Janeiro": {
+      "nome": "Prefeitura da Cidade do Rio de Janeiro — Cidade Nova",
+      "lat": -22.9057,
+      "lng": -43.1725
+    },
+    "Santa Maria Madalena": {
+      "nome": "Prefeitura Municipal — Santa Maria Madalena (ref. centro urbano OSM)",
+      "lat": -21.9518563,
+      "lng": -41.9000248
+    },
+    "Santo Antônio de Pádua": {
+      "nome": "Prefeitura Municipal — Santo Antônio de Pádua (ref. centro urbano OSM)",
+      "lat": -21.5711641,
+      "lng": -42.2014373
+    },
+    "São Fidélis": {
+      "nome": "Prefeitura Municipal de São Fidélis — São Fidélis",
+      "lat": -21.6468647,
+      "lng": -41.7459727
+    },
+    "São Francisco de Itabapoana": {
+      "nome": "Prefeitura Municipal de São Francisco de Itabapoana — São Francisco de Itabapoana",
+      "lat": -21.4735106,
+      "lng": -41.1163647
+    },
+    "São Gonçalo": {
+      "nome": "Prefeitura Municipal de São Gonçalo — São Gonçalo",
+      "lat": -22.8250882,
+      "lng": -43.0489091
+    },
+    "São João da Barra": {
+      "nome": "Prefeitura Municipal São João da Barra — São João da Barra",
+      "lat": -21.633601,
+      "lng": -41.0487318
+    },
+    "São João de Meriti": {
+      "nome": "Prefeitura Municipal — São João de Meriti (ref. centro urbano OSM)",
+      "lat": -22.7853575,
+      "lng": -43.366715
+    },
+    "São José de Ubá": {
+      "nome": "Prefeitura Municipal de São José de Ubá — São José de Ubá",
+      "lat": -21.3614899,
+      "lng": -41.9463966
+    },
+    "São José do Vale do Rio Preto": {
+      "nome": "Prefeitura Municipal de São José do Vale do Rio Preto — São José do Vale do Rio Preto",
+      "lat": -22.148171,
+      "lng": -42.9176537
+    },
+    "São Pedro da Aldeia": {
+      "nome": "Prefeitura Municipal de São Pedro da Aldeia — São Pedro da Aldeia",
+      "lat": -22.8408849,
+      "lng": -42.1010572
+    },
+    "São Sebastião do Alto": {
+      "nome": "Prefeitura Municipal — São Sebastião do Alto (ref. centro urbano OSM)",
+      "lat": -21.8765871,
+      "lng": -42.1115232
+    },
+    "Sapucaia": {
+      "nome": "Prefeitura Municipal — Sapucaia (ref. centro urbano OSM)",
+      "lat": -22.0196881,
+      "lng": -42.840827
+    },
+    "Saquarema": {
+      "nome": "Prefeitura Municipal de Saquarema — Saquarema",
+      "lat": -22.9325564,
+      "lng": -42.496908
+    },
+    "Seropédica": {
+      "nome": "Prefeitura Municipal de Seropédica — Seropédica",
+      "lat": -22.7431777,
+      "lng": -43.7057052
+    },
+    "Silva Jardim": {
+      "nome": "Prefeitura Municipal — Silva Jardim (ref. centro urbano OSM)",
+      "lat": -22.5687871,
+      "lng": -42.3915444
+    },
+    "Sumidouro": {
+      "nome": "Prefeitura Municipal de Sumidouro — Sumidouro",
+      "lat": -22.0484757,
+      "lng": -42.6732814
+    },
+    "Tanguá": {
+      "nome": "Prefeitura Municipal — Tanguá (ref. centro urbano OSM)",
+      "lat": -22.7353777,
+      "lng": -42.7202272
+    },
+    "Teresópolis": {
+      "nome": "Prefeitura Munícipal de Teresópolis — Teresópolis",
+      "lat": -22.4179204,
+      "lng": -42.9738327
+    },
+    "Trajano de Moraes": {
+      "nome": "Prefeitura Municipal — Trajano de Moraes (ref. centro urbano OSM)",
+      "lat": -22.1555839,
+      "lng": -42.1594703
+    },
+    "Três Rios": {
+      "nome": "Prefeitura Municipal de Três Rios — Três Rios",
+      "lat": -22.1169,
+      "lng": -43.2087
+    },
+    "Valença": {
+      "nome": "Prefeitura Municipal — Valença (ref. centróide IBGE)",
+      "lat": -22.247466233766243,
+      "lng": -43.86594545454544
+    },
+    "Varre-Sai": {
+      "nome": "Prefeitura Municipal de Varre-Sai — Varre-Sai",
+      "lat": -20.928661,
+      "lng": -41.8677623
+    },
+    "Vassouras": {
+      "nome": "Prefeitura Municipal — Vassouras (ref. centro urbano OSM)",
+      "lat": -22.3706473,
+      "lng": -43.592331
+    },
+    "Volta Redonda": {
+      "nome": "Palácio 17 de Julho ( Prefeitura Municipal de Volta Redonda) — Volta Redonda",
+      "lat": -22.5085649,
+      "lng": -44.0942387
+    }
+  },
+  "meta": {
+    "dpReplaced": [
+      {
+        "nome": "Barra Mansa",
+        "reason": "dist 27.8 km"
+      },
+      {
+        "nome": "Cardoso Moreira",
+        "reason": "rótulo/homônimo"
+      },
+      {
+        "nome": "Macaé",
+        "reason": "dist 60.2 km"
+      },
+      {
+        "nome": "Nova Friburgo",
+        "reason": "dist 53.8 km"
+      },
+      {
+        "nome": "Petrópolis",
+        "reason": "dist 35.7 km"
+      },
+      {
+        "nome": "Quissamã",
+        "reason": "rótulo/homônimo"
+      },
+      {
+        "nome": "Rio das Ostras",
+        "reason": "dist 46.5 km"
+      },
+      {
+        "nome": "Teresópolis",
+        "reason": "dist 19.5 km"
+      },
+      {
+        "nome": "Volta Redonda",
+        "reason": "dist 39.2 km"
+      }
+    ],
+    "prefReplaced": [
+      "Valença"
+    ]
+  }
+}
