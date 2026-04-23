@@ -382,10 +382,11 @@
       <h2>Viagens entre municípios — tempo de trajeto e pontos na rota</h2>
       <p class="note" style="margin-bottom:1rem">
         Escolha <strong>origem</strong> e <strong>destino</strong> (centróides dos polígonos municipais IBGE). A rota segue malha viária estimada
-        (<a href="http://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / OpenStreetMap). O tempo depende de trânsito e condições reais;
-        use como <strong>ordem de grandeza</strong> para planejamento. <strong>Comércio</strong> e <strong>eventos</strong> (corridas, beneficentes, culturais)
-        aparecem quando estão até o raio (km) da rota; <strong>eventos</strong> só entram se a <strong>data do evento</strong> cruzar o
-        <strong>período da viagem</strong> que você definir abaixo. Dados de eventos são <strong>ilustrativos</strong> — confirme em sites oficiais e prefeituras.
+        (<a href="http://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> / OpenStreetMap). O tempo <strong>não inclui trânsito em tempo real</strong>;
+        use como <strong>ordem de grandeza</strong>. Para <strong>movimentação, congestionamentos e horários típicos de público</strong> (feiras de manhã, centros nos picos),
+        use os atalhos <strong>Google Maps</strong> em cada marcador e em “Abrir rota no Google Maps” após calcular — lá você vê camadas de trânsito e avalia fluxo.
+        <strong>Comércio</strong> e <strong>eventos</strong> aparecem até o raio (km) da rota; <strong>eventos</strong> só se a <strong>data</strong> cruzar o <strong>período da viagem</strong>.
+        Dados são <strong>ilustrativos</strong> — confirme em fontes oficiais.
       </p>
       <div class="viagem-toolbar">
         <label>
@@ -410,7 +411,7 @@
         </label>
         <label>
           POIs até (km da rota)
-          <input type="range" id="viagemBufferKm" min="8" max="80" value="28" />
+          <input type="range" id="viagemBufferKm" min="8" max="100" value="28" />
           <span id="viagemBufferLabel" class="note" style="display:block;margin-top:0.25rem">28 km</span>
         </label>
         <button type="button" class="btn-viagem" id="btnCalcularViagem">Calcular rota</button>
@@ -418,6 +419,10 @@
       <div class="viagem-resumo" id="viagemResumo" hidden>
         <div id="viagemResumoLinha"></div>
         <p class="muted" id="viagemResumoExtra"></p>
+        <p class="note" id="viagemGoogleWrap" style="margin-top:0.65rem" hidden>
+          <a id="viagemLinkGoogle" href="#" target="_blank" rel="noopener noreferrer">Abrir esta rota no Google Maps</a>
+          — direções, trânsito ao vivo e revisão de trechos. O mapa abaixo continua em camada CARTO (OpenStreetMap); o Google abre noutro separador.
+        </p>
       </div>
       <div class="map-wrap">
         <div id="mapViagem" role="application" aria-label="Mapa de rota entre municípios"></div>
@@ -429,6 +434,7 @@
         <span><span class="swatch" style="background:#f87171"></span> Destino</span>
         <span><span class="swatch" style="background:#94a3b8"></span> Comércio (círculo)</span>
         <span><span class="swatch" style="background:#f472b6"></span> Evento no período (losango)</span>
+        <span><span class="swatch" style="background:#475569;border:1px solid #94a3b8"></span> Trechos ao longo da rota (km)</span>
       </div>
       <p id="viagemStatus" class="note" style="margin-top:0.75rem">Selecione origem, destino, período da viagem e calcule a rota.</p>
       <h3 style="margin-top:1.25rem;font-size:0.95rem;color:var(--muted)">Comércio e visitas próximos à rota</h3>
@@ -645,6 +651,25 @@
       { nome: "Centro de Cantagalo", cidade: "Cantagalo", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.9811, lng: -42.3672, dica: "Cidade média serrana; comércio e caficultura na conversa." },
       { nome: "Centro de São Fidélis", cidade: "São Fidélis", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.6819, lng: -41.7531, dica: "Vale do Café; rotas para Campos e interior." },
       { nome: "Centro de Rio das Ostras", cidade: "Rio das Ostras", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -22.5269, lng: -41.945, dica: "Crescimento urbano e petróleo próximo; orla e comércio de bairro." },
+      { nome: "Feira de São Bernardo (Vila Progresso)", cidade: "Niterói", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8265, lng: -43.0638, dica: "Feira livre tradicional; fluxo matinal intenso e comércio de proximidade.", diasFuncionamento: "Terças e sextas, em geral pela manhã; confirme calendário municipal." },
+      { nome: "Centro de Maricá", cidade: "Maricá", meso: "Metropolitana do Rio de Janeiro", tipo: "Centro urbano e comércio de rua", lat: -22.9194, lng: -42.8186, dica: "Região dos Lagos; corredor entre capital e Norte do estado." },
+      { nome: "Centro de Itaboraí", cidade: "Itaboraí", meso: "Metropolitana do Rio de Janeiro", tipo: "Centro urbano e comércio de rua", lat: -22.7444, lng: -42.8591, dica: "Entroncamento BR-101 / RJ-104; polo logístico e feiras regionais." },
+      { nome: "Centro de Araruama", cidade: "Araruama", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.8726, lng: -42.3418, dica: "Região dos Lagos; salinas, comércio local e turismo." },
+      { nome: "Centro histórico de Paraty", cidade: "Paraty", meso: "Sul Fluminense", tipo: "Turismo e comércio", lat: -23.2178, lng: -44.7131, dica: "Patrimônio e eventos culturais; forte fluxo turístico — avaliar público fora de picos.", diasFuncionamento: "Comércio turístico costuma intensificar fins de semana e feriados." },
+      { nome: "Centro de Miguel Pereira", cidade: "Miguel Pereira", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.4539, lng: -43.4686, dica: "Serra; conexão Dutra / Baixada; feiras de produtor em dias fixos." },
+      { nome: "Centro de Valença", cidade: "Valença", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.2456, lng: -43.7003, dica: "Vale do Paraíba; comércio de interior e logística regional." },
+      { nome: "Centro de Vassouras", cidade: "Vassouras", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.4036, lng: -43.6625, dica: "Cidade histórica na BR-040; polo de serviços para o Vale." },
+      { nome: "Centro de Mendes", cidade: "Mendes", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.5264, lng: -43.7331, dica: "Interior do Sul fluminense; rota para Barra do Piraí e feiras de bairro." },
+      { nome: "Centro de Paty do Alferes", cidade: "Paty do Alferes", meso: "Sul Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.4289, lng: -43.4236, dica: "Agricultura familiar e comércio de proximidade." },
+      { nome: "Largo dos Guimarães / polo Santa Teresa", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Turismo e comércio", lat: -22.9156, lng: -43.1894, dica: "Turismo, artesanato e bares; movimento alto em fins de semana.", diasFuncionamento: "Comércio e eventos de rua costumam concentrar sábados e domingos." },
+      { nome: "Centro de Mangaratiba", cidade: "Mangaratiba", meso: "Metropolitana do Rio de Janeiro", tipo: "Turismo e comércio", lat: -22.9597, lng: -44.0408, dica: "Costa Verde; conexão ferry Angra–Mangaratiba; sazonalidade de orla." },
+      { nome: "Centro de Engenheiro Paulo de Frontin", cidade: "Engenheiro Paulo de Frontin", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -22.5494, lng: -43.6811, dica: "Serra média; feiras e comércio de rota para Petrópolis." },
+      { nome: "Centro de Bom Jesus do Itabapoana", cidade: "Bom Jesus do Itabapoana", meso: "Noroeste Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.1431, lng: -41.6828, dica: "Polo noroeste na BR-101; comércio e público de interior." },
+      { nome: "Centro de São José de Ubá", cidade: "São José de Ubá", meso: "Noroeste Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.3592, lng: -41.9428, dica: "Interior; agricultura e pequeno comércio." },
+      { nome: "Centro de Carmo", cidade: "Carmo", meso: "Centro Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.9344, lng: -42.6089, dica: "Serrana; rota para Nova Friburgo e feiras locais." },
+      { nome: "Centro de Tanguá", cidade: "Tanguá", meso: "Metropolitana do Rio de Janeiro", tipo: "Centro urbano e comércio de rua", lat: -22.7314, lng: -42.7142, dica: "Baía de Guanabara; ligação rodoviária com interior e Niterói." },
+      { nome: "Centro de São João da Barra", cidade: "São João da Barra", meso: "Norte Fluminense", tipo: "Centro urbano e comércio de rua", lat: -21.6386, lng: -41.0511, dica: "Litoral norte; porto e comércio regional." },
+      { nome: "Feira livre de Bangu (referência centro)", cidade: "Rio de Janeiro", meso: "Metropolitana do Rio de Janeiro", tipo: "Feira ou mercado municipal", lat: -22.8742, lng: -43.4675, dica: "Zona Oeste; feiras de rua com forte presença matinal — confirmar dia com a prefeitura.", diasFuncionamento: "Dias e horários variam por feira livre; em geral manhã em dias fixos da semana." },
     ];
 
     /** Dias e horários ilustrativos; confirme no local ou na prefeitura. */
@@ -867,6 +892,68 @@
       return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
     }
 
+    /** Google Maps (abre noutro separador; trânsito e horários no app/site Google). */
+    function googleMapsDirectionsUrl(lat1, lng1, lat2, lng2) {
+      return (
+        "https://www.google.com/maps/dir/?api=1&origin=" +
+        encodeURIComponent(`${lat1},${lng1}`) +
+        "&destination=" +
+        encodeURIComponent(`${lat2},${lng2}`) +
+        "&travelmode=driving"
+      );
+    }
+
+    function googleMapsSearchPlaceUrl(nome, cidade) {
+      const q = `${nome}, ${cidade}, RJ, Brasil`;
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+    }
+
+    function googleMapsSearchCoordsUrl(lat, lng) {
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${lat},${lng}`);
+    }
+
+    /** Pontos intermédios ao longo da geometria da rota (planeamento + link para o Google). */
+    function addRouteCheckpoints(coordsLonLat, layerGroup) {
+      layerGroup.clearLayers();
+      if (!coordsLonLat || coordsLonLat.length < 2 || typeof turf === "undefined") return;
+      let line;
+      try {
+        line = turf.lineString(coordsLonLat);
+      } catch (_) {
+        return;
+      }
+      let lenKm;
+      try {
+        lenKm = turf.length(line, { units: "kilometers" });
+      } catch (_) {
+        return;
+      }
+      if (lenKm < 14) return;
+      const step = Math.min(48, Math.max(14, lenKm / 6));
+      let idx = 1;
+      for (let d = step; d < lenKm - 2; d += step) {
+        try {
+          const pt = turf.along(line, d, { units: "kilometers" });
+          const [lng, lat] = pt.geometry.coordinates;
+          const gUrl = googleMapsSearchCoordsUrl(lat, lng);
+          L.circleMarker([lat, lng], {
+            radius: 5,
+            color: "#94a3b8",
+            weight: 1,
+            fillColor: "#475569",
+            fillOpacity: 0.82,
+          })
+            .bindPopup(
+              `<strong>Trecho ${idx}</strong><br />~${Math.round(d)} km ao longo da rota<br /><a href="${escapeAttr(gUrl)}" target="_blank" rel="noopener noreferrer">Área no Google Maps</a>`
+            )
+            .addTo(layerGroup);
+          idx++;
+        } catch (_) {
+          break;
+        }
+      }
+    }
+
     function linksResolvidosEvento(ev) {
       const m = MUNICIPIO_LINKS_RJ[ev.cidade] || {};
       return {
@@ -972,6 +1059,7 @@
       const poiLayer = L.layerGroup().addTo(mapV);
       const eventLayer = L.layerGroup().addTo(mapV);
       const endLayer = L.layerGroup().addTo(mapV);
+      const checkpointLayer = L.layerGroup().addTo(mapV);
 
       const selO = document.getElementById("viagemOrigem");
       const selD = document.getElementById("viagemDestino");
@@ -1018,18 +1106,23 @@
         poiLayer.clearLayers();
         eventLayer.clearLayers();
         endLayer.clearLayers();
+        checkpointLayer.clearLayers();
         poisRoot.innerHTML = "";
         if (eventosRoot) eventosRoot.innerHTML = "";
+        const gw = document.getElementById("viagemGoogleWrap");
+        if (gw) gw.hidden = true;
       }
 
       function popupPoiRota(p, distKm) {
         const cor = TIPO_COMERCIO_COLORS[p.tipo] || "#888";
+        const gMaps = googleMapsSearchPlaceUrl(p.nome, p.cidade);
         return `
           <div class="popup-title">${escapeHtml(p.nome)}</div>
           <div class="popup-meso">~${distKm.toFixed(1)} km da rota · ${escapeHtml(p.cidade)}</div>
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(p.tipo)}</span></p>
           <p style="margin:0.45rem 0 0"><strong>Dias / horário (referência):</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
           <p style="margin:0.45rem 0 0">${escapeHtml(p.dica)}</p>
+          <p style="margin:0.5rem 0 0"><a href="${escapeAttr(gMaps)}" target="_blank" rel="noopener noreferrer">Google Maps — local, avaliações e movimentação</a></p>
         `;
       }
 
@@ -1037,12 +1130,14 @@
         const cor = TIPO_EVENTO_COLORS[ev.tipo] || "#888";
         const periodoTxt =
           ev.fim && ev.fim !== ev.inicio ? `${ev.inicio} a ${ev.fim}` : ev.inicio;
+        const gMaps = googleMapsSearchPlaceUrl(ev.nome, ev.cidade);
         return `
           <div class="popup-title">${escapeHtml(ev.nome)}</div>
           <div class="popup-meso">${escapeHtml(ev.cidade)} · ~${distKm.toFixed(1)} km da rota</div>
           <p style="margin:0.35rem 0 0"><span class="tag" style="background:${cor}33;color:#e8ecf2">${escapeHtml(ev.tipo)}</span></p>
           <p style="margin:0.35rem 0 0"><strong>Período:</strong> ${escapeHtml(periodoTxt)}</p>
           <p style="margin:0.45rem 0 0">${escapeHtml(ev.dica)}</p>
+          <p style="margin:0.5rem 0 0"><a href="${escapeAttr(gMaps)}" target="_blank" rel="noopener noreferrer">Google Maps — local e público esperado</a></p>
           ${htmlEventoLinksBlock(ev)}
         `;
       }
@@ -1152,6 +1247,8 @@
             "Rota viária online indisponível (rede, limite do serviço ou trecho sem resultado). Linha reta entre centróides IBGE; tempo estimado a ~55 km/h (não considera pedágio, ferry nem trânsito).";
         }
 
+        addRouteCheckpoints(coordsLonLat, checkpointLayer);
+
         const line = turf.lineString(coordsLonLat);
         const comDistancia = POIS_COMERCIO.map((p) => {
           const pt = turf.point([p.lng, p.lat]);
@@ -1221,6 +1318,12 @@
           resumoExtra.textContent = `${resumoExtra.textContent} ${extraPois}`;
         }
         resumo.hidden = false;
+        const googleWrap = document.getElementById("viagemGoogleWrap");
+        const googleLink = document.getElementById("viagemLinkGoogle");
+        if (googleLink && googleWrap) {
+          googleLink.href = googleMapsDirectionsUrl(c1.lat, c1.lng, c2.lat, c2.lng);
+          googleWrap.hidden = false;
+        }
 
         poisRoot.innerHTML = "";
         if (comDistancia.length === 0) {
@@ -1235,6 +1338,7 @@
               <strong>${escapeHtml(p.nome)}</strong> — ${escapeHtml(p.cidade)}
               <p class="note" style="margin:0.35rem 0 0"><strong>Dias / horário:</strong> ${escapeHtml(comercioDiasFuncionamentoRef(p))}</p>
               <p class="note" style="margin:0.35rem 0 0">${escapeHtml(p.dica)}</p>
+              <p class="note" style="margin:0.35rem 0 0"><a href="${escapeAttr(googleMapsSearchPlaceUrl(p.nome, p.cidade))}" target="_blank" rel="noopener noreferrer">Google Maps — local e movimentação</a></p>
             `;
             poisRoot.appendChild(card);
           }
@@ -1254,6 +1358,7 @@
                 <div class="dist">~${dist.toFixed(1)} km da rota · ${escapeHtml(ev.tipo)} · ${escapeHtml(quando)}</div>
                 <strong>${escapeHtml(ev.nome)}</strong> — ${escapeHtml(ev.cidade)}
                 <p class="note" style="margin:0.35rem 0 0">${escapeHtml(ev.dica)}</p>
+                <p class="note" style="margin:0.35rem 0 0"><a href="${escapeAttr(googleMapsSearchPlaceUrl(ev.nome, ev.cidade))}" target="_blank" rel="noopener noreferrer">Google Maps — local e fluxo</a></p>
                 ${htmlEventoLinksBlock(ev)}
               `;
               eventosRoot.appendChild(card);
@@ -1262,8 +1367,8 @@
         }
 
         statusEl.textContent = usouRotaViaria
-          ? "Rota calculada. Verde/vermelho: origem e destino; círculos: comércio; losangos: eventos no período."
-          : "Linha reta exibida. Verifique aviso acima sobre disponibilidade da rota viária.";
+          ? "Rota calculada. Pontos cinzentos: trechos ao longo do percurso (popup → Google Maps). Círculos coloridos: comércio/feiras; losangos: eventos no período."
+          : "Linha reta exibida. Trechos cinzentos seguem a linha aproximada; use Google Maps para vias reais e trânsito.";
 
         btn.disabled = false;
       });
