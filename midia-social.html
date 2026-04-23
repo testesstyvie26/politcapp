@@ -1119,6 +1119,7 @@
       <p class="note" style="margin-bottom:1rem">
         Painel de <strong>demonstração</strong> para organizar monitoramento de postagens sobre <strong>segurança pública, eventos policiais e crimes</strong>,
         e para destacar <strong>comentários positivos</strong> à atuação das forças ou a políticas de prevenção, com perfil resumido de quem comenta.
+        <strong>Só entram postagens com data a partir de 1 de janeiro de 2025</strong> (itens sem data fiável são ignorados).
         Em produção, ligue a exportações do seu social listening, API de redes ou planilha auditável — não substitui análise jurídica nem confirmação em fontes oficiais.
       </p>
 
@@ -1131,7 +1132,8 @@
         <p class="note" style="margin:0 0 1rem">
           Fontes <strong>sem login</strong>: RSS (G1, Prefeitura), Google News, ficheiro
           <span class="mono">data/escuta-social-seguranca.json</span>, <strong>Mastodon</strong> (API pública de hashtag — fediverso).
-          <strong>Instagram, Facebook, YouTube e TikTok</strong> no painel: ligações públicas (hashtags, buscas) e notícias agregadas — não há leitura de comentários por API no browser sem credenciais de projeto; use Mastodon/RSS ou API oficial da rede no seu ambiente.
+          Ao clicar em <strong>«Atualizar postagens»</strong>, o painel tenta <strong>buscar respostas públicas</strong> (comentários) nos toots Mastodon desse lote e funde os extractos na aba <strong>Comentários positivos</strong>.
+          <strong>Instagram, Facebook, YouTube e TikTok</strong>: ligações e notícias agregadas — comentários via API no browser exigem credenciais; use o proxy local descrito na outra aba.
           Páginas não verificadas no JSON: <span class="mono">"verificado": false</span> → selo <span class="fonte-badge fonte-badge--unverified">Não verificada</span>.
         </p>
         <div class="seg-toolbar">
@@ -1157,7 +1159,7 @@
         <p class="note" style="margin:0 0 1rem">
           <strong>Mastodon</strong> (API pública) e <strong>Meta (Facebook / Instagram)</strong> via <span class="mono">npm run dev:escuta-proxy</span> + token de página. Na lista entram o JSON curado, ligações manuais a redes e injeções de API.
           Por defeito a grelha mostra só <strong>vozes de apoio</strong> (operações policiais, concursos, cursos/formação em segurança) — heurística em português e campo <span class="mono">comentarioPositivo</span> no JSON (inclui <strong>citações reais</strong> de reportagens, com link para a matéria). Desmarque a caixa para ver todos os extractos fundidos.
-          Inclui comentários <strong>das postagens carregadas</strong> e respostas Mastodon (amostra) após «Atualizar postagens».
+          Inclui comentários <strong>das postagens carregadas (2025+)</strong> e respostas Mastodon obtidas automaticamente ao «Atualizar postagens», além do JSON e das APIs opcionais abaixo.
         </p>
         <div class="escuta-api-box" id="escutaApiBox">
           <h3>Mastodon — respostas em postagens (sem autenticação)</h3>
@@ -2247,91 +2249,91 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
         id: "rss-g1-rj",
         label: "RSS G1 Rio de Janeiro",
         async fetchPosts() {
-          return fetchRss2JsonFeed("https://g1.globo.com/rss/g1/rio-de-janeiro/", 12, "G1 RJ", "G1 RJ");
+          return fetchRss2JsonFeed("https://g1.globo.com/rss/g1/rio-de-janeiro/", 22, "G1 RJ", "G1 RJ");
         },
       },
       {
         id: "rss-pref-rio",
         label: "RSS Prefeitura do Rio",
         async fetchPosts() {
-          return fetchRss2JsonFeed("https://prefeitura.rio/feed/", 10, "Prefeitura", "prefeitura.rio");
+          return fetchRss2JsonFeed("https://prefeitura.rio/feed/", 18, "Prefeitura", "prefeitura.rio");
         },
       },
       {
         id: "gn-reage",
         label: "Google News — Reage Rio / bairros",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("Reage Rio moradores bairros O Globo", 10);
+          return fetchGoogleNewsPosts("Reage Rio moradores bairros O Globo", 16);
         },
       },
       {
         id: "gn-rio",
         label: "Google News — segurança RJ",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("segurança pública Rio de Janeiro", 10);
+          return fetchGoogleNewsPosts("segurança pública Rio de Janeiro", 16);
         },
       },
       {
         id: "gn-comunidades-rj",
         label: "Google News — comunidades Rio",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("comunidades Rio de Janeiro segurança violência bairros", 8);
+          return fetchGoogleNewsPosts("comunidades Rio de Janeiro segurança violência bairros", 14);
         },
       },
       {
         id: "mastodon-tag-rj",
         label: "Mastodon — #riodejaneiro (API pública, sem login)",
         async fetchPosts() {
-          return fetchMastodonHashtagPosts("riodejaneiro", 18);
+          return fetchMastodonHashtagPosts("riodejaneiro", 28);
         },
       },
       {
         id: "mastodon-tag-seguranca",
         label: "Mastodon — #segurança (API pública, sem login)",
         async fetchPosts() {
-          return fetchMastodonHashtagPosts("segurança", 15);
+          return fetchMastodonHashtagPosts("segurança", 24);
         },
       },
       {
         id: "mastodon-tag-segpub",
         label: "Mastodon — #segurançapublica",
         async fetchPosts() {
-          return fetchMastodonHashtagPosts("segurançapublica", 12);
+          return fetchMastodonHashtagPosts("segurançapublica", 20);
         },
       },
       {
         id: "mastodon-tag-concurso",
         label: "Mastodon — #concursopublico (PM/PC, Brasil)",
         async fetchPosts() {
-          return fetchMastodonHashtagPosts("concursopublico", 12);
+          return fetchMastodonHashtagPosts("concursopublico", 20);
         },
       },
       {
         id: "gn-operacoes-rj",
         label: "Google News — operações policiais RJ",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("operação policial Rio de Janeiro PM PC", 10);
+          return fetchGoogleNewsPosts("operação policial Rio de Janeiro PM PC", 16);
         },
       },
       {
         id: "gn-concursos-pol",
         label: "Google News — concursos policiais Brasil",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("concurso público polícia militar civil Brasil edital", 10);
+          return fetchGoogleNewsPosts("concurso público polícia militar civil Brasil edital", 16);
         },
       },
       {
         id: "gn-cursos-formacao",
         label: "Google News — cursos e formação em segurança",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("curso capacitação policial segurança pública Brasil", 8);
+          return fetchGoogleNewsPosts("curso capacitação policial segurança pública Brasil", 14);
         },
       },
       {
         id: "gn-segpub-nacional",
         label: "Google News — segurança pública (âmbito nacional)",
         async fetchPosts() {
-          return fetchGoogleNewsPosts("segurança pública Brasil polícia operações", 10);
+          return fetchGoogleNewsPosts("segurança pública Brasil polícia operações", 16);
         },
       },
     ];
@@ -2439,15 +2441,25 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       return descendants.map((st) => escutaMastodonStatusToComentarioCard(st, "Resposta no fio Mastodon"));
     }
 
-    /** Respostas públicas nos primeiros toots Mastodon do lote (limite para não sobrecarregar a API). */
+    /** Início do período exibido na escuta (1 jan 2025 UTC). */
+    const ESCUTA_POSTAGEM_MIN_MS = Date.UTC(2025, 0, 1);
+
+    function escutaPostPassaFiltroData(row) {
+      if (!row || !row.dataIso) return false;
+      const t = Date.parse(row.dataIso);
+      if (!Number.isFinite(t)) return false;
+      return t >= ESCUTA_POSTAGEM_MIN_MS;
+    }
+
+    /** Respostas públicas nos toots Mastodon do lote (limite para não sobrecarregar a API). */
     async function escutaAttachMastodonRepliesToLoadedPosts(posts) {
       const list = Array.isArray(posts) ? posts : [];
       const mastoRows = list.filter(
         (p) => normalizePlatform(p.plataforma) === "mastodon" && String(p.url || p.uri || "").trim()
       );
-      let budget = 40;
-      const maxPosts = 8;
-      const perPost = 6;
+      let budget = 100;
+      const maxPosts = 20;
+      const perPost = 10;
       for (const p of mastoRows.slice(0, maxPosts)) {
         if (budget <= 0) break;
         const u = String(p.url || p.uri || "").trim();
@@ -2701,12 +2713,21 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
         }
       }
 
-      merged.sort((a, b) => {
+      const beforeFilter = merged.length;
+      const filtered = merged.filter(escutaPostPassaFiltroData);
+      const dropped = beforeFilter - filtered.length;
+      if (dropped > 0) {
+        errors.push(
+          `Filtro ≥2025: ${dropped} postagem(ns) excluída(s) (data anterior a 1/1/2025 ou sem data).`
+        );
+      }
+
+      filtered.sort((a, b) => {
         const ta = a.dataIso ? Date.parse(a.dataIso) : 0;
         const tb = b.dataIso ? Date.parse(b.dataIso) : 0;
         return tb - ta;
       });
-      return { posts: merged, errors };
+      return { posts: filtered, errors };
     }
 
     function renderSegPostCards(posts, errors, opts) {
@@ -2770,7 +2791,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
           <div class="seg-tags">${tags}</div>
           ${
             segPostPublicUrl(row)
-              ? `<a class="seg-link" href="${escapeHtml(segPostPublicUrl(row))}" target="_blank" rel="noopener noreferrer">Abrir publicação ?</a>`
+              ? `<a class="seg-link" href="${escapeHtml(segPostPublicUrl(row))}" target="_blank" rel="noopener noreferrer">Abrir publicação</a>`
               : `<span class="seg-link seg-link--missing" title="Este item não tem URL direta no feed.">Sem ligação direta ao texto</span>`
           }
           ${comentHtml}
@@ -2793,7 +2814,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       try {
         const { posts, errors } = await runEscutaPlugins();
         if (status) {
-          status.textContent = "A carregar respostas Mastodon nos toots (amostra)…";
+          status.textContent = "A buscar comentários (respostas públicas) nos toots Mastodon do lote 2025+…";
         }
         await escutaAttachMastodonRepliesToLoadedPosts(posts);
         escutaPostsFull = posts;
@@ -2886,15 +2907,15 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       const pubUrl = String(c.postUrl || c.mastodonUrl || c.tweetUrl || "").trim();
       const pubLink =
         pubUrl && pf === "x"
-          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir post no X ?</a>`
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir post no X</a>`
           : pubUrl && pf === "mastodon"
-          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir publicação ?</a>`
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir publicação</a>`
           : pubUrl && pf === "youtube"
-          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir no YouTube ?</a>`
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir no YouTube</a>`
           : pubUrl && pf === "tiktok"
-          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir no TikTok ?</a>`
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir no TikTok</a>`
           : pubUrl
-          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir publicação ?</a>`
+          ? ` · <a class="seg-link" href="${escapeHtml(pubUrl)}" target="_blank" rel="noopener noreferrer">Abrir publicação</a>`
           : "";
       return `
         <article class="coment-card${unv ? " fonte-nao-verificada" : ""}">
@@ -3587,7 +3608,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
           const lab = escapeHtml(crmPlatformLabel(r.plataforma));
           const h = escapeHtml(r.handle || "");
           const u = escapeHtml(r.url || "#");
-          return `<li><strong>${lab}</strong>${h ? ` · ${h}` : ""} — <a href="${u}" target="_blank" rel="noopener noreferrer">abrir perfil ?</a></li>`;
+          return `<li><strong>${lab}</strong>${h ? ` · ${h}` : ""} — <a href="${u}" target="_blank" rel="noopener noreferrer">abrir perfil</a></li>`;
         })
         .join("");
       if (!redes.length) return '<p class="note" style="margin:0">Sem redes no registo.</p>';
