@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WhatsApp — setup do bot | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --wa: #25d366;
+      --warn: #fbbf24;
+      --danger: #f87171;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(37, 211, 102, 0.12), transparent),
+        radial-gradient(ellipse 80% 50% at 100% 50%, rgba(61, 139, 253, 0.08), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .site-nav {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
+    }
+    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+    header { margin-bottom: 1.5rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .wa-badge {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 0.2rem 0.5rem; border-radius: 6px;
+      background: rgba(37, 211, 102, 0.2); color: #6ee7a8;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 68ch; font-size: 0.95rem; }
+    header a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.02rem; margin: 0 0 0.65rem; font-weight: 600; }
+    .panel h3 { font-size: 0.88rem; margin: 1.1rem 0 0.45rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .panel h3:first-child { margin-top: 0; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .note.warn { color: #fcd34d; border-left: 3px solid var(--warn); padding-left: 0.75rem; margin-top: 0.5rem; }
+    .grid-2 {
+      display: grid; gap: 1rem 1.25rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    label.field {
+      display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.72rem;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    }
+    input[type="text"], input[type="url"], input[type="password"], select, textarea {
+      font-family: inherit; font-size: 0.9rem; padding: 0.55rem 0.65rem;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+    }
+    textarea { min-height: 88px; resize: vertical; line-height: 1.45; }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.82rem; }
+    pre.sample {
+      margin: 0.5rem 0 0; padding: 0.85rem 1rem; border-radius: 8px;
+      background: #0a0d12; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.78rem; line-height: 1.45;
+    }
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center;
+      margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+    .btn {
+      font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      padding: 0.55rem 1.1rem; border-radius: 8px; border: none; cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: #041018; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-wa { background: var(--wa); color: #041018; }
+    .btn-wa:hover { filter: brightness(1.06); }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-danger { background: rgba(248, 113, 113, 0.15); color: #fecaca; border: 1px solid rgba(248,113,113,0.35); }
+    .btn-danger:hover { background: rgba(248, 113, 113, 0.25); }
+    #statusLine { font-size: 0.88rem; color: var(--muted); min-height: 1.4em; margin: 0.5rem 0 0; }
+    #statusLine.ok { color: #6ee7b7; }
+    #statusLine.err { color: var(--danger); }
+    details.setup-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+    }
+    details.setup-block > summary {
+      cursor: pointer; font-weight: 600; font-size: 0.92rem;
+      padding: 0.85rem 1rem; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+    details.setup-block > summary::-webkit-details-marker { display: none; }
+    details.setup-block[open] > summary { border-bottom: 1px solid var(--border); }
+    .setup-block .inner { padding: 1rem 1rem 1.1rem; }
+    .checklist { list-style: none; margin: 0; padding: 0; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.88rem; color: var(--muted);
+      margin-bottom: 0.45rem;
+    }
+    .checklist input { margin-top: 0.2rem; accent-color: var(--wa); }
+    .site-credit {
+      margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--muted); text-align: center; line-height: 1.55;
+    }
+    .site-credit a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .site-credit a:hover { text-decoration: underline; }
+    .site-credit-role { font-weight: 400; opacity: 0.92; }
+    .row-inline { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .row-inline label.field { flex: 1; min-width: 140px; }
+    @media (max-width: 640px) {
+      .wrap { padding: 1rem 0.9rem 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="vereadores-rj.html">Vereadores RJ</a>
+      <a href="transparencia.html">Transparência</a>
+      <a href="midia-social.html">Mídia social</a>
+      <a href="whatsapp.html" aria-current="page">WhatsApp</a>
+      <a href="tarefas.html">Tarefas</a>
+      <a href="login.html">Entrar</a>
+      <a href="conta.html">Conta</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+
+    <header>
+      <h1>Integração WhatsApp <span class="wa-badge">Bot &amp; sessão</span></h1>
+      <p>
+        Painel de <strong>configuração e gestão</strong> para ligar o Politapp a um <strong>bot WhatsApp</strong> (oficial ou gateway próprio).
+        Os dados sensíveis abaixo ficam <strong>só neste navegador</strong> (<code class="mono">localStorage</code>) até você exportar —
+        em produção, guarde tokens no <strong>servidor</strong> e nunca os exponha em páginas estáticas públicas.
+      </p>
+    </header>
+
+    <section class="panel" aria-labelledby="sessao-heading">
+      <h2 id="sessao-heading">Sessão e persistência</h2>
+      <p class="note">
+        Use <strong>Salvar</strong> após preencher cada bloco. <strong>Limpar sessão</strong> apaga só as definições desta página neste dispositivo.
+      </p>
+      <p id="statusLine" role="status"></p>
+      <div class="actions" style="margin-top:0.75rem;padding-top:0;border:none">
+        <button type="button" class="btn btn-primary" id="btnSave">Salvar configuração</button>
+        <button type="button" class="btn btn-wa" id="btnExport">Exportar JSON</button>
+        <label class="btn btn-ghost" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">
+          Importar JSON
+          <input type="file" id="importFile" accept="application/json" hidden />
+        </label>
+        <button type="button" class="btn btn-danger" id="btnClear">Limpar sessão local</button>
+      </div>
+    </section>
+
+    <details class="setup-block" open>
+      <summary>1 · Provedor e modelo de integração</summary>
+      <div class="inner">
+        <p class="note">Escolha como o seu backend vai falar com o WhatsApp. O fluxo recomendado pela Meta é a <strong>Cloud API</strong> com app no Meta for Developers.</p>
+        <div class="grid-2">
+          <label class="field">Provedor / stack
+            <select id="provedor">
+              <option value="meta_cloud">Meta — WhatsApp Cloud API (oficial)</option>
+              <option value="meta_onprem">Meta — API On-Premise (legado / parceiro)</option>
+              <option value="evolution">Evolution API / Baileys (self-hosted)</option>
+              <option value="twilio">Twilio / outro BSP</option>
+              <option value="outro">Outro / personalizado</option>
+            </select>
+          </label>
+          <label class="field">Versão da Graph API (Cloud)
+            <input type="text" id="graphVersion" class="mono" placeholder="v21.0" autocomplete="off" />
+          </label>
+        </div>
+        <label class="field" style="margin-top:0.75rem">Notas internas (time, ambiente, URL do repositório do bot)
+          <textarea id="notasProvedor" placeholder="Ex.: repo github.com/org/bot — deploy Railway — staging"></textarea>
+        </label>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>2 · Credenciais e app (nunca commitar em repositório público)</summary>
+      <div class="inner">
+        <p class="note warn">
+          Tokens vazados permitem enviar mensagens em nome do número. Rotacione chaves se suspeitar de exposição. Em campanha, respeite a legislação eleitoral e políticas da Meta.
+        </p>
+        <div class="grid-2">
+          <label class="field">Access token (permanente ou de sistema)
+            <input type="password" id="accessToken" class="mono" autocomplete="off" placeholder="EAAxxxx..." />
+          </label>
+          <label class="field">App Secret (opcional, validação assinatura)
+            <input type="password" id="appSecret" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">Phone Number ID
+            <input type="text" id="phoneNumberId" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">WhatsApp Business Account ID (WABA)
+            <input type="text" id="wabaId" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">App ID (Meta Developers)
+            <input type="text" id="appId" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">Verify token (webhook)
+            <input type="text" id="verifyToken" class="mono" autocomplete="off" placeholder="string que você define" />
+          </label>
+        </div>
+        <h3>Variáveis de ambiente (.env) — referência</h3>
+        <pre class="sample mono" id="envSample"></pre>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>3 · Webhook e URLs públicas</summary>
+      <div class="inner">
+        <p class="note">O Meta envia eventos <code class="mono">POST</code> para o seu servidor. O endpoint deve responder ao challenge <code class="mono">GET</code> com o <code class="mono">hub.verify_token</code>.</p>
+        <label class="field">URL pública do webhook (HTTPS)
+          <input type="url" id="webhookUrl" placeholder="https://api.seudominio.com/webhooks/whatsapp" autocomplete="off" />
+        </label>
+        <div class="grid-2" style="margin-top:0.75rem">
+          <label class="field">Caminho interno (path)
+            <input type="text" id="webhookPath" class="mono" placeholder="/webhooks/whatsapp" autocomplete="off" />
+          </label>
+          <label class="field">URL base da API do seu bot (opcional)
+            <input type="url" id="botApiBase" placeholder="https://api.seudominio.com" autocomplete="off" />
+          </label>
+        </div>
+        <h3>Exemplo de payload recebido (simplificado)</h3>
+        <pre class="sample mono">{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "changes": [{
+      "value": {
+        "messaging_product": "whatsapp",
+        "messages": [{ "from": "5511...", "type": "text", "text": { "body": "Olá" } }]
+      }
+    }]
+  }]
+}</pre>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>4 · Conta comercial e identidade</summary>
+      <div class="inner">
+        <div class="grid-2">
+          <label class="field">Nome de exibição aprovado (perfil comercial)
+            <input type="text" id="displayName" placeholder="Nome visível no WhatsApp" autocomplete="organization" />
+          </label>
+          <label class="field">Número em formato E.164 (sem + no campo, opcional)
+            <input type="text" id="e164" class="mono" placeholder="5521999990000" autocomplete="off" />
+          </label>
+          <label class="field">Idioma padrão das mensagens automáticas
+            <select id="locale">
+              <option value="pt_BR">Português (Brasil)</option>
+              <option value="pt_PT">Português (Portugal)</option>
+              <option value="en_US">English (US)</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+          <label class="field">Timezone do servidor / agendamentos
+            <input type="text" id="timezone" class="mono" placeholder="America/Sao_Paulo" autocomplete="off" />
+          </label>
+        </div>
+        <p class="note" style="margin-top:0.75rem">
+          Lembrete: mensagens fora da <strong>janela de atendimento</strong> (24h após última msg do usuário, salvo templates aprovados) exigem <strong>template</strong> pela Meta.
+        </p>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>5 · Comportamento do bot e handoff humano</summary>
+      <div class="inner">
+        <label class="field">Mensagem de boas-vindas (primeiro contato / menu)
+          <textarea id="welcomeMsg" placeholder="Olá! Sou o assistente virtual. Digite 1 para propostas, 2 para atendimento..."></textarea>
+        </label>
+        <label class="field" style="margin-top:0.75rem">Palavras-chave → respostas rápidas (uma por linha: chave | resposta)
+          <textarea id="keywordMap" class="mono" placeholder="oi|Olá! Como posso ajudar?&#10;ajuda|Encaminhei para um atendente em breve." style="min-height:100px"></textarea>
+        </label>
+        <div class="grid-2" style="margin-top:0.75rem">
+          <label class="field">Filas / etiquetas CRM (opcional)
+            <input type="text" id="crmLabels" placeholder="ex.: campanha2026, suporte" autocomplete="off" />
+          </label>
+          <label class="field">Webhook interno para escalar humano (URL)
+            <input type="url" id="handoffUrl" placeholder="https://.../notify-operator" autocomplete="off" />
+          </label>
+        </div>
+      </div>
+    </details>
+
+    <details class="setup-block">
+      <summary>6 · Checklist de sessão e go-live</summary>
+      <div class="inner">
+        <p class="note">Marque o que já está validado com a sua equipa. Os dados ficam neste browser para acompanhamento.</p>
+        <ul class="checklist" id="checklist">
+          <li><label><input type="checkbox" data-key="chk_app" /> App criado no Meta for Developers e modo Live</label></li>
+          <li><label><input type="checkbox" data-key="chk_waba" /> WABA verificada e número associado</label></li>
+          <li><label><input type="checkbox" data-key="chk_token" /> Token com permissões de WhatsApp Business Messaging</label></li>
+          <li><label><input type="checkbox" data-key="chk_webhook" /> Webhook assinado e challenge OK em produção</label></li>
+          <li><label><input type="checkbox" data-key="chk_tls" /> HTTPS válido (certificado) no endpoint público</label></li>
+          <li><label><input type="checkbox" data-key="chk_templates" /> Templates de utilidade/marketing submetidos (se necessário)</label></li>
+          <li><label><input type="checkbox" data-key="chk_optin" /> Fluxo de opt-in e política de privacidade alinhados</label></li>
+          <li><label><input type="checkbox" data-key="chk_logs" /> Logs e rate limit configurados no backend</label></li>
+        </ul>
+      </div>
+    </details>
+
+    <section class="panel">
+      <h2>Documentação útil</h2>
+      <ul class="note" style="padding-left:1.2rem;margin:0;line-height:1.65">
+        <li><a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener">Meta — Get started (Cloud API)</a></li>
+        <li><a href="https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/components" target="_blank" rel="noopener">Meta — Webhooks</a></li>
+        <li><a href="https://www.whatsapp.com/legal/business-policy" target="_blank" rel="noopener">Política comercial WhatsApp</a></li>
+      </ul>
+    </section>
+
+    <footer class="site-credit" role="contentinfo">
+      <p>
+        Criado por
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
+        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "politapp_whatsapp_bot_v1";
+
+    function $(id) { return document.getElementById(id); }
+
+    function setStatus(msg, kind) {
+      const el = $("statusLine");
+      el.textContent = msg || "";
+      el.className = kind === "ok" ? "ok" : kind === "err" ? "err" : "";
+    }
+
+    function collectState() {
+      const checks = {};
+      document.querySelectorAll("#checklist input[type=checkbox]").forEach((cb) => {
+        checks[cb.getAttribute("data-key")] = cb.checked;
+      });
+      return {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        provedor: $("provedor").value,
+        graphVersion: $("graphVersion").value.trim(),
+        notasProvedor: $("notasProvedor").value,
+        accessToken: $("accessToken").value,
+        appSecret: $("appSecret").value,
+        phoneNumberId: $("phoneNumberId").value.trim(),
+        wabaId: $("wabaId").value.trim(),
+        appId: $("appId").value.trim(),
+        verifyToken: $("verifyToken").value,
+        webhookUrl: $("webhookUrl").value.trim(),
+        webhookPath: $("webhookPath").value.trim(),
+        botApiBase: $("botApiBase").value.trim(),
+        displayName: $("displayName").value.trim(),
+        e164: $("e164").value.trim(),
+        locale: $("locale").value,
+        timezone: $("timezone").value.trim(),
+        welcomeMsg: $("welcomeMsg").value,
+        keywordMap: $("keywordMap").value,
+        crmLabels: $("crmLabels").value.trim(),
+        handoffUrl: $("handoffUrl").value.trim(),
+        checklist: checks,
+      };
+    }
+
+    function applyState(data) {
+      if (!data || typeof data !== "object") return;
+      const set = (id, v) => { const el = $(id); if (el && v != null) el.value = v; };
+      set("provedor", data.provedor);
+      set("graphVersion", data.graphVersion);
+      set("notasProvedor", data.notasProvedor);
+      set("accessToken", data.accessToken);
+      set("appSecret", data.appSecret);
+      set("phoneNumberId", data.phoneNumberId);
+      set("wabaId", data.wabaId);
+      set("appId", data.appId);
+      set("verifyToken", data.verifyToken);
+      set("webhookUrl", data.webhookUrl);
+      set("webhookPath", data.webhookPath);
+      set("botApiBase", data.botApiBase);
+      set("displayName", data.displayName);
+      set("e164", data.e164);
+      set("locale", data.locale);
+      set("timezone", data.timezone);
+      set("welcomeMsg", data.welcomeMsg);
+      set("keywordMap", data.keywordMap);
+      set("crmLabels", data.crmLabels);
+      set("handoffUrl", data.handoffUrl);
+      if (data.checklist && typeof data.checklist === "object") {
+        document.querySelectorAll("#checklist input[type=checkbox]").forEach((cb) => {
+          const k = cb.getAttribute("data-key");
+          if (k in data.checklist) cb.checked = !!data.checklist[k];
+        });
+      }
+      refreshEnvSample();
+    }
+
+    function refreshEnvSample() {
+      const s = collectState();
+      const mask = (v) => (v ? `${String(v).slice(0, 6)}…` : "");
+      const lines = [
+        "# Copie para o .env do servidor — não use estes valores no cliente público",
+        `WHATSAPP_ACCESS_TOKEN=${s.accessToken ? mask(s.accessToken) + " (definido)" : ""}`,
+        `WHATSAPP_PHONE_NUMBER_ID=${s.phoneNumberId || ""}`,
+        `WHATSAPP_WABA_ID=${s.wabaId || ""}`,
+        `WHATSAPP_APP_ID=${s.appId || ""}`,
+        `WHATSAPP_APP_SECRET=${s.appSecret ? mask(s.appSecret) + " (definido)" : ""}`,
+        `WHATSAPP_VERIFY_TOKEN=${s.verifyToken || ""}`,
+        `WHATSAPP_WEBHOOK_URL=${s.webhookUrl || ""}`,
+        `GRAPH_API_VERSION=${s.graphVersion || "v21.0"}`,
+      ];
+      $("envSample").textContent = lines.join("\n");
+    }
+
+    function saveLocal() {
+      try {
+        const state = collectState();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        setStatus("Configuração guardada neste navegador.", "ok");
+        refreshEnvSample();
+      } catch (e) {
+        setStatus("Não foi possível guardar (armazenamento cheio ou privado).", "err");
+      }
+    }
+
+    function loadLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          $("graphVersion").value = "v21.0";
+          $("timezone").value = "America/Sao_Paulo";
+          refreshEnvSample();
+          return;
+        }
+        applyState(JSON.parse(raw));
+        setStatus("Sessão carregada do armazenamento local.", "ok");
+      } catch (e) {
+        setStatus("Ficheiro guardado corrompido — use Limpar e recomece.", "err");
+      }
+    }
+
+    function clearLocal() {
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll("input[type=text], input[type=url], input[type=password], select, textarea").forEach((el) => {
+        if (el.id === "provedor") { el.selectedIndex = 0; return; }
+        if (el.id === "locale") { el.value = "pt_BR"; return; }
+        el.value = "";
+      });
+      document.querySelectorAll("#checklist input[type=checkbox]").forEach((cb) => { cb.checked = false; });
+      $("graphVersion").value = "v21.0";
+      $("timezone").value = "America/Sao_Paulo";
+      refreshEnvSample();
+      setStatus("Sessão local limpa.", "ok");
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify(collectState(), null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "politapp-whatsapp-setup.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      setStatus("Exportação iniciada.", "ok");
+    }
+
+    $("btnSave").addEventListener("click", saveLocal);
+    $("btnClear").addEventListener("click", () => {
+      if (confirm("Apagar toda a configuração WhatsApp guardada neste navegador?")) clearLocal();
+    });
+    $("btnExport").addEventListener("click", exportJson);
+    $("importFile").addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try {
+          applyState(JSON.parse(String(r.result)));
+          saveLocal();
+          setStatus("Importado e guardado.", "ok");
+        } catch (err) {
+          setStatus("JSON inválido.", "err");
+        }
+      };
+      r.readAsText(f);
+    });
+
+    [
+      "accessToken", "appSecret", "phoneNumberId", "wabaId", "webhookUrl", "graphVersion",
+    ].forEach((id) => {
+      const el = $(id);
+      if (el) el.addEventListener("input", refreshEnvSample);
+    });
+
+    loadLocal();
+  </script>
+</body>
+</html>
