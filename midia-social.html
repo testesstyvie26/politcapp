@@ -673,6 +673,78 @@
       letter-spacing: 0.04em;
     }
 
+    .post-gerador {
+      margin-bottom: 1.35rem;
+      padding: 1rem 1.15rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.22);
+    }
+    .post-gerador h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .post-gerador > .note {
+      margin: 0 0 1rem !important;
+    }
+    .post-gerador-grid {
+      display: grid;
+      gap: 0.85rem 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      margin-bottom: 0.85rem;
+      align-items: end;
+    }
+    .post-gerador-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .post-gerador-grid input,
+    .post-gerador-grid select {
+      font: inherit;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .post-gerador-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .post-gerador-actions .btn-seg.secondary {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+    #postGenOutput {
+      width: 100%;
+      min-height: 220px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      resize: vertical;
+    }
+    #postGenStatus {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      min-height: 1.25em;
+    }
+
     .site-credit {
       margin-top: 2.5rem;
       padding-top: 1.25rem;
@@ -1060,7 +1132,7 @@
           Fontes <strong>sem login</strong>: RSS (G1, Prefeitura), Google News, ficheiro
           <span class="mono">data/escuta-social-seguranca.json</span>, <strong>Mastodon</strong> (API pública de hashtag — fediverso).
           <strong>Instagram, Facebook, YouTube e TikTok</strong> no painel: ligações públicas (hashtags, buscas) e notícias agregadas — não há leitura de comentários por API no browser sem credenciais de projeto; use Mastodon/RSS ou API oficial da rede no seu ambiente.
-          Páginas não verificadas no JSON: <span class="mono">"verificado": false</span> ? selo <span class="fonte-badge fonte-badge--unverified">Não verificada</span>.
+          Páginas não verificadas no JSON: <span class="mono">"verificado": false</span> → selo <span class="fonte-badge fonte-badge--unverified">Não verificada</span>.
         </p>
         <div class="seg-toolbar">
           <button type="button" class="btn-seg" id="segRefreshPosts">Atualizar postagens</button>
@@ -1251,7 +1323,7 @@
           <p class="note" style="margin:0 0 0.5rem">Picos quando há crise, CPI, anúncio ou dado forte do IBGE.</p>
           <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
             <li><strong>Face-cam + print da manchete</strong> no fundo (greenscreen): “O que isso muda pra você?”</li>
-            <li>Carrossel <strong>5 slides máximo</strong>: contexto ? dado ? impacto no bolso/serviço ? o que acompanhar ? fonte.</li>
+            <li>Carrossel <strong>5 slides máximo</strong>: contexto → dado → impacto no bolso/serviço → o que acompanhar → fonte.</li>
             <li>Evite clickbait falso; o título da última tela deve bater com o conteúdo.</li>
           </ul>
         </article>
@@ -1268,7 +1340,7 @@
           <h3>Debate acelerado (X / comentários)</h3>
           <p class="note" style="margin:0 0 0.5rem">Threads e respostas em vídeo viram prova social.</p>
           <ul class="note" style="padding-left:1.1rem;margin:0;font-size:0.88rem">
-            <li>Thread <strong>numerada</strong> (1/5…): tese ? dado ? contraponto honesto ? proposta ? link.</li>
+            <li>Thread <strong>numerada</strong> (1/5…): tese → dado → contraponto honesto → proposta → link.</li>
             <li><strong>Stitch/dueto</strong> só com trechos legítimos e contexto; cite a fonte original.</li>
             <li>Fixar regra nos comentários: sem ofensa pessoal, debate sobre ideia.</li>
           </ul>
@@ -1298,6 +1370,47 @@
         </div>
       </div>
       <p class="note" id="exemplosRefreshHint" aria-live="polite" style="margin:0 0 1rem">Carregue ou clique em «Atualizar» para gerar um lote de modelos.</p>
+
+      <div class="post-gerador" id="postGerador">
+        <h3>Gerador de conteúdo para post</h3>
+        <p class="note" style="margin:0 0 1rem">
+          Escolha o <strong>tema</strong> (termômetro), o <strong>formato</strong> e, se quiser, o <strong>local</strong>. O texto é montado a partir dos ganchos e ideias já usados nos cartões — edite antes de publicar e confira fontes oficiais.
+        </p>
+        <div class="post-gerador-grid">
+          <label>Tema / pauta
+            <select id="postGenTema" aria-label="Tema do post"></select>
+          </label>
+          <label>Formato
+            <select id="postGenFormato" aria-label="Formato do post">
+              <option value="reels">Reels / TikTok (roteiro com tempos)</option>
+              <option value="carrossel">Carrossel (5 slides)</option>
+              <option value="thread">Thread no X (numerada)</option>
+              <option value="legenda">Legenda Instagram / vídeo</option>
+              <option value="stories">Stories (3 telas)</option>
+              <option value="whatsapp">WhatsApp (convite curto)</option>
+            </select>
+          </label>
+          <label>Tom
+            <select id="postGenTom" aria-label="Tom do texto">
+              <option value="informativo">Informativo / didático</option>
+              <option value="mobilizacao">Mobilização / convite</option>
+              <option value="esclarecimento">Esclarecimento / desmonte de mito</option>
+            </select>
+          </label>
+          <label>Cidade, bairro ou UF (opcional)
+            <input type="text" id="postGenLocal" autocomplete="off" placeholder="Ex.: Rio de Janeiro, Copacabana, RJ" />
+          </label>
+        </div>
+        <div class="post-gerador-actions">
+          <button type="button" class="btn-seg" id="postGenGerar">Gerar texto</button>
+          <button type="button" class="btn-seg secondary" id="postGenVariacao">Outra variação</button>
+          <button type="button" class="btn-seg secondary" id="postGenCopiar">Copiar</button>
+        </div>
+        <label class="note" for="postGenOutput" style="display:block;font-weight:600;color:var(--text);margin-bottom:0.35rem">Texto gerado</label>
+        <textarea id="postGenOutput" rows="14" spellcheck="true" placeholder="Clique em «Gerar texto» para preencher."></textarea>
+        <p class="note" id="postGenStatus" aria-live="polite"></p>
+      </div>
+
       <div class="exemplos-grid" id="exemplosGrid"></div>
     </section>
 
@@ -1483,6 +1596,163 @@
       return arr;
     }
 
+    function pickRandom(arr) {
+      if (!arr || !arr.length) return "";
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function postGenLocalLine(local) {
+      const s = String(local || "").trim();
+      return s || "[cidade / bairro / UF — preencha]";
+    }
+
+    function postGenTomPhrase(tom) {
+      if (tom === "mobilizacao") return "Tom sugerido: convite e próximo passo concreto para quem assiste ou lê.";
+      if (tom === "esclarecimento") return "Tom sugerido: calmo, sem sensacionalismo; corrija equívoco com dado ou fonte.";
+      return "Tom sugerido: didático, uma ideia principal por trecho.";
+    }
+
+    /** Monta texto corrido a partir do termômetro + formato (para colar na rede). */
+    function buildPostContent(formatoId, temaIdx, local, tom) {
+      const idx = Math.max(0, Math.min(TERMOMETROS.length - 1, temaIdx | 0));
+      const t = TERMOMETROS[idx];
+      const ex = t.exemplo;
+      const ideia = pickRandom(t.ideias);
+      const loc = postGenLocalLine(local);
+      const tomLinha = postGenTomPhrase(tom);
+      const taghint = t.tags && t.tags.length ? pickRandom(t.tags) : "";
+
+      if (formatoId === "reels") {
+        return `[ROTEIRO · ${t.titulo} · ${loc}]
+
+GANCHO (0–2 s, texto na tela)
+${ex.gancho}
+
+MEIO (fala / legenda)
+${ex.meio}
+
+FECHAMENTO + CTA
+${ex.fechamento}
+
+Ideia de enquadramento
+${ideia}
+
+${tomLinha}
+Sugestão de formato no painel: ${taghint}`;
+      }
+
+      if (formatoId === "carrossel") {
+        return `[CARROSSEL · 5 slides · ${t.titulo} · ${loc}
+
+Slide 1 — Capa: "${t.titulo}" e ${loc}
+Slide 2 — Contexto: ${ex.gancho}
+Slide 3 — Explicação: ${ex.meio}
+Slide 4 — Fiscalização ou aprofundamento: ${pickRandom(t.ideias)}
+Slide 5 — Fontes e CTA: ${ex.fechamento}
+
+${tomLinha}`;
+      }
+
+      if (formatoId === "thread") {
+        const fraseMeio = ex.meio.split(/(?<=[.!?])\s+/)[0] || ex.meio;
+        const sinal = t.sinais.split(/[.;]/)[0] || t.sinais;
+        return `[THREAD · ${t.titulo} · ${loc}
+
+1/5 · ${ex.gancho}
+
+2/5 · ${fraseMeio}
+
+3/5 · ${ideia}
+
+4/5 · Sinais no debate (resumo): ${sinal}.
+
+5/5 · ${ex.fechamento}
+
+${tomLinha}`;
+      }
+
+      if (formatoId === "legenda") {
+        return `[LEGENDA · ${t.titulo} · ${loc}
+
+${ex.gancho}
+
+${ex.meio}
+
+${ex.fechamento}
+
+—
+
+Ideia extra: ${ideia}
+
+${tomLinha}
+Use poucas hashtags relevantes (evite lista longa).`;
+      }
+
+      if (formatoId === "stories") {
+        const meioCurto = ex.meio.length > 220 ? `${ex.meio.slice(0, 217)}…` : ex.meio;
+        return `[STORIES · sequência · ${t.titulo} · ${loc}
+
+Tela 1 — Gancho na tela: ${ex.gancho}
+Tela 2 — Detalhe: ${meioCurto}
+Tela 3 — CTA / link: ${ex.fechamento}
+
+${tomLinha}`;
+      }
+
+      if (formatoId === "whatsapp") {
+        const frase = ex.meio.split(/(?<=[.!?])\s+/)[0] || ex.meio;
+        return `[WHATSAPP / COMUNIDADE · ${t.titulo} · ${loc}
+
+Resumo curto:
+
+• ${ex.gancho}
+• ${frase}
+• Próximo passo: ${ex.fechamento}
+
+Sugestão de ângulo: ${ideia}
+
+${tomLinha}
+Revise antes de encaminhar; cite fonte ao repassar números.`;
+      }
+
+      return "";
+    }
+
+    function fillPostGenTemaSelect() {
+      const sel = document.getElementById("postGenTema");
+      if (!sel) return;
+      sel.innerHTML = TERMOMETROS.map((tm, i) => `<option value="${i}">${escapeHtml(tm.titulo)}</option>`).join("");
+    }
+
+    function setupPostGerador() {
+      fillPostGenTemaSelect();
+      const out = document.getElementById("postGenOutput");
+      const st = document.getElementById("postGenStatus");
+      const run = (msg) => {
+        const temaIdx = parseInt(document.getElementById("postGenTema")?.value || "0", 10) || 0;
+        const formato = document.getElementById("postGenFormato")?.value || "reels";
+        const tom = document.getElementById("postGenTom")?.value || "informativo";
+        const local = document.getElementById("postGenLocal")?.value || "";
+        if (out) out.value = buildPostContent(formato, temaIdx, local, tom);
+        if (st) st.textContent = msg || "Texto gerado. Revise e adapte antes de publicar.";
+      };
+      document.getElementById("postGenGerar")?.addEventListener("click", () => run());
+      document.getElementById("postGenVariacao")?.addEventListener("click", () => run("Nova variação (ideias sorteadas de novo)."));
+      document.getElementById("postGenCopiar")?.addEventListener("click", async () => {
+        const text = document.getElementById("postGenOutput")?.value || "";
+        if (!text.trim()) {
+          if (st) st.textContent = "Gere um texto antes de copiar.";
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          if (st) st.textContent = "Copiado para a área de transferência.";
+        } catch {
+          if (st) st.textContent = "Copie manualmente (Ctrl+C) se o navegador bloquear a área de transferência.";
+        }
+      });
+    }
+
     /** Modelos fixos (HTML de confiança — editar aqui se mudar o texto). */
     const EXEMPLOS_POSTAGENS_FIXOS_HTML = [
       `<article class="exemplo-bloco">
@@ -1511,7 +1781,7 @@
           <div class="meta">Thread · X</div>
           <h3>Segurança sem sensacionalismo</h3>
           <div class="post-sample">
-            <p><strong>1/5</strong> Ontem rolou debate forte sobre segurança aqui em [cidade]. Quero separar três coisas que às vezes misturam no mesmo post ??</p>
+            <p><strong>1/5</strong> Ontem rolou debate forte sobre segurança aqui em [cidade]. Quero separar três coisas que às vezes misturam no mesmo post.</p>
             <p><strong>2/5</strong> <strong>Prevenção social</strong> — escola no contraturno, iluminação, emprego. Efeito é médio prazo, mas muda o jogo.</p>
             <p><strong>3/5</strong> <strong>Polícia e justiça</strong> — resposta a crime e investigação. Dados de [fonte estadual/federal], não achismo.</p>
             <p><strong>4/5</strong> Se alguém te mandar vídeo de suposta facção sem contexto: não compartilha. Desinformação coloca gente inocente em risco.</p>
@@ -1531,7 +1801,7 @@
           <div class="meta">Legenda Instagram / vídeo longo</div>
           <h3>Educação — direito do estudante</h3>
           <div class="post-sample">
-            <span class="ps-quote">Três direitos do estudante da rede pública que vale mandar no grupo da escola ??</span>
+            <span class="ps-quote">Três direitos do estudante da rede pública que vale mandar no grupo da escola:</span>
             <p>1) Transporte escolar quando a lei prever no seu caso.<br>2) Merenda e cantinho seguro para denúncia de violência.<br>3) Conselho escolar aberto pra pais ouvidos.</p>
             <p>Se algo não tá sendo cumprido, o caminho é protocolo na secretaria + conselho tutelar quando for caso de violência. Compartilha com quem precisa.</p>
             <p><strong>Hashtags (use poucas e relevantes):</strong> #educação #direitodocidadão #[cidade] (evite lista gigante).</p>
@@ -1541,7 +1811,7 @@
           <div class="meta">WhatsApp · card simples</div>
           <h3>Reunião ou plantão</h3>
           <div class="post-sample">
-            <span class="ps-quote">?? [Bairro] — quinta, 19h, [local público].<br>Vamos ouvir demandas de saúde e transporte. Entrada gratuita.<br>Confirma no reply se leva 1 minuto pra falar de [tema].</span>
+            <span class="ps-quote">[Bairro] — quinta, 19h, [local público].<br>Vamos ouvir demandas de saúde e transporte. Entrada gratuita.<br>Confirma no reply se leva 1 minuto pra falar de [tema].</span>
             <p class="note" style="margin-top:0.5rem">Sem promessa de benefício em troca de voto; texto só de convocação e escuta.</p>
           </div>
         </article>`,
@@ -3614,6 +3884,7 @@
     function bootMidiaSocialPage() {
       renderTermometros();
       renderExemplosGrid();
+      setupPostGerador();
       document.getElementById("exemplosRefresh")?.addEventListener("click", renderExemplosGrid);
       setupMainTabs();
       setupSegSubtabs();
