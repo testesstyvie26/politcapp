@@ -2,7 +2,7 @@
 import path from "path";
 
 const root = path.join(import.meta.dirname, "..");
-const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css?v=3" />\n`;
+const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css?v=4" />\n  <link rel="stylesheet" href="css/site-theme.css?v=1" />\n`;
 const SKIP = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 const SKIP_LOGIN = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 
@@ -35,7 +35,7 @@ function addGuia(s) {
 }
 
 function addCss(s) {
-  if (s.includes("site-shell-nav.css")) return s;
+  if (s.includes("site-theme.css")) return s;
   return s.replace("</head>", `${CSS}</head>`);
 }
 

@@ -1,23 +1,23 @@
 /**
- * Navegação global — rail com chips (sempre legível sobre CSS embutido).
- * Carregar por último no <head>. Especificidade reforçada: html body … + !important onde faz falta.
+ * Navegação global — fallbacks se site-theme.css falhar; o tema sobrescreve estes tokens.
+ * Ordem no HTML: site-shell-nav.css → site-theme.css
  */
 
 :root {
-  --shell-nav-accent: #5ea1ff;
-  --shell-nav-accent-dim: rgba(94, 161, 255, 0.22);
-  --shell-nav-accent-edge: rgba(94, 161, 255, 0.45);
-  --shell-nav-bg: rgba(11, 14, 20, 0.94);
-  --shell-nav-chip: rgba(255, 255, 255, 0.06);
-  --shell-nav-chip-hover: rgba(255, 255, 255, 0.11);
-  --shell-nav-border: rgba(255, 255, 255, 0.11);
-  --shell-nav-border-soft: rgba(255, 255, 255, 0.08);
-  --shell-nav-text: #a8b0c0;
-  --shell-nav-text-hi: #f0f3f8;
-  --shell-nav-radius-bar: 14px;
-  --shell-nav-radius-chip: 10px;
-  --shell-nav-dur: 0.16s;
-  --shell-nav-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --shell-nav-accent: #6ec8ff;
+  --shell-nav-accent-dim: rgba(110, 200, 255, 0.2);
+  --shell-nav-accent-edge: rgba(110, 200, 255, 0.48);
+  --shell-nav-bg: rgba(16, 22, 36, 0.82);
+  --shell-nav-chip: rgba(255, 255, 255, 0.05);
+  --shell-nav-chip-hover: rgba(255, 255, 255, 0.1);
+  --shell-nav-border: rgba(255, 255, 255, 0.1);
+  --shell-nav-border-soft: rgba(255, 255, 255, 0.07);
+  --shell-nav-text: #98a3b8;
+  --shell-nav-text-hi: #f0f4fa;
+  --shell-nav-radius-bar: 16px;
+  --shell-nav-radius-chip: 11px;
+  --shell-nav-dur: 0.2s;
+  --shell-nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -91,7 +91,7 @@ html body nav.site-nav[aria-label]::before {
   background: linear-gradient(
     90deg,
     var(--shell-nav-accent) 0%,
-    rgba(94, 161, 255, 0.35) 42%,
+    var(--shell-nav-accent-dim) 42%,
     transparent 88%
   );
   opacity: 0.92;
@@ -152,7 +152,7 @@ html body nav.site-nav[aria-label] a:focus-visible {
   color: var(--shell-nav-text-hi) !important;
   border-color: var(--shell-nav-accent) !important;
   box-shadow:
-    0 0 0 2px rgba(94, 161, 255, 0.35),
+    0 0 0 2px var(--shell-nav-accent-dim),
     0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
 }
 
@@ -162,7 +162,7 @@ html body nav.site-nav[aria-label] a[aria-current="page"] {
   background: var(--shell-nav-accent-dim) !important;
   border-color: var(--shell-nav-accent-edge) !important;
   box-shadow:
-    0 0 0 1px rgba(94, 161, 255, 0.2) inset,
+    0 0 0 1px var(--shell-nav-accent-dim) inset,
     0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
 }
 
@@ -206,14 +206,14 @@ html body nav.site-nav[aria-label] a:active {
       transparent
     );
     scrollbar-width: thin;
-    scrollbar-color: rgba(94, 161, 255, 0.35) transparent;
+    scrollbar-color: var(--shell-nav-accent-dim) transparent;
   }
 
   html body nav.site-nav[aria-label]::-webkit-scrollbar {
     height: 4px;
   }
   html body nav.site-nav[aria-label]::-webkit-scrollbar-thumb {
-    background: rgba(94, 161, 255, 0.3);
+    background: var(--shell-nav-accent-dim);
     border-radius: 99px;
   }
 
