@@ -1,8 +1,8 @@
-import fs from "fs";
+﻿import fs from "fs";
 import path from "path";
 
 const root = path.join(import.meta.dirname, "..");
-const CSS = `  <link rel="stylesheet" href="css/politapp-nav.css" />\n`;
+const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css" />\n`;
 const SKIP = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 const SKIP_LOGIN = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 
@@ -35,7 +35,7 @@ function addGuia(s) {
 }
 
 function addCss(s) {
-  if (s.includes("politapp-nav.css")) return s;
+  if (s.includes("site-shell-nav.css")) return s;
   return s.replace("</head>", `${CSS}</head>`);
 }
 
@@ -126,3 +126,4 @@ for (const f of fs.readdirSync(root)) {
 }
 
 console.log("apply-nav-shell: concluído.");
+

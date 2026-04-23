@@ -1,6 +1,6 @@
 /**
- * Politapp — navegação global (layout, acessibilidade, visual moderno).
- * Carregar por último no <head> para sobrepor regras locais de .site-nav quando necessário.
+ * Navegação global (layout, acessibilidade, visual moderno).
+ * Ficheiro: site-shell-nav.css — carregar por último no <head>.
  */
 
 :root {
