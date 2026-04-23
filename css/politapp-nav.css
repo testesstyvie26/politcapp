@@ -1,166 +1,369 @@
 /**
- * Politapp — navegação responsiva e acessível (complementa estilos inline das páginas).
- * Incluir após meta viewport / favicon: <link rel="stylesheet" href="css/politapp-nav.css" />
+ * Politapp — navegação global (layout, acessibilidade, visual moderno).
+ * Carregar por último no <head> para sobrepor regras locais de .site-nav quando necessário.
  */
 
-/* Skip link — visível ao focar (teclado) */
+:root {
+  --politapp-nav-accent: #3d8bfd;
+  --politapp-nav-accent-glow: rgba(61, 139, 253, 0.45);
+  --politapp-nav-surface: rgba(18, 22, 30, 0.92);
+  --politapp-nav-border: rgba(255, 255, 255, 0.1);
+  --politapp-nav-text: #8b95a8;
+  --politapp-nav-text-hover: #e8ecf2;
+  --politapp-nav-pill-bg: rgba(255, 255, 255, 0.06);
+  --politapp-nav-pill-bg-hover: rgba(61, 139, 253, 0.18);
+  --politapp-nav-radius: 999px;
+  --politapp-nav-bar-radius: 16px;
+  --politapp-nav-duration: 0.22s;
+  --politapp-nav-ease: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --politapp-nav-duration: 0.01ms;
+  }
+}
+
+/* ——— Skip link ——— */
 .politapp-skip {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10000;
-  padding: 0.6rem 1rem;
+  padding: 0.65rem 1.15rem;
   font: 600 0.88rem "DM Sans", system-ui, sans-serif;
-  background: #3d8bfd;
+  background: linear-gradient(135deg, #3d8bfd, #2563eb);
   color: #041018;
   border: none;
-  border-radius: 0 0 10px 0;
+  border-radius: 0 0 12px 0;
   text-decoration: none;
   transform: translateY(-130%);
-  transition: transform 0.18s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: transform var(--politapp-nav-duration) var(--politapp-nav-ease),
+    box-shadow var(--politapp-nav-duration) ease;
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.35);
 }
 .politapp-skip:focus {
   transform: translateY(0);
   outline: 2px solid #e8ecf2;
   outline-offset: 2px;
+  box-shadow: 0 8px 28px rgba(61, 139, 253, 0.45);
+}
+.politapp-skip:focus:not(:focus-visible) {
+  outline: none;
 }
 
-/* Barra principal: fixa no topo com fundo legível ao rolar */
-.site-nav {
+/* ——— Barra principal (dentro de .wrap) ——— */
+nav.site-nav {
   position: sticky;
-  top: 0;
-  z-index: 50;
-  padding: 0.45rem 0 0.75rem;
-  margin: -0.15rem 0 1.1rem;
-  background: rgba(12, 15, 20, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  scroll-padding-top: 3rem;
+  top: 0.5rem;
+  z-index: 100;
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  gap: 0.4rem 0.5rem;
+  margin: 0 0 1.25rem !important;
+  padding: 0.5rem 0.6rem !important;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  background: linear-gradient(
+    165deg,
+    rgba(28, 36, 51, 0.94) 0%,
+    rgba(16, 20, 28, 0.92) 100%
+  );
+  border: 1px solid var(--politapp-nav-border);
+  border-radius: var(--politapp-nav-bar-radius);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.15),
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+
+  /* Animação de entrada suave (uma vez) */
+  animation: politapp-nav-enter 0.55s var(--politapp-nav-ease) both;
 }
 
-.site-nav a {
-  border-radius: 6px;
-  transition: color 0.15s ease, background 0.15s ease;
-}
-.site-nav a:hover {
-  text-decoration: none;
-}
-.site-nav a:focus-visible {
-  outline: 2px solid #3d8bfd;
-  outline-offset: 3px;
-}
-.site-nav a[aria-current="page"] {
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-  text-decoration-thickness: 2px;
+@keyframes politapp-nav-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Login: topo com marca + menu */
+@media (prefers-reduced-motion: reduce) {
+  nav.site-nav {
+    animation: none;
+  }
+}
+
+nav.site-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.42rem 0.9rem !important;
+  margin: 0 !important;
+  min-height: 2.25rem;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  color: var(--politapp-nav-text) !important;
+  text-decoration: none !important;
+  white-space: nowrap;
+  border-radius: var(--politapp-nav-radius);
+  background: var(--politapp-nav-pill-bg);
+  border: 1px solid transparent;
+  transition:
+    color var(--politapp-nav-duration) var(--politapp-nav-ease),
+    background var(--politapp-nav-duration) var(--politapp-nav-ease),
+    border-color var(--politapp-nav-duration) ease,
+    transform var(--politapp-nav-duration) var(--politapp-nav-ease),
+    box-shadow var(--politapp-nav-duration) ease;
+}
+
+nav.site-nav a::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--politapp-nav-accent), transparent 55%);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity var(--politapp-nav-duration) ease;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+nav.site-nav a:hover {
+  color: var(--politapp-nav-text-hover) !important;
+  background: var(--politapp-nav-pill-bg-hover);
+  border-color: rgba(61, 139, 253, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+nav.site-nav a:hover::after {
+  opacity: 0.35;
+}
+
+nav.site-nav a:active {
+  transform: translateY(0);
+  transition-duration: 0.08s;
+}
+
+nav.site-nav a:focus-visible {
+  outline: none;
+  color: var(--politapp-nav-text-hover) !important;
+  border-color: var(--politapp-nav-accent);
+  box-shadow: 0 0 0 3px var(--politapp-nav-accent-glow);
+}
+
+nav.site-nav a[aria-current="page"] {
+  color: #fff !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, rgba(61, 139, 253, 0.35), rgba(37, 99, 235, 0.22)) !important;
+  border-color: rgba(61, 139, 253, 0.55) !important;
+  box-shadow:
+    0 0 20px rgba(61, 139, 253, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  text-decoration: none !important;
+}
+nav.site-nav a[aria-current="page"]::after {
+  opacity: 0.5;
+}
+
+/* ——— Telemóvel: fila única com scroll + indicador de mais conteúdo ——— */
+@media (max-width: 768px) {
+  nav.site-nav {
+    flex-wrap: nowrap !important;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.45rem 0.5rem !important;
+    gap: 0.35rem;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 12px,
+      #000 calc(100% - 12px),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 12px,
+      #000 calc(100% - 12px),
+      transparent
+    );
+    scrollbar-width: thin;
+    scrollbar-color: rgba(61, 139, 253, 0.45) transparent;
+  }
+
+  nav.site-nav::-webkit-scrollbar {
+    height: 5px;
+  }
+  nav.site-nav::-webkit-scrollbar-thumb {
+    background: rgba(61, 139, 253, 0.4);
+    border-radius: 99px;
+  }
+
+  nav.site-nav a {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    min-height: 44px;
+    padding-inline: 0.85rem !important;
+  }
+}
+
+/* ——— Login: topo marca + menu ——— */
 header.top-bar {
   position: sticky;
   top: 0;
-  z-index: 50;
-  padding: 0.35rem 0 0.85rem;
-  margin: -0.25rem 0 1.5rem;
-  background: rgba(7, 10, 15, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-}
-header.top-bar .site-nav {
-  position: static;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  backdrop-filter: none;
-  border-bottom: none;
-}
-
-/* Em ecrãs estreitos: fila horizontal com scroll (evita “parede” de links quebrados) */
-@media (max-width: 768px) {
-  .site-nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 0.35rem 0.85rem;
-    padding-bottom: 0.55rem;
-    margin-left: -0.35rem;
-    margin-right: -0.35rem;
-    padding-left: 0.35rem;
-    padding-right: 0.35rem;
-    scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-  }
-  .site-nav a {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    padding: 0.4rem 0.35rem;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-  }
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1rem;
+  margin: -0.35rem -0.25rem 1.5rem;
+  padding: 0.65rem 0.85rem;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 14, 22, 0.96) 0%,
+    rgba(7, 10, 15, 0.88) 100%
+  );
+  border: 1px solid var(--politapp-nav-border);
+  border-radius: var(--politapp-nav-bar-radius);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: politapp-nav-enter 0.5s var(--politapp-nav-ease) both;
 }
 
-/* Sub-navegação (ex.: vereadores RJ) */
+header.top-bar .brand {
+  flex: 0 0 auto;
+  transition: color var(--politapp-nav-duration) ease, transform var(--politapp-nav-duration) var(--politapp-nav-ease);
+}
+header.top-bar .brand:hover {
+  transform: scale(1.02);
+}
+
+header.top-bar nav.site-nav {
+  position: static !important;
+  top: auto;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: min(100%, 0);
+  margin: 0 !important;
+  padding: 0.35rem 0.4rem !important;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: none;
+}
+
+@media (max-width: 720px) {
+  header.top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  header.top-bar nav.site-nav {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+/* ——— Sub-navegação vereadores ——— */
 .vereador-sub {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 0.65rem;
-  font-size: 0.84rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 0.4rem 0.55rem;
+  font-size: 0.82rem;
+  margin-bottom: 1rem !important;
+  padding: 0.45rem 0.55rem !important;
+  background: rgba(18, 22, 30, 0.75);
+  border: 1px solid var(--politapp-nav-border);
+  border-radius: 12px;
+  transition: border-color var(--politapp-nav-duration) ease;
+}
+.vereador-sub:hover {
+  border-color: rgba(61, 139, 253, 0.2);
 }
 .vereador-sub a {
-  color: #8b95a8;
-  text-decoration: none;
+  color: var(--politapp-nav-text) !important;
+  text-decoration: none !important;
   font-weight: 500;
-  border-radius: 6px;
-  padding: 0.3rem 0.25rem;
+  padding: 0.35rem 0.75rem !important;
+  border-radius: var(--politapp-nav-radius);
+  background: var(--politapp-nav-pill-bg);
+  transition:
+    color var(--politapp-nav-duration) ease,
+    background var(--politapp-nav-duration) ease,
+    transform var(--politapp-nav-duration) var(--politapp-nav-ease);
 }
 .vereador-sub a:hover {
-  color: #3d8bfd;
+  color: var(--politapp-nav-text-hover) !important;
+  background: var(--politapp-nav-pill-bg-hover);
+  transform: translateY(-1px);
 }
 .vereador-sub a[aria-current="page"] {
-  color: #3d8bfd;
-  font-weight: 600;
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(61, 139, 253, 0.35), rgba(37, 99, 235, 0.2)) !important;
+  border: 1px solid rgba(61, 139, 253, 0.45);
 }
 .vereador-sub .sep {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.18);
   user-select: none;
+  flex-shrink: 0;
 }
+
 @media (max-width: 768px) {
   .vereador-sub {
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 0.65rem;
     -webkit-overflow-scrolling: touch;
-    gap: 0.35rem 0.5rem;
-  }
-  .vereador-sub .sep {
-    flex-shrink: 0;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 10px,
+      #000 calc(100% - 10px),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 10px,
+      #000 calc(100% - 10px),
+      transparent
+    );
   }
   .vereador-sub a {
     flex: 0 0 auto;
     white-space: nowrap;
-    min-height: 44px;
-    align-items: center;
+    min-height: 40px;
     display: inline-flex;
+    align-items: center;
   }
 }
 
-/* Âncora de conteúdo (pode ficar vazio, só para foco do skip) */
+/* ——— Conteúdo principal / skip target ——— */
 #politapp-main:focus {
   outline: none;
 }
-
-/* Ancoragem e skip: conteúdo não fica colado sob a barra fixa */
 #politapp-main {
-  scroll-margin-top: 4.5rem;
+  scroll-margin-top: 6rem;
 }
