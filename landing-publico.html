@@ -630,7 +630,7 @@
           cellDay === hoje.getDate();
 
         const el = document.createElement("div");
-        el.className = "cal-cell" + (out ? " out" : "") + (isToday ? " today" : "") + (fh && !out ? " feriado" : "");
+        el.className = "cal-cell" + (out ? " out" : "") + (isToday ? " today" : "") + (fh ? " feriado" : "");
         el.style.animationDelay = `${(i % 7) * 0.02}s`;
 
         const num = document.createElement("span");
@@ -638,7 +638,7 @@
         num.textContent = String(cellDay);
         el.appendChild(num);
 
-        if (fh && (!out || feriados.has(key))) {
+        if (fh) {
           const ic = document.createElement("span");
           ic.className = "cal-icon";
           ic.textContent = fh.icon;
