@@ -1,50 +1,50 @@
 /**
- * Navegação global — estilo contido (superfície leve, links em texto + estado suave).
- * Ficheiro: site-shell-nav.css — carregar por último no <head>.
+ * Navegação global — rail com chips (sempre legível sobre CSS embutido).
+ * Carregar por último no <head>. Especificidade reforçada: html body … + !important onde faz falta.
  */
 
 :root {
-  --nav-accent: #5b9cf8;
-  --nav-accent-muted: rgba(91, 156, 248, 0.22);
-  --nav-accent-ring: rgba(91, 156, 248, 0.35);
-  --nav-border: rgba(255, 255, 255, 0.09);
-  --nav-border-hover: rgba(255, 255, 255, 0.14);
-  --nav-text: #9aa3b2;
-  --nav-text-strong: #eef1f6;
-  --nav-surface: rgba(17, 21, 29, 0.78);
-  --nav-chip: rgba(255, 255, 255, 0.045);
-  --nav-chip-hover: rgba(255, 255, 255, 0.08);
-  --nav-radius-bar: 12px;
-  --nav-radius-link: 8px;
-  --nav-duration: 0.18s;
-  --nav-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --shell-nav-accent: #5ea1ff;
+  --shell-nav-accent-dim: rgba(94, 161, 255, 0.22);
+  --shell-nav-accent-edge: rgba(94, 161, 255, 0.45);
+  --shell-nav-bg: rgba(11, 14, 20, 0.94);
+  --shell-nav-chip: rgba(255, 255, 255, 0.06);
+  --shell-nav-chip-hover: rgba(255, 255, 255, 0.11);
+  --shell-nav-border: rgba(255, 255, 255, 0.11);
+  --shell-nav-border-soft: rgba(255, 255, 255, 0.08);
+  --shell-nav-text: #a8b0c0;
+  --shell-nav-text-hi: #f0f3f8;
+  --shell-nav-radius-bar: 14px;
+  --shell-nav-radius-chip: 10px;
+  --shell-nav-dur: 0.16s;
+  --shell-nav-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --nav-duration: 0.01ms;
+    --shell-nav-dur: 0.01ms;
   }
 }
 
-/* ——— Skip link ——— */
+/* ——— Skip ——— */
 .politapp-skip {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10000;
-  padding: 0.55rem 1rem;
+  padding: 0.5rem 1rem;
   font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
-  background: var(--nav-accent);
-  color: #0a0e14;
+  background: var(--shell-nav-accent);
+  color: #0a0d12;
   border: none;
   border-radius: 0 0 10px 0;
   text-decoration: none;
   transform: translateY(-130%);
-  transition: transform var(--nav-duration) var(--nav-ease);
+  transition: transform var(--shell-nav-dur) var(--shell-nav-ease);
 }
 .politapp-skip:focus {
   transform: translateY(0);
-  outline: 2px solid var(--nav-text-strong);
+  outline: 2px solid var(--shell-nav-text-hi);
   outline-offset: 2px;
 }
 .politapp-skip:focus:not(:focus-visible) {
@@ -52,105 +52,142 @@
 }
 
 /* ——— Barra principal ——— */
-nav.site-nav {
+html body nav.site-nav[aria-label] {
   position: sticky;
   top: 0.5rem;
   z-index: 100;
+  isolation: isolate;
   display: flex !important;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
   align-content: center;
-  gap: 0.15rem 0.2rem;
-  margin: 0 0 1.35rem !important;
-  padding: 0.35rem 0.4rem !important;
+  gap: 0.35rem 0.45rem !important;
+  margin: 0 0 1.4rem !important;
+  padding: 0.7rem 0.6rem 0.55rem !important;
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
 
-  background: var(--nav-surface);
-  border: 1px solid var(--nav-border);
-  border-radius: var(--nav-radius-bar);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(10px) saturate(1.05);
-  -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  background: var(--shell-nav-bg) !important;
+  border: 1px solid var(--shell-nav-border) !important;
+  border-radius: var(--shell-nav-radius-bar) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 12px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
 
-  animation: nav-fade-in 0.4s var(--nav-ease) both;
+  animation: shell-nav-in 0.45s var(--shell-nav-ease) both;
 }
 
-@keyframes nav-fade-in {
+html body nav.site-nav[aria-label]::before {
+  content: "";
+  position: absolute;
+  left: 0.65rem;
+  right: 0.65rem;
+  top: 0.35rem;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--shell-nav-accent) 0%,
+    rgba(94, 161, 255, 0.35) 42%,
+    transparent 88%
+  );
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+@keyframes shell-nav-in {
   from {
     opacity: 0;
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  nav.site-nav {
+  html body nav.site-nav[aria-label] {
     animation: none;
   }
 }
 
-nav.site-nav a {
+html body nav.site-nav[aria-label] a {
   position: relative;
-  display: inline-flex;
+  z-index: 1;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.72rem !important;
+  padding: 0.45rem 0.78rem !important;
   margin: 0 !important;
-  min-height: 2.125rem;
+  min-height: 2.35rem;
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em;
-  color: var(--nav-text) !important;
+  color: var(--shell-nav-text) !important;
   text-decoration: none !important;
   white-space: nowrap;
-  border-radius: var(--nav-radius-link);
-  background: transparent;
-  border: 1px solid transparent;
+  border-radius: var(--shell-nav-radius-chip) !important;
+  background: var(--shell-nav-chip) !important;
+  border: 1px solid var(--shell-nav-border-soft) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   transition:
-    color var(--nav-duration) var(--nav-ease),
-    background var(--nav-duration) var(--nav-ease),
-    border-color var(--nav-duration) ease;
+    color var(--shell-nav-dur) var(--shell-nav-ease),
+    background var(--shell-nav-dur) var(--shell-nav-ease),
+    border-color var(--shell-nav-dur) ease,
+    box-shadow var(--shell-nav-dur) ease;
 }
 
-nav.site-nav a:hover {
-  color: var(--nav-text-strong) !important;
-  background: var(--nav-chip-hover);
-  border-color: var(--nav-border-hover);
+html body nav.site-nav[aria-label] a:hover {
+  color: var(--shell-nav-text-hi) !important;
+  background: var(--shell-nav-chip-hover) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
-nav.site-nav a:active {
-  background: rgba(255, 255, 255, 0.06);
+html body nav.site-nav[aria-label] a:focus-visible {
+  outline: none !important;
+  color: var(--shell-nav-text-hi) !important;
+  border-color: var(--shell-nav-accent) !important;
+  box-shadow:
+    0 0 0 2px rgba(94, 161, 255, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
 }
 
-nav.site-nav a:focus-visible {
-  outline: none;
-  color: var(--nav-text-strong) !important;
-  border-color: var(--nav-accent);
-  box-shadow: 0 0 0 2px var(--nav-accent-ring);
-}
-
-nav.site-nav a[aria-current="page"] {
-  color: var(--nav-text-strong) !important;
+html body nav.site-nav[aria-label] a[aria-current="page"] {
+  color: var(--shell-nav-text-hi) !important;
   font-weight: 600 !important;
-  background: var(--nav-accent-muted) !important;
-  border-color: rgba(91, 156, 248, 0.35) !important;
-  text-decoration: none !important;
+  background: var(--shell-nav-accent-dim) !important;
+  border-color: var(--shell-nav-accent-edge) !important;
+  box-shadow:
+    0 0 0 1px rgba(94, 161, 255, 0.2) inset,
+    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
+}
+
+html body nav.site-nav[aria-label] a:active {
+  transform: scale(0.98);
+  transition-duration: 0.06s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body nav.site-nav[aria-label] a:active {
+    transform: none;
+  }
 }
 
 /* ——— Telemóvel ——— */
 @media (max-width: 768px) {
-  nav.site-nav {
+  html body nav.site-nav[aria-label] {
     flex-wrap: nowrap !important;
     justify-content: flex-start;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.3rem 0.35rem !important;
-    gap: 0.1rem;
+    padding: 0.5rem 0.5rem !important;
+    gap: 0.3rem !important;
     scroll-snap-type: x proximity;
-    scroll-padding-inline: 0.35rem;
+    scroll-padding-inline: 0.45rem;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
 
@@ -169,22 +206,22 @@ nav.site-nav a[aria-current="page"] {
       transparent
     );
     scrollbar-width: thin;
-    scrollbar-color: rgba(91, 156, 248, 0.3) transparent;
+    scrollbar-color: rgba(94, 161, 255, 0.35) transparent;
   }
 
-  nav.site-nav::-webkit-scrollbar {
+  html body nav.site-nav[aria-label]::-webkit-scrollbar {
     height: 4px;
   }
-  nav.site-nav::-webkit-scrollbar-thumb {
-    background: rgba(91, 156, 248, 0.28);
+  html body nav.site-nav[aria-label]::-webkit-scrollbar-thumb {
+    background: rgba(94, 161, 255, 0.3);
     border-radius: 99px;
   }
 
-  nav.site-nav a {
+  html body nav.site-nav[aria-label] a {
     flex: 0 0 auto;
     scroll-snap-align: start;
     min-height: 44px;
-    padding-inline: 0.78rem !important;
+    padding-inline: 0.82rem !important;
   }
 }
 
@@ -200,35 +237,38 @@ header.top-bar {
   gap: 0.85rem 1rem;
   margin: -0.35rem -0.25rem 1.5rem;
   padding: 0.6rem 0.8rem;
-  background: var(--nav-surface);
-  border: 1px solid var(--nav-border);
-  border-radius: var(--nav-radius-bar);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: nav-fade-in 0.35s var(--nav-ease) both;
+  background: var(--shell-nav-bg);
+  border: 1px solid var(--shell-nav-border);
+  border-radius: var(--shell-nav-radius-bar);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: shell-nav-in 0.4s var(--shell-nav-ease) both;
 }
 
 header.top-bar .brand {
-  flex: 0 0 auto;
-  transition: color var(--nav-duration) ease, opacity var(--nav-duration) ease;
+  transition: opacity var(--shell-nav-dur) ease;
 }
 header.top-bar .brand:hover {
-  opacity: 0.92;
+  opacity: 0.9;
 }
 
-header.top-bar nav.site-nav {
+html body header.top-bar nav.site-nav[aria-label] {
   position: static !important;
   top: auto;
   flex: 1 1 auto;
   justify-content: flex-end;
   min-width: min(100%, 0);
   margin: 0 !important;
-  padding: 0.28rem 0.32rem !important;
-  background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: none;
+  padding: 0.4rem 0.45rem !important;
+  background: rgba(0, 0, 0, 0.22) !important;
+  border: 1px solid var(--shell-nav-border-soft) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   animation: none;
+}
+
+html body header.top-bar nav.site-nav[aria-label]::before {
+  display: none;
 }
 
 @media (max-width: 720px) {
@@ -238,57 +278,56 @@ header.top-bar nav.site-nav {
     margin-left: 0;
     margin-right: 0;
   }
-  header.top-bar nav.site-nav {
+  html body header.top-bar nav.site-nav[aria-label] {
     justify-content: flex-start;
     width: 100%;
   }
 }
 
-/* ——— Sub-navegação vereadores ——— */
+/* ——— Vereador sub-nav ——— */
 .vereador-sub {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2rem 0.35rem;
+  align-items: stretch;
+  gap: 0.3rem 0.4rem;
   font-size: 0.8125rem;
   margin-bottom: 1rem !important;
-  padding: 0.35rem 0.4rem !important;
-  background: var(--nav-surface);
-  border: 1px solid var(--nav-border);
-  border-radius: var(--nav-radius-bar);
-  transition: border-color var(--nav-duration) ease;
+  padding: 0.45rem 0.5rem !important;
+  background: var(--shell-nav-bg) !important;
+  border: 1px solid var(--shell-nav-border) !important;
+  border-radius: var(--shell-nav-radius-bar) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
-.vereador-sub:hover {
-  border-color: var(--nav-border-hover);
-}
+
 .vereador-sub a {
-  color: var(--nav-text) !important;
+  color: var(--shell-nav-text) !important;
   text-decoration: none !important;
   font-weight: 500;
-  padding: 0.32rem 0.68rem !important;
-  border-radius: var(--nav-radius-link);
-  background: transparent;
-  border: 1px solid transparent;
+  padding: 0.38rem 0.72rem !important;
+  border-radius: var(--shell-nav-radius-chip) !important;
+  background: var(--shell-nav-chip) !important;
+  border: 1px solid var(--shell-nav-border-soft) !important;
   transition:
-    color var(--nav-duration) ease,
-    background var(--nav-duration) ease,
-    border-color var(--nav-duration) ease;
+    color var(--shell-nav-dur) ease,
+    background var(--shell-nav-dur) ease,
+    border-color var(--shell-nav-dur) ease;
 }
 .vereador-sub a:hover {
-  color: var(--nav-text-strong) !important;
-  background: var(--nav-chip-hover);
-  border-color: var(--nav-border-hover);
+  color: var(--shell-nav-text-hi) !important;
+  background: var(--shell-nav-chip-hover) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
 }
 .vereador-sub a[aria-current="page"] {
-  color: var(--nav-text-strong) !important;
+  color: var(--shell-nav-text-hi) !important;
   font-weight: 600 !important;
-  background: var(--nav-accent-muted) !important;
-  border: 1px solid rgba(91, 156, 248, 0.35);
+  background: var(--shell-nav-accent-dim) !important;
+  border-color: var(--shell-nav-accent-edge) !important;
 }
 .vereador-sub .sep {
-  color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.16);
   user-select: none;
   flex-shrink: 0;
+  align-self: center;
 }
 
 @media (max-width: 768px) {
@@ -321,10 +360,9 @@ header.top-bar nav.site-nav {
   }
 }
 
-/* ——— Conteúdo principal / skip target ——— */
 #politapp-main:focus {
   outline: none;
 }
 #politapp-main {
-  scroll-margin-top: 5.5rem;
+  scroll-margin-top: 5.75rem;
 }

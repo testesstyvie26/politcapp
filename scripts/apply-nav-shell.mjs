@@ -2,7 +2,7 @@
 import path from "path";
 
 const root = path.join(import.meta.dirname, "..");
-const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css" />\n`;
+const CSS = `  <link rel="stylesheet" href="css/site-shell-nav.css?v=3" />\n`;
 const SKIP = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 const SKIP_LOGIN = `  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>\n`;
 
@@ -126,4 +126,5 @@ for (const f of fs.readdirSync(root)) {
 }
 
 console.log("apply-nav-shell: concluído.");
+
 
