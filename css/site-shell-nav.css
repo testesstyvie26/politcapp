@@ -366,3 +366,123 @@ html body header.top-bar nav.site-nav[aria-label]::before {
 #politapp-main {
   scroll-margin-top: 5.75rem;
 }
+
+/* ——— Mídia social · submenu (details + painel) ——— */
+html body nav.site-nav[aria-label] .site-nav-dropdown {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 0 0 auto;
+  align-self: stretch;
+  z-index: 20;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
+  position: relative;
+  z-index: 1;
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.78rem !important;
+  padding-inline-end: 1.85rem !important;
+  margin: 0 !important;
+  min-height: 2.35rem;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  color: var(--shell-nav-text) !important;
+  text-decoration: none !important;
+  white-space: nowrap;
+  border-radius: var(--shell-nav-radius-chip) !important;
+  background: var(--shell-nav-chip) !important;
+  border: 1px solid var(--shell-nav-border-soft) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  transition:
+    color var(--shell-nav-dur) var(--shell-nav-ease),
+    background var(--shell-nav-dur) var(--shell-nav-ease),
+    border-color var(--shell-nav-dur) ease,
+    box-shadow var(--shell-nav-dur) ease;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__summary::-webkit-details-marker {
+  display: none;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__summary::after {
+  content: "▾";
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown[open] > .site-nav-dropdown__summary::after {
+  opacity: 1;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__summary:hover {
+  color: var(--shell-nav-text-hi) !important;
+  background: var(--shell-nav-chip-hover) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__summary:focus-visible {
+  outline: none !important;
+  color: var(--shell-nav-text-hi) !important;
+  border-color: var(--shell-nav-accent) !important;
+  box-shadow:
+    0 0 0 2px var(--shell-nav-accent-dim),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown[open] > .site-nav-dropdown__summary {
+  color: var(--shell-nav-text-hi) !important;
+  font-weight: 600 !important;
+  background: var(--shell-nav-accent-dim) !important;
+  border-color: var(--shell-nav-accent-edge) !important;
+  box-shadow:
+    0 0 0 1px var(--shell-nav-accent-dim) inset,
+    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__panel {
+  position: absolute;
+  top: calc(100% + 0.28rem);
+  left: 0;
+  min-width: min(260px, calc(100vw - 2rem));
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  background: var(--shell-nav-bg) !important;
+  border: 1px solid var(--shell-nav-border) !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 18px 40px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+  z-index: 400;
+}
+
+html body nav.site-nav[aria-label] .site-nav-dropdown__panel a {
+  display: flex !important;
+  justify-content: flex-start !important;
+  text-align: left;
+  white-space: normal;
+  width: 100%;
+  margin: 0 !important;
+}
+
+@media (max-width: 768px) {
+  html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
+    min-height: 44px;
+    scroll-snap-align: start;
+  }
+}
