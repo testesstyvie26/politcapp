@@ -140,11 +140,37 @@
     #mapComercio { height: 440px; width: 100%; background: var(--surface2); }
     @media (max-width: 640px) { #mapComercio { height: 340px; } }
     .comercio-filtros { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem; }
+    .comercio-lista-controls {
+      margin-top: 0.65rem;
+    }
+    .btn-toggle-lista-comercio {
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-toggle-lista-comercio:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .btn-toggle-lista-comercio:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .comercio-lista-panel[hidden] {
+      display: none !important;
+    }
     .comercio-lista {
       display: grid;
       gap: 0.65rem;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      margin-top: 1rem;
+      margin-top: 0.75rem;
     }
     .comercio-item {
       background: var(--surface2);
@@ -254,7 +280,6 @@
       .comercio-filtros label { width: 100%; }
       .comercio-filtros select { min-width: 0; width: 100%; }
       #mapComercio { height: min(58vh, 520px) !important; min-height: 320px; }
-      .comercio-lista { display: none !important; }
       .viagem-toolbar { flex-direction: column; align-items: stretch; gap: 0.65rem; }
       .viagem-toolbar label { min-width: 0 !important; width: 100%; }
       .viagem-toolbar .btn-viagem { width: 100%; align-self: stretch; }
@@ -262,6 +287,7 @@
       input[type="range"] { max-width: 100% !important; width: 100%; }
       #mapViagem { height: min(50vh, 400px) !important; min-height: 280px; }
       .viagem-pois { grid-template-columns: 1fr; }
+      .btn-toggle-lista-comercio { width: 100%; }
     }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=4" />
@@ -375,7 +401,14 @@
       </div>
       <div class="legend" id="legendaComercio" style="margin-top:0.75rem" aria-hidden="true"></div>
       <p id="comercioStatus" class="note" style="margin-top:0.75rem"></p>
-      <div class="comercio-lista" id="listaComercio" aria-label="Lista de polos: use marcadores no mapa em ecrãs pequenos"></div>
+      <div class="comercio-lista-controls">
+        <button type="button" id="btnToggleListaComercio" class="btn-toggle-lista-comercio" aria-expanded="false" aria-controls="comercioListaPanel">
+          Expandir lista de pontos
+        </button>
+      </div>
+      <div id="comercioListaPanel" class="comercio-lista-panel" hidden>
+        <div class="comercio-lista" id="listaComercio" aria-label="Lista de polos de comércio e visitas"></div>
+      </div>
     </section>
 
     <section class="panel">
@@ -1425,6 +1458,8 @@
     function initComercioMap() {
       const statusEl = document.getElementById("comercioStatus");
       const listaEl = document.getElementById("listaComercio");
+      const listaPanel = document.getElementById("comercioListaPanel");
+      const btnToggleLista = document.getElementById("btnToggleListaComercio");
       const mqComercioMobile = window.matchMedia("(max-width: 640px)");
       const tipos = [...new Set(POIS_COMERCIO.map((p) => p.tipo))].sort((a, b) => a.localeCompare(b, "pt-BR"));
       const mesos = [...new Set(POIS_COMERCIO.map((p) => p.meso))].sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -1556,17 +1591,26 @@
       function setComercioStatusText() {
         const n = POIS_COMERCIO.filter(matchesFilter).length;
         const mobile = mqComercioMobile.matches;
-        if (listaEl) listaEl.setAttribute("aria-hidden", mobile ? "true" : "false");
+        const expanded = listaPanel && !listaPanel.hidden;
+        if (listaEl) listaEl.setAttribute("aria-hidden", expanded ? "false" : "true");
+
+        const todos = n === POIS_COMERCIO.length;
+
+        if (!expanded) {
+          statusEl.innerHTML = mobile
+            ? `${n} ponto(s) no mapa${todos ? "" : " (filtros)"}. Toque nos marcadores. <strong>Expanda a lista</strong> para ver quadros e centralizar.`
+            : `${n} ponto(s) no mapa${todos ? "" : " com os filtros atuais"}. Clique nos marcadores para detalhes — <strong>expanda a lista</strong> abaixo para ver quadros e centralizar.`;
+          return;
+        }
+
         if (mobile) {
-          statusEl.textContent =
-            n === POIS_COMERCIO.length
-              ? `${n} pontos no mapa. Toque num marcador para ver detalhes e centralizar.`
-              : `${n} ponto(s) com os filtros atuais. Toque nos marcadores no mapa.`;
+          statusEl.textContent = todos
+            ? `${n} pontos no mapa. Toque num marcador ou num quadro para centralizar.`
+            : `${n} ponto(s) com os filtros atuais. Marcadores ou quadros na lista.`;
         } else {
-          statusEl.textContent =
-            n === POIS_COMERCIO.length
-              ? `${n} pontos no mapa. Clique nos marcadores ou na lista para centralizar.`
-              : `${n} ponto(s) com os filtros atuais.`;
+          statusEl.textContent = todos
+            ? `${n} pontos no mapa. Clique nos marcadores ou nos quadros da lista para centralizar.`
+            : `${n} ponto(s) com os filtros atuais — marcadores ou lista.`;
         }
       }
 
@@ -1579,6 +1623,19 @@
       mqComercioMobile.addEventListener("change", () => {
         setComercioStatusText();
       });
+
+      if (btnToggleLista && listaPanel) {
+        btnToggleLista.addEventListener("click", () => {
+          listaPanel.hidden = !listaPanel.hidden;
+          const expanded = !listaPanel.hidden;
+          btnToggleLista.setAttribute("aria-expanded", expanded ? "true" : "false");
+          btnToggleLista.textContent = expanded ? "Ocultar lista de pontos" : "Expandir lista de pontos";
+          setComercioStatusText();
+          if (expanded) {
+            setTimeout(() => mapC.invalidateSize(), 200);
+          }
+        });
+      }
 
       let invComercioT;
       window.addEventListener("resize", () => {
