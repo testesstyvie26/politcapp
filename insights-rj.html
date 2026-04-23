@@ -1477,9 +1477,17 @@
       const rangeLabel = document.getElementById("viagemBufferLabel");
       const din = document.getElementById("viagemDataInicio");
       const dfim = document.getElementById("viagemDataFim");
-      if (din && dfim && !din.value) {
-        din.value = "2026-04-01";
-        dfim.value = "2026-04-30";
+      if (din && dfim) {
+        const hoje = new Date();
+        const y = hoje.getFullYear();
+        const m = String(hoje.getMonth() + 1).padStart(2, "0");
+        const d = String(hoje.getDate()).padStart(2, "0");
+        din.value = `${y}-${m}-${d}`;
+        const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        const y2 = fimMes.getFullYear();
+        const m2 = String(fimMes.getMonth() + 1).padStart(2, "0");
+        const d2 = String(fimMes.getDate()).padStart(2, "0");
+        dfim.value = `${y2}-${m2}-${d2}`;
       }
 
       const munList = [...byId.entries()]
