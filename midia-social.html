@@ -705,6 +705,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center 30%;
     }
     .noticias-pauta-card .noticias-bg.is-hidden {
       display: none;
@@ -1547,17 +1548,16 @@
           <button type="button" class="btn-seg" id="exemplosRefresh" title="Gera de novo: modelos fixos, combinações dos termômetros e um novo lote de notícias com imagens para redes">Atualizar</button>
         </div>
       </div>
-      <p class="note" id="exemplosRefreshHint" aria-live="polite" style="margin:0 0 1rem">Clique em «Atualizar» para renovar sugestões de modelos e a pauta com notícias (segurança e crime) com imagem para post.</p>
+      <p class="note" id="exemplosRefreshHint" aria-live="polite" style="margin:0 0 1rem">Clique em «Atualizar» para renovar sugestões de modelos e a pauta (só <strong>Rio de Janeiro</strong> — segurança, crime) com imagem para post.</p>
 
-      <div class="noticias-pauta-box" id="noticiasPautaBox" aria-label="Pauta com notícias e imagem para post">
-        <h3>Pauta com notícias — segurança, crime e justiça</h3>
+      <div class="noticias-pauta-box" id="noticiasPautaBox" aria-label="Pauta Rio de Janeiro com notícias e imagem para post">
+        <h3>Pauta — Rio de Janeiro (segurança, crime e justiça)</h3>
         <p class="note" style="margin:0 0 0.75rem">
-          Busca pública no <strong>Google News</strong> (várias queries em paralelo), remove duplicados e procura
-          <strong>miniaturas no HTML do feed</strong> (incl. gstatic do Google). Se faltar, tenta
-          <strong>imagem de preview do site</strong> (Microlink, sujeita a limite; sem chave). Se a miniatura bloquear hotlink, usa
-          <strong>proxy weserv.nl</strong> no cartão e no export quando a rede permitir. A <strong>tarja</strong> fica por cima. Confira na
-          <strong>fonte original</strong> antes de publicar. Na consola do navegador, após carregar a pauta,
-          <span class="mono">PolitappNoticiasPauta.downloadIndice(0)</span> descarrega o PNG do primeiro cartão (foto + tarja de engajamento).
+          Notícias centradas no <strong>RJ</strong>: <strong>Google News</strong> (queries com Rio / PMERJ / bairros), RSS
+          <strong>G1 Rio</strong> e <strong>Prefeitura do Rio</strong> (fotos e miniaturas no feed). <strong>Imagens Globo/prefeitura</strong> carregam
+          com URL directa; noutros casos usa-se <strong>weserv.nl</strong> (1:1, cover). Se a miniatura bloquear, tenta o fallback automático. Confirme na
+          <strong>fonte original</strong> antes de publicar. Na consola,
+          <span class="mono">PolitappNoticiasPauta.downloadIndice(0)</span> descarrega o PNG do primeiro cartão (foto + tarja).
         </p>
         <div class="noticias-pauta-toolbar">
           <span class="seg-status" id="noticiasPautaStatus" aria-live="polite">A carregar notícias…</span>
@@ -2042,20 +2042,26 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       }
     }
 
-    /** Pauta dinâmica: notícias (Google News via RSS) + imagem exportável — usa fetchGoogleNewsPosts (definido mais abaixo). */
+    /** Pauta dinâmica: só Rio de Janeiro — Google News (queries) + RSS locais; imagem exportável. */
     const NOTICIAS_PAUTA_QUERIES = [
-      { kicker: "Crime e investigação", q: "crime polícia investigação prisão Brasil", limit: 7 },
-      { kicker: "Segurança pública", q: "segurança pública operação policial PM Brasil", limit: 7 },
-      { kicker: "Violência e justiça", q: "violência urbana justiça MP operação Brasil", limit: 6 },
-      { kicker: "Rio e segurança", q: "segurança Rio de Janeiro polícia PM", limit: 6 },
+      { kicker: "RJ — crime e polícia", q: "crime polícia investigação prisão Rio de Janeiro", limit: 6 },
+      { kicker: "RJ — segurança pública", q: "segurança pública operação policial PM Rio de Janeiro Niterói", limit: 6 },
+      { kicker: "RJ — bairros e comunidades", q: "Rio de Janeiro favela comunidade segurança bairros", limit: 5 },
+      { kicker: "RJ — trânsito e PM", q: "polícia militar civil PCERJ PMERJ Rio de Janeiro trânsito", limit: 5 },
     ];
     /**
-     * Feeds com foto no próprio item (G1: thumbnail e img no HTML). O Google News via rss2json, em geral, não
-     * traz imagem e só o link ofuscado — o enrich a partir de news.google.com quase nunca consegue og:image.
+     * Feeds com foto no item (G1 RJ, prefeitura). O Google News via rss2json, em regra, não traz tag img e só
+     * o link ofuscado — o enrich a partir de news.google.com raramente obtém og:image.
      */
     const NOTICIAS_PAUTA_FEEDS_DIRETOS = [
-      { kicker: "G1 — Brasil", rssUrl: "https://g1.globo.com/rss/g1/", limit: 14, tag: "G1 Brasil", fonte: "G1" },
-      { kicker: "G1 — Política", rssUrl: "https://g1.globo.com/rss/politica/", limit: 10, tag: "G1 Política", fonte: "G1" },
+      {
+        kicker: "G1 — Rio de Janeiro",
+        rssUrl: "https://g1.globo.com/rss/g1/rio-de-janeiro/",
+        limit: 16,
+        tag: "G1 Rio",
+        fonte: "G1 RJ",
+      },
+      { kicker: "Prefeitura do Rio", rssUrl: "https://prefeitura.rio/feed/", limit: 10, tag: "Prefeitura RJ", fonte: "prefeitura.rio" },
     ];
     const TARJAS_EFEITO_ENGAJAMENTO = [
       "E no seu bairro: o que muda com essa notícia?",
@@ -2119,7 +2125,23 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
     function weservProxyUrl(srcUrl) {
       const s = String(srcUrl || "").trim();
       if (!s || !/^https?:\/\//i.test(s)) return "";
-      return "https://images.weserv.nl/?url=" + encodeURIComponent(s) + "&w=1200&we";
+      return (
+        "https://images.weserv.nl/?url=" +
+        encodeURIComponent(s) +
+        "&w=1200&h=1200&fit=cover&we"
+      );
+    }
+
+    /** Globo e sites .rio entregam bem por URL directa; outras passam o proxy 1:1. */
+    function noticiaImagemPreferirUrlDiretaNoCartao(u) {
+      const low = String(u || "").toLowerCase();
+      if (!low) return false;
+      return (
+        /(\.glbimg\.com|s3\.glbimg|i\.s3\.glbimg)/.test(low) ||
+        /prefeitura\.rio\/(wp-content|upload|files)\b/.test(low) ||
+        /\.rio\.rj\.gov\.br\//.test(low) ||
+        /(g1\.globo\.com|globo\.com\/rj)/.test(low)
+      );
     }
 
     /** Tenta carregar a imagem para o canvas: URL direta → weserv → allorigins (CORS aberto). */
@@ -2730,8 +2752,11 @@ Fonte: ${item.fonte}
           const hasImg = !!(it.imagemUrl && String(it.imagemUrl).trim());
           const rawImgForCard = hasImg ? String(it.imagemUrl).trim() : "";
           const imgWeserv = hasImg && rawImgForCard ? weservProxyUrl(rawImgForCard) : "";
+          const preferDireto = hasImg && noticiaImagemPreferirUrlDiretaNoCartao(rawImgForCard);
           const imgSrcDisplay = hasImg
-            ? imgWeserv || escapeHtml(rawImgForCard)
+            ? preferDireto
+              ? escapeHtml(rawImgForCard)
+              : imgWeserv || escapeHtml(rawImgForCard)
             : "";
           const rawImgAttr = hasImg ? escapeHtml(rawImgForCard) : "";
           const tarja = escapeHtml(String(it._tarja || pickTarjaEfeito(it, idx)));
@@ -2831,7 +2856,7 @@ Fonte: ${item.fonte}
     async function loadNoticiasPauta() {
       const st = document.getElementById("noticiasPautaStatus");
       const grid = document.getElementById("noticiasPautaGrid");
-      if (st) st.textContent = "A buscar notícias e imagens (feed + preview dos sites)…";
+      if (st) st.textContent = "A buscar notícias do Rio (Google News, G1 RJ, prefeitura) + imagens…";
       if (typeof fetchGoogleNewsPosts !== "function" || typeof fetchRss2JsonFeed !== "function") {
         if (st) st.textContent = "Função de notícias indisponível (recarregue a página).";
         return;
