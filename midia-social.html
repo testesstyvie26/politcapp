@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mídia social — Termômetros e conteúdo | Politapp</title>
+  <title>Mídia social — Rio de Janeiro | Termômetros e conteúdo | Politapp</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1251,29 +1251,29 @@
     </nav>
 
     <header id="politapp-main" tabindex="-1">
-      <h1>Mídia social e agenda pública</h1>
+      <h1>Mídia social e agenda pública — Rio de Janeiro</h1>
       <p>
-        Dicas e <strong>sugestões de conteúdo</strong> alinhadas a <strong>termômetros de assuntos públicos</strong>: leitura da temperatura
-        dos temas no debate democrático (mídia, buscas, Congresso, dados abertos). Os níveis abaixo são
-        <strong>ilustrativos</strong> — calibre sempre com fontes em tempo real e com a realidade do seu distrito.
+        <strong>Contexto:</strong> cidade e <strong>região metropolitana do Rio de Janeiro (RJ)</strong> — capital, municípios vizinhos e pauta estadual quando fizer sentido.
+        Dicas e <strong>sugestões de conteúdo</strong> com <strong>termômetros de assuntos públicos</strong> (mídia, buscas, Congresso, Alerj, Câmara dos vereadores, dados abertos).
+        Os níveis são <strong>ilustrativos</strong> — calibre com fontes em tempo real, <strong>território e bairro</strong> que você representa ou acompanha.
       </p>
     </header>
 
     <section class="panel">
       <h2>Onde medir o “calor” dos temas</h2>
       <p class="note" style="margin-bottom:0.75rem">
-        Use combinação de fontes; nenhuma sozinha substitui pesquisa de opinião ou escuta territorial.
+        Use combinação de fontes; nenhuma sozinha substitui pesquisa de opinião ou escuta territorial. Para o <strong>Rio</strong>, refine termos com bairro, conselho regional ou “região metropolitana”.
       </p>
       <ul class="src-list">
-        <li><a href="https://trends.google.com/trends/?geo=BR" target="_blank" rel="noopener">Google Trends (Brasil)</a> — interesse em termos ao longo do tempo e por sub-região.</li>
+        <li><a href="https://trends.google.com/trends/explore?geo=BR-RJ" target="_blank" rel="noopener">Google Trends (estado do Rio de Janeiro)</a> e <a href="https://trends.google.com/trends/?geo=BR" target="_blank" rel="noopener">Brasil</a> — interesse ao longo do tempo; compare com o recorte carioca.</li>
         <li><a href="https://www12.senado.leg.br/noticias" target="_blank" rel="noopener">Agência Senado</a> e pautas em tramitação — o que o Congresso coloca em destaque.</li>
         <li><a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API Dados Abertos da Câmara</a> — proposições, frentes, discursos (para cruzar com narrativa local).</li>
-        <li><a href="https://www.ibge.gov.br/" target="_blank" rel="noopener">IBGE</a> e órgãos setoriais — indicadores que “viram manchete” (emprego, inflação, educação, saúde).</li>
-        <li>Ouvidorias e canais oficiais de órgãos públicos — demandas recorrentes da população.</li>
+        <li><a href="https://www.ibge.gov.br/" target="_blank" rel="noopener">IBGE</a> e órgãos setoriais — indicadores que “viram manchete” (emprego, inflação, educação, saúde); no RJ, cruze com bases municipais e <a href="https://www.data.rio/" target="_blank" rel="noopener">dados abertos da prefeitura (Data.rio)</a> quando existir.</li>
+        <li>Ouvidorias e canais oficiais (prefeitura, estado, conselhos locais) — demandas recorrentes na cidade e na Baixada/Niterói conforme o tema.</li>
       </ul>
     </section>
 
-    <div class="tabs" role="tablist" aria-label="Seções mídia social">
+    <div class="tabs" role="tablist" aria-label="Seções mídia social — contexto Rio de Janeiro">
       <button type="button" role="tab" id="tab-termo" aria-selected="true" aria-controls="panel-termo">Termômetros temáticos</button>
       <button type="button" role="tab" id="tab-seg" aria-selected="false" aria-controls="panel-seg">Segurança — escuta social</button>
       <button type="button" role="tab" id="tab-crm" aria-selected="false" aria-controls="panel-crm">Base de apoio (CRM)</button>
@@ -1283,21 +1283,23 @@
     </div>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-termo" aria-labelledby="tab-termo">
-      <h2>Termômetros ilustrativos e ideias de post</h2>
+      <h2>Termômetros ilustrativos e ideias de post (Rio de Janeiro)</h2>
       <p class="note" style="margin-bottom:1rem">
-        Porcentagem = “intensidade de presença na agenda pública” <strong>exemplo</strong> (não é pesquisa eleitoral).
-        Ajuste conforme Trends, noticiário local e relatórios oficiais na sua semana de conteúdo.
+        Porcentagem = “intensidade de presença na agenda pública” <strong>exemplo</strong> (não é pesquisa eleitoral). Traduza para o
+        <strong>RJ</strong> com o que a imprensa local, a <strong>ALERJ</strong>, a <strong>Câmara de vereadores</strong> e a <strong>prefeitura</strong> puseram em pauta na semana.
+        Ajuste ainda com Trends, bairro e relatórios oficiais.
       </p>
       <div class="termo-grid" id="termoCards"></div>
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-seg" aria-labelledby="tab-seg" hidden>
-      <h2>Escuta social — segurança pública</h2>
+      <h2>Escuta social — segurança pública (foco Rio)</h2>
       <p class="note" style="margin-bottom:1rem">
-        Painel de <strong>demonstração</strong> para organizar monitoramento de postagens sobre <strong>segurança pública, eventos policiais e crimes</strong>,
-        e para destacar <strong>comentários positivos</strong> à atuação das forças ou a políticas de prevenção, com perfil resumido de quem comenta.
+        Painel de <strong>demonstração</strong> para monitorar postagens sobre <strong>segurança pública, eventos policiais e crimes</strong> com ângulo
+        <strong>Rio de Janeiro e região metropolitana</strong> (PMERJ, PCERJ, prefeitura, obras, comunidades), e para destacar
+        <strong>comentários positivos</strong> à atuação das forças ou a políticas de prevenção, com perfil resumido de quem comenta.
         <strong>Só entram postagens com data a partir de 1 de janeiro de 2025</strong> (itens sem data fiável são ignorados).
-        Em produção, ligue a exportações do seu social listening, API de redes ou planilha auditável — não substitui análise jurídica nem confirmação em fontes oficiais.
+        O JSON e as buscas padrão privilegiam fontes e hashtags ligadas ao <strong>RJ</strong> — adapte o proxy e query do X se precisar de outro recorte. Em produção, ligue o seu social listening; não substitui análise jurídica nem fonte oficial.
       </p>
 
       <div class="subtabs" role="tablist" aria-label="Submenu segurança e escuta">
@@ -1307,7 +1309,7 @@
 
       <div class="subpanel" role="tabpanel" id="subpanel-posts" aria-labelledby="subtab-posts">
         <p class="note" style="margin:0 0 1rem">
-          Fontes <strong>sem login</strong>: RSS (G1, Prefeitura), Google News, ficheiro
+          Fontes <strong>sem login</strong>: RSS (G1, Prefeitura do <strong>Rio</strong>), Google News, ficheiro
           <span class="mono">data/escuta-social-seguranca.json</span>, <strong>Mastodon</strong> (API pública de hashtag — fediverso).
           Ao clicar em <strong>«Atualizar postagens»</strong>, o painel tenta <strong>buscar respostas públicas</strong> (comentários) nos toots Mastodon desse lote e funde os extractos na aba <strong>Comentários positivos</strong>.
           <strong>Instagram, Facebook, YouTube e TikTok</strong>: ligações e notícias agregadas — comentários via API no browser exigem credenciais; use o proxy local descrito na outra aba.
@@ -1447,9 +1449,10 @@
     <section class="panel tab-panel" role="tabpanel" id="panel-crm" aria-labelledby="tab-crm" hidden>
       <h2>Base de apoio — interlocutores e redes</h2>
       <p class="note" style="margin-bottom:1rem">
-        O JSON separa <strong>instituições</strong> (órgãos, partidos, ONGs, governos) de <strong>contatos pessoais</strong> (indivíduos). Em pessoas, destaque para <strong>telefone, e-mail e WhatsApp</strong> só após <strong>consentimento</strong> (campo
+        O JSON separa <strong>instituições</strong> (órgãos, partidos, ONGs, governos) de <strong>contatos pessoais</strong> (indivíduos). Use filtros e o campo
+        <strong>cidade / UF</strong> para priorizar <strong>parceiros e veículos no Rio de Janeiro</strong> e região. Em pessoas, <strong>telefone, e-mail e WhatsApp</strong> só após <strong>consentimento</strong> (campo
         <span class="mono">consentimento_lgpd</span>). Figuras públicas podem ter só redes oficiais até registar consentimento para dados adicionais.
-        Ficheiro: <span class="mono">data/base-apoio-interlocutores.json</span>. <strong>LGPD</strong> e <strong>TSE</strong> (<a href="https://www.tse.jus.br/" target="_blank" rel="noopener">tse.jus.br</a>).
+        Ficheiro: <span class="mono">data/base-apoio-interlocutores.json</span>. <strong>LGPD</strong>, <strong>TRE-RJ</strong> e <strong>TSE</strong> (<a href="https://www.tre-rj.jus.br/" target="_blank" rel="noopener">tre-rj.jus.br</a>, <a href="https://www.tse.jus.br/" target="_blank" rel="noopener">tse.jus.br</a>).
       </p>
 
       <div class="subtabs crm-subtabs" role="tablist" aria-label="Tipo de registo CRM">
@@ -1493,7 +1496,7 @@
     <section class="panel tab-panel" role="tabpanel" id="panel-formatos" aria-labelledby="tab-formatos" hidden>
       <h2>Formatos que conversam com a agenda quente</h2>
       <p class="note" style="margin-bottom:1rem">
-        Padrões que costumam <strong>reter atenção</strong> em 2025–2026: gancho nos primeiros 2 segundos, texto na tela (muita gente assiste sem som),
+        Padrões que costumam <strong>reter atenção</strong> em 2025–2026, aplicáveis a conteúdo com <strong>âncora no Rio</strong> (bairro, linha de ônibus, obras, escolas da rede, delegacias, praia, costa, Baixada): gancho nos primeiros 2 segundos, texto na tela (muita gente assiste sem som),
         “salvar depois”, carrossel com último slide de fonte, e vídeos com <strong>uma ideia por post</strong> (não discurso inteiro).
       </p>
       <div class="format-grid">
@@ -1539,9 +1542,10 @@
     <section class="panel tab-panel" role="tabpanel" id="panel-exemplos" aria-labelledby="tab-exemplos" hidden>
       <div class="exemplos-head">
         <div>
-          <h2>Modelos de post no estilo do que costuma viralizar</h2>
+          <h2>Modelos de post no estilo do que costuma viralizar (Rio de Janeiro)</h2>
           <p class="note" style="margin:0">
-            Textos <strong>fictícios</strong> para você adaptar (bairro, cargo, números e fontes reais). Estrutura inspirada em ganchos comuns em Reels, TikTok, Threads e carrosséis de perfis de política e educação cívica no Brasil.
+            Textos <strong>fictícios</strong> para você adaptar a <strong>bairros, cargos, números e fontes reais do RJ</strong>. Estrutura inspirada em ganchos comuns em Reels, TikTok, Threads e carrosséis de política e educação cívica, com
+            <strong>contexto de capital e região metropolitana</strong>.
           </p>
         </div>
         <div class="exemplos-toolbar">
@@ -1568,7 +1572,8 @@
       <div class="post-gerador" id="postGerador">
         <h3>Gerador de conteúdo para post</h3>
         <p class="note" style="margin:0 0 1rem">
-          Escolha o <strong>tema</strong> (termômetro), o <strong>formato</strong> e, se quiser, o <strong>local</strong>. O texto é montado a partir dos ganchos e ideias já usados nos cartões — edite antes de publicar e confira fontes oficiais.
+          O local vem <strong>pré-preenchido com Rio de Janeiro, RJ</strong> — altere para bairro ou município da região se precisar. Escolha o <strong>tema</strong> (termômetro), o <strong>formato</strong> e, se quiser, refine o
+          <strong>lugar</strong>. O texto segue o contexto <strong>da cidade e do estado do Rio</strong>; edite antes de publicar e confira fontes oficiais (prefeitura, estado, MP, TSE/TRE, etc.).
         </p>
         <div class="post-gerador-grid">
           <label>Tema / pauta
@@ -1592,7 +1597,7 @@
             </select>
           </label>
           <label>Cidade, bairro ou UF (opcional)
-            <input type="text" id="postGenLocal" autocomplete="off" placeholder="Ex.: Rio de Janeiro, Copacabana, RJ" />
+            <input type="text" id="postGenLocal" autocomplete="off" value="Rio de Janeiro, RJ" placeholder="Ex.: Niterói, Duque de Caxias, Bangu, RJ" />
           </label>
         </div>
         <div class="post-gerador-actions">
@@ -1609,10 +1614,10 @@
     </section>
 
     <section class="panel tab-panel" role="tabpanel" id="panel-check" aria-labelledby="tab-check" hidden>
-      <h2>Checklist rápido</h2>
+      <h2>Checklist rápido (geral e Rio de Janeiro)</h2>
       <ul class="checklist">
-        <li>Conferir fatos em fontes primárias antes de publicar dados ou acusações.</li>
-        <li>Respeitar <strong>legislação eleitoral</strong> e normas da plataforma (impulsionamento, desinformação, uso de imagens).</li>
+        <li>Conferir fatos em fontes primárias; no <strong>RJ</strong>, cruzar com órgãos municipais, estaduais, MP, Defensoria e, em eleições, <strong>TRE-RJ</strong>, antes de publicar dados sensíveis ou acusações.</li>
+        <li>Respeitar <strong>legislação eleitoral</strong> (TSE, TRE) e normas da plataforma (impulsionamento, desinformação, uso de imagens).</li>
         <li>Não prometer obras ou benefícios vinculados a voto; cuidado com tom de “troca de favores”.</li>
         <li>Consentimento e dignidade: crianças, pessoas em situação de vulnerabilidade e dados pessoais.</li>
         <li>Base de contactos (CRM): trate só dados com base legal; não armazene ou trate dados obtidos por meios ilícitos; documente origem e finalidade (LGPD).</li>
@@ -1635,6 +1640,10 @@
   </div>
 
   <script>
+    /** Eixo comum a todos os textos gerados nesta página. */
+    const CONTEXTO_RIO_JANEIRO_CARTAO =
+      "Contexto: Rio de Janeiro (RJ) e região metropolitana — ajuste bairro, município, Alerj/Câmara e órgãos locais à sua pauta.";
+
     const TERMOMETROS = [
       {
         titulo: "Saúde e SUS",
@@ -1797,7 +1806,7 @@
 
     function postGenLocalLine(local) {
       const s = String(local || "").trim();
-      return s || "[cidade / bairro / UF — preencha]";
+      return s || "Rio de Janeiro, RJ";
     }
 
     function postGenTomPhrase(tom) {
@@ -1815,9 +1824,12 @@
       const loc = postGenLocalLine(local);
       const tomLinha = postGenTomPhrase(tom);
       const taghint = t.tags && t.tags.length ? pickRandom(t.tags) : "";
+      const rj = CONTEXTO_RIO_JANEIRO_CARTAO;
 
       if (formatoId === "reels") {
-        return `[ROTEIRO · ${t.titulo} · ${loc}]
+        return `${rj}
+
+[ROTEIRO · ${t.titulo} · ${loc}]
 
 GANCHO (0–2 s, texto na tela)
 ${ex.gancho}
@@ -1836,7 +1848,9 @@ Sugestão de formato no painel: ${taghint}`;
       }
 
       if (formatoId === "carrossel") {
-        return `[CARROSSEL · 5 slides · ${t.titulo} · ${loc}
+        return `${rj}
+
+[CARROSSEL · 5 slides · ${t.titulo} · ${loc}
 
 Slide 1 — Capa: "${t.titulo}" e ${loc}
 Slide 2 — Contexto: ${ex.gancho}
@@ -1850,7 +1864,9 @@ ${tomLinha}`;
       if (formatoId === "thread") {
         const fraseMeio = ex.meio.split(/(?<=[.!?])\s+/)[0] || ex.meio;
         const sinal = t.sinais.split(/[.;]/)[0] || t.sinais;
-        return `[THREAD · ${t.titulo} · ${loc}
+        return `${rj}
+
+[THREAD · ${t.titulo} · ${loc}
 
 1/5 · ${ex.gancho}
 
@@ -1866,7 +1882,9 @@ ${tomLinha}`;
       }
 
       if (formatoId === "legenda") {
-        return `[LEGENDA · ${t.titulo} · ${loc}
+        return `${rj}
+
+[LEGENDA · ${t.titulo} · ${loc}
 
 ${ex.gancho}
 
@@ -1884,7 +1902,9 @@ Use poucas hashtags relevantes (evite lista longa).`;
 
       if (formatoId === "stories") {
         const meioCurto = ex.meio.length > 220 ? `${ex.meio.slice(0, 217)}…` : ex.meio;
-        return `[STORIES · sequência · ${t.titulo} · ${loc}
+        return `${rj}
+
+[STORIES · sequência · ${t.titulo} · ${loc}
 
 Tela 1 — Gancho na tela: ${ex.gancho}
 Tela 2 — Detalhe: ${meioCurto}
@@ -1895,7 +1915,9 @@ ${tomLinha}`;
 
       if (formatoId === "whatsapp") {
         const frase = ex.meio.split(/(?<=[.!?])\s+/)[0] || ex.meio;
-        return `[WHATSAPP / COMUNIDADE · ${t.titulo} · ${loc}
+        return `${rj}
+
+[WHATSAPP / COMUNIDADE · ${t.titulo} · ${loc}
 
 Resumo curto:
 
@@ -1928,7 +1950,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
         const tom = document.getElementById("postGenTom")?.value || "informativo";
         const local = document.getElementById("postGenLocal")?.value || "";
         if (out) out.value = buildPostContent(formato, temaIdx, local, tom);
-        if (st) st.textContent = msg || "Texto gerado. Revise e adapte antes de publicar.";
+        if (st) st.textContent = msg || "Texto gerado (Rio de Janeiro / região). Revise e adapte antes de publicar.";
       };
       document.getElementById("postGenGerar")?.addEventListener("click", () => run());
       document.getElementById("postGenVariacao")?.addEventListener("click", () => run("Nova variação (ideias sorteadas de novo)."));
@@ -1998,7 +2020,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
             <span class="ps-quote">Três direitos do estudante da rede pública que vale mandar no grupo da escola:</span>
             <p>1) Transporte escolar quando a lei prever no seu caso.<br>2) Merenda e cantinho seguro para denúncia de violência.<br>3) Conselho escolar aberto pra pais ouvidos.</p>
             <p>Se algo não tá sendo cumprido, o caminho é protocolo na secretaria + conselho tutelar quando for caso de violência. Compartilha com quem precisa.</p>
-            <p><strong>Hashtags (use poucas e relevantes):</strong> #educação #direitodocidadão #[cidade] (evite lista gigante).</p>
+            <p><strong>Hashtags (use poucas e relevantes):</strong> #educação #direitodocidadão #RioDeJaneiro (evite lista gigante).</p>
           </div>
         </article>`,
       `<article class="exemplo-bloco">
@@ -2016,7 +2038,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       const ex = t.exemplo;
       const tagsHtml = t.tags.map((g) => `<span>${escapeHtml(g)}</span>`).join("");
       return `<article class="exemplo-bloco">
-      <div class="meta">Combinação nova · ${escapeHtml(t.titulo)}</div>
+      <div class="meta">Combinação nova · ${escapeHtml(t.titulo)} · Rio de Janeiro (RJ)</div>
       <h3>Roteiro curto a partir do termômetro</h3>
       <div class="post-sample">
         <div class="ps-label">Uma ideia de pauta</div>
@@ -2038,7 +2060,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       grid.innerHTML = pool.slice(0, 6).join("");
       const hint = document.getElementById("exemplosRefreshHint");
       if (hint) {
-        hint.textContent = `Modelos: 6 sugestões — ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}. Use «Atualizar» para renovar também a pauta de notícias abaixo.`;
+        hint.textContent = `Modelos: 6 sugestões (contexto Rio de Janeiro) — ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}. «Atualizar» renova a pauta de notícias (RJ) abaixo.`;
       }
     }
 
@@ -2293,7 +2315,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       ctx.fillRect(0, 0, W, 96);
       ctx.fillStyle = "#bae6fd";
       ctx.font = "600 28px 'DM Sans', system-ui, sans-serif";
-      ctx.fillText("Politapp · pauta segurança", 40, 60);
+      ctx.fillText("Politapp · Rio · pauta segurança", 40, 60);
 
       const bandH = 240;
       const grd = ctx.createLinearGradient(0, H - bandH, 0, H);
@@ -2350,7 +2372,7 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
 
       ctx.fillStyle = "#7cb6ff";
       ctx.font = "500 32px 'DM Sans', system-ui, sans-serif";
-      ctx.fillText("Politapp · pauta segurança", 72, 95);
+      ctx.fillText("Politapp · Rio · pauta segurança", 72, 95);
 
       ctx.fillStyle = "#9ec5ff";
       ctx.font = "600 28px 'DM Sans', system-ui, sans-serif";
@@ -2418,7 +2440,7 @@ ${tarjaLinha}
 ${linkLinha}
 
 Fonte: ${item.fonte}
-#SegurançaPública #Brasil`;
+#SegurançaPública #RioDeJaneiro #RJ`;
     }
 
     /**
@@ -3052,6 +3074,7 @@ Fonte: ${item.fonte}
           <div class="termo-bar" role="img" aria-label="Intensidade ilustrativa ${t.nivel} por cento">
             <div class="termo-fill" style="width:${t.nivel}%"></div>
           </div>
+          <p class="note" style="margin:0 0 0.4rem;font-size:0.8rem">Contexto: <strong>Rio de Janeiro (RJ)</strong> e região metropolitana; cruze com agenda local e canais oficiais.</p>
           <p class="note" style="margin:0 0 0.5rem"><strong>Sinais no debate:</strong> ${escapeHtml(t.sinais)}</p>
           <p class="note" style="margin:0 0 0.35rem"><strong>Sugestões de conteúdo:</strong></p>
           <ul>
