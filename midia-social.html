@@ -735,6 +735,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
+      line-clamp: 2;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
     }
@@ -1507,9 +1508,10 @@
       <div class="noticias-pauta-box" id="noticiasPautaBox" aria-label="Pauta com notícias e imagem para post">
         <h3>Pauta com notícias — segurança, crime e justiça</h3>
         <p class="note" style="margin:0 0 0.75rem">
-          Busca pública no <strong>Google News</strong> (várias queries em paralelo), remove duplicados e monta
-          <strong>modelo de post</strong> + <strong>imagem 1:1</strong> (PNG) pronta para Instagram ou outras redes. Confira sempre o texto na
-          <strong>fonte original</strong> antes de publicar; o resumo do agregador pode ser incompleto.
+          Busca pública no <strong>Google News</strong> (várias queries em paralelo), remove duplicados e tenta usar a
+          <strong>miniatura do feed RSS</strong> (quando existir). Sobre a imagem há uma <strong>tarja</strong> com frase de engajamento (edite na legenda).
+          O <strong>PNG 1:1</strong> junta foto (se o servidor permitir download via rede) + título + tarja. Sem miniatura ou com bloqueio CORS, o fundo usa o
+          estilo Politapp. Confira sempre na <strong>fonte original</strong> antes de publicar.
         </p>
         <div class="noticias-pauta-toolbar">
           <span class="seg-status" id="noticiasPautaStatus" aria-live="polite">A carregar notícias…</span>
@@ -2311,7 +2313,7 @@ Fonte: ${item.fonte}
         const finalList = shuffled.slice(0, 6).map((it, i) => ({ ...it, _tarja: pickTarjaEfeito(it, i) }));
         renderNoticiasPautaCards(finalList);
         const t = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-        if (st) st.textContent = `Pauta: ${finalList.length} notícia(s) · imagens prontas · ${t}`;
+        if (st) st.textContent = `Pauta: ${finalList.length} notícia(s) · fotos do feed + tarjas · ${t}`;
       } catch (e) {
         if (grid) {
           grid.innerHTML = `<p class="note err" style="margin:0">Não foi possível carregar as notícias. Verifique a ligação à Internet ou tente de novo. (${escapeHtml(
@@ -2323,7 +2325,16 @@ Fonte: ${item.fonte}
     }
 
     function setupNoticiasPautaActions() {
-      document.getElementById("noticiasPautaGrid")?.addEventListener("click", (e) => {
+      const grid = document.getElementById("noticiasPautaGrid");
+      grid?.addEventListener(
+        "error",
+        (e) => {
+          const t = e.target;
+          if (t && t.classList && t.classList.contains("noticias-bg")) t.classList.add("is-hidden");
+        },
+        true
+      );
+      grid?.addEventListener("click", (e) => {
         const dl = e.target.closest(".noticias-dl");
         const cp = e.target.closest(".noticias-copy");
         if (!dl && !cp) return;
@@ -2332,21 +2343,29 @@ Fonte: ${item.fonte}
         if (!item) return;
         const st = document.getElementById("noticiasPautaStatus");
         if (dl) {
-          const { dataUrl } = drawPolitappSocialImage({
-            title: item.titulo,
-            kicker: item._kicker || "Segurança",
-            footnote: "Fonte: confirme no veículo antes de publicar",
-          });
-          const a = document.createElement("a");
-          const safe =
-            noticiaDedupKey(item.titulo)
-              .replace(/[^a-z0-9]+/gi, "-")
-              .replace(/^-|-$/g, "")
-              .slice(0, 48) || "post";
-          a.href = dataUrl;
-          a.download = `politapp-${safe}.png`;
-          a.click();
-          if (st) st.textContent = "Download da imagem iniciado. Confira a pasta de descargas.";
+          if (st) st.textContent = "A compor imagem (foto + tarja)…";
+          (async () => {
+            let dataUrl;
+            try {
+              dataUrl = await compositeNoticiaSocialPng(item);
+            } catch {
+              dataUrl = drawPolitappSocialImage({
+                title: item.titulo,
+                kicker: item._kicker || "Segurança",
+                footnote: String(item._tarja || "Fonte: confirme no veículo antes de publicar"),
+              }).dataUrl;
+            }
+            const a = document.createElement("a");
+            const safe =
+              noticiaDedupKey(item.titulo)
+                .replace(/[^a-z0-9]+/gi, "-")
+                .replace(/^-|-$/g, "")
+                .slice(0, 48) || "post";
+            a.href = dataUrl;
+            a.download = `politapp-${safe}.png`;
+            a.click();
+            if (st) st.textContent = "Download da imagem (PNG) com foto e tarja. Confira a pasta de descargas.";
+          })();
         }
         if (cp) {
           const text = buildLegendaNoticia(item);
