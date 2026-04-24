@@ -2296,6 +2296,41 @@ Fonte: ${item.fonte}
 #SegurançaPública #Brasil`;
     }
 
+    /**
+     * Rejeita ícones, logos de agregador (ex.: Google News), favicons e miniaturas genéricas —
+     * é comum a API devolver isso no lugar da foto de capa.
+     */
+    function isLowQualityOrPlaceholderImageUrl(u) {
+      if (!u || String(u).length < 10) return true;
+      const s = String(u).trim();
+      const low = s.toLowerCase();
+      if (!/^https?:\/\//i.test(s)) return true;
+      if (low.includes("favicon") || low.includes("apple-touch-icon") || low.includes("mask-icon")) return true;
+      if (low.includes("google.com/s2/favicons")) return true;
+      if (low.includes("doubleclick") || low.includes("googlesyndication") || low.includes("googleads")) return true;
+      if (low.includes("placeholder") || /\/1x1\./.test(low) || low.includes("spacer.")) return true;
+      if (/[/-]logo[/.?]/i.test(s) || /logo\.(png|svg|jpg|jpeg|gif|webp)($|\?|#)/i.test(s)) return true;
+      if (low.includes("news.google.com")) return true;
+      if (low.includes("branding") && low.includes("gstatic")) return true;
+      if (low.includes("gstatic.com") && (low.includes("/icon") || /\/(icons?|favicon)\//.test(low) || /[/-]favicon/i.test(s)))
+        return true;
+      if (low.includes("ggpht.com") && (low.includes("logo") || low.includes("favicon"))) return true;
+      if (/[?&]w=(?:1[0-9]|[0-9])(?:&|$)/i.test(s) && (low.includes("gstatic") || low.includes("google")))
+        return true;
+      if (/[?&]h=(?:1[0-9]|[0-9])(?:&|$)/i.test(s) && (low.includes("gstatic") || low.includes("google")))
+        return true;
+      if (low.includes("gnews") && low.includes("icon")) return true;
+      return false;
+    }
+
+    function takeFirstPlausibleImageUrl(candidates) {
+      for (const c of candidates) {
+        const u = String(c || "").trim();
+        if (u && /^https?:\/\//i.test(u) && !isLowQualityOrPlaceholderImageUrl(u)) return u;
+      }
+      return "";
+    }
+
     async function fetchOgImageMicrolink(pageUrl) {
       const u = String(pageUrl || "").trim();
       if (!u || u === "#" || !/^https?:\/\//i.test(u)) return "";
@@ -2310,14 +2345,13 @@ Fonte: ${item.fonte}
         const d = j && j.data;
         if (!d) return "";
         const im = d.image;
-        if (im && typeof im === "string" && /^https?:\/\//i.test(im)) return im;
-        if (im && im.url && /^https?:\/\//i.test(String(im.url))) return String(im.url);
-        if (d.screenshot && d.screenshot.url && /^https?:\/\//i.test(d.screenshot.url)) return String(d.screenshot.url);
-        if (d.logo && d.logo.url && /^https?:\/\//i.test(String(d.logo.url))) return String(d.logo.url);
+        const fromImage = im && (typeof im === "string" ? im : im.url);
+        const fromShot = d.screenshot && d.screenshot.url;
+        // Não usar d.logo — costuma ser o ícone do Google News / site, não a manchete.
+        return takeFirstPlausibleImageUrl([fromImage, fromShot]);
       } catch {
         return "";
       }
-      return "";
     }
 
     function parseOgImageFromHtml(html, basePageUrl) {
@@ -2344,7 +2378,7 @@ Fonte: ${item.fonte}
           const val = m[i];
           if (val && /https?:\/\//.test(String(val))) {
             const out = tryResolve(val);
-            if (out && !out.toLowerCase().includes("favicon") && out.length < 4000) return out;
+            if (out && out.length < 4000 && !isLowQualityOrPlaceholderImageUrl(out)) return out;
           }
         }
         return "";
@@ -2374,12 +2408,12 @@ Fonte: ${item.fonte}
         tryGroup(html.match(/"image"\s*:\s*["'](https?:\/\/[^"']+)["']/i)),
       ];
       for (const o of g) {
-        if (o) return o;
+        if (o && !isLowQualityOrPlaceholderImageUrl(o)) return o;
       }
       const im = html.match(
         /<img[^>]+(?:\bsrc|\bdata-src)\s*=\s*["'](https?:\/\/[^"']{10,})/i
       );
-      if (im && im[1] && !im[1].toLowerCase().includes("favicon")) return im[1];
+      if (im && im[1] && !isLowQualityOrPlaceholderImageUrl(im[1])) return im[1];
       return "";
     }
 
@@ -2398,7 +2432,8 @@ Fonte: ${item.fonte}
           clearTimeout(to);
           if (!r.ok) continue;
           const t = await r.text();
-          if (t && t.length > 300 && /<html/i.test(t)) return t;
+          if (t && t.length > 200 && (/<html/i.test(t) || /og:image|twitter:image/i.test(t)))
+            return t;
         } catch {
           /* próximo proxy */
         }
@@ -2419,8 +2454,14 @@ Fonte: ${item.fonte}
         const r = await fetch(api, { method: "GET" });
         if (!r.ok) return "";
         const j = await r.json();
-        if (j && j.image) return String(j.image).trim();
-        if (j && j.images && j.images[0]) return String(j.images[0]).trim();
+        if (j && j.image) {
+          const x = String(j.image).trim();
+          if (x && !isLowQualityOrPlaceholderImageUrl(x)) return x;
+        }
+        if (j && j.images && j.images[0]) {
+          const y = String(j.images[0]).trim();
+          if (y && !isLowQualityOrPlaceholderImageUrl(y)) return y;
+        }
       } catch {
         return "";
       }
@@ -2438,10 +2479,10 @@ Fonte: ${item.fonte}
         const m1 = t.match(/!\[([^\]]*)\]\((https?:\/\/[^)]+?)\)/);
         if (m1 && m1[2]) {
           const c = m1[2].trim().split(/\s+/)[0];
-          if (/^https?:\/\//i.test(c) && !c.toLowerCase().includes("favicon")) return c;
+          if (/^https?:\/\//i.test(c) && !isLowQualityOrPlaceholderImageUrl(c)) return c;
         }
         const m2 = t.match(/(https?:\/\/[^\s<>]+\.(?:jpe?g|png|webp|gif)(?:\?[^\s<>]*)?)/i);
-        if (m2 && m2[1] && m2[1].length < 2000) return m2[1];
+        if (m2 && m2[1] && m2[1].length < 2000 && !isLowQualityOrPlaceholderImageUrl(m2[1])) return m2[1];
       } catch {
         return "";
       }
@@ -2471,23 +2512,24 @@ Fonte: ${item.fonte}
         fetchOgImageJsonlink(pageUrl),
         fetchImageUrlFromJinaReader(pageUrl),
       ]);
+      const sourceWeight = { "og-html": 160, jsonlink: 120, jina: 100, microlink: 35 };
       const pickScore = (u) => {
         const s = String(u || "");
         const low = s.toLowerCase();
         let n = 0;
         if (/\.(jpe?g|png|webp|gif)(\?|#|$)/i.test(s)) n += 4;
-        if (low.includes("gstatic") || low.includes("ggpht") || low.includes("wp-content") || low.includes("media."))
-          n += 3;
-        if (s.length > 60) n += 1;
+        if (low.includes("wp-content") || /\/media[/-]/i.test(s)) n += 4;
+        if (low.includes("encrypted-tbn") || (low.includes("gstatic.com") && low.includes("im"))) n += 3;
+        if (s.length > 80) n += 2;
         return n;
       };
       const collect = (lab, p) => {
         if (p.status !== "fulfilled") return null;
         const v = String(p.value || "").trim();
-        if (!v || v === "#" || !/^https?:\/\//i.test(v)) return null;
-        return { url: v, fonte: lab, score: pickScore(v) };
+        if (!v || v === "#" || !/^https?:\/\//i.test(v) || isLowQualityOrPlaceholderImageUrl(v)) return null;
+        return { url: v, fonte: lab, score: (sourceWeight[lab] || 0) + pickScore(v) };
       };
-      const all = [collect("microlink", a), collect("og-html", b), collect("jsonlink", c), collect("jina", d)]
+      const all = [collect("og-html", b), collect("jsonlink", c), collect("jina", d), collect("microlink", a)]
         .filter(Boolean)
         .sort((x, y) => y.score - x.score);
       if (all[0]) return { url: all[0].url, fonte: all[0].fonte };
@@ -2501,10 +2543,12 @@ Fonte: ${item.fonte}
         base.imagemFonte = base.imagemFonte || "rss";
         return base;
       }
-      const toTry = dedupeUrls([
-        String(base.url || "").trim(),
-        String(base.linkRss || "").trim(),
-      ]);
+      const u0 = String(base.url || "").trim();
+      const u1 = String(base.linkRss || "").trim();
+      const toTry = dedupeUrls([u0, u1].filter((x) => x && x !== "#")).sort((a, b) => {
+        const g = (s) => (/news\.google\.com/i.test(s) ? 1 : 0);
+        return g(a) - g(b);
+      });
       for (const page of toTry) {
         if (page === "#") continue;
         const { url, fonte } = await fetchFirstPreviewImageForPage(page);
@@ -2972,7 +3016,8 @@ Fonte: ${item.fonte}
     function extractRssItemImageUrl(item) {
       if (!item) return "";
       if (typeof item.image === "string" && /^https?:\/\//i.test(item.image.trim())) {
-        return decodeHtmlEntities(item.image.trim());
+        const oi = decodeHtmlEntities(item.image.trim());
+        if (!isLowQualityOrPlaceholderImageUrl(oi)) return oi;
       }
       const enc = item.enclosure;
       const encs = enc && (Array.isArray(enc) ? enc : [enc]);
@@ -2982,14 +3027,18 @@ Fonte: ${item.fonte}
           if (encLink && /^https?:\/\//i.test(encLink)) {
             const t = String((e && e.type) || "");
             if (/^image\//i.test(t) || /\.(jpe?g|png|gif|webp|avif|bmp)(\?|#|$)/i.test(encLink) || !t) {
-              return decodeHtmlEntities(encLink);
+              const encDec = decodeHtmlEntities(encLink);
+              if (!isLowQualityOrPlaceholderImageUrl(encDec)) return encDec;
             }
           }
         }
       }
       if (item.thumbnail) {
         const th = String(item.thumbnail).trim();
-        if (/^https?:\/\//i.test(th)) return decodeHtmlEntities(th);
+        if (/^https?:\/\//i.test(th)) {
+          const td = decodeHtmlEntities(th);
+          if (!isLowQualityOrPlaceholderImageUrl(td)) return td;
+        }
       }
 
       const html = rssItemHtmlBundle(item);
@@ -3041,7 +3090,10 @@ Fonte: ${item.fonte}
 
       if (!candidates.length) return "";
       candidates.sort((a, b) => scoreImageCandidate(b) - scoreImageCandidate(a));
-      return candidates[0];
+      for (const c of candidates) {
+        if (!isLowQualityOrPlaceholderImageUrl(c)) return c;
+      }
+      return "";
     }
 
     /**
