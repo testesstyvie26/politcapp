@@ -2224,7 +2224,8 @@ Fonte: ${item.fonte}
           const hasImg = !!(it.imagemUrl && String(it.imagemUrl).trim());
           const imgSrc = hasImg ? escapeHtml(String(it.imagemUrl).trim()) : "";
           const tarja = escapeHtml(String(it._tarja || pickTarjaEfeito(it, idx)));
-          const tituloBreve = escapeHtml(String(it.titulo).slice(0, 120)) + (it.titulo.length > 120 ? "…" : "");
+          const rawTit = String(it.titulo);
+          const tituloBreve = escapeHtml(rawTit.length > 120 ? rawTit.slice(0, 120) + "…" : rawTit);
           return `<article class="exemplo-bloco noticias-pauta-card" data-idx="${idx}">
           <div class="meta">Notícia + modelo · ${escapeHtml(it._kicker || "Pauta")}</div>
           <h3>${escapeHtml(it.titulo)}</h3>
@@ -2307,7 +2308,7 @@ Fonte: ${item.fonte}
         if (picked.length < 3) picked = merged;
 
         const shuffled = shuffleInPlace(picked);
-        const finalList = shuffled.slice(0, 6);
+        const finalList = shuffled.slice(0, 6).map((it, i) => ({ ...it, _tarja: pickTarjaEfeito(it, i) }));
         renderNoticiasPautaCards(finalList);
         const t = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
         if (st) st.textContent = `Pauta: ${finalList.length} notícia(s) · imagens prontas · ${t}`;
