@@ -1508,10 +1508,11 @@
       <div class="noticias-pauta-box" id="noticiasPautaBox" aria-label="Pauta com notícias e imagem para post">
         <h3>Pauta com notícias — segurança, crime e justiça</h3>
         <p class="note" style="margin:0 0 0.75rem">
-          Busca pública no <strong>Google News</strong> (várias queries em paralelo), remove duplicados e tenta usar a
-          <strong>miniatura do feed RSS</strong> (quando existir). Sobre a imagem há uma <strong>tarja</strong> com frase de engajamento (edite na legenda).
-          O <strong>PNG 1:1</strong> junta foto (se o servidor permitir download via rede) + título + tarja. Sem miniatura ou com bloqueio CORS, o fundo usa o
-          estilo Politapp. Confira sempre na <strong>fonte original</strong> antes de publicar.
+          Busca pública no <strong>Google News</strong> (várias queries em paralelo), remove duplicados e procura
+          <strong>miniaturas no HTML do feed</strong> (incl. gstatic do Google). Se faltar, tenta
+          <strong>imagem de preview do site</strong> (Microlink, sujeita a limite; sem chave). Se a miniatura bloquear hotlink, usa
+          <strong>proxy weserv.nl</strong> no cartão e no export quando a rede permitir. A <strong>tarja</strong> fica por cima. Confira na
+          <strong>fonte original</strong> antes de publicar.
         </p>
         <div class="noticias-pauta-toolbar">
           <span class="seg-status" id="noticiasPautaStatus" aria-live="polite">A carregar notícias…</span>
@@ -2062,18 +2063,32 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       return py;
     }
 
+    function weservProxyUrl(srcUrl) {
+      const s = String(srcUrl || "").trim();
+      if (!s || !/^https?:\/\//i.test(s)) return "";
+      return "https://images.weserv.nl/?url=" + encodeURIComponent(s) + "&w=1200&we";
+    }
+
     async function tryGetImageBitmapFromUrl(url) {
       const u = String(url || "").trim();
       if (!u || !/^https?:\/\//i.test(u)) return null;
-      try {
-        const r = await fetch(u, { mode: "cors", cache: "no-cache" });
-        if (!r.ok) return null;
-        const blob = await r.blob();
-        if (!blob.type.startsWith("image/") && !/\.(jpe?g|png|gif|webp|avif)(\?|#|$)/i.test(u)) return null;
-        return await createImageBitmap(blob);
-      } catch {
-        return null;
-      }
+      const tryOnce = async (src) => {
+        try {
+          const r = await fetch(src, { mode: "cors", cache: "no-cache" });
+          if (!r.ok) return null;
+          const blob = await r.blob();
+          if (
+            !blob.type.startsWith("image/") &&
+            !/\.(jpe?g|png|gif|webp|avif|bmp)(\?|#|$)/i.test(u)
+          ) {
+            return null;
+          }
+          return await createImageBitmap(blob);
+        } catch {
+          return null;
+        }
+      };
+      return (await tryOnce(u)) || (await tryOnce(weservProxyUrl(u))) || null;
     }
 
     /**
@@ -2211,6 +2226,46 @@ Fonte: ${item.fonte}
 #SegurançaPública #Brasil`;
     }
 
+    async function fetchOgImageMicrolink(pageUrl) {
+      const u = String(pageUrl || "").trim();
+      if (!u || u === "#" || !/^https?:\/\//i.test(u)) return "";
+      try {
+        const api = "https://api.microlink.io/?url=" + encodeURIComponent(u);
+        const r = await fetch(api, { method: "GET" });
+        if (!r.ok) return "";
+        const j = await r.json();
+        const d = j && j.data;
+        if (!d) return "";
+        const im = d.image;
+        if (im && typeof im === "string" && /^https?:\/\//i.test(im)) return im;
+        if (im && im.url && /^https?:\/\//i.test(String(im.url))) return String(im.url);
+        if (d.logo && d.logo.url && /^https?:\/\//i.test(String(d.logo.url))) return String(d.logo.url);
+      } catch {
+        return "";
+      }
+      return "";
+    }
+
+    async function enrichNoticiaImagem(item) {
+      const base = { ...item };
+      const existing = String(base.imagemUrl || "").trim();
+      if (existing) {
+        base.imagemFonte = base.imagemFonte || "rss";
+        return base;
+      }
+      const page = String(base.url || "").trim();
+      if (page && page !== "#") {
+        const og = await fetchOgImageMicrolink(page);
+        if (og) {
+          base.imagemUrl = og;
+          base.imagemFonte = "og";
+          return base;
+        }
+      }
+      base.imagemFonte = "none";
+      return base;
+    }
+
     function renderNoticiasPautaCards(items) {
       const grid = document.getElementById("noticiasPautaGrid");
       if (!grid) return;
@@ -2239,16 +2294,18 @@ Fonte: ${item.fonte}
           }${
             hasImg
               ? " · " +
-                "<span>Imagem do feed RSS" +
-                (it.imagemUrl && String(it.imagemUrl).toLowerCase().includes("gstatic") ? " (Google)" : "") +
+                "<span>" +
+                (it.imagemFonte === "og"
+                  ? "Imagem (preview do site, Microlink)"
+                  : "Imagem do feed (RSS)") +
                 "</span>"
-              : " · " + "<span>Sem miniatura no feed — pré-visual com fundo Politapp</span>"
+              : " · " + "<span>Sem imagem de apoio — use o fundo Politapp</span>"
           }</p>
           <div class="noticias-visual-stack" role="img" aria-label="Pré-visualização: foto da notícia com tarja de engajamento">
             <div class="noticias-visual-fallback" aria-hidden="true"></div>
             ${
               hasImg
-                ? `<img class="noticias-bg" crossorigin="anonymous" referrerpolicy="no-referrer" src="${imgSrc}" width="400" height="400" alt="" loading="lazy" />`
+                ? `<img class="noticias-bg" referrerpolicy="no-referrer" data-orig="${imgSrc}" width="400" height="400" src="${imgSrc}" alt="" loading="lazy" decoding="async" />`
                 : ""
             }
             <span class="noticias-visual-pill" aria-hidden="true">Foto + tarja</span>
@@ -2281,7 +2338,7 @@ Fonte: ${item.fonte}
     async function loadNoticiasPauta() {
       const st = document.getElementById("noticiasPautaStatus");
       const grid = document.getElementById("noticiasPautaGrid");
-      if (st) st.textContent = "A buscar notícias no Google News…";
+      if (st) st.textContent = "A buscar notícias e imagens (feed + preview dos sites)…";
       if (typeof fetchGoogleNewsPosts !== "function") {
         if (st) st.textContent = "Função de notícias indisponível (recarregue a página).";
         return;
@@ -2310,10 +2367,14 @@ Fonte: ${item.fonte}
         if (picked.length < 3) picked = merged;
 
         const shuffled = shuffleInPlace(picked);
-        const finalList = shuffled.slice(0, 6).map((it, i) => ({ ...it, _tarja: pickTarjaEfeito(it, i) }));
-        renderNoticiasPautaCards(finalList);
+        const withTarja = shuffled
+          .slice(0, 6)
+          .map((it, i) => ({ ...it, _tarja: pickTarjaEfeito(it, i) }));
+        const enriched = await Promise.all(withTarja.map((it) => enrichNoticiaImagem(it)));
+        renderNoticiasPautaCards(enriched);
         const t = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-        if (st) st.textContent = `Pauta: ${finalList.length} notícia(s) · fotos do feed + tarjas · ${t}`;
+        const nImg = enriched.filter((x) => x.imagemUrl && String(x.imagemUrl).trim()).length;
+        if (st) st.textContent = `Pauta: ${enriched.length} notícia(s) · ${nImg} com imagem · ${t}`;
       } catch (e) {
         if (grid) {
           grid.innerHTML = `<p class="note err" style="margin:0">Não foi possível carregar as notícias. Verifique a ligação à Internet ou tente de novo. (${escapeHtml(
@@ -2330,7 +2391,17 @@ Fonte: ${item.fonte}
         "error",
         (e) => {
           const t = e.target;
-          if (t && t.classList && t.classList.contains("noticias-bg")) t.classList.add("is-hidden");
+          if (!t || !t.classList || !t.classList.contains("noticias-bg")) return;
+          const orig = t.getAttribute("data-orig");
+          if (orig && t.getAttribute("data-tried-weserv") !== "1") {
+            t.setAttribute("data-tried-weserv", "1");
+            const w = weservProxyUrl(orig);
+            if (w) {
+              t.src = w;
+              return;
+            }
+          }
+          t.classList.add("is-hidden");
         },
         true
       );
@@ -2596,39 +2667,118 @@ Fonte: ${item.fonte}
         .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
     }
 
-    /** Thumbnail do item RSS (enclosure, img na descrição, og:image). */
+    function rssItemHtmlBundle(item) {
+      if (!item) return "";
+      return [
+        item.description,
+        item.content,
+        item["content:encoded"],
+        item["content:encodedCDATA"],
+        item.summary,
+      ]
+        .filter(Boolean)
+        .map((x) => String(x))
+        .join("\n");
+    }
+
+    function looksLikePhotoUrl(u) {
+      const low = u.toLowerCase();
+      if (!/^https?:\/\//i.test(u)) return false;
+      if (low.includes("favicon") || /\/favicon\./.test(low)) return false;
+      if (low.includes("logo-google") && low.includes("gstatic.com")) return false;
+      if (low.includes("spacer") || low.includes("pixel") || low.includes("1x1")) return false;
+      if (
+        low.includes("gstatic.com") ||
+        low.includes("ggpht.com") ||
+        low.includes("googleusercontent.com") ||
+        low.includes("encrypted-tbn")
+      ) {
+        return !low.includes("/favicon");
+      }
+      return /\.(jpe?g|png|gif|webp|avif|bmp)(\?|#|$|&)/i.test(u) || low.includes("wp-content") || low.includes("media.");
+    }
+
+    function scoreImageCandidate(u) {
+      const low = u.toLowerCase();
+      let s = 0;
+      if (looksLikePhotoUrl(u)) s += 5;
+      if (low.includes("gstatic") || low.includes("ggpht") || low.includes("googleusercontent")) s += 4;
+      if (/\b(w=\d{3,}|width=\d{3,})\b/i.test(u)) s += 2;
+      if (u.length > 80) s += 1;
+      return s;
+    }
+
+    /** Thumbnail: enclosure, media tags, description/content HTML (Google News usa gstatic no feed). */
     function extractRssItemImageUrl(item) {
       if (!item) return "";
       const enc = item.enclosure;
-      const encLink = enc && enc.link ? String(enc.link).trim() : "";
-      if (encLink && /^https?:\/\//i.test(encLink)) {
-        const t = String(enc.type || "");
-        if (/^image\//i.test(t) || /\.(jpe?g|png|gif|webp|avif|bmp)(\?|#|$)/i.test(encLink)) {
-          return decodeHtmlEntities(encLink);
+      const encs = enc && (Array.isArray(enc) ? enc : [enc]);
+      if (encs && encs.length) {
+        for (const e of encs) {
+          const encLink = e && e.link ? String(e.link).trim() : "";
+          if (encLink && /^https?:\/\//i.test(encLink)) {
+            const t = String((e && e.type) || "");
+            if (/^image\//i.test(t) || /\.(jpe?g|png|gif|webp|avif|bmp)(\?|#|$)/i.test(encLink) || !t) {
+              return decodeHtmlEntities(encLink);
+            }
+          }
         }
       }
       if (item.thumbnail) {
         const th = String(item.thumbnail).trim();
         if (/^https?:\/\//i.test(th)) return decodeHtmlEntities(th);
       }
-      const html = String(item.description || "");
-      const re = /<img[^>]+(?:\bsrc|\bdata-src)\s*=\s*["']([^"']+)["']/gi;
+
+      const html = rssItemHtmlBundle(item);
+      if (!html) return "";
+
+      const found = new Set();
+      const candidates = [];
+      const pushU = (raw) => {
+        const u0 = decodeHtmlEntities(String(raw || "").trim());
+        if (!u0 || !/^https?:\/\//i.test(u0)) return;
+        if (found.has(u0)) return;
+        found.add(u0);
+        candidates.push(u0);
+      };
+
+      const reAttr =
+        /<img[^>]+?(?:\bsrc|\bdata-src)\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi;
       let m;
-      while ((m = re.exec(html)) !== null) {
-        const u0 = decodeHtmlEntities(m[1].trim());
-        if (!/^https?:\/\//i.test(u0)) continue;
-        const low = u0.toLowerCase();
-        if (low.includes("favicon")) continue;
-        if (low.includes("logo-google") || low.includes("gstatic.com/favicon")) continue;
-        if (low.includes("news.google.com") && (low.includes("icon") || low.includes("sassets"))) continue;
-        return u0;
+      while ((m = reAttr.exec(html)) !== null) {
+        pushU(m[1] || m[2] || m[3] || "");
       }
-      const og = html.match(/property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
-      if (og) {
-        const u = decodeHtmlEntities(og[1].trim());
-        if (/^https?:\/\//i.test(u)) return u;
+
+      const reSrcset = /srcset\s*=\s*["']([^"']+)["']/gi;
+      while ((m = reSrcset.exec(html)) !== null) {
+        const part = (m[1] || "").split(",")[0].trim().split(/\s+/)[0];
+        if (part) pushU(part);
       }
-      return "";
+
+      const og1 = html.match(/property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+      if (og1) pushU(og1[1]);
+      const og2 = html.match(/content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+      if (og2) pushU(og2[1]);
+
+      const metaTw = html.match(
+        /name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i
+      );
+      if (metaTw) pushU(metaTw[1]);
+
+      if (!candidates.length) {
+        const plain = String(item.description || "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s+/g, " ");
+        const reUrl = /(https?:\/\/[^\s"'<>]+\.(jpe?g|png|gif|webp|avif)(?:\?[^\s"'<>]*)?)/gi;
+        let um;
+        while ((um = reUrl.exec(plain)) !== null) {
+          pushU(um[1]);
+        }
+      }
+
+      if (!candidates.length) return "";
+      candidates.sort((a, b) => scoreImageCandidate(b) - scoreImageCandidate(a));
+      return candidates[0];
     }
 
     /**
