@@ -2219,13 +2219,12 @@ Fonte: ${item.fonte}
       noticiasPautaCache = items;
       const html = items
         .map((it, idx) => {
-          const { dataUrl } = drawPolitappSocialImage({
-            title: it.titulo,
-            kicker: it._kicker || "Segurança",
-            footnote: "Fonte: confirme no veículo antes de publicar",
-          });
           const legenda = buildLegendaNoticia(it);
           const urlOk = it.url && it.url !== "#";
+          const hasImg = !!(it.imagemUrl && String(it.imagemUrl).trim());
+          const imgSrc = hasImg ? escapeHtml(String(it.imagemUrl).trim()) : "";
+          const tarja = escapeHtml(String(it._tarja || pickTarjaEfeito(it, idx)));
+          const tituloBreve = escapeHtml(String(it.titulo).slice(0, 120)) + (it.titulo.length > 120 ? "…" : "");
           return `<article class="exemplo-bloco noticias-pauta-card" data-idx="${idx}">
           <div class="meta">Notícia + modelo · ${escapeHtml(it._kicker || "Pauta")}</div>
           <h3>${escapeHtml(it.titulo)}</h3>
@@ -2234,8 +2233,27 @@ Fonte: ${item.fonte}
               ? " · " +
                 new Date(it.dataIso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
               : ""
+          }${
+            hasImg
+              ? " · " +
+                "<span>Imagem do feed RSS" +
+                (it.imagemUrl && String(it.imagemUrl).toLowerCase().includes("gstatic") ? " (Google)" : "") +
+                "</span>"
+              : " · " + "<span>Sem miniatura no feed — pré-visual com fundo Politapp</span>"
           }</p>
-          <div class="noticias-canvas-wrap" aria-hidden="true"><img src="${dataUrl}" width="1080" height="1080" alt="" loading="lazy" /></div>
+          <div class="noticias-visual-stack" role="img" aria-label="Pré-visualização: foto da notícia com tarja de engajamento">
+            <div class="noticias-visual-fallback" aria-hidden="true"></div>
+            ${
+              hasImg
+                ? `<img class="noticias-bg" crossorigin="anonymous" referrerpolicy="no-referrer" src="${imgSrc}" width="400" height="400" alt="" loading="lazy" />`
+                : ""
+            }
+            <span class="noticias-visual-pill" aria-hidden="true">Foto + tarja</span>
+            <div class="noticias-visual-tarja">
+              <span class="noticias-tarja-efeito">${tarja}</span>
+              <p class="noticias-titulo-breve">${tituloBreve}</p>
+            </div>
+          </div>
           <div class="post-sample">
             <div class="ps-label">Rascunho de legenda (copiar e editar)</div>
             <pre style="white-space:pre-wrap;margin:0;font-family:inherit;font-size:0.8rem;color:var(--muted)">${escapeHtml(legenda)}</pre>
