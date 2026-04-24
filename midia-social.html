@@ -637,6 +637,62 @@
       gap: 1rem;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     }
+    .noticias-pauta-box {
+      margin: 0 0 1.35rem;
+      padding: 1rem 1.15rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.45);
+    }
+    .noticias-pauta-box h3 {
+      margin: 0 0 0.45rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .noticias-pauta-box > .note {
+      margin: 0 0 0.75rem !important;
+    }
+    .noticias-pauta-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .noticias-pauta-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .noticias-pauta-card .noticias-canvas-wrap {
+      margin: 0.5rem 0 0.65rem;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      line-height: 0;
+    }
+    .noticias-pauta-card .noticias-canvas-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .noticias-pauta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .noticias-pauta-foot {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+    #noticiasPautaStatus {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
     .exemplo-bloco {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -1368,10 +1424,23 @@
           </p>
         </div>
         <div class="exemplos-toolbar">
-          <button type="button" class="btn-seg" id="exemplosRefresh" title="Sorteia um novo lote: modelos fixos + combinações dos termômetros temáticos">Atualizar</button>
+          <button type="button" class="btn-seg" id="exemplosRefresh" title="Gera de novo: modelos fixos, combinações dos termômetros e um novo lote de notícias com imagens para redes">Atualizar</button>
         </div>
       </div>
-      <p class="note" id="exemplosRefreshHint" aria-live="polite" style="margin:0 0 1rem">Carregue ou clique em «Atualizar» para gerar um lote de modelos.</p>
+      <p class="note" id="exemplosRefreshHint" aria-live="polite" style="margin:0 0 1rem">Clique em «Atualizar» para renovar sugestões de modelos e a pauta com notícias (segurança e crime) com imagem para post.</p>
+
+      <div class="noticias-pauta-box" id="noticiasPautaBox" aria-label="Pauta com notícias e imagem para post">
+        <h3>Pauta com notícias — segurança, crime e justiça</h3>
+        <p class="note" style="margin:0 0 0.75rem">
+          Busca pública no <strong>Google News</strong> (várias queries em paralelo), remove duplicados e monta
+          <strong>modelo de post</strong> + <strong>imagem 1:1</strong> (PNG) pronta para Instagram ou outras redes. Confira sempre o texto na
+          <strong>fonte original</strong> antes de publicar; o resumo do agregador pode ser incompleto.
+        </p>
+        <div class="noticias-pauta-toolbar">
+          <span class="seg-status" id="noticiasPautaStatus" aria-live="polite">A carregar notícias…</span>
+        </div>
+        <div class="noticias-pauta-grid" id="noticiasPautaGrid" aria-live="polite"></div>
+      </div>
 
       <div class="post-gerador" id="postGerador">
         <h3>Gerador de conteúdo para post</h3>
@@ -1846,8 +1915,266 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       grid.innerHTML = pool.slice(0, 6).join("");
       const hint = document.getElementById("exemplosRefreshHint");
       if (hint) {
-        hint.textContent = `Lote com 6 sugestões — atualizado às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`;
+        hint.textContent = `Modelos: 6 sugestões — ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}. Use «Atualizar» para renovar também a pauta de notícias abaixo.`;
       }
+    }
+
+    /** Pauta dinâmica: notícias (Google News via RSS) + imagem exportável — usa fetchGoogleNewsPosts (definido mais abaixo). */
+    const NOTICIAS_PAUTA_QUERIES = [
+      { kicker: "Crime e investigação", q: "crime polícia investigação prisão Brasil", limit: 7 },
+      { kicker: "Segurança pública", q: "segurança pública operação policial PM Brasil", limit: 7 },
+      { kicker: "Violência e justiça", q: "violência urbana justiça MP operação Brasil", limit: 6 },
+      { kicker: "Rio e segurança", q: "segurança Rio de Janeiro polícia PM", limit: 6 },
+    ];
+    const NOTICIA_DATA_MIN = "2025-01-01T00:00:00.000Z";
+    let noticiasPautaCache = [];
+
+    function noticiaDedupKey(titulo) {
+      return String(titulo || "")
+        .toLowerCase()
+        .replace(/["'`«»]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = String(text || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ");
+      let line = "";
+      let py = y;
+      const maxLines = 6;
+      let nline = 0;
+      for (let n = 0; n < words.length; n++) {
+        const test = line ? `${line} ${words[n]}` : words[n];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, py);
+          line = words[n];
+          py += lineHeight;
+          nline++;
+          if (nline >= maxLines) {
+            line += "…";
+            break;
+          }
+        } else {
+          line = test;
+        }
+      }
+      if (line && nline < maxLines) {
+        ctx.fillText(line, x, py);
+        py += lineHeight;
+      }
+      return py;
+    }
+
+    function drawPolitappSocialImage({ title, kicker, footnote }) {
+      const W = 1080;
+      const H = 1080;
+      const c = document.createElement("canvas");
+      c.width = W;
+      c.height = H;
+      const ctx = c.getContext("2d");
+      if (!ctx) return { dataUrl: "", w: W, h: H };
+
+      const g = ctx.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, "#0b1220");
+      g.addColorStop(0.45, "#132a4a");
+      g.addColorStop(1, "#0f172a");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "rgba(61, 139, 253, 0.14)";
+      ctx.beginPath();
+      ctx.arc(W * 0.88, H * 0.12, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#7cb6ff";
+      ctx.font = "500 32px 'DM Sans', system-ui, sans-serif";
+      ctx.fillText("Politapp · pauta segurança", 72, 95);
+
+      ctx.fillStyle = "#9ec5ff";
+      ctx.font = "600 28px 'DM Sans', system-ui, sans-serif";
+      const kick = String(kicker || "Segurança").slice(0, 80);
+      ctx.fillText(kick, 72, 150);
+
+      ctx.fillStyle = "#f1f5f9";
+      ctx.font = "700 48px 'DM Sans', system-ui, sans-serif";
+      const t = String(title || "Título indisponível").trim();
+      const bottom = wrapTextCanvas(ctx, t, 72, 320, W - 144, 58);
+
+      ctx.strokeStyle = "rgba(61, 139, 253, 0.55)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(72, 300);
+      ctx.lineTo(320, 300);
+      ctx.stroke();
+
+      const foot = String(footnote || "Cite a fonte ao publicar").slice(0, 120);
+      ctx.fillStyle = "rgba(148, 163, 184, 0.95)";
+      ctx.font = "400 28px 'DM Sans', system-ui, sans-serif";
+      ctx.fillText(foot, 72, Math.max(bottom + 40, 880));
+
+      return { dataUrl: c.toDataURL("image/png"), w: W, h: H };
+    }
+
+    function buildLegendaNoticia(item) {
+      const snip = String(item.corpo || "")
+        .split(/[.!?]/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 2)
+        .join(". ");
+      const bloco = snip || "Leia a matéria completa e confira o contexto na fonte.";
+      const link = String(item.url || "").trim();
+      const linkLinha = link && link !== "#" ? `\n\n🔗 ${link}` : "";
+      return `${item.titulo}
+
+📌 Rascunho de legenda (edite, cite a fonte e evite sensacionalismo):
+${bloco}
+${linkLinha}
+
+Fonte: ${item.fonte}
+#SegurançaPública #Brasil`;
+    }
+
+    function renderNoticiasPautaCards(items) {
+      const grid = document.getElementById("noticiasPautaGrid");
+      if (!grid) return;
+      if (!items.length) {
+        grid.innerHTML = `<p class="note" style="margin:0">Nenhum item pôde ser obtido. Verifique a rede ou tente «Atualizar» mais tarde (limite do agregador RSS).</p>`;
+        return;
+      }
+      noticiasPautaCache = items;
+      const html = items
+        .map((it, idx) => {
+          const { dataUrl } = drawPolitappSocialImage({
+            title: it.titulo,
+            kicker: it._kicker || "Segurança",
+            footnote: "Fonte: confirme no veículo antes de publicar",
+          });
+          const legenda = buildLegendaNoticia(it);
+          const urlOk = it.url && it.url !== "#";
+          return `<article class="exemplo-bloco noticias-pauta-card" data-idx="${idx}">
+          <div class="meta">Notícia + modelo · ${escapeHtml(it._kicker || "Pauta")}</div>
+          <h3>${escapeHtml(it.titulo)}</h3>
+          <p class="note" style="margin:0;font-size:0.8rem">Fonte: ${escapeHtml(it.fonte)}${
+            it.dataIso
+              ? " · " +
+                new Date(it.dataIso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+              : ""
+          }</p>
+          <div class="noticias-canvas-wrap" aria-hidden="true"><img src="${dataUrl}" width="1080" height="1080" alt="" loading="lazy" /></div>
+          <div class="post-sample">
+            <div class="ps-label">Rascunho de legenda (copiar e editar)</div>
+            <pre style="white-space:pre-wrap;margin:0;font-family:inherit;font-size:0.8rem;color:var(--muted)">${escapeHtml(legenda)}</pre>
+          </div>
+          <div class="noticias-pauta-actions">
+            <button type="button" class="btn-seg noticias-dl" data-idx="${idx}">Baixar imagem (PNG)</button>
+            <button type="button" class="btn-seg secondary noticias-copy" data-idx="${idx}">Copiar legenda</button>
+            ${
+              urlOk
+                ? `<a class="btn-seg secondary" href="${escapeHtml(
+                    it.url
+                  )}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block">Abrir notícia</a>`
+                : ""
+            }
+          </div>
+        </article>`;
+        })
+        .join("");
+      grid.innerHTML = html;
+    }
+
+    async function loadNoticiasPauta() {
+      const st = document.getElementById("noticiasPautaStatus");
+      const grid = document.getElementById("noticiasPautaGrid");
+      if (st) st.textContent = "A buscar notícias no Google News…";
+      if (typeof fetchGoogleNewsPosts !== "function") {
+        if (st) st.textContent = "Função de notícias indisponível (recarregue a página).";
+        return;
+      }
+      const minMs = new Date(NOTICIA_DATA_MIN).getTime();
+      const seen = new Set();
+      const merged = [];
+      try {
+        const settled = await Promise.allSettled(
+          NOTICIAS_PAUTA_QUERIES.map(({ q, limit }) => fetchGoogleNewsPosts(q, limit))
+        );
+        settled.forEach((res, i) => {
+          if (res.status !== "fulfilled" || !Array.isArray(res.value)) return;
+          const { kicker } = NOTICIAS_PAUTA_QUERIES[i];
+          for (const item of res.value) {
+            const k = noticiaDedupKey(item.titulo);
+            if (!k || seen.has(k)) continue;
+            seen.add(k);
+            merged.push({ ...item, _kicker: kicker });
+          }
+        });
+        let picked = merged.filter((it) => {
+          if (!it.dataIso) return true;
+          return new Date(it.dataIso).getTime() >= minMs;
+        });
+        if (picked.length < 3) picked = merged;
+
+        const shuffled = shuffleInPlace(picked);
+        const finalList = shuffled.slice(0, 6);
+        renderNoticiasPautaCards(finalList);
+        const t = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        if (st) st.textContent = `Pauta: ${finalList.length} notícia(s) · imagens prontas · ${t}`;
+      } catch (e) {
+        if (grid) {
+          grid.innerHTML = `<p class="note err" style="margin:0">Não foi possível carregar as notícias. Verifique a ligação à Internet ou tente de novo. (${escapeHtml(
+            (e && e.message) || String(e)
+          )})</p>`;
+        }
+        if (st) st.textContent = "Erro ao buscar notícias.";
+      }
+    }
+
+    function setupNoticiasPautaActions() {
+      document.getElementById("noticiasPautaGrid")?.addEventListener("click", (e) => {
+        const dl = e.target.closest(".noticias-dl");
+        const cp = e.target.closest(".noticias-copy");
+        if (!dl && !cp) return;
+        const idx = parseInt((dl || cp).getAttribute("data-idx") || "-1", 10);
+        const item = noticiasPautaCache[idx];
+        if (!item) return;
+        const st = document.getElementById("noticiasPautaStatus");
+        if (dl) {
+          const { dataUrl } = drawPolitappSocialImage({
+            title: item.titulo,
+            kicker: item._kicker || "Segurança",
+            footnote: "Fonte: confirme no veículo antes de publicar",
+          });
+          const a = document.createElement("a");
+          const safe =
+            noticiaDedupKey(item.titulo)
+              .replace(/[^a-z0-9]+/gi, "-")
+              .replace(/^-|-$/g, "")
+              .slice(0, 48) || "post";
+          a.href = dataUrl;
+          a.download = `politapp-${safe}.png`;
+          a.click();
+          if (st) st.textContent = "Download da imagem iniciado. Confira a pasta de descargas.";
+        }
+        if (cp) {
+          const text = buildLegendaNoticia(item);
+          navigator.clipboard.writeText(text).then(
+            () => {
+              if (st) st.textContent = "Legenda copiada. Revise antes de publicar.";
+            },
+            () => {
+              if (st) st.textContent = "Não foi possível copiar automaticamente; selecione o texto do cartão.";
+            }
+          );
+        }
+      });
+    }
+
+    function refreshExemplosTab() {
+      renderExemplosGrid();
+      loadNoticiasPauta();
     }
 
     function renderTermometros() {
@@ -3904,9 +4231,10 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
 
     function bootMidiaSocialPage() {
       renderTermometros();
-      renderExemplosGrid();
+      refreshExemplosTab();
       setupPostGerador();
-      document.getElementById("exemplosRefresh")?.addEventListener("click", renderExemplosGrid);
+      setupNoticiasPautaActions();
+      document.getElementById("exemplosRefresh")?.addEventListener("click", refreshExemplosTab);
       setupMainTabs();
       setupSegSubtabs();
       setupEscutaApiUi();
