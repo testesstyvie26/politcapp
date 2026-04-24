@@ -117,6 +117,13 @@ function isRecusadaPage() {
     document.documentElement.classList.remove("auth-pending");
     resolveReady({ session, profile });
   } catch (e) {
+    console.error("[politapp] auth-guard:", e);
+    document.documentElement.classList.remove("auth-pending");
     rejectReady(e);
+    try {
+      window.location.replace(loginUrlWithNext());
+    } catch {
+      // Sem redirect: o corpo já deixou de estar oculto; evita tela em branco permanente
+    }
   }
 })();

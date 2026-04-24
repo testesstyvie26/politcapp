@@ -38,6 +38,10 @@
     .site-nav {
       display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
     }
+    html body .wrap > nav.site-nav[aria-label] {
+      position: relative;
+      z-index: 5;
+    }
     .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
     .site-nav a:hover { color: var(--accent); }
     .site-nav a[aria-current="page"] { color: var(--accent); }
@@ -64,6 +68,9 @@
     .note.err { color: #f0a090; }
 
     .tabs {
+      /* Sobre irmãos .panel (site-theme: hover com transform cria empilhamento; senão o painel cobre os cliques) */
+      position: relative;
+      z-index: 3;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
@@ -93,6 +100,8 @@
     .tab-panel[hidden] { display: none !important; }
 
     .subtabs {
+      position: relative;
+      z-index: 2;
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem;
@@ -1273,7 +1282,7 @@
       </ul>
     </section>
 
-    <div class="tabs" role="tablist" aria-label="Seções mídia social — contexto Rio de Janeiro">
+    <div class="tabs" id="mainMidiaSocialTabs" role="tablist" aria-label="Seções mídia social — contexto Rio de Janeiro">
       <button type="button" role="tab" id="tab-termo" aria-selected="true" aria-controls="panel-termo">Termômetros temáticos</button>
       <button type="button" role="tab" id="tab-seg" aria-selected="false" aria-controls="panel-seg">Segurança — escuta social</button>
       <button type="button" role="tab" id="tab-crm" aria-selected="false" aria-controls="panel-crm">Base de apoio (CRM)</button>
@@ -3097,7 +3106,7 @@ Fonte: ${item.fonte}
 
     /** Só abas principais — evita que subtabs escondam panel-termo, etc. */
     function setupMainTabs() {
-      const tablist = document.querySelector('.tabs[aria-label="Seções mídia social"]');
+      const tablist = document.getElementById("mainMidiaSocialTabs");
       if (!tablist) return;
       const tabs = tablist.querySelectorAll(':scope > [role="tab"]');
       const panels = document.querySelectorAll("section.tab-panel[role=\"tabpanel\"]");
@@ -5324,16 +5333,17 @@ Fonte: ${item.fonte}
     }
 
     function bootMidiaSocialPage() {
+      /* Menus primeiro: se algo abaixo falhar, as abas e subtabs continuam a funcionar. */
+      setupMainTabs();
+      setupSegSubtabs();
+      setupCrmUi();
       renderTermometros();
       refreshExemplosTab();
       setupPostGerador();
       setupNoticiasPautaActions();
       registerNoticiasPautaDownloadApi();
       document.getElementById("exemplosRefresh")?.addEventListener("click", refreshExemplosTab);
-      setupMainTabs();
-      setupSegSubtabs();
       setupEscutaApiUi();
-      setupCrmUi();
       document.getElementById("segRefreshPosts")?.addEventListener("click", loadSegPosts);
       setupSegPlatformFilters();
       setupSegComentadoresPagination();
