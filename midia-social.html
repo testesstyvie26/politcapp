@@ -754,6 +754,38 @@
       border: 1px solid rgba(56, 189, 248, 0.45);
       border-radius: 6px;
     }
+    .noticias-pauta-original-links {
+      margin: 0.5rem 0 0.35rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      background: rgba(8, 15, 35, 0.55);
+    }
+    .noticias-pauta-original-links .ps-label {
+      margin-bottom: 0.35rem;
+    }
+    .noticias-pauta-original-links .noticias-link-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .noticias-pauta-original-links .noticias-link-list li {
+      margin-bottom: 0.3rem;
+    }
+    .noticias-pauta-original-links .noticias-link-list li:last-child {
+      margin-bottom: 0;
+    }
+    .noticias-pauta-original-links a {
+      color: #7dd3fc;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 0.12em;
+    }
+    .noticias-pauta-original-links a:hover {
+      color: #bae6fd;
+    }
     .noticias-pauta-actions {
       display: flex;
       flex-wrap: wrap;
@@ -2280,8 +2312,14 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
         .slice(0, 2)
         .join(". ");
       const bloco = snip || "Leia a matéria completa e confira o contexto na fonte.";
-      const link = String(item.url || "").trim();
-      const linkLinha = link && link !== "#" ? `\n\n🔗 ${link}` : "";
+      const uArt = String(item.url || "").trim();
+      const uFeed = String(item.linkRss || "").trim();
+      const linhasOrig = [];
+      if (uArt && uArt !== "#") linhasOrig.push(`🔗 Matéria (original / veículo): ${uArt}`);
+      if (uFeed && uFeed !== "#" && uFeed !== uArt) {
+        linhasOrig.push(`📰 No Google News / ligação do feed: ${uFeed}`);
+      }
+      const linkLinha = linhasOrig.length ? "\n\n" + linhasOrig.join("\n") : "";
       const tarjaLinha = item._tarja
         ? `\n✦ Tarja (engajamento): ${item._tarja}`
         : "";
@@ -2354,6 +2392,49 @@ Fonte: ${item.fonte}
       }
     }
 
+    function extractImageFromEmbeddedJsonLd(html) {
+      if (!html || html.length < 80) return "";
+      const re = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+      let m;
+      while ((m = re.exec(html)) !== null) {
+        const inner = String(m[1] || "")
+          .replace(/^\s*<!\[CDATA\[([\s\S]*)\]\]>\s*$/i, "$1")
+          .trim();
+        if (!inner) continue;
+        const tryPick = (node) => {
+          if (!node) return "";
+          if (typeof node === "string" && /^https?:\/\//i.test(node)) return node.trim();
+          if (typeof node === "object" && node !== null) {
+            if (node.url && /^https?:\/\//i.test(String(node.url))) return String(node.url).trim();
+            if (node["@type"] === "ImageObject" && node.contentUrl) return tryPick(node.contentUrl);
+            if (node.image) return tryPick(node.image);
+          }
+          if (Array.isArray(node)) {
+            for (const x of node) {
+              const u = tryPick(x);
+              if (u) return u;
+            }
+          }
+          return "";
+        };
+        try {
+          const o = JSON.parse(inner);
+          let u = tryPick(o);
+          if (!u && o && Array.isArray(o["@graph"])) {
+            for (const g of o["@graph"]) {
+              u = tryPick(g && g.image);
+              if (u) break;
+            }
+          }
+          if (u && !isLowQualityOrPlaceholderImageUrl(u)) return u;
+        } catch {
+          const um = inner.match(/"image"\s*:\s*"(https?:\/\/[^"]+)"/i);
+          if (um && um[1] && !isLowQualityOrPlaceholderImageUrl(um[1])) return um[1].trim();
+        }
+      }
+      return "";
+    }
+
     function parseOgImageFromHtml(html, basePageUrl) {
       if (!html || html.length < 50) return "";
       const base = String(basePageUrl || "https://example.com/").trim();
@@ -2414,26 +2495,60 @@ Fonte: ${item.fonte}
         /<img[^>]+(?:\bsrc|\bdata-src)\s*=\s*["'](https?:\/\/[^"']{10,})/i
       );
       if (im && im[1] && !isLowQualityOrPlaceholderImageUrl(im[1])) return im[1];
+      const ld = extractImageFromEmbeddedJsonLd(html);
+      if (ld) return ld;
       return "";
+    }
+
+    function htmlLooksUsable(t) {
+      if (!t || t.length < 100) return false;
+      if (/<html[\s>]/i.test(t) && t.length > 400) return true;
+      if (/og:image|twitter:image|application\/ld\+json/i.test(t)) return true;
+      return t.length > 2000;
     }
 
     async function fetchHtmlTextThroughProxy(pageUrl) {
       const u = String(pageUrl || "").trim();
       if (!u || !/^https?:\/\//i.test(u)) return "";
-      const proxies = [
-        "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
-        "https://corsproxy.io/?" + encodeURIComponent(u),
-      ];
-      for (const p of proxies) {
-        try {
-          const ctrl = new AbortController();
-          const to = setTimeout(() => ctrl.abort(), 15000);
-          const r = await fetch(p, { method: "GET", signal: ctrl.signal, cache: "no-store" });
-          clearTimeout(to);
-          if (!r.ok) continue;
+      const attempts = [
+        async () => {
+          const r = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(u), {
+            cache: "no-store",
+          });
+          if (!r.ok) return "";
+          const j = await r.json();
+          const t = (j && j.contents) || "";
+          return htmlLooksUsable(t) ? t : "";
+        },
+        async () => {
+          const r = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(u), {
+            cache: "no-store",
+          });
+          if (!r.ok) return "";
           const t = await r.text();
-          if (t && t.length > 200 && (/<html/i.test(t) || /og:image|twitter:image/i.test(t)))
-            return t;
+          return htmlLooksUsable(t) ? t : "";
+        },
+        async () => {
+          const r = await fetch("https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u), {
+            cache: "no-store",
+          });
+          if (!r.ok) return "";
+          const t = await r.text();
+          return htmlLooksUsable(t) ? t : "";
+        },
+        async () => {
+          const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(u), {
+            cache: "no-store",
+          });
+          if (!r.ok) return "";
+          const t = await r.text();
+          return htmlLooksUsable(t) ? t : "";
+        },
+      ];
+      for (const fn of attempts) {
+        try {
+          const t = await fn();
+          if (t) return t;
         } catch {
           /* próximo proxy */
         }
@@ -2579,6 +2694,33 @@ Fonte: ${item.fonte}
           const tarja = escapeHtml(String(it._tarja || pickTarjaEfeito(it, idx)));
           const rawTit = String(it.titulo);
           const tituloBreve = escapeHtml(rawTit.length > 120 ? rawTit.slice(0, 120) + "…" : rawTit);
+          const uArt = String(it.url || "").trim();
+          const uFeed = String(it.linkRss || "").trim();
+          const hasArt = uArt && uArt !== "#";
+          const hasFeed = uFeed && /^https?:\/\//.test(uFeed);
+          const showFeedLink = hasFeed && (!hasArt || uFeed !== uArt);
+          const originalLinksBlock =
+            hasArt || showFeedLink
+              ? `<div class="noticias-pauta-original-links">
+            <div class="ps-label">Post original</div>
+            <ul class="noticias-link-list">
+              ${
+                hasArt
+                  ? `<li><a href="${escapeHtml(
+                      uArt
+                    )}" target="_blank" rel="noopener noreferrer">Matéria no veículo (link original)</a></li>`
+                  : ""
+              }
+              ${
+                showFeedLink
+                  ? `<li><a href="${escapeHtml(
+                      uFeed
+                    )}" target="_blank" rel="noopener noreferrer">Entrada no Google News (agregador RSS)</a></li>`
+                  : ""
+              }
+            </ul>
+          </div>`
+              : "";
           return `<article class="exemplo-bloco noticias-pauta-card" data-idx="${idx}">
           <div class="meta">Notícia + modelo · ${escapeHtml(it._kicker || "Pauta")}</div>
           <h3>${escapeHtml(it.titulo)}</h3>
@@ -2597,6 +2739,7 @@ Fonte: ${item.fonte}
                 "</span>"
               : " · " + "<span>Sem imagem de apoio — use o fundo Politapp</span>"
           }</p>
+          ${originalLinksBlock}
           <div class="noticias-visual-stack" role="img" aria-label="Pré-visualização: foto da notícia com tarja de engajamento">
             <div class="noticias-visual-fallback" aria-hidden="true"></div>
             ${
@@ -2621,7 +2764,18 @@ Fonte: ${item.fonte}
               urlOk
                 ? `<a class="btn-seg secondary" href="${escapeHtml(
                     it.url
-                  )}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block">Abrir notícia</a>`
+                  )}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block">Abrir matéria original</a>`
+                : showFeedLink && !hasArt
+                  ? `<a class="btn-seg secondary" href="${escapeHtml(
+                      uFeed
+                    )}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block">Abrir no Google News</a>`
+                  : ""
+            }
+            ${
+              hasArt && showFeedLink
+                ? `<a class="btn-seg secondary" href="${escapeHtml(
+                    uFeed
+                  )}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block">Google News (feed)</a>`
                 : ""
             }
           </div>
