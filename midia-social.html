@@ -663,7 +663,19 @@
     .noticias-pauta-grid {
       display: grid;
       gap: 1rem;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    }
+    .noticias-pauta-card {
+      min-width: 0;
+    }
+    .noticias-pauta-card .post-sample pre {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-width: 100%;
+    }
+    .noticias-pauta-original-links a {
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
     .noticias-pauta-card .noticias-canvas-wrap,
     .noticias-pauta-card .noticias-visual-stack {
@@ -2315,9 +2327,23 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       const uArt = String(item.url || "").trim();
       const uFeed = String(item.linkRss || "").trim();
       const linhasOrig = [];
-      if (uArt && uArt !== "#") linhasOrig.push(`🔗 Matéria (original / veículo): ${uArt}`);
+      if (uArt && uArt !== "#") {
+        if (isUnwieldyUrlForLegenda(uArt)) {
+          linhasOrig.push(
+            "🔗 Matéria (veículo): ligação no bloco «Post original» / botão no cartão (evita colar URL muito longa)."
+          );
+        } else {
+          linhasOrig.push(`🔗 Matéria (original / veículo): ${uArt}`);
+        }
+      }
       if (uFeed && uFeed !== "#" && uFeed !== uArt) {
-        linhasOrig.push(`📰 No Google News / ligação do feed: ${uFeed}`);
+        if (isUnwieldyUrlForLegenda(uFeed)) {
+          linhasOrig.push(
+            "📰 Google News (agregador): use o bloco «Post original» ou o botão «Google News (feed)» no cartão."
+          );
+        } else {
+          linhasOrig.push(`📰 No Google News / ligação do feed: ${uFeed}`);
+        }
       }
       const linkLinha = linhasOrig.length ? "\n\n" + linhasOrig.join("\n") : "";
       const tarjaLinha = item._tarja
@@ -2353,11 +2379,15 @@ Fonte: ${item.fonte}
       if (low.includes("gstatic.com") && (low.includes("/icon") || /\/(icons?|favicon)\//.test(low) || /[/-]favicon/i.test(s)))
         return true;
       if (low.includes("ggpht.com") && (low.includes("logo") || low.includes("favicon"))) return true;
-      if (/[?&]w=(?:1[0-9]|[0-9])(?:&|$)/i.test(s) && (low.includes("gstatic") || low.includes("google")))
-        return true;
-      if (/[?&]h=(?:1[0-9]|[0-9])(?:&|$)/i.test(s) && (low.includes("gstatic") || low.includes("google")))
-        return true;
       if (low.includes("gnews") && low.includes("icon")) return true;
+      return false;
+    }
+
+    /** True se a URL for desconfortável na legenda (muito longa e quebra o layout do cartão). */
+    function isUnwieldyUrlForLegenda(u) {
+      const s = String(u || "");
+      if (s.length > 100) return true;
+      if (/news\.google\.com\/rss\/articles\//i.test(s)) return true;
       return false;
     }
 
@@ -2690,7 +2720,12 @@ Fonte: ${item.fonte}
           const legenda = buildLegendaNoticia(it);
           const urlOk = it.url && it.url !== "#";
           const hasImg = !!(it.imagemUrl && String(it.imagemUrl).trim());
-          const imgSrc = hasImg ? escapeHtml(String(it.imagemUrl).trim()) : "";
+          const rawImgForCard = hasImg ? String(it.imagemUrl).trim() : "";
+          const imgWeserv = hasImg && rawImgForCard ? weservProxyUrl(rawImgForCard) : "";
+          const imgSrcDisplay = hasImg
+            ? imgWeserv || escapeHtml(rawImgForCard)
+            : "";
+          const rawImgAttr = hasImg ? escapeHtml(rawImgForCard) : "";
           const tarja = escapeHtml(String(it._tarja || pickTarjaEfeito(it, idx)));
           const rawTit = String(it.titulo);
           const tituloBreve = escapeHtml(rawTit.length > 120 ? rawTit.slice(0, 120) + "…" : rawTit);
@@ -2744,7 +2779,7 @@ Fonte: ${item.fonte}
             <div class="noticias-visual-fallback" aria-hidden="true"></div>
             ${
               hasImg
-                ? `<img class="noticias-bg" referrerpolicy="no-referrer" data-orig="${imgSrc}" width="400" height="400" src="${imgSrc}" alt="" loading="lazy" decoding="async" />`
+                ? `<img class="noticias-bg" referrerpolicy="no-referrer" data-orig="${rawImgAttr}" width="400" height="400" src="${imgSrcDisplay}" alt="" loading="lazy" decoding="async" />`
                 : ""
             }
             <span class="noticias-visual-pill" aria-hidden="true">Foto + tarja</span>
@@ -2843,11 +2878,20 @@ Fonte: ${item.fonte}
           const t = e.target;
           if (!t || !t.classList || !t.classList.contains("noticias-bg")) return;
           const orig = t.getAttribute("data-orig");
-          if (orig && t.getAttribute("data-tried-weserv") !== "1") {
-            t.setAttribute("data-tried-weserv", "1");
-            const w = weservProxyUrl(orig);
+          if (t.getAttribute("data-tried-fallback") !== "1") {
+            t.setAttribute("data-tried-fallback", "1");
+            const s = t.src || "";
+            if (orig && s.indexOf("images.weserv.nl") >= 0) {
+              t.src = orig;
+              return;
+            }
+            const w = orig && weservProxyUrl(orig);
             if (w) {
               t.src = w;
+              return;
+            }
+            if (orig) {
+              t.src = orig;
               return;
             }
           }
@@ -3173,6 +3217,23 @@ Fonte: ${item.fonte}
         const oi = decodeHtmlEntities(item.image.trim());
         if (!isLowQualityOrPlaceholderImageUrl(oi)) return oi;
       }
+      const pickRss2JsonMediaUrl = (m) => {
+        if (m == null) return "";
+        if (typeof m === "string" && /^https?:\/\//i.test(m.trim())) return decodeHtmlEntities(m.trim());
+        if (typeof m === "object" && m !== null) {
+          const u = m.url || m.href || m.link || (m.$ && m.$.url);
+          if (u && typeof u === "string" && /^https?:\/\//i.test(u.trim())) {
+            const type = (m.$ && m.$.type) || m.type || m.medium || "";
+            if (type && !/^image\//i.test(type) && !/\.(jpe?g|png|gif|webp|avif)(\?|#|$)/i.test(u)) return "";
+            return decodeHtmlEntities(u.trim());
+          }
+        }
+        return "";
+      };
+      const mThumb = pickRss2JsonMediaUrl(item["media:thumbnail"]);
+      if (mThumb && !isLowQualityOrPlaceholderImageUrl(mThumb)) return mThumb;
+      const mContent = pickRss2JsonMediaUrl(item["media:content"]);
+      if (mContent && !isLowQualityOrPlaceholderImageUrl(mContent)) return mContent;
       const enc = item.enclosure;
       const encs = enc && (Array.isArray(enc) ? enc : [enc]);
       if (encs && encs.length) {
@@ -3247,6 +3308,7 @@ Fonte: ${item.fonte}
       for (const c of candidates) {
         if (!isLowQualityOrPlaceholderImageUrl(c)) return c;
       }
+      if (candidates[0] && looksLikePhotoUrl(candidates[0])) return candidates[0];
       return "";
     }
 
