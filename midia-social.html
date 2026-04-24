@@ -2049,6 +2049,14 @@ Revise antes de encaminhar; cite fonte ao repassar números.`;
       { kicker: "Violência e justiça", q: "violência urbana justiça MP operação Brasil", limit: 6 },
       { kicker: "Rio e segurança", q: "segurança Rio de Janeiro polícia PM", limit: 6 },
     ];
+    /**
+     * Feeds com foto no próprio item (G1: thumbnail e img no HTML). O Google News via rss2json, em geral, não
+     * traz imagem e só o link ofuscado — o enrich a partir de news.google.com quase nunca consegue og:image.
+     */
+    const NOTICIAS_PAUTA_FEEDS_DIRETOS = [
+      { kicker: "G1 — Brasil", rssUrl: "https://g1.globo.com/rss/g1/", limit: 14, tag: "G1 Brasil", fonte: "G1" },
+      { kicker: "G1 — Política", rssUrl: "https://g1.globo.com/rss/politica/", limit: 10, tag: "G1 Política", fonte: "G1" },
+    ];
     const TARJAS_EFEITO_ENGAJAMENTO = [
       "E no seu bairro: o que muda com essa notícia?",
       "Três perguntas antes de comentar ou partilhar",
@@ -2824,7 +2832,7 @@ Fonte: ${item.fonte}
       const st = document.getElementById("noticiasPautaStatus");
       const grid = document.getElementById("noticiasPautaGrid");
       if (st) st.textContent = "A buscar notícias e imagens (feed + preview dos sites)…";
-      if (typeof fetchGoogleNewsPosts !== "function") {
+      if (typeof fetchGoogleNewsPosts !== "function" || typeof fetchRss2JsonFeed !== "function") {
         if (st) st.textContent = "Função de notícias indisponível (recarregue a página).";
         return;
       }
@@ -2832,12 +2840,20 @@ Fonte: ${item.fonte}
       const seen = new Set();
       const merged = [];
       try {
-        const settled = await Promise.allSettled(
-          NOTICIAS_PAUTA_QUERIES.map(({ q, limit }) => fetchGoogleNewsPosts(q, limit))
-        );
+        const pautaTarefas = [
+          ...NOTICIAS_PAUTA_QUERIES.map(({ kicker, q, limit }) => ({
+            kicker,
+            run: () => fetchGoogleNewsPosts(q, limit),
+          })),
+          ...NOTICIAS_PAUTA_FEEDS_DIRETOS.map(({ kicker, rssUrl, limit, tag, fonte }) => ({
+            kicker,
+            run: () => fetchRss2JsonFeed(rssUrl, limit, tag, fonte),
+          })),
+        ];
+        const settled = await Promise.allSettled(pautaTarefas.map((t) => t.run()));
         settled.forEach((res, i) => {
           if (res.status !== "fulfilled" || !Array.isArray(res.value)) return;
-          const { kicker } = NOTICIAS_PAUTA_QUERIES[i];
+          const { kicker } = pautaTarefas[i];
           for (const item of res.value) {
             const k = noticiaDedupKey(item.titulo);
             if (!k || seen.has(k)) continue;
@@ -2851,7 +2867,9 @@ Fonte: ${item.fonte}
         });
         if (picked.length < 3) picked = merged;
 
-        const shuffled = shuffleInPlace(picked);
+        const withImg = picked.filter((it) => String(it.imagemUrl || "").trim());
+        const noImg = picked.filter((it) => !String(it.imagemUrl || "").trim());
+        const shuffled = shuffleInPlace([...withImg, ...noImg]);
         const withTarja = shuffled
           .slice(0, 6)
           .map((it, i) => ({ ...it, _tarja: pickTarjaEfeito(it, i) }));
@@ -3453,11 +3471,15 @@ Fonte: ${item.fonte}
         } catch (_) {}
         const authorName = stripHtml(item.author || "").trim();
         const url = extractRssItemArticleUrl(item) || item.link || "#";
+        const linkRss = String(item.link || "").trim();
+        const imagemUrl = extractRssItemImageUrl(item) || "";
         return {
           titulo,
           corpo: desc.slice(0, 500),
           fonte: authorName ? authorName + " · " + host : host,
           url,
+          linkRss,
+          imagemUrl,
           badge,
           tags: [tagLabel, host],
           plugin: "rss",
