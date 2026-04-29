@@ -118,6 +118,7 @@
     }
     tr:hover td { background: rgba(61, 139, 253, 0.06); }
     .num { text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .tel-cell { font-size: 0.82rem; max-width: 13rem; line-height: 1.35; word-break: break-word; }
     .mono { font-family: ui-monospace, monospace; font-size: 0.8rem; }
     .muted { color: var(--muted); }
     .toolbar-foot {
@@ -373,7 +374,7 @@
         <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2024" target="_blank" rel="noopener">Portal de Dados Abertos do TSE</a>.
         A lista inclui <strong>todos</strong> os registos de vereador (cargo 13): candidatos titulares, suplentes e demais participantes, conforme
         <span class="mono">DS_SIT_TOT_TURNO</span>. Votos (1º turno), redes declaradas e contactos WhatsApp provenientes dos ficheiros
-        <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE, quando existirem.
+        <span class="mono">votacao_candidato_munzona</span>, <span class="mono">rede_social_candidato</span> e declaração de celular no TSE (<strong>Telefone</strong> na lista: número oficial ou inferido do link <span class="mono">wa.me</span>/<span class="mono">send</span> quando existir).
         Use <strong>Município</strong> e <strong>Grupo</strong> para filtrar.
         Para <strong>Duque de Caxias</strong> com ordenação <strong>por votos crescentes</strong> (menor ? maior), abra
         <a href="vereadores-caxias-ordem-votos.html">a página dedicada</a>.
@@ -409,7 +410,7 @@
           type="button"
           class="secondary"
           id="btnExportPlUniBrXlsx"
-          title="Gera ficheiro XLSX só com candidatos do PL ou União Brasil (sigla UNIÃO), respeitando busca, município e grupo; ordenação por votos decrescentes"
+          title="Gera XLSX só com PL ou União Brasil (sigla UNIÃO); respeita busca, município e grupo; redes separadas por coluna (Instagram, Facebook, X, etc.); telefone e votos conforme lista"
         >
           Exportar planilha XLSX (PL + União Brasil)
         </button>
@@ -417,8 +418,8 @@
       </p>
       <div class="filters">
         <label>
-          Buscar (nome, partido, votos ou texto em links)
-          <input type="search" id="inpBusca" placeholder="Ex.: maria, PSOL, 12345, instagram…" autocomplete="off" />
+          Buscar (nome, partido, votos, telefone ou texto em links)
+          <input type="search" id="inpBusca" placeholder="Ex.: maria, PSOL, 21 9, instagram…" autocomplete="off" />
         </label>
         <label>
           Partido
@@ -461,6 +462,7 @@
               <th>Grupo</th>
               <th>Resultado (pleito)</th>
               <th class="num">Votos</th>
+              <th>Telefone</th>
               <th>Mídias sociais</th>
               <th>WhatsApp</th>
               <th class="mono">SQ</th>
@@ -618,6 +620,58 @@
       return a.map((x) => `${x.label || ""} ${x.url || ""}`).join(" ");
     }
 
+    function isWhatsAppGrupoOuCanal(url) {
+      return /chat\.whatsapp\.com|whatsapp\.com\/channel|whatsapp\.com\/c\//i.test(String(url || ""));
+    }
+
+    function urlWhatsappPreferida(r) {
+      const list = r.whatsapp || [];
+      for (const x of list) {
+        const u = x && x.url;
+        if (u && /^https?:\/\//i.test(String(u).trim()) && !isWhatsAppGrupoOuCanal(u)) return String(u).trim();
+      }
+      for (const x of list) {
+        const u = x && x.url;
+        if (u && /^https?:\/\//i.test(String(u).trim())) return String(u).trim();
+      }
+      return null;
+    }
+
+    function extrairDigitosDeUrlWhatsapp(u) {
+      if (!u) return null;
+      const s = String(u);
+      const m1 = s.match(/[?&]phone=\+?(\d{10,15})/i);
+      if (m1) return m1[1].replace(/\D/g, "");
+      const m2 = s.match(/wa\.me\/\+?(\d{10,15})/i);
+      if (m2) return m2[1].replace(/\D/g, "");
+      return null;
+    }
+
+    function formatarDigitosNacionais(d) {
+      let x = String(d).replace(/\D/g, "");
+      if (x.startsWith("55") && x.length > 4) x = x.slice(2);
+      if (x.length < 10) return null;
+      const ddd = x.slice(0, 2);
+      const n = x.slice(2);
+      if (n.length === 9) return `(${ddd}) ${n.slice(0, 5)}-${n.slice(5)}`;
+      if (n.length === 8) return `(${ddd}) ${n.slice(0, 4)}-${n.slice(4)}`;
+      return `(${ddd}) ${n}`;
+    }
+
+    /** Declarado no TSE (campo telefone) ou número inferido de link wa.me/send oficial; grupos/canais não entram. */
+    function telefoneTexto(r) {
+      const t = r && r.telefone != null && String(r.telefone).trim();
+      if (t) return t;
+      const href = urlWhatsappPreferida(r);
+      if (!href) return "—";
+      const dig = extrairDigitosDeUrlWhatsapp(href);
+      if (dig) {
+        const f = formatarDigitosNacionais(dig);
+        if (f) return f;
+      }
+      return "—";
+    }
+
     function norm(s) {
       return String(s || "")
         .toLowerCase()
@@ -665,6 +719,8 @@
           PAPEL_LABEL[pap],
           r.votos != null ? String(r.votos) : "",
           fmtIntPt(r.votos),
+          r.telefone != null ? String(r.telefone) : "",
+          telefoneTexto(r),
           textoLinks(r),
         ]
           .filter(Boolean)
@@ -672,6 +728,81 @@
           .join(" ");
         return hay.includes(q) || hay.split(/\s+/).some((w) => w.startsWith(q)) || q.split(/\s+/).every((term) => hay.includes(term));
       });
+    }
+
+    function uniqJoinUrls(urls) {
+      return [...new Set((urls || []).filter(Boolean))].join(" | ");
+    }
+
+    /** Agrupa URLs de mídias + WhatsApp por coluna para exportação XLSX. */
+    function urlsRedesPorColunaExport(r) {
+      const buckets = {
+        instagram: [],
+        facebook: [],
+        x: [],
+        tiktok: [],
+        youtube: [],
+        linkedin: [],
+        kwai: [],
+        outros: [],
+        whatsapp: [],
+      };
+
+      function add(x) {
+        if (!x || !x.url || !/^https?:\/\//i.test(String(x.url).trim())) return;
+        const raw = String(x.url).trim();
+        const tipo = redeTipoPorUrlELabel(raw, x.label);
+        const lbl = String(x.label || "").toLowerCase();
+
+        if (tipo === "whatsapp") {
+          buckets.whatsapp.push(raw);
+          return;
+        }
+        if (tipo === "instagram") {
+          buckets.instagram.push(raw);
+          return;
+        }
+        if (tipo === "facebook") {
+          buckets.facebook.push(raw);
+          return;
+        }
+        if (tipo === "x") {
+          buckets.x.push(raw);
+          return;
+        }
+        if (tipo === "tiktok") {
+          buckets.tiktok.push(raw);
+          return;
+        }
+        if (tipo === "youtube") {
+          buckets.youtube.push(raw);
+          return;
+        }
+        if (tipo === "linkedin") {
+          buckets.linkedin.push(raw);
+          return;
+        }
+        if (/kwai\.com/i.test(raw) || lbl.includes("kwai")) {
+          buckets.kwai.push(raw);
+          return;
+        }
+        buckets.outros.push(raw);
+      }
+
+      for (const x of r.midiasSociais || []) add(x);
+      for (const x of r.whatsapp || []) add(x);
+
+      return {
+        Instagram: uniqJoinUrls(buckets.instagram),
+        Facebook: uniqJoinUrls(buckets.facebook),
+        "X (Twitter)": uniqJoinUrls(buckets.x),
+        TikTok: uniqJoinUrls(buckets.tiktok),
+        YouTube: uniqJoinUrls(buckets.youtube),
+        LinkedIn: uniqJoinUrls(buckets.linkedin),
+        Kwai: uniqJoinUrls(buckets.kwai),
+        "Outros links": uniqJoinUrls(buckets.outros),
+        "WhatsApp (URL)": uniqJoinUrls(buckets.whatsapp),
+      };
     }
 
     function ordenarListaPlUniBrDecrescente(arr) {
@@ -699,6 +830,8 @@
       }
       const rows = lista.map((r) => {
         const pap = papelFromRow(r);
+        const tel = telefoneTexto(r);
+        const redes = urlsRedesPorColunaExport(r);
         return {
           Município: r.municipio || "",
           "UE TSE": codigoUeRow(r),
@@ -709,8 +842,9 @@
           Grupo: PAPEL_LABEL[pap] || pap,
           "Resultado (pleito)": r.dsSitTotTurno || "",
           Votos: votosParaOrdenar(r),
+          Telefone: tel !== "—" ? tel : "",
+          ...redes,
           "SQ candidato": r.sqCandidato != null ? r.sqCandidato : "",
-          "Redes (resumo)": textoLinks(r).replace(/\s+/g, " ").trim().slice(0, 800),
         };
       });
       const ws = X.utils.json_to_sheet(rows);
@@ -759,6 +893,9 @@
           const lbl = PAPEL_LABEL[pap] || pap;
           const res = r.dsSitTotTurno != null && String(r.dsSitTotTurno).trim() !== "" ? escapeHtml(String(r.dsSitTotTurno)) : "—";
           const vot = fmtIntPt(r.votos);
+          const tt = telefoneTexto(r);
+          const telTd =
+            tt === "—" ? '<span class="muted">—</span>' : `<span class="mono">${escapeHtml(tt)}</span>`;
           const mid = linksHtml(r.midiasSociais);
           const wz = linksHtml(r.whatsapp);
           const ueCode = codigoUeRow(r);
@@ -773,6 +910,7 @@
             <td>${escapeHtml(lbl)}</td>
             <td>${res}</td>
             <td class="num mono">${vot}</td>
+            <td class="tel-cell">${telTd}</td>
             <td class="soc-cell">${mid}</td>
             <td class="soc-cell">${wz}</td>
             <td class="mono">${sq}</td>
