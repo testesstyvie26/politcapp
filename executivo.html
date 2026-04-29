@@ -296,6 +296,25 @@
       box-shadow: 0 1px 0 0 currentColor;
     }
 
+    .lid-toolbar.toolbar {
+      gap: 0.5rem 0.85rem !important;
+    }
+    .lid-toolbar.toolbar button.lid-btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .lid-toolbar.toolbar button.lid-btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .lid-form-grid--cad {
+      grid-template-columns: 1fr 1fr;
+    }
+    .lid-label-span2 {
+      grid-column: 1 / -1;
+    }
+
     .lid-lede {
       margin: 0 0 0.85rem;
       max-width: 88ch;
@@ -497,7 +516,8 @@
         Os registros são guardados neste navegador (<span class="mono">localStorage</span>) — use <strong>Gerar planilha XLSX</strong> para exportar.
       </p>
       <div class="toolbar lid-toolbar">
-        <button type="button" id="lidExportXlsx">Gerar planilha XLSX</button>
+        <button type="button" id="lidBtnAdicionarLideranca">Adicionar líderança</button>
+        <button type="button" class="lid-btn-secondary" id="lidExportXlsx">Gerar planilha XLSX</button>
         <span class="meta" id="lidStorageMeta"></span>
       </div>
       <div class="panel lid-map-panel">
@@ -507,6 +527,42 @@
         </div>
         <p class="panel-note" id="lidMapStatus"></p>
       </div>
+
+      <dialog id="lidDialogAdd" class="lid-dialog" aria-labelledby="lidDialogAddTitle">
+        <header class="lid-dialog-head">
+          <h2 id="lidDialogAddTitle">Adicionar líderança</h2>
+          <button type="button" class="lid-dialog-x" id="lidDialogAddClose" aria-label="Fechar">×</button>
+        </header>
+        <div class="lid-dialog-body">
+          <form id="lidFormAddGlobal" class="lid-form">
+            <div class="lid-form-grid lid-form-grid--cad">
+              <label class="lid-label-span2">
+                Município <span class="req">*</span>
+                <select name="ibgeMunicipio" id="lidSelAddMunicipio" required></select>
+              </label>
+              <label>
+                Nome <span class="req">*</span>
+                <input name="nome" required autocomplete="name" maxlength="120" />
+              </label>
+              <label>
+                Telefone
+                <input name="telefone" type="tel" autocomplete="tel" maxlength="40" />
+              </label>
+              <label class="lid-label-span2">
+                Partido
+                <input name="partido" maxlength="40" placeholder="Sigla ou nome — opcional" />
+              </label>
+            </div>
+            <label class="lid-label-full">
+              Observações
+              <textarea name="obs" rows="2" maxlength="500" placeholder="Opcional"></textarea>
+            </label>
+            <div class="lid-form-actions">
+              <button type="submit">Salvar líderança</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
 
       <dialog id="lidDialog" class="lid-dialog" aria-labelledby="lidDialogTitle">
         <header class="lid-dialog-head">
@@ -520,7 +576,7 @@
                 <tr>
                   <th>Nome</th>
                   <th>Contato</th>
-                  <th>Função</th>
+                  <th>Partido</th>
                   <th></th>
                 </tr>
               </thead>
@@ -540,12 +596,8 @@
                 <input name="telefone" type="tel" autocomplete="tel" maxlength="40" />
               </label>
               <label>
-                E-mail
-                <input name="email" type="email" autocomplete="email" maxlength="120" />
-              </label>
-              <label>
-                Função / cargo
-                <input name="cargo" maxlength="80" placeholder="Opcional" />
+                Partido
+                <input name="partido" maxlength="40" placeholder="Opcional — sigla ou nome" />
               </label>
             </div>
             <label class="lid-label-full">
@@ -687,7 +739,7 @@
             `<tr>
           <td><strong>${escapeHtml(rec.nome || "—")}</strong></td>
           <td>${lidFmtContato(rec)}</td>
-          <td>${escapeHtml(rec.cargo || "—")}</td>
+          <td>${escapeHtml(rec.partido || rec.cargo || "—")}</td>
           <td><button type="button" class="btn-rm" data-remove-id="${escapeHtml(rec.id)}">Remover</button></td>
         </tr>`
         )
@@ -701,6 +753,36 @@
       lidRenderDialogRows();
       document.getElementById("lidForm").reset();
       document.getElementById("lidDialog").showModal();
+    }
+
+    function lidFillMunicipioSelect() {
+      const sel = document.getElementById("lidSelAddMunicipio");
+      if (!sel) return;
+      const ents = [...lidNomePorIbge.entries()].sort((a, b) =>
+        String(a[1]).localeCompare(String(b[1]), "pt-BR")
+      );
+      const prev = sel.value;
+      sel.innerHTML =
+        '<option value="">Selecione o município…</option>' +
+        ents
+          .map(
+            ([ibge, nome]) =>
+              `<option value="${escapeHtml(ibge)}">${escapeHtml(nome)}</option>`
+          )
+          .join("");
+      if (prev && ents.some(([k]) => k === prev)) sel.value = prev;
+    }
+
+    async function lidAbrirCadastroLiderancaGlobal() {
+      await lidEnsureIbgeNames();
+      if (!lidNomePorIbge.size) {
+        alert("Não foi possível carregar a lista de municípios. Verifique a conexão e tente novamente.");
+        return;
+      }
+      lidFillMunicipioSelect();
+      const form = document.getElementById("lidFormAddGlobal");
+      if (form) form.reset();
+      document.getElementById("lidDialogAdd").showModal();
     }
 
     async function initLiderancasMap() {
@@ -733,6 +815,28 @@
           const nm = (f.properties && (f.properties.name || f.properties.description)) || "";
           lidNomePorIbge.set(id, nm);
         }
+
+        const mapEl = document.getElementById("mapLiderancas");
+        if (!mapEl || !document.body.contains(mapEl)) {
+          status.innerHTML =
+            '<span class="error">Contêiner do mapa (#mapLiderancas) não encontrado no documento.</span>';
+          return;
+        }
+
+        if (lidMap) {
+          try {
+            lidMap.remove();
+          } catch (e2) {
+            console.warn(e2);
+          }
+          lidMap = null;
+          lidGeoLayer = null;
+        }
+
+        lidMap = L.map(mapEl, {
+          zoomSnap: 0.5,
+          attributionControl: true,
+        });
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
@@ -781,6 +885,14 @@
         status.textContent = `${(geo.features || []).length} municípios · limite oficial (geojson RJ-33)`;
       } catch (e) {
         console.error(e);
+        if (lidMap) {
+          try {
+            lidMap.remove();
+          } catch (_) {}
+          lidMap = null;
+        }
+        lidGeoLayer = null;
+        lidMapReady = false;
         status.innerHTML = `<span class="error">${escapeHtml(
           e.message || "Erro ao carregar o GeoJSON municipal."
         )}</span>`;
@@ -821,8 +933,8 @@
             "Código IBGE": ibge,
             Nome: rec.nome || "",
             Telefone: rec.telefone || "",
+            Partido: rec.partido || rec.cargo || "",
             "E-mail": rec.email || "",
-            "Função ou cargo": rec.cargo || "",
             Observações: rec.obs || "",
           });
         }
@@ -1411,6 +1523,42 @@
       document.getElementById("lidDialog").close();
     });
 
+    document.getElementById("lidDialogAddClose").addEventListener("click", () => {
+      document.getElementById("lidDialogAdd").close();
+    });
+
+    document.getElementById("lidBtnAdicionarLideranca").addEventListener("click", () => {
+      lidAbrirCadastroLiderancaGlobal().catch((e) => {
+        console.error(e);
+        alert(e.message || String(e));
+      });
+    });
+
+    document.getElementById("lidFormAddGlobal").addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(ev.currentTarget);
+      const ibge = String(fd.get("ibgeMunicipio") || "").trim();
+      const nome = String(fd.get("nome") || "").trim();
+      if (!ibge || !nome) return;
+      const row = {
+        id:
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        nome,
+        telefone: String(fd.get("telefone") || "").trim(),
+        partido: String(fd.get("partido") || "").trim(),
+        obs: String(fd.get("obs") || "").trim(),
+      };
+      const store = lidLoadStore();
+      if (!Array.isArray(store[ibge])) store[ibge] = [];
+      store[ibge].push(row);
+      lidSaveStore(store);
+      lidRefreshStyles();
+      document.getElementById("lidDialogAdd").close();
+      ev.currentTarget.reset();
+    });
+
     document.getElementById("lidForm").addEventListener("submit", (ev) => {
       ev.preventDefault();
       const fd = new FormData(ev.currentTarget);
@@ -1424,8 +1572,7 @@
             : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`,
         nome,
         telefone: String(fd.get("telefone") || "").trim(),
-        email: String(fd.get("email") || "").trim(),
-        cargo: String(fd.get("cargo") || "").trim(),
+        partido: String(fd.get("partido") || "").trim(),
         obs: String(fd.get("obs") || "").trim(),
       };
 
