@@ -98,6 +98,11 @@
     }
     button:hover { filter: brightness(1.06); }
     button.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    button.secondary.is-active {
+      border-color: rgba(52, 211, 153, 0.55);
+      box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.25);
+      color: #d1fae5;
+    }
     .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); max-height: min(70vh, 52rem); overflow-y: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -395,6 +400,12 @@
       <p class="note" id="metaLista">Carregando…</p>
       <p class="note" id="hintFiltroVazio" hidden style="margin-top:0.35rem;color:#f0c975;font-size:0.86rem"></p>
       <div id="msgErro" hidden class="alert"></div>
+      <p class="note" style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;gap:0.5rem 0.85rem;align-items:center">
+        <button type="button" class="secondary" id="btnFiltroPlUniaoBr" aria-pressed="false" title="Inclui só PL e União Brasil (sigla UNIÃO no TSE), votos na ordem ascendentemente (menos votados primeiro)">
+          PL + União Brasil — votos crescentes
+        </button>
+        <span class="muted" id="presetPlUniHint" hidden style="font-size:0.82rem"></span>
+      </p>
       <div class="filters">
         <label>
           Buscar (nome, partido, votos ou texto em links)
@@ -465,6 +476,8 @@
     let raw = [];
     let partidosOrdenados = [];
     let geradoEm = "";
+    /** Filtro rápido: só PL e União Brasil (sigla UNIÃO), ordenação por votos crescentes. Desliga ao mexer nos outros filtros. */
+    let presetPlUniaoBr = false;
 
     const UE_RIO = "60011";
     const UE_CAXIAS = "58335";
@@ -602,13 +615,28 @@
         .replace(/\p{M}/gu, "");
     }
 
+    function partidoEhPlOuUniaoBrasil(sigla) {
+      const s = String(sigla ?? "").trim();
+      if (!s) return false;
+      if (s === "PL") return true;
+      const n = norm(s);
+      return n === "uniao" || s === "UNIÃO";
+    }
+
+    function votosParaOrdenar(r) {
+      const x = Number(r.votos);
+      return Number.isFinite(x) ? x : 0;
+    }
+
     function filtrar() {
       const q = norm(document.getElementById("inpBusca").value.trim());
       const p = document.getElementById("selPartido").value;
       const munFiltro = document.getElementById("selMunicipio").value;
       const papelFiltro = document.getElementById("selPapel").value;
       return raw.filter((r) => {
-        if (p && r.partido !== p) return false;
+        if (presetPlUniaoBr) {
+          if (!partidoEhPlOuUniaoBrasil(r.partido)) return false;
+        } else if (p && r.partido !== p) return false;
         if (munFiltro && codigoUeRow(r) !== munFiltro) return false;
         if (papelFiltro && papelFromRow(r) !== papelFiltro) return false;
         if (!q) return true;
@@ -652,7 +680,15 @@
 
     function render() {
       const tbody = document.getElementById("tbody");
-      const lista = filtrar();
+      let lista = filtrar();
+      if (presetPlUniaoBr && lista.length) {
+        lista = lista.slice().sort((a, b) => {
+          const va = votosParaOrdenar(a);
+          const vb = votosParaOrdenar(b);
+          if (va !== vb) return va - vb;
+          return String(a.nomeUrna || "").localeCompare(String(b.nomeUrna || ""), "pt-BR");
+        });
+      }
       PAGE.size = parseInt(document.getElementById("selPageSize").value, 10) || 50;
       const total = lista.length;
       const pages = Math.max(1, Math.ceil(total / PAGE.size));
@@ -719,6 +755,23 @@
       document.getElementById("btnPrev").disabled = PAGE.num <= 1;
       document.getElementById("btnNext").disabled = PAGE.num >= pages || pages <= 1;
 
+      const btnPreset = document.getElementById("btnFiltroPlUniaoBr");
+      const hintPreset = document.getElementById("presetPlUniHint");
+      if (btnPreset) {
+        btnPreset.setAttribute("aria-pressed", presetPlUniaoBr ? "true" : "false");
+        btnPreset.classList.toggle("is-active", presetPlUniaoBr);
+      }
+      if (hintPreset) {
+        if (presetPlUniaoBr) {
+          hintPreset.hidden = false;
+          hintPreset.textContent =
+            "Listagem restrita a PL e UNIÃO (União Brasil), ordenada por votos do menor para o maior. Limpe este modo alterando partido, busca, município ou grupo.";
+        } else {
+          hintPreset.hidden = true;
+          hintPreset.textContent = "";
+        }
+      }
+
       const meta = document.getElementById("metaLista");
       if (raw.length) {
         const ccAll = contagemPorPapel(raw);
@@ -733,7 +786,8 @@
           lista.length !== raw.length
             ? ` · visíveis agora: ${lista.length} (${ccF.eleito} el., ${ccF.suplente} supl., ${ccF.participante} demais)`
             : "";
-        meta.textContent = `Fonte: TSE (consulta_cand, votacao_munzona, rede_social) · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${tail}.`;
+        const presetExtra = presetPlUniaoBr ? " · Filtro rápido: apenas PL + União Brasil (sigla UNIÃO) · votos ascendente (menor → maior)." : "";
+        meta.textContent = `Fonte: TSE (consulta_cand, votacao_munzona, rede_social) · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${presetExtra}${tail}.`;
       }
     }
 
@@ -776,14 +830,17 @@
     }
 
     document.getElementById("inpBusca").addEventListener("input", () => {
+      presetPlUniaoBr = false;
       PAGE.num = 1;
       render();
     });
     document.getElementById("selPartido").addEventListener("change", () => {
+      presetPlUniaoBr = false;
       PAGE.num = 1;
       render();
     });
     document.getElementById("selMunicipio").addEventListener("change", () => {
+      presetPlUniaoBr = false;
       const ue = document.getElementById("selMunicipio").value;
       refreshPartidoOptions(ue);
       document.getElementById("selPapel").value = "";
@@ -791,6 +848,7 @@
       render();
     });
     document.getElementById("selPapel").addEventListener("change", () => {
+      presetPlUniaoBr = false;
       PAGE.num = 1;
       render();
     });
@@ -804,6 +862,18 @@
     });
     document.getElementById("btnNext").addEventListener("click", () => {
       PAGE.num++;
+      render();
+    });
+
+    document.getElementById("btnFiltroPlUniaoBr").addEventListener("click", () => {
+      const ativo = !presetPlUniaoBr;
+      presetPlUniaoBr = ativo;
+      if (ativo) {
+        document.getElementById("inpBusca").value = "";
+        document.getElementById("selPartido").value = "";
+        document.getElementById("selPapel").value = "";
+      }
+      PAGE.num = 1;
       render();
     });
 
