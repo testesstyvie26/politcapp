@@ -401,16 +401,17 @@
       <p class="note" id="hintFiltroVazio" hidden style="margin-top:0.35rem;color:#f0c975;font-size:0.86rem"></p>
       <div id="msgErro" hidden class="alert"></div>
       <p class="note" style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;gap:0.5rem 0.85rem;align-items:center">
-        <button type="button" class="secondary" id="btnFiltroPlUniaoBr" aria-pressed="false" title="Inclui só PL e União Brasil (sigla UNIÃO no TSE), ordenado por mais votados primeiro">
+        <span class="muted" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;width:100%">Filtro rápido PL · União Brasil</span>
+        <button type="button" class="secondary" id="btnFiltroPlUniaoBr" aria-pressed="false" title="Mostra na tabela só PL e União Brasil (sigla UNIÃO no TSE), ordenado por mais votados primeiro">
           PL + União Brasil — votos decrescentes
         </button>
         <button
           type="button"
           class="secondary"
           id="btnExportPlUniBrXlsx"
-          title="Exporta todas as linhas PL e União Brasil (filtros atuais: busca, município, grupo), ordenadas por votos na ordem decrescente"
+          title="Gera ficheiro XLSX só com candidatos do PL ou União Brasil (sigla UNIÃO), respeitando busca, município e grupo; ordenação por votos decrescentes"
         >
-          Exportar planilha XLSX
+          Exportar planilha XLSX (PL + União Brasil)
         </button>
         <span class="muted" id="presetPlUniHint" hidden style="font-size:0.82rem"></span>
       </p>
@@ -692,7 +693,7 @@
       lista = ordenarListaPlUniBrDecrescente(lista);
       if (!lista.length) {
         alert(
-          "Nenhuma linha PL ou União Brasil (sigla UNIÃO) com os filtros actuais (busca, município ou grupo)."
+          "Nenhuma linha PL ou União Brasil (sigla UNIÃO) com os filtros atuais (busca, município ou grupo)."
         );
         return;
       }
