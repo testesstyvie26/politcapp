@@ -404,6 +404,14 @@
         <button type="button" class="secondary" id="btnFiltroPlUniaoBr" aria-pressed="false" title="Inclui só PL e União Brasil (sigla UNIÃO no TSE), ordenado por mais votados primeiro">
           PL + União Brasil — votos decrescentes
         </button>
+        <button
+          type="button"
+          class="secondary"
+          id="btnExportPlUniBrXlsx"
+          title="Exporta todas as linhas PL e União Brasil (filtros atuais: busca, município, grupo), ordenadas por votos na ordem decrescente"
+        >
+          Exportar planilha XLSX
+        </button>
         <span class="muted" id="presetPlUniHint" hidden style="font-size:0.82rem"></span>
       </p>
       <div class="filters">
@@ -470,6 +478,7 @@
     </section>
   </div>
 
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script>
     const JSON_URL = "data/vereadores-rj-rio-2024.json";
     const PAGE = { num: 1, size: 50 };
@@ -628,13 +637,16 @@
       return Number.isFinite(x) ? x : 0;
     }
 
-    function filtrar() {
+    function filtrar(forcePlUniOverride) {
+      const usarPlUni =
+        forcePlUniOverride === true ? true : forcePlUniOverride === false ? false : presetPlUniaoBr;
+
       const q = norm(document.getElementById("inpBusca").value.trim());
       const p = document.getElementById("selPartido").value;
       const munFiltro = document.getElementById("selMunicipio").value;
       const papelFiltro = document.getElementById("selPapel").value;
       return raw.filter((r) => {
-        if (presetPlUniaoBr) {
+        if (usarPlUni) {
           if (!partidoEhPlOuUniaoBrasil(r.partido)) return false;
         } else if (p && r.partido !== p) return false;
         if (munFiltro && codigoUeRow(r) !== munFiltro) return false;
@@ -661,6 +673,52 @@
       });
     }
 
+    function ordenarListaPlUniBrDecrescente(arr) {
+      return arr.slice().sort((a, b) => {
+        const va = votosParaOrdenar(a);
+        const vb = votosParaOrdenar(b);
+        if (va !== vb) return vb - va;
+        return String(a.nomeUrna || "").localeCompare(String(b.nomeUrna || ""), "pt-BR");
+      });
+    }
+
+    function exportarPlanilhaPlUniBr() {
+      const X = typeof XLSX !== "undefined" ? XLSX : null;
+      if (!X || !X.utils) {
+        alert("Biblioteca de planilhas não carregou (offline?). Verifique a conexão e recarregue a página.");
+        return;
+      }
+      let lista = filtrar(true);
+      lista = ordenarListaPlUniBrDecrescente(lista);
+      if (!lista.length) {
+        alert(
+          "Nenhuma linha PL ou União Brasil (sigla UNIÃO) com os filtros actuais (busca, município ou grupo)."
+        );
+        return;
+      }
+      const rows = lista.map((r) => {
+        const pap = papelFromRow(r);
+        return {
+          Município: r.municipio || "",
+          "UE TSE": codigoUeRow(r),
+          "Nº urna": r.numero != null ? r.numero : "",
+          "Nome de urna": r.nomeUrna || "",
+          Partido: r.partido || "",
+          "Nome partido (TSE)": r.partidoNome || "",
+          Grupo: PAPEL_LABEL[pap] || pap,
+          "Resultado (pleito)": r.dsSitTotTurno || "",
+          Votos: votosParaOrdenar(r),
+          "SQ candidato": r.sqCandidato != null ? r.sqCandidato : "",
+          "Redes (resumo)": textoLinks(r).replace(/\s+/g, " ").trim().slice(0, 800),
+        };
+      });
+      const ws = X.utils.json_to_sheet(rows);
+      const wb = X.utils.book_new();
+      X.utils.book_append_sheet(wb, ws, "PL e União Brasil");
+      const stamp = new Date().toISOString().slice(0, 10);
+      X.writeFile(wb, `vereadores-rj-pl-uniao-brasil-${stamp}.xlsx`);
+    }
+
     function contagemPorPapel(rows) {
       const c = { eleito: 0, suplente: 0, participante: 0 };
       for (const row of rows) {
@@ -682,12 +740,7 @@
       const tbody = document.getElementById("tbody");
       let lista = filtrar();
       if (presetPlUniaoBr && lista.length) {
-        lista = lista.slice().sort((a, b) => {
-          const va = votosParaOrdenar(a);
-          const vb = votosParaOrdenar(b);
-          if (va !== vb) return vb - va;
-          return String(a.nomeUrna || "").localeCompare(String(b.nomeUrna || ""), "pt-BR");
-        });
+        lista = ordenarListaPlUniBrDecrescente(lista);
       }
       PAGE.size = parseInt(document.getElementById("selPageSize").value, 10) || 50;
       const total = lista.length;
@@ -876,6 +929,8 @@
       PAGE.num = 1;
       render();
     });
+
+    document.getElementById("btnExportPlUniBrXlsx").addEventListener("click", () => exportarPlanilhaPlUniBr());
 
     load();
   </script>
