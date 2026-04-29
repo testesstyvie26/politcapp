@@ -401,8 +401,8 @@
       <p class="note" id="hintFiltroVazio" hidden style="margin-top:0.35rem;color:#f0c975;font-size:0.86rem"></p>
       <div id="msgErro" hidden class="alert"></div>
       <p class="note" style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;gap:0.5rem 0.85rem;align-items:center">
-        <button type="button" class="secondary" id="btnFiltroPlUniaoBr" aria-pressed="false" title="Inclui só PL e União Brasil (sigla UNIÃO no TSE), votos na ordem ascendentemente (menos votados primeiro)">
-          PL + União Brasil — votos crescentes
+        <button type="button" class="secondary" id="btnFiltroPlUniaoBr" aria-pressed="false" title="Inclui só PL e União Brasil (sigla UNIÃO no TSE), ordenado por mais votados primeiro">
+          PL + União Brasil — votos decrescentes
         </button>
         <span class="muted" id="presetPlUniHint" hidden style="font-size:0.82rem"></span>
       </p>
@@ -476,7 +476,7 @@
     let raw = [];
     let partidosOrdenados = [];
     let geradoEm = "";
-    /** Filtro rápido: só PL e União Brasil (sigla UNIÃO), ordenação por votos crescentes. Desliga ao mexer nos outros filtros. */
+    /** Filtro rápido: só PL e União Brasil (sigla UNIÃO), ordenação por votos decrescentes (maior → menor). Desliga ao mexer nos outros filtros. */
     let presetPlUniaoBr = false;
 
     const UE_RIO = "60011";
@@ -685,7 +685,7 @@
         lista = lista.slice().sort((a, b) => {
           const va = votosParaOrdenar(a);
           const vb = votosParaOrdenar(b);
-          if (va !== vb) return va - vb;
+          if (va !== vb) return vb - va;
           return String(a.nomeUrna || "").localeCompare(String(b.nomeUrna || ""), "pt-BR");
         });
       }
@@ -765,7 +765,7 @@
         if (presetPlUniaoBr) {
           hintPreset.hidden = false;
           hintPreset.textContent =
-            "Listagem restrita a PL e UNIÃO (União Brasil), ordenada por votos do menor para o maior. Limpe este modo alterando partido, busca, município ou grupo.";
+            "Listagem restrita a PL e UNIÃO (União Brasil), ordenada por votos do maior para o menor. Limpe este modo alterando partido, busca, município ou grupo.";
         } else {
           hintPreset.hidden = true;
           hintPreset.textContent = "";
@@ -786,7 +786,7 @@
           lista.length !== raw.length
             ? ` · visíveis agora: ${lista.length} (${ccF.eleito} el., ${ccF.suplente} supl., ${ccF.participante} demais)`
             : "";
-        const presetExtra = presetPlUniaoBr ? " · Filtro rápido: apenas PL + União Brasil (sigla UNIÃO) · votos ascendente (menor → maior)." : "";
+        const presetExtra = presetPlUniaoBr ? " · Filtro rápido: apenas PL + União Brasil (sigla UNIÃO) · votos decrescente (maior → menor)." : "";
         meta.textContent = `Fonte: TSE (consulta_cand, votacao_munzona, rede_social) · ${munTxt} · total ficheiro ${raw.length} · eleitos: ${ccAll.eleito}, suplentes: ${ccAll.suplente}, demais: ${ccAll.participante}${filtroExtra}${presetExtra}${tail}.`;
       }
     }
