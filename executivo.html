@@ -262,7 +262,176 @@
       font-weight: 400;
       opacity: 0.92;
     }
+
+    /* ——— Submenu desta página (Indicadores / Lideranças) ——— */
+    .exec-page-sub {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 1rem;
+      margin: 0 0 1.35rem;
+      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface2);
+      font-size: 0.9rem;
+    }
+    .exec-page-sub .sep { color: var(--border); user-select: none; }
+    .exec-page-sub button.tab {
+      font: inherit;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      padding: 0.25rem 0.15rem;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .exec-page-sub button.tab:hover {
+      color: var(--accent);
+      background: rgba(61, 139, 253, 0.08);
+    }
+    .exec-page-sub button.tab[aria-current="page"] {
+      color: var(--accent);
+      box-shadow: 0 1px 0 0 currentColor;
+    }
+
+    .lid-lede {
+      margin: 0 0 0.85rem;
+      max-width: 88ch;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .lid-map-panel { margin-bottom: 1rem; }
+    .lid-hint { margin: 0 0 0.75rem; }
+    .lid-map-wrap {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    #mapLiderancas {
+      height: min(560px, 70vh);
+      width: 100%;
+      background: var(--surface2);
+    }
+    @media (max-width: 640px) {
+      #mapLiderancas { height: 360px; }
+    }
+
+    .lid-dialog {
+      max-width: min(520px, 94vw);
+      width: 100%;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+    .lid-dialog::backdrop {
+      background: rgba(6, 8, 12, 0.72);
+    }
+    .lid-dialog-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 1rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .lid-dialog-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .lid-dialog-x {
+      font: inherit;
+      font-size: 1.35rem;
+      line-height: 1;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .lid-dialog-x:hover { color: var(--accent); border-color: var(--accent); }
+    .lid-dialog-body { padding: 1rem 1.1rem 1.15rem; max-height: min(70vh, 560px); overflow: auto; }
+    .lid-table-wrap {
+      overflow: auto;
+      max-height: 220px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .lid-table-wrap table { font-size: 0.82rem; }
+    .lid-table-wrap td, .lid-table-wrap th { padding: 0.45rem 0.5rem; }
+    .lid-table-wrap .btn-rm {
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.45rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: #f87171;
+      cursor: pointer;
+    }
+    .lid-table-wrap .btn-rm:hover { border-color: #f87171; }
+    .lid-form-title { margin: 0 0 0.5rem; font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .lid-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem 0.85rem;
+    }
+    @media (max-width: 520px) {
+      .lid-form-grid { grid-template-columns: 1fr; }
+    }
+    .lid-form label, .lid-label-full {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .lid-form .req { color: #f87171; }
+    .lid-form input, .lid-form textarea {
+      font: inherit;
+      font-size: 0.9rem;
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 500;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      padding: 0.45rem 0.55rem;
+    }
+    .lid-label-full { margin-top: 0.65rem; }
+    .lid-form-actions { margin-top: 0.75rem; }
+    .lid-form-actions button[type="submit"] {
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: rgba(61, 139, 253, 0.15);
+      color: var(--accent);
+      cursor: pointer;
+    }
+    .lid-form-actions button[type="submit"]:hover { background: rgba(61, 139, 253, 0.28); }
+    .lid-empty { color: var(--muted); font-size: 0.88rem; margin: 0; padding: 0.5rem 0; }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.92em; }
   </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
   <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
@@ -293,6 +462,12 @@
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
     </nav>
 
+    <nav class="exec-page-sub no-print" aria-label="Seções — Visão executiva">
+      <button type="button" class="tab" id="tabExecDashboard" aria-current="page">Indicadores</button>
+      <span class="sep" aria-hidden="true">|</span>
+      <button type="button" class="tab" id="tabExecLiderancas">Lideranças</button>
+    </nav>
+
     <header id="politapp-main" tabindex="-1">
       <h1>Visão executiva — Câmara e campo eleitoral RJ</h1>
       <p class="lede">
@@ -305,14 +480,85 @@
       </p>
     </header>
 
-    <div class="toolbar">
-      <button type="button" id="refresh">Atualizar dados</button>
-      <span class="meta" id="fetchMeta"></span>
-    </div>
+    <section id="view-dashboard" class="exec-view-dash" aria-label="Indicadores">
+      <div class="toolbar">
+        <button type="button" id="refresh">Atualizar dados</button>
+        <span class="meta" id="fetchMeta"></span>
+      </div>
 
-    <div id="main">
-      <div class="loading"><div class="spinner"></div>Consolidando indicadores…</div>
-    </div>
+      <div id="main">
+        <div class="loading"><div class="spinner"></div>Consolidando indicadores…</div>
+      </div>
+    </section>
+
+    <section id="view-liderancas" class="exec-view-lid" hidden aria-label="Lideranças · Rio de Janeiro">
+      <p class="lede lid-lede">
+        Mapa interativo dos municípios do estado do Rio de Janeiro. Clique em um município para cadastrar pessoas e líderanças de campo.
+        Os registros são guardados neste navegador (<span class="mono">localStorage</span>) — use <strong>Gerar planilha XLSX</strong> para exportar.
+      </p>
+      <div class="toolbar lid-toolbar">
+        <button type="button" id="lidExportXlsx">Gerar planilha XLSX</button>
+        <span class="meta" id="lidStorageMeta"></span>
+      </div>
+      <div class="panel lid-map-panel">
+        <p class="lid-hint panel-note">Cada polígono é um município. Passe o cursor para ver o nome; clique para abrir o cadastro. A cor esverdeada indica quantidade de líderanças registradas.</p>
+        <div class="lid-map-wrap">
+          <div id="mapLiderancas" role="application" aria-label="Mapa dos municípios do Rio de Janeiro"></div>
+        </div>
+        <p class="panel-note" id="lidMapStatus"></p>
+      </div>
+
+      <dialog id="lidDialog" class="lid-dialog" aria-labelledby="lidDialogTitle">
+        <header class="lid-dialog-head">
+          <h2 id="lidDialogTitle">Município</h2>
+          <button type="button" class="lid-dialog-x" id="lidDialogClose" aria-label="Fechar">×</button>
+        </header>
+        <div class="lid-dialog-body">
+          <div class="lid-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Contato</th>
+                  <th>Função</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="lidDialogTbody"></tbody>
+            </table>
+          </div>
+          <p class="lid-empty" id="lidDialogEmpty" hidden>Nenhuma líderança cadastrada neste município — preencha o formulário abaixo.</p>
+          <form id="lidForm" class="lid-form">
+            <p class="lid-form-title">Incluir líderança</p>
+            <div class="lid-form-grid">
+              <label>
+                Nome completo <span class="req">*</span>
+                <input name="nome" required autocomplete="name" maxlength="120" />
+              </label>
+              <label>
+                Telefone
+                <input name="telefone" type="tel" autocomplete="tel" maxlength="40" />
+              </label>
+              <label>
+                E-mail
+                <input name="email" type="email" autocomplete="email" maxlength="120" />
+              </label>
+              <label>
+                Função / cargo
+                <input name="cargo" maxlength="80" placeholder="Opcional" />
+              </label>
+            </div>
+            <label class="lid-label-full">
+              Observações
+              <textarea name="obs" rows="2" maxlength="500" placeholder="Opcional"></textarea>
+            </label>
+            <div class="lid-form-actions">
+              <button type="submit">Adicionar</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+    </section>
 
     <footer class="note-footer">
       <strong>Câmara:</strong> API REST v2 (<code>dadosabertos.camara.leg.br</code>); HHI e N efetivo calculados no navegador sobre deputados em exercício.
@@ -332,6 +578,8 @@
     </footer>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script>
     const API = "https://dadosabertos.camara.leg.br/api/v2";
     const JSON_HDR = { Accept: "application/json" };
@@ -341,6 +589,286 @@
     let chartUfs = null;
     let chartReceitasTse = null;
     const TSE_JSON = new URL("data/executivo-tse-rj.json", window.location.href).href;
+
+    /* ——— Lideranças RJ (mapa + localStorage + XLSX) ——— */
+    const LS_LIDERANCAS_KEY = "politapp_executivo_liderancas_rj_v1";
+    const GEOJSON_RJ_MUN = "https://cdn.jsdelivr.net/gh/tbrugz/geodata-br@master/geojson/geojs-33-mun.json";
+
+    let lidMap = null;
+    let lidGeoLayer = null;
+    let lidMapReady = false;
+    let lidDialogIbge = "";
+    const lidNomePorIbge = new Map();
+
+    function lidLoadStore() {
+      try {
+        const raw = localStorage.getItem(LS_LIDERANCAS_KEY);
+        if (!raw) return {};
+        const o = JSON.parse(raw);
+        return o && typeof o === "object" ? o : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function lidSaveStore(store) {
+      localStorage.setItem(LS_LIDERANCAS_KEY, JSON.stringify(store));
+      lidUpdateMeta();
+    }
+
+    function lidUpdateMeta() {
+      const meta = document.getElementById("lidStorageMeta");
+      if (!meta) return;
+      const s = lidLoadStore();
+      let rows = 0;
+      let munWith = 0;
+      for (const k of Object.keys(s)) {
+        const arr = Array.isArray(s[k]) ? s[k] : [];
+        rows += arr.length;
+        if (arr.length) munWith += 1;
+      }
+      meta.textContent = `${rows} líderança(s) em ${munWith} município(s) · guardado neste navegador`;
+    }
+
+    function lidRecomputeMax(store) {
+      let m = 0;
+      for (const id of Object.keys(store)) {
+        const arr = store[id];
+        if (Array.isArray(arr)) m = Math.max(m, arr.length);
+      }
+      return Math.max(m, 1);
+    }
+
+    function lidFeatStyle(props, store, maxV) {
+      const id = String(props.id || "");
+      const arr = Array.isArray(store[id]) ? store[id] : [];
+      const n = arr.length;
+      const t = n / maxV;
+      return {
+        color: "#3d8bfd",
+        weight: n > 0 ? 1.15 : 0.85,
+        opacity: n > 0 ? 0.95 : 0.72,
+        fillColor: "#34d399",
+        fillOpacity: 0.06 + Math.min(1, t) * 0.52,
+      };
+    }
+
+    function lidApplyStyleToLayer(layer) {
+      const store = lidLoadStore();
+      const maxV = lidRecomputeMax(store);
+      layer.setStyle(lidFeatStyle(layer.feature.properties, store, maxV));
+    }
+
+    function lidRefreshStyles() {
+      if (!lidGeoLayer) return;
+      lidGeoLayer.eachLayer((layer) => lidApplyStyleToLayer(layer));
+    }
+
+    function lidFmtContato(rec) {
+      const parts = [rec.telefone, rec.email].filter((x) => x != null && String(x).trim() !== "");
+      return escapeHtml(parts.join(" · "));
+    }
+
+    function lidRenderDialogRows() {
+      const tbody = document.getElementById("lidDialogTbody");
+      const emptyEl = document.getElementById("lidDialogEmpty");
+      const store = lidLoadStore();
+      const list =
+        lidDialogIbge && Array.isArray(store[lidDialogIbge]) ? store[lidDialogIbge] : [];
+      tbody.innerHTML = "";
+
+      emptyEl.hidden = list.length > 0;
+      if (!list.length) return;
+
+      emptyEl.hidden = true;
+      tbody.innerHTML = list
+        .map(
+          (rec) =>
+            `<tr>
+          <td><strong>${escapeHtml(rec.nome || "—")}</strong></td>
+          <td>${lidFmtContato(rec)}</td>
+          <td>${escapeHtml(rec.cargo || "—")}</td>
+          <td><button type="button" class="btn-rm" data-remove-id="${escapeHtml(rec.id)}">Remover</button></td>
+        </tr>`
+        )
+        .join("");
+    }
+
+    function lidOpenDialog(ibge, nome) {
+      lidDialogIbge = String(ibge);
+      const titulo = nome || lidNomePorIbge.get(String(ibge)) || String(ibge);
+      document.getElementById("lidDialogTitle").textContent = titulo;
+      lidRenderDialogRows();
+      document.getElementById("lidForm").reset();
+      document.getElementById("lidDialog").showModal();
+    }
+
+    async function initLiderancasMap() {
+      const status = document.getElementById("lidMapStatus");
+
+      function invalidateLater() {
+        requestAnimationFrame(() => {
+          if (lidMap) lidMap.invalidateSize({ animate: false });
+        });
+      }
+
+      if (lidMapReady) {
+        invalidateLater();
+        return;
+      }
+
+      if (typeof L === "undefined") {
+        status.innerHTML =
+          '<span class="error">Biblioteca Leaflet não carregou. Verifique a conexão e recarregue a página.</span>';
+        return;
+      }
+
+      status.textContent = "Carregando limites municipais…";
+      try {
+        const geo = await fetchJson(GEOJSON_RJ_MUN);
+        lidNomePorIbge.clear();
+        for (const f of geo.features || []) {
+          const id = String((f.properties && f.properties.id) || "");
+          if (!id) continue;
+          const nm = (f.properties && (f.properties.name || f.properties.description)) || "";
+          lidNomePorIbge.set(id, nm);
+        }
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(lidMap);
+
+        lidGeoLayer = L.geoJSON(geo, {
+          style(feature) {
+            const s = lidLoadStore();
+            const mv = lidRecomputeMax(s);
+            return lidFeatStyle(feature.properties, s, mv);
+          },
+          onEachFeature(feature, layer) {
+            const id = String((feature.properties && feature.properties.id) || "");
+            const nome =
+              (feature.properties && (feature.properties.name || feature.properties.description)) || id;
+
+            layer.bindTooltip(nome, { sticky: true, direction: "auto", opacity: 0.95 });
+
+            layer.on({
+              mouseover(e) {
+                const lyr = e.target;
+                const fo = lyr.options.fillOpacity || 0.2;
+                lyr.setStyle({
+                  weight: 2.65,
+                  color: "#f0f4fa",
+                  fillOpacity: Math.min(0.94, fo + 0.12),
+                });
+                lyr.bringToFront();
+              },
+              mouseout(e) {
+                lidApplyStyleToLayer(e.target);
+              },
+              click() {
+                lidOpenDialog(id, nome);
+              },
+            });
+          },
+        }).addTo(lidMap);
+
+        lidMap.fitBounds(lidGeoLayer.getBounds(), { padding: [18, 18] });
+        lidMapReady = true;
+        invalidateLater();
+
+        lidUpdateMeta();
+        status.textContent = `${(geo.features || []).length} municípios · limite oficial (geojson RJ-33)`;
+      } catch (e) {
+        console.error(e);
+        status.innerHTML = `<span class="error">${escapeHtml(
+          e.message || "Erro ao carregar o GeoJSON municipal."
+        )}</span>`;
+      }
+    }
+
+    async function lidEnsureIbgeNames() {
+      if (lidNomePorIbge.size >= 85) return;
+      try {
+        const geo = await fetchJson(GEOJSON_RJ_MUN);
+        for (const f of geo.features || []) {
+          const id = String((f.properties && f.properties.id) || "");
+          if (!id) continue;
+          const nm = (f.properties && (f.properties.name || f.properties.description)) || "";
+          lidNomePorIbge.set(id, nm);
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    async function lidExportXlsx() {
+      const X = typeof XLSX !== "undefined" ? XLSX : null;
+      if (!X || !X.utils) {
+        alert("Biblioteca de planilha não carregou. Verifique a conexão e recarregue.");
+        return;
+      }
+      await lidEnsureIbgeNames();
+      const store = lidLoadStore();
+      const rows = [];
+      for (const ibge of Object.keys(store)) {
+        const munNome = lidNomePorIbge.get(ibge) || "—";
+        const arr = store[ibge];
+        if (!Array.isArray(arr)) continue;
+        for (const rec of arr) {
+          rows.push({
+            Município: munNome,
+            "Código IBGE": ibge,
+            Nome: rec.nome || "",
+            Telefone: rec.telefone || "",
+            "E-mail": rec.email || "",
+            "Função ou cargo": rec.cargo || "",
+            Observações: rec.obs || "",
+          });
+        }
+      }
+
+      rows.sort((a, b) => {
+        const c = String(a["Município"]).localeCompare(String(b["Município"]), "pt-BR");
+        return c !== 0 ? c : String(a.Nome).localeCompare(String(b.Nome), "pt-BR");
+      });
+
+      if (!rows.length) {
+        alert("Não há líderanças cadastradas para exportar.");
+        return;
+      }
+
+      const ws = X.utils.json_to_sheet(rows);
+      const wb = X.utils.book_new();
+      X.utils.book_append_sheet(wb, ws, "Lideranças RJ");
+      const stamp = new Date().toISOString().slice(0, 10);
+      X.writeFile(wb, `liderancas-rj-${stamp}.xlsx`);
+    }
+
+    function execSwitchView(which) {
+      const dash = document.getElementById("view-dashboard");
+      const lid = document.getElementById("view-liderancas");
+      const tb = document.getElementById("tabExecDashboard");
+      const tl = document.getElementById("tabExecLiderancas");
+      const isLid = which === "liderancas";
+
+      dash.hidden = isLid;
+      lid.hidden = !isLid;
+
+      if (isLid) {
+        tb.removeAttribute("aria-current");
+        tl.setAttribute("aria-current", "page");
+        initLiderancasMap().then(() => {
+          queueMicrotask(() => {
+            if (lidMap) lidMap.invalidateSize({ animate: false });
+          });
+        });
+        lidUpdateMeta();
+      } else {
+        tl.removeAttribute("aria-current");
+        tb.setAttribute("aria-current", "page");
+      }
+    }
 
     function linkHref(links, rel) {
       const x = (links || []).find((l) => l.rel === rel);
@@ -878,6 +1406,62 @@
         main.innerHTML = `<p class="error">Falha ao montar o painel: ${escapeHtml(e.message)}</p>`;
       }
     }
+
+    document.getElementById("lidDialogClose").addEventListener("click", () => {
+      document.getElementById("lidDialog").close();
+    });
+
+    document.getElementById("lidForm").addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(ev.currentTarget);
+      const nome = String(fd.get("nome") || "").trim();
+      if (!lidDialogIbge || !nome) return;
+
+      const row = {
+        id:
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        nome,
+        telefone: String(fd.get("telefone") || "").trim(),
+        email: String(fd.get("email") || "").trim(),
+        cargo: String(fd.get("cargo") || "").trim(),
+        obs: String(fd.get("obs") || "").trim(),
+      };
+
+      const store = lidLoadStore();
+      if (!Array.isArray(store[lidDialogIbge])) store[lidDialogIbge] = [];
+      store[lidDialogIbge].push(row);
+      lidSaveStore(store);
+      lidRefreshStyles();
+      lidRenderDialogRows();
+      ev.currentTarget.reset();
+    });
+
+    document.getElementById("lidDialogTbody").addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button[data-remove-id]");
+      if (!btn || !lidDialogIbge) return;
+      const rid = btn.getAttribute("data-remove-id");
+      if (!rid) return;
+
+      const store = lidLoadStore();
+      const arr = store[lidDialogIbge];
+      if (!Array.isArray(arr)) return;
+      store[lidDialogIbge] = arr.filter((r) => String(r.id) !== rid);
+      lidSaveStore(store);
+      lidRefreshStyles();
+      lidRenderDialogRows();
+    });
+
+    document.getElementById("tabExecDashboard").addEventListener("click", () => execSwitchView("dashboard"));
+    document.getElementById("tabExecLiderancas").addEventListener("click", () => execSwitchView("liderancas"));
+
+    document.getElementById("lidExportXlsx").addEventListener("click", () => {
+      lidExportXlsx().catch((e) => {
+        console.error(e);
+        alert(e.message || String(e));
+      });
+    });
 
     document.getElementById("refresh").addEventListener("click", loadDashboard);
     loadDashboard();
