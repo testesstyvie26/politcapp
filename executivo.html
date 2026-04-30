@@ -513,7 +513,7 @@
     <section id="view-liderancas" class="exec-view-lid" hidden aria-label="Lideranças · Rio de Janeiro">
       <p class="lede lid-lede">
         Mapa interativo dos municípios do estado do Rio de Janeiro. Clique em um município para cadastrar pessoas e líderanças de campo.
-        Os registros são guardados neste navegador (<span class="mono">localStorage</span>) — use <strong>Gerar planilha XLSX</strong> para exportar.
+        Autenticado com perfil aceito pela organização: os registros ficam também na base (Supabase, por sua unidade) e há uma cópia em cache neste navegador; sem sessão, só o cache local. Use <strong>Gerar planilha XLSX</strong> para exportar.
       </p>
       <div class="toolbar lid-toolbar">
         <button type="button" id="lidBtnAdicionarLideranca">Adicionar líderança</button>
@@ -632,6 +632,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script type="module" src="./js/executivo-liderancas-cloud.mjs"></script>
   <script>
     const API = "https://dadosabertos.camara.leg.br/api/v2";
     const JSON_HDR = { Accept: "application/json" };
@@ -642,7 +643,7 @@
     let chartReceitasTse = null;
     const TSE_JSON = new URL("data/executivo-tse-rj.json", window.location.href).href;
 
-    /* ——— Lideranças RJ (mapa + localStorage + XLSX) ——— */
+    /* ——— Lideranças RJ (mapa + Supabase por unidade + cópia local + XLSX) ——— */
     const LS_LIDERANCAS_KEY = "politapp_executivo_liderancas_rj_v1";
     const GEOJSON_RJ_MUN = "https://cdn.jsdelivr.net/gh/tbrugz/geodata-br@master/geojson/geojs-33-mun.json";
 
@@ -652,7 +653,7 @@
     let lidDialogIbge = "";
     const lidNomePorIbge = new Map();
 
-    function lidLoadStore() {
+    function lidReadLS() {
       try {
         const raw = localStorage.getItem(LS_LIDERANCAS_KEY);
         if (!raw) return {};
@@ -663,8 +664,102 @@
       }
     }
 
+    let lidStoreMem = lidReadLS();
+    let lidRanHydrate = false;
+    let lidSyncTimer = null;
+
+    function lidCountRows(obj) {
+      let n = 0;
+      for (const k of Object.keys(obj || {})) {
+        if (Array.isArray(obj[k])) n += obj[k].length;
+      }
+      return n;
+    }
+
+    async function lidWaitForCloudBridge(maxMs) {
+      var max = typeof maxMs === "number" ? maxMs : 3500;
+      var start = Date.now();
+      while (Date.now() - start < max && !window.__politAppLiderancasCloud) {
+        await new Promise(function (resolve) {
+          setTimeout(resolve, 30);
+        });
+      }
+      return window.__politAppLiderancasCloud || null;
+    }
+
+    function lidPersistLS() {
+      try {
+        localStorage.setItem(LS_LIDERANCAS_KEY, JSON.stringify(lidStoreMem));
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    function lidLoadStore() {
+      return lidStoreMem;
+    }
+
     function lidSaveStore(store) {
-      localStorage.setItem(LS_LIDERANCAS_KEY, JSON.stringify(store));
+      lidStoreMem = store;
+      lidPersistLS();
+      lidUpdateMeta();
+      lidQueueCloudSync();
+    }
+
+    async function lidTryHydrateFromCloud() {
+      if (lidRanHydrate) return;
+      var L = await lidWaitForCloudBridge();
+      if (!L) {
+        lidUpdateMeta();
+        return;
+      }
+      var r;
+      try {
+        r = await L.initLiderancasCloud();
+      } catch (e1) {
+        console.warn("Lideranças cloud:", e1);
+        lidUpdateMeta();
+        return;
+      }
+      if (!r.ok) {
+        lidUpdateMeta();
+        return;
+      }
+      try {
+        var remote = await L.fetchStoreFromCloud();
+        var rn = lidCountRows(remote);
+        var ln = lidCountRows(lidStoreMem);
+        if (rn === 0 && ln > 0) {
+          await L.replaceCloudStore(lidStoreMem);
+        } else if (rn > 0) {
+          lidStoreMem = remote;
+          lidPersistLS();
+        }
+        lidRefreshStyles();
+        lidRanHydrate = true;
+      } catch (e2) {
+        console.warn("Lideranças cloud fetch/sync:", e2);
+      }
+      lidUpdateMeta();
+    }
+
+    function lidQueueCloudSync() {
+      clearTimeout(lidSyncTimer);
+      lidSyncTimer = setTimeout(function () {
+        lidQueueCloudSyncDo().catch(function (e) {
+          console.warn("Lideranças cloud save:", e);
+        });
+      }, 650);
+    }
+
+    async function lidQueueCloudSyncDo() {
+      var L = window.__politAppLiderancasCloud || (await lidWaitForCloudBridge(2000));
+      if (!L) return;
+      if (!L.isReady()) {
+        var r = await L.initLiderancasCloud();
+        if (!r.ok) return;
+      }
+      await L.replaceCloudStore(lidLoadStore());
       lidUpdateMeta();
     }
 
@@ -679,7 +774,10 @@
         rows += arr.length;
         if (arr.length) munWith += 1;
       }
-      meta.textContent = `${rows} líderança(s) em ${munWith} município(s) · guardado neste navegador`;
+      var L = window.__politAppLiderancasCloud;
+      var synced = !!(L && L.isReady());
+      var tail = synced ? " · na base da sua unidade (Supabase) + cópia local" : " · neste navegador · inicie sessão para gravar na base";
+      meta.textContent = `${rows} líderança(s) em ${munWith} município(s)${tail}`;
     }
 
     function lidRecomputeMax(store) {
@@ -970,12 +1068,14 @@
       if (isLid) {
         tb.removeAttribute("aria-current");
         tl.setAttribute("aria-current", "page");
-        initLiderancasMap().then(() => {
-          queueMicrotask(() => {
+        lidUpdateMeta();
+        lidTryHydrateFromCloud().then(function () {
+          return initLiderancasMap();
+        }).then(function () {
+          queueMicrotask(function () {
             if (lidMap) lidMap.invalidateSize({ animate: false });
           });
         });
-        lidUpdateMeta();
       } else {
         tl.removeAttribute("aria-current");
         tb.setAttribute("aria-current", "page");
