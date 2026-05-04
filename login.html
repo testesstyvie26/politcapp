@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Politapp — inteligência eleitoral territorial, mapas por zona e dados públicos. Entre com Google para acessar o painel." />
-  <title>Politapp — Entrar na plataforma</title>
+  <meta name="description" content="Politapp — inteligência eleitoral em tempo real: análise por seção, estratégia territorial e decisão com dados. Tecnologia web com APIs públicas e governança de acesso. Entrada com Google após conformidade da conta." />
+  <title>Politapp — Acesso ao painel</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -121,13 +121,13 @@
       font-style: normal;
       color: var(--accent);
     }
-    .tagline {
-      font-size: 0.8rem;
+    .hero-kicker {
+      margin: 0 0 1.25rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
       color: var(--muted);
-      margin: 0 0 1.35rem;
     }
 
     .value-trio {
@@ -160,6 +160,37 @@
       color: var(--muted);
       line-height: 1.42;
     }
+    .value-card p strong { color: var(--text); font-weight: 600; }
+
+    .strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1.1rem;
+      padding: 0.85rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.805rem;
+      color: var(--muted);
+      max-width: fit-content;
+      margin-bottom: 0.85rem;
+    }
+    .strip strong { color: var(--text); font-weight: 600; }
+
+    .tech-note {
+      margin: 0 0 1.05rem;
+      font-size: 0.815rem;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.5;
+    }
+    .tech-note a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .tech-note a:hover { text-decoration: underline; }
 
     .cta-row {
       display: flex;
@@ -238,12 +269,20 @@
       font-weight: 600;
       margin-bottom: 0.05rem;
     }
-    .proof-ico {
+    .proof-chip .proof-num {
       flex-shrink: 0;
-      width: 1.45rem;
-      text-align: center;
-      font-size: 1rem;
-      line-height: 1.2;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1;
     }
 
     .security-block {
@@ -307,6 +346,12 @@
       font-size: 0.92rem;
       margin: 0 0 1.1rem;
     }
+    .card-form .sub a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .card-form .sub a:hover { text-decoration: underline; }
 
     .tabs {
       display: flex;
@@ -436,7 +481,7 @@
     <header class="top-bar">
       <a class="brand" href="landing-app.html">Politapp</a>
       <nav class="site-nav" aria-label="Navegação principal">
-        <a href="landing-app.html">Produto</a>
+        <a href="landing-app.html">Página Politapp</a>
         <a href="landing-publico.html">Solicitar acesso</a>
         <a href="privacidade.html">Privacidade</a>
         <a href="termos-uso.html">Termos</a>
@@ -447,85 +492,86 @@
 
     <main id="politapp-main" class="login-grid" tabindex="-1">
       <section class="hero" aria-labelledby="auth-hero-title">
-        <p class="pill">Campanhas e mandatos que disputam resultado na urna</p>
+        <p class="pill">Inteligência · tecnologia · território</p>
         <h1 id="auth-hero-title">
           Inteligência eleitoral em tempo real para campanhas que querem <em>vencer</em> —
-          análise de votos por seção, estratégia territorial e decisão guiada por dados públicos.
+          análise de votos por seção, estratégia territorial e decisão baseada em dados.
         </h1>
-        <p class="tagline">Clareza no topo · ação rápida · menos ruído</p>
+        <p class="hero-kicker">Os três eixos primeiro — antes de recurso técnico</p>
 
         <div class="value-trio">
           <article class="value-card">
-            <span class="value-q">Para quem é?</span>
+            <span class="value-q">👉 Para quem é?</span>
             <p>
-              Direção de campanha, articulação municipal, comunicação institucional e assessores que precisam
-              <strong>ler território e urna ao mesmo tempo</strong>.
+              <strong>Direção de campanha, coordenação territorial e equipes de dados</strong>
+              que precisam ler urna e geografia no mesmo quadro — na hora da decisão, não depois da reunião.
             </p>
           </article>
           <article class="value-card">
-            <span class="value-q">Que problema resolve?</span>
+            <span class="value-q">👉 Como me ajuda?</span>
             <p>
-              Dados públicos dispersos entre portais — equipe perdida entre planilhas, sem uma <strong>visão territorial única</strong>
-              antes da decisão na reunião.
+              Dados públicos <strong>espalhados em vários portais</strong>; a equipe cruza TSE, Câmara e recortes locais
+              <strong>sem uma visão única</strong> para priorizar onde atuar ou o que comunicar.
             </p>
           </article>
           <article class="value-card">
-            <span class="value-q">Que resultado entrega?</span>
+            <span class="value-q">👉 Qual resultado entrega?</span>
             <p>
-              <strong>Onde converter, onde recuperar votos</strong>, prioridade de agendas e relatórios alinhados a Câmara, TSE e recortes regionais configurados — no mesmo painel.
+              <strong>Leitura por seção e região</strong>, cenários territoriais comparáveis e painéis escuros pensados
+              para <strong>decisão rápida</strong> com arquivos e APIs oficiais — menos achismo, mais dado no mesmo lugar.
             </p>
           </article>
         </div>
 
         <div class="cta-row" aria-label="Ações rápidas">
-          <a class="pill-btn ghost" href="landing-app.html">Ver demo</a>
-          <a class="pill-btn primary-soft" href="#bloco-acesso">Testar</a>
+          <a class="pill-btn ghost" href="landing-app.html">Conhecer o produto</a>
+          <a class="pill-btn primary-soft" href="#bloco-acesso">Testar · entrar</a>
           <a class="pill-btn ghost" href="landing-publico.html">Solicitar acesso</a>
         </div>
 
-        <div class="proof-panel" aria-label="Valor entregue no produto">
-          <p class="proof-title">O que há dentro do produto · prova tangível</p>
+        <div class="strip" role="note">
+          <span><strong>Dados &amp; stack:</strong></span>
+          <span>TSE</span>
+          <span>·</span>
+          <span>Câmara (API aberta)</span>
+          <span>·</span>
+          <span>Web + governança de acesso</span>
+        </div>
+        <p class="tech-note">
+          Arquitetura em <strong>web modular</strong>; sessão com <strong>OAuth Google</strong> e <strong>aprovação administrativa</strong>.
+          Conformidade: <a href="privacidade.html">privacidade</a> ·
+          <a href="termos-uso.html">termos</a>.
+        </p>
+
+        <div class="proof-panel" aria-label="Inteligência e tecnologia no produto">
+          <p class="proof-title">Inteligência &amp; tecnologia · por que existe engenharia</p>
           <div class="proof-grid">
             <div class="proof-chip">
-              <span class="proof-ico" aria-hidden="true">📍</span>
+              <span class="proof-num" aria-hidden="true">01</span>
               <div>
-                <strong>Mapa por zona e seção</strong>
-                Leitura geográfica do voto onde a campanha precisa cortar ônibus e porta a porta — base TSE/arquivos oficiais.
+                <strong>Geointeligência eleitoral</strong>
+                Zona e seção como primeira classe: comparar comportamento territorial e orientar recurso onde a urna pesa mais.
               </div>
             </div>
             <div class="proof-chip">
-              <span class="proof-ico" aria-hidden="true">📈</span>
+              <span class="proof-num" aria-hidden="true">02</span>
               <div>
-                <strong>Comparativo e evolução por região</strong>
-                Leitura rápida entre áreas RJ e a família legislativa (vereadores, prefeituras) na mesma experiência tipo dashboard escuro.
+                <strong>Pipeline de dados públicos</strong>
+                Junção no mesmo frontend de <strong>APIs abertas e arquivos oficiais</strong> (Câmara, divulgação TSE, etc.) — menos retrabalho de planilha.
               </div>
             </div>
             <div class="proof-chip">
-              <span class="proof-ico" aria-hidden="true">📊</span>
+              <span class="proof-num" aria-hidden="true">03</span>
               <div>
-                <strong>Dashboard executivo + importação oficial</strong>
-                Deputados (API Câmara) correlacionados a resultados públicos quando o recorte permite — menos cópia manual.
+                <strong>Painéis para decidir rápido</strong>
+                UI escura tipo dashboard, pronta para <strong>indicadores e camadas RJ</strong> quando ativadas no seu ambiente.
               </div>
             </div>
             <div class="proof-chip">
-              <span class="proof-ico" aria-hidden="true">🎯</span>
+              <span class="proof-num" aria-hidden="true">04</span>
               <div>
-                <strong>Segmentação territorial</strong>
-                Foco em RJ (lista, interior, insights) antes de extrapolar nacionalmente — menos dispersão estratégica.
-              </div>
-            </div>
-            <div class="proof-chip">
-              <span class="proof-ico" aria-hidden="true">🤖</span>
-              <div>
-                <strong>Insights automatizados (camada inicial)</strong>
-                Resumos e priorização sobre dados públicos já carregados no painel — <em>uso assistido</em>, sem substituir campo nem jurídico.
-              </div>
-            </div>
-            <div class="proof-chip">
-              <span class="proof-ico" aria-hidden="true">📲</span>
-              <div>
-                <strong>Escuta digital + WhatsApp configurável</strong>
-                Fluxo unificado no ambiente institucional; export seguro onde o fluxo permite.
+                <strong>Camada zero-trust institucional</strong>
+                Tráfego em <strong>HTTPS</strong>, conta com revisão administrativa e trilhos de perfil para <strong>menor circulação de briefing sensível</strong>.
               </div>
             </div>
           </div>
@@ -550,16 +596,19 @@
         </details>
 
         <p class="footnote-public">
-          Também público sem login:
-          <a href="landing-app.html">Landing do aplicativo</a> e a
-          <a href="landing-publico.html">agenda institucional e contatos</a>.
-          Áreas restritas ficam atrás da sessão aprovada.
+          Mesma visão institucional em
+          <a href="landing-app.html">landing-app.html</a>
+          (<strong>inteligência eleitoral e tecnologia</strong>) —
+          páginas restritas apenas após Google + <strong>perfil aprovado</strong>.
+          Contato pela <a href="landing-publico.html">agenda institucional</a>.
         </p>
       </section>
 
       <section id="bloco-acesso" class="card-form" aria-labelledby="auth-form-title">
         <h2 id="auth-form-title">Acesso ao painel</h2>
-        <p class="sub">Escolha <strong>Entrar</strong> ou <strong>Cadastrar</strong> — sempre com Google. Isso equivale ao &quot;Testar&quot;: após autorização, você cai nos dashboards.</p>
+        <p class="sub">
+          <strong>Entrar</strong> ou <strong>Cadastrar</strong> com Google — equivalente a &quot;Testar · entrar&quot;: após conformidade do administrador, você acessa os painéis e o <a href="login.html?next=guia-uso.html">guia de uso</a>.
+        </p>
         <p id="err" class="error" hidden></p>
 
         <div class="tabs" role="tablist" aria-label="Entrar ou cadastrar">
@@ -607,14 +656,14 @@
 
     <footer class="site-credit">
       <p>
-        <strong>Politapp</strong> — dados públicos para decisão rápida, com segurança e governança de acesso.
+        <strong>Politapp</strong> — inteligência eleitoral em stack web aberto, com dados públicos e governança de acesso.
         <span class="sep">|</span>
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener noreferrer">API Câmara</a>
+        <span class="sep">·</span>
         <a href="privacidade.html">Privacidade</a><span class="sep">·</span>
         <a href="termos-uso.html">Termos</a>
       </p>
-      <p>
-        Cumpre sempre a lei eleitoral e as normas do seu papel (campanha, mandato ou instituição).
-      </p>
+      <p>Uso compatível com o seu papel (campanha, mandato ou equipe técnica) e com a lei eleitoral aplicável.</p>
     </footer>
   </div>
 
