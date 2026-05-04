@@ -359,26 +359,103 @@
       gap: 0.5rem;
       margin-top: 0.75rem;
     }
+
+    details.cal-details {
+      overflow: clip;
+      border-radius: var(--radius);
+    }
+    .cal-details-summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 1rem 1.25rem;
+      margin: -1.35rem -1.4rem 0;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: linear-gradient(165deg, rgba(61, 139, 253, 0.12), transparent 55%);
+      border-bottom: 1px solid transparent;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      z-index: 2;
+    }
+    .cal-details-summary:hover {
+      background: linear-gradient(165deg, rgba(61, 139, 253, 0.18), transparent 52%);
+    }
+    .cal-details-summary::-webkit-details-marker { display: none; }
+    .cal-details-summary .line-closed,
+    .cal-details-summary .line-open {
+      display: block;
+      font-size: 0.92rem;
+      line-height: 1.42;
+      color: var(--text);
+      max-width: 60ch;
+    }
+    details.cal-details[open] > .cal-details-summary {
+      border-bottom-color: var(--border);
+      margin-bottom: 1rem;
+    }
+    details.cal-details[open] > .cal-details-summary .line-closed { display: none; }
+    details.cal-details:not([open]) > .cal-details-summary .line-open { display: none !important; }
+    details.cal-details:not([open]) > .cal-details-summary .line-closed { display: block; }
+    details.cal-details[open] > .cal-details-summary .line-open { display: block; }
+    .cal-details-meta {
+      display: block;
+      margin-top: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ok);
+      letter-spacing: 0.01em;
+    }
+    details.cal-details:not([open]) .cal-details-meta { color: var(--muted); }
+    .btn-cal-hide {
+      font-family: inherit;
+      margin: 0.75rem 0 0;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      width: fit-content;
+    }
+    .btn-cal-hide:hover {
+      color: var(--text);
+      border-color: rgba(61, 139, 253, 0.45);
+      background: rgba(61, 139, 253, 0.1);
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <section class="panel cal-hero" aria-label="Calendário — mês corrente e feriados nacionais">
-      <div class="cal-head">
-        <button type="button" class="cal-nav" id="calPrev" aria-label="Mês anterior">‹</button>
-        <h2 id="calMonthTitle"></h2>
-        <button type="button" class="cal-nav" id="calNext" aria-label="Próximo mês">›</button>
+    <details id="cal-details" class="panel cal-hero cal-details" tabindex="-1" aria-label="Calendário — feriados nacionais (Brasil)">
+      <summary class="cal-details-summary">
+        <span class="line-closed">
+          <strong>Calendário de referência</strong> (feriados nacionais, Brasil) — expandir para ver o mês e navegar.
+        </span>
+        <span class="line-open">
+          <strong>Calendário de referência</strong> — toque aqui ou em «Ocultar calendário» para recolher; com o painel expandido, <kbd style="opacity:0.75;font-size:0.8em;font-family:inherit;border:1px solid var(--border);padding:0.05rem 0.35rem;border-radius:4px">Esc</kbd> também fecha.
+        </span>
+        <span id="cal-details-hint" class="cal-details-meta" aria-live="polite"></span>
+      </summary>
+
+      <div class="cal-details-body">
+        <div class="cal-head">
+          <button type="button" class="cal-nav" id="calPrev" aria-label="Mês anterior">‹</button>
+          <h2 id="calMonthTitle"></h2>
+          <button type="button" class="cal-nav" id="calNext" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="cal-weekdays" role="row">
+          <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <span>🎉 Feriado ou data nacional</span>
+          <span>📍 Dia de hoje</span>
+          <span title="Inclui datas móveis (Páscoa, Carnaval, etc.)">📅 Calendário Brasil</span>
+        </div>
+        <button type="button" class="btn-cal-hide" id="btnCalClose">Ocultar calendário</button>
       </div>
-      <div class="cal-weekdays" role="row">
-        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-      </div>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="cal-legend">
-        <span>🎉 Feriado ou data nacional</span>
-        <span>📍 Dia de hoje</span>
-        <span title="Inclui datas móveis (Páscoa, Carnaval, etc.)">📅 Calendário Brasil</span>
-      </div>
-    </section>
+    </details>
 
     <nav class="site-nav" aria-label="Navegação">
       <a href="landing-app.html">Apresentação do Politapp</a>
@@ -766,6 +843,42 @@
         );
       }
     });
+
+    /** Calendário: em telas estreitas começa recolhido; em telas largas mantém-se aberto. Esc sempre recolhe se estiver expandido. */
+    (function calDetailsBehavior() {
+      const details = document.getElementById("cal-details");
+      const hint = document.getElementById("cal-details-hint");
+      if (!details) return;
+      const mq = window.matchMedia("(min-width: 720px)");
+      function hintText() {
+        if (!hint) return;
+        hint.textContent = mq.matches
+          ? "Em telas grandes o painel abre por padrão · pode minimizar quando quiser."
+          : "Toque nesta barra ou use «Ocultar calendário» para fechar o painel.";
+      }
+      function apply() {
+        if (mq.matches) details.setAttribute("open", "");
+        else details.removeAttribute("open");
+        hintText();
+      }
+      mq.addEventListener("change", apply);
+      apply();
+
+      document.getElementById("btnCalClose")?.addEventListener("click", () => {
+        details.open = false;
+        details.focus({ preventScroll: true });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        const d = document.getElementById("cal-details");
+        if (d?.open) {
+          e.preventDefault();
+          d.open = false;
+          d.focus({ preventScroll: true });
+        }
+      });
+    })();
 
     initCalendar();
   </script>
