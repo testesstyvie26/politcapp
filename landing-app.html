@@ -339,9 +339,30 @@
     }
     .site-credit a:hover { text-decoration: underline; }
     .site-credit-role { font-weight: 400; opacity: 0.92; }
+
+    /* Skip link — mesmo comportamento das outras páginas públicas */
+    .politapp-skip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10000;
+      padding: 0.5rem 1rem;
+      font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
+      background: var(--accent);
+      color: #0a0d12;
+      border: none;
+      border-radius: 0 0 10px 0;
+      text-decoration: none;
+      transform: translateY(-130%);
+      transition: transform 0.18s ease;
+    }
+    .politapp-skip:focus {
+      transform: translateY(0);
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+    }
+    .politapp-skip:focus:not(:focus-visible) { outline: none; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
