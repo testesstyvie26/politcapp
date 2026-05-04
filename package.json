@@ -17,7 +17,8 @@
     "dev:escuta-proxy": "node scripts/escuta-social-proxy.cjs",
     "deploy:worker": "npx wrangler deploy",
     "build:pdf-apresentacao": "node scripts/generate-apresentacao-pdf.mjs",
-    "build:pdf-apresentacao-comercial": "node scripts/generate-apresentacao-pdf.mjs --comercial"
+    "build:pdf-apresentacao-comercial": "node scripts/generate-apresentacao-pdf.mjs --comercial",
+    "build:pdf-demonstracao-guia": "node scripts/generate-apresentacao-pdf.mjs --guia-demo"
   },
   "devDependencies": {
     "adm-zip": "^0.5.16",

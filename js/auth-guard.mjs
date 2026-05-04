@@ -24,7 +24,7 @@ function currentPageFile() {
 }
 
 /** Páginas 100% públicas: sem sessão Supabase e sem redirecionar ao login. */
-const AUTH_GUARD_PUBLIC_PAGES = new Set(["landing-publico.html"]);
+const AUTH_GUARD_PUBLIC_PAGES = new Set(["landing-publico.html", "landing-app.html"]);
 
 function isPublicHtmlPage() {
   return AUTH_GUARD_PUBLIC_PAGES.has(currentPageFile().toLowerCase());

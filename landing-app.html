@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Politapp — plataforma web para inteligência política: deputados federais, território RJ, transparência, mídia social e gestão da equipe, com dados oficiais da Câmara, TSE e Portal da Transparência." />
+  <title>Politapp — Inteligência política com dados públicos</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070a0f;
+      --surface: rgba(20, 26, 36, 0.92);
+      --surface2: #121a26;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #f0f3f8;
+      --muted: #94a0b8;
+      --accent: #4d9fff;
+      --accent-soft: rgba(77, 159, 255, 0.14);
+      --mint: rgba(52, 211, 153, 0.12);
+      --gold: #e8c547;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --font-display: "Outfit", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 15% -5%, rgba(77, 159, 255, 0.2), transparent 52%),
+        radial-gradient(ellipse 70% 50% at 95% 20%, rgba(52, 211, 153, 0.07), transparent 48%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(232, 197, 71, 0.05), transparent 45%),
+        linear-gradient(180deg, #070a0f 0%, #0d131c 55%, #070a0f 100%);
+      pointer-events: none;
+    }
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.25rem 4rem;
+    }
+    header.top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0 2rem;
+    }
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .brand:hover { color: var(--accent); }
+    nav.top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem 1.15rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    nav.top-nav a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    nav.top-nav a:hover { color: var(--accent); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.62rem 1.15rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: filter 0.15s ease, background 0.15s ease;
+    }
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #061018;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .btn-primary:hover { filter: brightness(1.06); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--accent-soft);
+      border-color: rgba(77, 159, 255, 0.35);
+    }
+    .hero {
+      padding-bottom: 2.75rem;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 0.85rem;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4.2vw, 2.55rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin: 0 0 1rem;
+      max-width: 16ch;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero .lede {
+      margin: 0 0 1.5rem;
+      color: var(--muted);
+      font-size: 1.06rem;
+      max-width: 52ch;
+    }
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.25rem;
+      padding: 0.95rem 1.15rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      color: var(--muted);
+      max-width: fit-content;
+    }
+    .strip strong { color: var(--text); font-weight: 600; }
+
+    section.block {
+      margin-top: 2.75rem;
+    }
+    .block h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2vw, 1.45rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+    .block .subtitle {
+      margin: 0 0 1.35rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 60ch;
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 620px) {
+      .grid.features { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .grid.features { grid-template-columns: repeat(3, 1fr); }
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.2rem 1.25rem;
+      height: 100%;
+    }
+    .card .icon {
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .card h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .band {
+      margin-top: 2.75rem;
+      padding: 1.5rem 1.35rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(77, 159, 255, 0.22);
+      background: linear-gradient(135deg, rgba(77, 159, 255, 0.1), rgba(52, 211, 153, 0.06));
+    }
+    .band h2 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      margin: 0 0 0.5rem;
+    }
+    .band p {
+      margin: 0;
+      font-size: 0.93rem;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+    .steps {
+      display: grid;
+      gap: 1rem;
+      counter-reset: step;
+    }
+    @media (min-width: 720px) {
+      .steps { grid-template-columns: repeat(3, 1fr); }
+    }
+    .step {
+      position: relative;
+      padding: 1.15rem 1.2rem 1.15rem 3rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 1rem;
+      top: 1.05rem;
+      width: 1.55rem;
+      height: 1.55rem;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.98rem;
+    }
+    .step p {
+      margin: 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .cta {
+      margin-top: 3rem;
+      text-align: center;
+      padding: 2rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .cta h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .cta > p {
+      margin: 0 0 1.25rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+    .muted-note {
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      max-width: 48ch;
+      margin-inline: auto;
+    }
+    .site-credit {
+      margin-top: 3rem;
+      padding-top: 1.35rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.65;
+    }
+    .site-credit a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .site-credit a:hover { text-decoration: underline; }
+    .site-credit-role { font-weight: 400; opacity: 0.92; }
+  </style>
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+</head>
+<body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <div class="bg" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="top">
+      <a class="brand" href="landing-app.html" aria-current="page">Politapp</a>
+      <nav class="top-nav" aria-label="Navegação">
+        <a href="landing-publico.html">Agenda pública</a>
+        <a href="login.html?next=guia-uso.html">Guia após entrar</a>
+        <a href="login.html" class="btn btn-primary" style="padding: 0.5rem 1rem">Entrar</a>
+      </nav>
+    </header>
+
+    <main id="politapp-main">
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="pill">Dados públicos · Equipe única · Território</p>
+        <h1 id="hero-title"><em>Uma plataforma</em> para decidir com contexto.</h1>
+        <p class="lede">
+          O Politapp reúne informação parlamentar e eleitoral, recortes do Rio de Janeiro, transparência federal,
+          escuta em mídias sociais e tarefas da equipe — com acesso corporativo sob aprovação de administradores.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="login.html">Acessar a plataforma</a>
+          <a class="btn btn-ghost" href="login.html?next=guia-uso.html">Entrar para ver o guia</a>
+        </div>
+        <div class="strip" role="note">
+          <span><strong>Fontes:</strong></span>
+          <span>Câmara dos Deputados (API)</span>
+          <span>·</span>
+          <span>TSE · eleições públicas</span>
+          <span>·</span>
+          <span>Portal da Transparência</span>
+        </div>
+      </section>
+
+      <section class="block" aria-labelledby="feat-title">
+        <h2 id="feat-title">O que faz o aplicativo</h2>
+        <p class="subtitle">
+          Ferramentas pensadas para campanhas, mandatos e análises institucionais — sempre alinhadas a fontes auditáveis
+          e à legislação vigente aplicável aos seus casos de uso.
+        </p>
+        <div class="grid features">
+          <article class="card">
+            <div class="icon" aria-hidden="true">Câmara</div>
+            <h3>Candidatos e perfis</h3>
+            <p>Lista paginada de deputados federais, filtros, votos correlacionados quando disponíveis e ficha por candidato a partir das APIs públicas da Câmara.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">RJ</div>
+            <h3>Território RJ</h3>
+            <p>Vereadores, prefeituras, mapas por zona/seção e painéis de insights — uma família de páginas pensada para leitura regional.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">EXE</div>
+            <h3>Visão executiva</h3>
+            <p>Resumos e indicadores para priorização e reuniões de coordenação, sem dispersar a equipe em múltiplos portais.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">TR</div>
+            <h3>Transparência</h3>
+            <p>Consultas ligadas ao ecossistema de accountability e informação federal pública quando disponível pela sua infraestrutura.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">SM</div>
+            <h3>Mídia e WhatsApp</h3>
+            <p>Painel de escuta e conteúdo; página dedicada ao bot de WhatsApp, exportação segura de configuração onde aplicável.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">Eq</div>
+            <h3>Equipe e governança</h3>
+            <p>Tarefas por dia e unidade; conta do usuário; perfis administrativos para aprovação de novos acessos.</p>
+          </article>
+        </div>
+      </section>
+
+      <aside class="band" aria-label="É Legal">
+        <h2>Uso responsável</h2>
+        <p>
+          O Politapp trabalha sobre <strong>dados públicos para análise</strong>; não substitui assessoria jurídica
+          nem orientação oficial em matéria eleitoral ou de compliance. Adeque o uso à legislação aplicável ao seu papel
+          (campanha, mandato ou equipa institucional).
+        </p>
+      </aside>
+
+      <section class="block" aria-labelledby="fluxo-title">
+        <h2 id="fluxo-title">Fluxo rápido</h2>
+        <p class="subtitle">Mesma lógica descrita no guia interno: sessão válida antes da maior parte das áreas.</p>
+        <div class="steps">
+          <div class="step">
+            <h3>Criar sessão</h3>
+            <p>Continue com Google. Novas contas podem ficar em aprovação até um administrador autorizar.</p>
+          </div>
+          <div class="step">
+            <h3>Explorar módulos</h3>
+            <p>Use o menu global para ir de candidatos a transparência, RJ, redes e tarefas com o mesmo tema visual.</p>
+          </div>
+          <div class="step">
+            <h3>Operar em equipe</h3>
+            <p>Distribua checklist e contexto público pela organização mantendo perfis e unidades controlados pelo admin.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" aria-labelledby="cta-title">
+        <h2 id="cta-title">Pronto para dentro do escritório político?</h2>
+        <p>Entrar leva aos painéis com dados atualizados das fontes públicas configuradas para o projeto.</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="login.html">Entrar ou cadastrar</a>
+          <a class="btn btn-ghost" href="landing-publico.html">Ver agenda e contato público</a>
+        </div>
+        <p class="muted-note">
+          Página inicial do produto. O conteúdo autenticado (lista de candidatos, transparência etc.) só aparece depois da sessão aprovada.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-credit">
+      <p>
+        Politapp — plataforma de apoio a análises com dados públicos.
+        ·
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener noreferrer">Documentação · API Câmara</a>
+      </p>
+      <p>
+        Criado por
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
+        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
