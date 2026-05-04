@@ -167,8 +167,61 @@ html body nav.site-nav[aria-label] a:active {
   transition-duration: 0.06s;
 }
 
+/* ——— Deslogar (auth-guard inject) ——— */
+html body nav.site-nav[aria-label] button.site-nav-logout-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex !important;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0.38rem 0.62rem !important;
+  margin: 0 !important;
+  min-height: 2.2rem;
+  font: inherit;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  color: #f0b4b4 !important;
+  text-decoration: none !important;
+  white-space: nowrap;
+  border-radius: var(--shell-nav-radius-chip) !important;
+  background: rgba(248, 113, 113, 0.1) !important;
+  border: 1px solid rgba(248, 113, 113, 0.35) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  cursor: pointer;
+  transition:
+    color var(--shell-nav-dur) var(--shell-nav-ease),
+    background var(--shell-nav-dur) var(--shell-nav-ease),
+    border-color var(--shell-nav-dur) ease,
+    box-shadow var(--shell-nav-dur) ease,
+    opacity var(--shell-nav-dur) ease;
+}
+html body nav.site-nav[aria-label] button.site-nav-logout-btn:hover:not(:disabled) {
+  color: #ffd4d4 !important;
+  background: rgba(248, 113, 113, 0.18) !important;
+  border-color: rgba(252, 165, 165, 0.55) !important;
+}
+html body nav.site-nav[aria-label] button.site-nav-logout-btn:focus-visible {
+  outline: none !important;
+  color: #fff0f0 !important;
+  border-color: #f87171 !important;
+  box-shadow:
+    0 0 0 2px rgba(248, 113, 113, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
+}
+html body nav.site-nav[aria-label] button.site-nav-logout-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+html body nav.site-nav[aria-label] button.site-nav-logout-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  transition-duration: 0.06s;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  html body nav.site-nav[aria-label] a:active {
+  html body nav.site-nav[aria-label] a:active,
+  html body nav.site-nav[aria-label] button.site-nav-logout-btn:active:not(:disabled) {
     transform: none;
   }
 }
@@ -189,6 +242,12 @@ html body nav.site-nav[aria-label] a:active {
     min-height: 44px;
     padding-inline: 0.72rem !important;
     padding-inline-end: 1.75rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  html body nav.site-nav[aria-label] button.site-nav-logout-btn {
+    min-height: 44px;
+    padding-inline: 0.72rem !important;
     font-size: 0.8rem !important;
   }
 }
