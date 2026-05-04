@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Política de privacidade — Politapp. Tratamento de dados em conformidade com a LGPD e boas práticas de segurança." />
+  <title>Privacidade e dados — Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#070a0f; --surf:#141a24; --b:rgba(255,255,255,.09); --t:#f0f3f8; --m:#94a0b8; --a:#4d9fff; --r:12px; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; font-family:"DM Sans",system-ui,sans-serif; background:var(--bg); color:var(--t); line-height:1.58; padding:1.75rem 1.2rem 3rem; }
+    .wrap { max-width:680px; margin:0 auto; }
+    .back { display:inline-block; margin-bottom:1.25rem; color:var(--a); font-weight:600; text-decoration:none; font-size:.9rem; }
+    .back:hover { text-decoration:underline; }
+    h1 { font-family:"Outfit",sans-serif; font-size:clamp(1.35rem,3vw,1.75rem); letter-spacing:-.03em; margin:0 0 .5rem; }
+    .muted { color:var(--m); font-size:.9rem; margin:0 0 1.5rem; }
+    section { background:var(--surf); border:1px solid var(--b); border-radius:var(--r); padding:1.15rem 1.25rem; margin-bottom:1rem; }
+    h2 { font-size:.95rem; margin:0 0 .55rem; color:var(--t); font-weight:600; }
+    p, li { margin:0; color:var(--m); font-size:.89rem; }
+    p+p, ul { margin-top:.55rem; }
+    ul { padding-left:1.15rem; }
+    code { font-size:.8rem; background:#0f141c; padding:.1rem .35rem; border-radius:4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="login.html">← Voltar ao login</a>
+    <h1>Política de privacidade</h1>
+    <p class="muted"><strong>Versão resumida e transparente.</strong> O Politapp pode evoluir; em caso de dúvidas institucionais, consulte a equipe responsável pelo deployment.</p>
+
+    <section>
+      <h2>Finalidade</h2>
+      <p>Tratamos dados na medida necessária para <strong>autenticação, perfis autorizados, tarefas e logs operacionais</strong> da plataforma — alinhados à lei aplicável (<strong>LGPD</strong> no Brasil).</p>
+    </section>
+
+    <section>
+      <h2>Dados e bases legais</h2>
+      <ul>
+        <li><strong>Credencial Google via Supabase:</strong> dados de conta fornecidos pelo provedor OAuth, segundo configuração do projeto.</li>
+        <li><strong>Uso legitimo / execução de serviço:</strong> acesso aos painéis após perfil criado ou aprovado por administradores.</li>
+        <li><strong>Dados públicos mostrados no app:</strong> oriundos de APIs e arquivos oficiais (Câmara, TSE, transparência, etc.).</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Segurança em trânsito e hospedagem</h2>
+      <p>O acesso público esperado deve ocorrer em <strong>HTTPS</strong>; credenciais e tokens <strong>não devem ser partilhados em chat aberto</strong>. Configurações sensíveis (ex.: WhatsApp) ficam sob responsabilidade do cliente/equipa que opera o ambiente.</p>
+    </section>
+
+    <section>
+      <h2>Retenção e direitos do titular</h2>
+      <p>O titular pode pedir correção ou eliminação de dados pessoais quando aplicável à operação técnica. Retenções internas devem estar alinhadas à política do <strong>Supabase/Google</strong> e à decisão institucional de cada cliente.</p>
+    </section>
+
+    <section>
+      <h2>Cookies</h2>
+      <p>O login por OAuth pode usar cookies/sessões do provedor conforme comportamento normal do navegador. Não há rastreamento publicitário descrito aqui pelo nucleo estadico do projeto.</p>
+    </section>
+
+    <section>
+      <h2>Contato LGPD</h2>
+      <p>Use o canal da equipe institucional (por exemplo <a href="landing-publico.html" style="color:var(--a);font-weight:600;text-decoration:none">agenda e contato público</a>) para pedidos formais relacionados ao uso do Politapp no seu mandato ou campanha.</p>
+    </section>
+
+    <p style="margin-top:1.5rem;font-size:.82rem;color:var(--m)"><a href="termos-uso.html" style="color:var(--a);font-weight:600;text-decoration:none">Termos de uso</a></p>
+  </div>
+</body>
+</html>

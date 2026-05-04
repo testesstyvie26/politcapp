@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Politapp — plataforma web para inteligência política: deputados federais, território RJ, transparência, mídia social e gestão da equipe, com dados oficiais da Câmara, TSE e Portal da Transparência." />
-  <title>Politapp — Inteligência política com dados públicos</title>
+  <meta name="description" content="Politapp — inteligência eleitoral em tempo real: análise por seção, estratégia territorial e decisão com dados. Tecnologia web com APIs públicas e governança de acesso." />
+  <title>Politapp — Inteligência eleitoral e tecnologia</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -135,22 +135,94 @@
     }
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(1.75rem, 4.2vw, 2.55rem);
+      font-size: clamp(1.28rem, 4vw, 2.15rem);
       font-weight: 700;
       letter-spacing: -0.035em;
-      line-height: 1.12;
-      margin: 0 0 1rem;
-      max-width: 16ch;
+      line-height: 1.14;
+      margin: 0 0 0.75rem;
+      max-width: 38ch;
     }
     .hero h1 em {
       font-style: normal;
       color: var(--accent);
     }
-    .hero .lede {
-      margin: 0 0 1.5rem;
+    .hero-kicker {
+      margin: 0 0 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
       color: var(--muted);
-      font-size: 1.06rem;
-      max-width: 52ch;
+    }
+    .value-trio {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: 1fr;
+      margin: 1.35rem 0 1.5rem;
+    }
+    @media (min-width: 720px) {
+      .value-trio { grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+    }
+    .value-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.95rem 1.05rem;
+    }
+    .value-q {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+    .value-card p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .value-card p strong { color: var(--text); font-weight: 600; }
+
+    .tech-note {
+      margin-top: 0.25rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.5;
+    }
+    .tech-note code {
+      font-size: 0.76rem;
+      background: var(--surface2);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .mini-tech {
+      display: grid;
+      gap: 0.65rem;
+      margin-top: 1.25rem;
+    }
+    @media (min-width: 640px) {
+      .mini-tech { grid-template-columns: repeat(3, 1fr); }
+    }
+    .mini-tech div {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.65rem 0.75rem;
+      background: rgba(77, 159, 255, 0.06);
+      border: 1px solid rgba(77, 159, 255, 0.18);
+      border-radius: 10px;
+      line-height: 1.4;
+    }
+    .mini-tech strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.82rem;
+      margin-bottom: 0.2rem;
     }
     .hero-cta {
       display: flex;
@@ -195,9 +267,6 @@
     }
     @media (min-width: 620px) {
       .grid.features { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (min-width: 900px) {
-      .grid.features { grid-template-columns: repeat(3, 1fr); }
     }
     .card {
       background: var(--surface);
@@ -248,48 +317,6 @@
       font-size: 0.93rem;
       color: var(--muted);
       max-width: 70ch;
-    }
-    .steps {
-      display: grid;
-      gap: 1rem;
-      counter-reset: step;
-    }
-    @media (min-width: 720px) {
-      .steps { grid-template-columns: repeat(3, 1fr); }
-    }
-    .step {
-      position: relative;
-      padding: 1.15rem 1.2rem 1.15rem 3rem;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-    }
-    .step::before {
-      counter-increment: step;
-      content: counter(step);
-      position: absolute;
-      left: 1rem;
-      top: 1.05rem;
-      width: 1.55rem;
-      height: 1.55rem;
-      border-radius: 8px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .step h3 {
-      margin: 0 0 0.35rem;
-      font-size: 0.98rem;
-    }
-    .step p {
-      margin: 0;
-      font-size: 0.86rem;
-      color: var(--muted);
-      line-height: 1.5;
     }
     .cta {
       margin-top: 3rem;
@@ -372,120 +399,138 @@
     <header class="top">
       <a class="brand" href="landing-app.html" aria-current="page">Politapp</a>
       <nav class="top-nav" aria-label="Navegação">
-        <a href="landing-publico.html">Agenda pública</a>
-        <a href="login.html?next=guia-uso.html">Guia após entrar</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="landing-publico.html">Contato</a>
         <a href="login.html" class="btn btn-primary" style="padding: 0.5rem 1rem">Entrar</a>
       </nav>
     </header>
 
     <main id="politapp-main">
       <section class="hero" aria-labelledby="hero-title">
-        <p class="pill">Dados públicos · Equipe única · Território</p>
-        <h1 id="hero-title"><em>Uma plataforma</em> para decidir com contexto.</h1>
-        <p class="lede">
-          O Politapp reúne informação parlamentar e eleitoral, recortes do Rio de Janeiro, transparência federal,
-          escuta em mídias sociais e tarefas da equipe — com acesso corporativo sob aprovação de administradores.
-        </p>
+        <p class="pill">Inteligência · tecnologia · território</p>
+        <h1 id="hero-title">
+          Inteligência eleitoral em tempo real para campanhas que querem <em>vencer</em> —
+          análise de votos por seção, estratégia territorial e decisão baseada em dados.
+        </h1>
+        <p class="hero-kicker">Os três eixos primeiro — antes de recurso técnico</p>
+
+        <div class="value-trio">
+          <article class="value-card">
+            <span class="value-q">👉 Para quem é?</span>
+            <p>
+              <strong>Direção de campanha, coordenação territorial e equipes de dados</strong>
+              que precisam ler urna e geografia no mesmo quadro — na hora da decisão, não depois da reunião.
+            </p>
+          </article>
+          <article class="value-card">
+            <span class="value-q">👉 Que problema resolve?</span>
+            <p>
+              Dados públicos <strong>espalhados em vários portais</strong>; a equipe cruza TSE, Câmara e recortes locais
+              <strong>sem uma visão única</strong> para priorizar onde atuar ou o que comunicar.
+            </p>
+          </article>
+          <article class="value-card">
+            <span class="value-q">👉 Qual resultado entrega?</span>
+            <p>
+              <strong>Leitura por seção e região</strong>, cenários territoriais comparáveis e painéis escuros pensados
+              para <strong>decisão rápida</strong> com arquivos e APIs oficiais — menos achismo, mais dado no mesmo lugar.
+            </p>
+          </article>
+        </div>
+
         <div class="hero-cta">
-          <a class="btn btn-primary" href="login.html">Acessar a plataforma</a>
-          <a class="btn btn-ghost" href="login.html?next=guia-uso.html">Entrar para ver o guia</a>
+          <a class="btn btn-primary" href="login.html">Acessar o painel</a>
+          <a class="btn btn-ghost" href="login.html?next=guia-uso.html">Guia após entrar</a>
         </div>
         <div class="strip" role="note">
-          <span><strong>Fontes:</strong></span>
-          <span>Câmara dos Deputados (API)</span>
+          <span><strong>Dados &amp; stack:</strong></span>
+          <span>TSE</span>
           <span>·</span>
-          <span>TSE · eleições públicas</span>
+          <span>Câmara (API aberta)</span>
           <span>·</span>
-          <span>Portal da Transparência</span>
+          <span>Web + governança de acesso</span>
         </div>
+        <p class="tech-note">
+          Arquitetura em <strong>web modular</strong>; sessão com <strong>OAuth Google</strong> e <strong>aprovação administrativa</strong>.
+          Conformidade e transparência: <a href="privacidade.html" style="color: var(--accent); font-weight: 600">privacidade</a> ·
+          <a href="termos-uso.html" style="color: var(--accent); font-weight: 600">termos</a>.
+        </p>
       </section>
 
       <section class="block" aria-labelledby="feat-title">
-        <h2 id="feat-title">O que faz o aplicativo</h2>
+        <h2 id="feat-title">Inteligência &amp; tecnologia (por que existe engenharia)</h2>
         <p class="subtitle">
-          Ferramentas pensadas para campanhas, mandatos e análises institucionais — sempre alinhadas a fontes auditáveis
-          e à legislação vigente aplicável aos seus casos de uso.
+          Só pontos onde software e método se encontram: <strong>território tratado como dado</strong>, ingestão oficial e confiança no acesso.
         </p>
         <div class="grid features">
           <article class="card">
-            <div class="icon" aria-hidden="true">Câmara</div>
-            <h3>Candidatos e perfis</h3>
-            <p>Lista paginada de deputados federais, filtros, votos correlacionados quando disponíveis e ficha por candidato a partir das APIs públicas da Câmara.</p>
+            <div class="icon" aria-hidden="true">01</div>
+            <h3>Geointeligência eleitoral</h3>
+            <p>Zona/seção tratadas como primeira classe: base para comparar comportamento territorial e orientar recurso onde a urna falou mais alto ou mais baixo.</p>
           </article>
           <article class="card">
-            <div class="icon" aria-hidden="true">RJ</div>
-            <h3>Território RJ</h3>
-            <p>Vereadores, prefeituras, mapas por zona/seção e painéis de insights — uma família de páginas pensada para leitura regional.</p>
+            <div class="icon" aria-hidden="true">02</div>
+            <h3>Pipeline de dados públicos</h3>
+            <p>Junção sob o mesmo frontend de <strong>APIs abertas e arquivos oficiais</strong> já homologados (Câmara, divulgação TSE, etc.), com menos retrabalho de planilha.</p>
           </article>
           <article class="card">
-            <div class="icon" aria-hidden="true">EXE</div>
-            <h3>Visão executiva</h3>
-            <p>Resumos e indicadores para priorização e reuniões de coordenação, sem dispersar a equipe em múltiplos portais.</p>
+            <div class="icon" aria-hidden="true">03</div>
+            <h3>Painéis para decidir rápido</h3>
+            <p>UI escura estilo dashboard, preparada para <strong>indicadores e camadas RJ</strong> quando ativadas no seu ambiente — foco cognitivo, não poluição visual.</p>
           </article>
           <article class="card">
-            <div class="icon" aria-hidden="true">TR</div>
-            <h3>Transparência</h3>
-            <p>Consultas ligadas ao ecossistema de accountability e informação federal pública quando disponível pela sua infraestrutura.</p>
+            <div class="icon" aria-hidden="true">04</div>
+            <h3>Camada zero-trust institucional</h3>
+            <p>Tráfego esperado em <strong>HTTPS</strong>, conta com revisão administrativa e trilhos de perfil pensados para <strong>circulação menor de briefing sensível</strong>.</p>
           </article>
-          <article class="card">
-            <div class="icon" aria-hidden="true">SM</div>
-            <h3>Mídia e WhatsApp</h3>
-            <p>Painel de escuta e conteúdo; página dedicada ao bot de WhatsApp, exportação segura de configuração onde aplicável.</p>
-          </article>
-          <article class="card">
-            <div class="icon" aria-hidden="true">Eq</div>
-            <h3>Equipe e governança</h3>
-            <p>Tarefas por dia e unidade; conta do usuário; perfis administrativos para aprovação de novos acessos.</p>
-          </article>
+        </div>
+
+        <div class="mini-tech" aria-label="Observações técnicas">
+          <div>
+            <strong>Atualização &amp; “real time”</strong>
+            Métricas e mapas refrescam segundo a própria fonte pública e a rede — prometemos arquitetura para acompanhar, não SLA ilegível de órgão terceiro.
+          </div>
+          <div>
+            <strong>Extensível</strong>
+            Proxies e integrações opcionais para manter navegador em origem única quando a infra do cliente assim definir.
+          </div>
+          <div>
+            <strong>Evolução</strong>
+            Camada frontend estática permite somar datasets e vistas sem obrigar refactor completo antes de nova eleição.
+          </div>
         </div>
       </section>
 
-      <aside class="band" aria-label="É Legal">
+      <aside class="band" aria-label="Uso responsável">
         <h2>Uso responsável</h2>
         <p>
-          O Politapp trabalha sobre <strong>dados públicos para análise</strong>; não substitui assessoria jurídica
-          nem orientação oficial em matéria eleitoral ou de compliance. Adeque o uso à legislação aplicável ao seu papel
-          (campanha, mandato ou equipa institucional).
+          O Politapp opera sobre <strong>dados públicos para análise</strong>; não substitui assessoria jurídica nem compliance eleitoral.
+          Adeque o uso ao seu papel institucional (<strong>campanha</strong>, <strong>mandato</strong> ou <strong>equipe técnica</strong>).
         </p>
       </aside>
 
-      <section class="block" aria-labelledby="fluxo-title">
-        <h2 id="fluxo-title">Fluxo rápido</h2>
-        <p class="subtitle">Mesma lógica descrita no guia interno: sessão válida antes da maior parte das áreas.</p>
-        <div class="steps">
-          <div class="step">
-            <h3>Criar sessão</h3>
-            <p>Continue com Google. Novas contas podem ficar em aprovação até um administrador autorizar.</p>
-          </div>
-          <div class="step">
-            <h3>Explorar módulos</h3>
-            <p>Use o menu global para ir de candidatos a transparência, RJ, redes e tarefas com o mesmo tema visual.</p>
-          </div>
-          <div class="step">
-            <h3>Operar em equipe</h3>
-            <p>Distribua checklist e contexto público pela organização mantendo perfis e unidades controlados pelo admin.</p>
-          </div>
-        </div>
-      </section>
-
       <section class="cta" aria-labelledby="cta-title">
-        <h2 id="cta-title">Pronto para dentro do escritório político?</h2>
-        <p>Entrar leva aos painéis com dados atualizados das fontes públicas configuradas para o projeto.</p>
+        <h2 id="cta-title">Testar o produto na prática</h2>
+        <p>Login com Google habilita o restante das rotas após conformidade do perfil definida pelo administrador.</p>
         <div class="cta-actions">
           <a class="btn btn-primary" href="login.html">Entrar ou cadastrar</a>
-          <a class="btn btn-ghost" href="landing-publico.html">Ver agenda e contato público</a>
+          <a class="btn btn-ghost" href="landing-publico.html">Contato institucional</a>
         </div>
         <p class="muted-note">
-          Página inicial do produto. O conteúdo autenticado (lista de candidatos, transparência etc.) só aparece depois da sessão aprovada.
+          Landing pública · Módulos adicionais (transparência, escuta, etc.) ficam dentro do mesmo shell após acesso.
         </p>
       </section>
     </main>
 
     <footer class="site-credit">
       <p>
-        Politapp — plataforma de apoio a análises com dados públicos.
+        Politapp — inteligência eleitoral em stack web aberto.
         ·
-        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener noreferrer">Documentação · API Câmara</a>
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener noreferrer">API Câmara</a>
+        ·
+        <a href="privacidade.html">Privacidade</a>
+        ·
+        <a href="termos-uso.html">Termos</a>
       </p>
       <p>
         Criado por

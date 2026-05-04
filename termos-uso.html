@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Termos de uso — Politapp. Regras de uso da plataforma e limitações jurídicas." />
+  <title>Termos de uso — Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#070a0f; --surf:#141a24; --b:rgba(255,255,255,.09); --t:#f0f3f8; --m:#94a0b8; --a:#4d9fff; --r:12px; --w:#fca5a5; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; font-family:"DM Sans",system-ui,sans-serif; background:var(--bg); color:var(--t); line-height:1.58; padding:1.75rem 1.2rem 3rem; }
+    .wrap { max-width:680px; margin:0 auto; }
+    .back { display:inline-block; margin-bottom:1.25rem; color:var(--a); font-weight:600; text-decoration:none; font-size:.9rem; }
+    .back:hover { text-decoration:underline; }
+    h1 { font-family:"Outfit",sans-serif; font-size:clamp(1.35rem,3vw,1.75rem); letter-spacing:-.03em; margin:0 0 .5rem; }
+    .muted { color:var(--m); font-size:.9rem; margin:0 0 1.5rem; }
+    section { background:var(--surf); border:1px solid var(--b); border-radius:var(--r); padding:1.15rem 1.25rem; margin-bottom:1rem; }
+    h2 { font-size:.95rem; margin:0 0 .55rem; color:var(--t); font-weight:600; }
+    p, li { margin:0; color:var(--m); font-size:.89rem; }
+    p+p, ul { margin-top:.55rem; }
+    ul { padding-left:1.15rem; }
+    .warn { border-color:rgba(252,165,165,.35); background:rgba(239,68,68,.08); }
+    .warn p { color:#fecaca; font-size:.86rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="login.html">← Voltar ao login</a>
+    <h1>Termos de uso</h1>
+    <p class="muted"><strong>Uso institucional responsável.</strong> Leia antes de usar a plataforma em campanha, mandato ou análises políticas.</p>
+
+    <section>
+      <h2>Objeto</h2>
+      <p>O Politapp oferece <strong>painéis e ferramentas de leitura de dados públicos</strong> para apoiar decisões da equipe cliente. Funcionalidades e disponibilidade dependem da configuração técnica e das fontes de dados de cada instalação.</p>
+    </section>
+
+    <section>
+      <h2>Acesso</h2>
+      <ul>
+        <li>Algumas páginas são públicas (<code>landing-app.html</code>, <code>landing-publico.html</code>), outras <strong>exigem conta aprovada</strong>.</li>
+        <li>A equipe cliente é responsável por <strong>não divulgar credenciais</strong> nem compartilhar acesso não autorizado.</li>
+      </ul>
+    </section>
+
+    <section class="warn">
+      <h2 style="color:#fecaca;margin-bottom:.4rem">Não substitui assessoria jurídica</h2>
+      <p>Análises, mapas ou indicadores são <strong>apoio operativo</strong>. Legislação eleitoral e outras normas vigentes continuam a ser obrigação jurídica do cliente ou do usuário final.</p>
+    </section>
+
+    <section>
+      <h2>Dados públicos e fontes</h2>
+      <p>Uso deve respeitar <strong>termos das APIs/fontes originais</strong> (Câmara, TSE, transparência, etc.). Interpretações equivocadas não imputam aos operadores externos dessas infraestruturas.</p>
+    </section>
+
+    <section>
+      <h2>Uso vedado</h2>
+      <ul>
+        <li>Violação de lei, discriminação, ou uso fraudulento de dados pessoais de terceiros.</li>
+        <li>Abuso de infraestrutura (scraping pesado onde proibido) ou uso que comprometa segurança alheia.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Limitação de garantia</h2>
+      <p>O serviço pode ser interrompido por manutenção, falha de redes ou políticas externas (<strong>canais públicos nem sempre garantem SLA</strong>). Planeje redundâncias para operações críticas.</p>
+    </section>
+
+    <p style="margin-top:1.5rem;font-size:.82rem;color:var(--m)"><a href="privacidade.html" style="color:var(--a);font-weight:600;text-decoration:none">Política de privacidade</a></p>
+  </div>
+</body>
+</html>

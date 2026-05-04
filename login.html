@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Entrar ou cadastrar — Politapp</title>
+  <meta name="description" content="Politapp — inteligência eleitoral territorial, mapas por zona e dados públicos. Entre com Google para acessar o painel." />
+  <title>Politapp — Entrar na plataforma</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,6 +20,7 @@
       --accent: #4d9fff;
       --accent-soft: rgba(77, 159, 255, 0.14);
       --gold: #e8c547;
+      --mint: rgba(52, 211, 153, 0.12);
       --radius: 16px;
       --radius-sm: 10px;
       --font-display: "Outfit", system-ui, sans-serif;
@@ -48,7 +50,7 @@
       position: relative;
       z-index: 1;
       min-height: 100vh;
-      max-width: 1120px;
+      max-width: 1160px;
       margin: 0 auto;
       padding: 1.25rem 1.25rem 2.5rem;
     }
@@ -58,7 +60,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
     .brand {
       font-family: var(--font-display);
@@ -68,19 +70,24 @@
       color: var(--text);
       text-decoration: none;
     }
-    .site-nav {
+    .brand:hover { color: var(--accent); }
+    nav.site-nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem 1.1rem;
-      font-size: 0.88rem;
-    }
-    .site-nav a {
-      color: var(--muted);
-      text-decoration: none;
+      align-items: center;
+      gap: 0.6rem 1rem;
+      font-size: 0.86rem;
       font-weight: 500;
     }
-    .site-nav a:hover { color: var(--accent); }
-    .site-nav a[aria-current="page"] { color: var(--accent); }
+    nav.site-nav a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    nav.site-nav a:hover { color: var(--accent); }
+    nav.site-nav a[aria-current="page"] {
+      color: var(--accent);
+      font-weight: 600;
+    }
 
     .login-grid {
       display: grid;
@@ -88,67 +95,200 @@
       align-items: start;
       grid-template-columns: 1fr;
     }
-    @media (min-width: 900px) {
-      .login-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    @media (min-width: 960px) {
+      .login-grid { grid-template-columns: 1.05fr 0.95fr; gap: 2.75rem; }
     }
 
     .hero .pill {
       display: inline-block;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       color: var(--gold);
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
     }
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-size: clamp(1.28rem, 3.9vw, 2.06rem);
       font-weight: 700;
-      letter-spacing: -0.03em;
-      margin: 0 0 0.75rem;
-      line-height: 1.2;
+      letter-spacing: -0.035em;
+      margin: 0 0 0.85rem;
+      line-height: 1.17;
+      max-width: 36ch;
     }
     .hero h1 em {
       font-style: normal;
       color: var(--accent);
     }
-    .hero .lede {
+    .tagline {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       color: var(--muted);
-      margin: 0;
-      max-width: 46ch;
+      margin: 0 0 1.35rem;
     }
-    .overview {
-      margin-top: 1.45rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--border);
-      max-width: 54ch;
+
+    .value-trio {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 1.1rem;
     }
-    .overview .overview-title {
-      font-family: var(--font-display);
-      font-size: 0.95rem;
+    @media (min-width: 620px) {
+      .value-trio { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    }
+    .value-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.82rem 0.92rem;
+    }
+    .value-q {
+      display: block;
+      font-size: 0.68rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      margin: 0 0 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gold);
+      margin-bottom: 0.32rem;
     }
-    .overview .overview-lead {
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin: 0 0 0.85rem;
-      line-height: 1.55;
-    }
-    .overview .overview-lead strong { color: var(--text); font-weight: 600; }
-    .overview-list {
+    .value-card p {
       margin: 0;
-      padding: 0 0 0 1.15rem;
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.52rem 0.92rem;
+      border-radius: 999px;
+      font-size: 0.845rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: background 0.15s ease, filter 0.15s ease, color 0.15s ease;
+    }
+    .pill-btn.ghost {
+      background: transparent;
+      color: var(--muted);
+    }
+    .pill-btn.ghost:hover {
+      color: var(--text);
+      background: var(--accent-soft);
+      border-color: rgba(77, 159, 255, 0.35);
+    }
+    .pill-btn.primary-soft {
+      background: var(--accent-soft);
+      color: var(--text);
+      border-color: rgba(77, 159, 255, 0.4);
+    }
+    .pill-btn.primary-soft:hover { filter: brightness(1.07); }
+
+    .proof-panel {
+      padding: 1rem 1.05rem;
+      background: rgba(77, 159, 255, 0.07);
+      border: 1px solid rgba(77, 159, 255, 0.24);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+    .proof-title {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin: 0 0 0.7rem;
+    }
+    .proof-grid {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 520px) {
+      .proof-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .proof-chip {
+      display: flex;
+      gap: 0.55rem;
+      align-items: flex-start;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.38;
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 8px;
+      padding: 0.48rem 0.62rem;
+      border: 1px solid var(--border);
+    }
+    .proof-chip strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.05rem;
+    }
+    .proof-ico {
+      flex-shrink: 0;
+      width: 1.45rem;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .security-block {
+      margin-top: 0.25rem;
+      padding: 0.88rem 1rem;
+      background: var(--mint);
+      border: 1px solid rgba(52, 211, 153, 0.22);
+      border-radius: var(--radius-sm);
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+    .security-block summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+    }
+    .security-block[open] summary { margin-bottom: 0.45rem; }
+    .security-block ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.1rem;
+    }
+    .security-block li { margin-bottom: 0.38rem; }
+    .security-block .legal-mini {
+      margin-top: 0.7rem;
+      font-size: 0.8rem;
+    }
+    .security-block a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .security-block a:hover { text-decoration: underline; }
+
+    .footnote-public {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      max-width: 52ch;
       line-height: 1.5;
     }
-    .overview-list li { margin-bottom: 0.55rem; }
-    .overview-list li::marker { color: var(--accent); }
-    .overview-list strong { color: var(--text); font-weight: 600; }
+    .footnote-public a { color: var(--accent); font-weight: 600; }
+
+    #bloco-acesso { scroll-margin-top: 1.5rem; }
 
     .card-form {
       background: var(--surface);
@@ -253,19 +393,41 @@
       border-radius: 4px;
     }
 
+    .politapp-skip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10000;
+      padding: 0.5rem 1rem;
+      font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
+      background: var(--accent);
+      color: #0a0d12;
+      border: none;
+      border-radius: 0 0 10px 0;
+      text-decoration: none;
+      transform: translateY(-130%);
+      transition: transform 0.18s ease;
+    }
+    .politapp-skip:focus {
+      transform: translateY(0);
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+    }
+    .politapp-skip:focus:not(:focus-visible) { outline: none; }
+
     .site-credit {
-      margin-top: 2.5rem;
-      padding-top: 1.25rem;
+      margin-top: 2.75rem;
+      padding-top: 1.35rem;
       border-top: 1px solid var(--border);
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       color: var(--muted);
       text-align: center;
+      line-height: 1.6;
     }
     .site-credit a { color: var(--accent); font-weight: 600; text-decoration: none; }
     .site-credit a:hover { text-decoration: underline; }
+    .site-credit .sep { margin: 0 0.35rem; opacity: 0.6; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -274,52 +436,130 @@
     <header class="top-bar">
       <a class="brand" href="landing-app.html">Politapp</a>
       <nav class="site-nav" aria-label="Navegação principal">
-        <a href="index.html">Candidatos</a>
-        <a href="transparencia.html">Transparência</a>
-        <details class="site-nav-dropdown">
-          <summary class="site-nav-dropdown__summary">Mídia social</summary>
-          <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-            <a href="midia-social.html">Painel · escuta e conteúdo</a>
-            <a href="whatsapp.html">WhatsApp · bot</a>
-          </div>
-        </details>
-        <a href="guia-uso.html">Guia de uso</a>
-        <a href="tarefas.html">Tarefas</a>
-        <a href="conta.html">Conta</a>
+        <a href="landing-app.html">Produto</a>
+        <a href="landing-publico.html">Solicitar acesso</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="termos-uso.html">Termos</a>
+        <a href="login.html?next=guia-uso.html">Guia</a>
         <a href="login.html" aria-current="page">Entrar</a>
       </nav>
     </header>
 
     <main id="politapp-main" class="login-grid" tabindex="-1">
       <section class="hero" aria-labelledby="auth-hero-title">
-        <p class="pill">Conta Politapp</p>
-        <h1 id="auth-hero-title">Entre ou <em>crie sua conta</em> com Google</h1>
-        <p class="lede">
-          Entre para aceder aos painéis com dados públicos para análise. Algumas páginas são públicas mesmo sem sessão
-          (<strong><a href="landing-app.html" style="color: var(--accent); font-weight: 600">apresentação do Politapp</a></strong>,
-          <a href="landing-publico.html" style="color: var(--accent); font-weight: 600">agenda e contato</a>).
-        </p>
-        <div class="overview" aria-label="Visão geral do Politapp">
-          <p class="overview-title">Visão geral do sistema</p>
-          <p class="overview-lead">
-            O Politapp organiza <strong>informação pública e fluxos de trabalho</strong> para oferecer
-            <strong>apoio inteligente a campanhas</strong> e à <strong>gestão pública</strong>: cruzar dados,
-            priorizar temas e acompanhar transparência com menos ruído e mais contexto — sempre com rigor
-            frente à legislação eleitoral e às fontes oficiais.
-          </p>
-          <ul class="overview-list">
-            <li><strong>Campanhas e equipes</strong> — listagens, recortes territoriais e materiais de leitura rápida para apoiar planeamento, discurso e monitorização de candidaturas.</li>
-            <li><strong>Gestão pública e accountability</strong> — painéis e rotas de transparência para acompanhar órgãos, despesas e compromissos com dados auditáveis.</li>
-            <li><strong>Inteligência assistida</strong> — priorização e síntese a partir de dados abertos (TSE, portais, bases integradas), sem substituir parecer jurídico nem pesquisa de campo.</li>
-            <li><strong>Tarefas e colaboração</strong> — fluxo de trabalho integrado para o que a equipe precisa acompanhar depois de entrar na plataforma.</li>
-            <li><strong>Guia de uso</strong> — mapa das páginas e fluxos; abra <a href="guia-uso.html">guia-uso.html</a> após entrar.</li>
-          </ul>
+        <p class="pill">Campanhas e mandatos que disputam resultado na urna</p>
+        <h1 id="auth-hero-title">
+          Inteligência eleitoral em tempo real para campanhas que querem <em>vencer</em> —
+          análise de votos por seção, estratégia territorial e decisão guiada por dados públicos.
+        </h1>
+        <p class="tagline">Clareza no topo · ação rápida · menos ruído</p>
+
+        <div class="value-trio">
+          <article class="value-card">
+            <span class="value-q">Para quem é?</span>
+            <p>
+              Direção de campanha, articulação municipal, comunicação institucional e assessores que precisam
+              <strong>ler território e urna ao mesmo tempo</strong>.
+            </p>
+          </article>
+          <article class="value-card">
+            <span class="value-q">Que problema resolve?</span>
+            <p>
+              Dados públicos dispersos entre portais — equipe perdida entre planilhas, sem uma <strong>visão territorial única</strong>
+              antes da decisão na reunião.
+            </p>
+          </article>
+          <article class="value-card">
+            <span class="value-q">Que resultado entrega?</span>
+            <p>
+              <strong>Onde converter, onde recuperar votos</strong>, prioridade de agendas e relatórios alinhados a Câmara, TSE e recortes regionais configurados — no mesmo painel.
+            </p>
+          </article>
         </div>
+
+        <div class="cta-row" aria-label="Ações rápidas">
+          <a class="pill-btn ghost" href="landing-app.html">Ver demo</a>
+          <a class="pill-btn primary-soft" href="#bloco-acesso">Testar</a>
+          <a class="pill-btn ghost" href="landing-publico.html">Solicitar acesso</a>
+        </div>
+
+        <div class="proof-panel" aria-label="Valor entregue no produto">
+          <p class="proof-title">O que há dentro do produto · prova tangível</p>
+          <div class="proof-grid">
+            <div class="proof-chip">
+              <span class="proof-ico" aria-hidden="true">📍</span>
+              <div>
+                <strong>Mapa por zona e seção</strong>
+                Leitura geográfica do voto onde a campanha precisa cortar ônibus e porta a porta — base TSE/arquivos oficiais.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-ico" aria-hidden="true">📈</span>
+              <div>
+                <strong>Comparativo e evolução por região</strong>
+                Leitura rápida entre áreas RJ e a família legislativa (vereadores, prefeituras) na mesma experiência tipo dashboard escuro.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-ico" aria-hidden="true">📊</span>
+              <div>
+                <strong>Dashboard executivo + importação oficial</strong>
+                Deputados (API Câmara) correlacionados a resultados públicos quando o recorte permite — menos cópia manual.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-ico" aria-hidden="true">🎯</span>
+              <div>
+                <strong>Segmentação territorial</strong>
+                Foco em RJ (lista, interior, insights) antes de extrapolar nacionalmente — menos dispersão estratégica.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-ico" aria-hidden="true">🤖</span>
+              <div>
+                <strong>Insights automatizados (camada inicial)</strong>
+                Resumos e priorização sobre dados públicos já carregados no painel — <em>uso assistido</em>, sem substituir campo nem jurídico.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-ico" aria-hidden="true">📲</span>
+              <div>
+                <strong>Escuta digital + WhatsApp configurável</strong>
+                Fluxo unificado no ambiente institucional; export seguro onde o fluxo permite.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <details class="security-block">
+          <summary>Segurança da informação aplicada à política</summary>
+          <p style="margin:0.45rem 0 0;line-height:1.5;font-size:.84rem">
+            Posicionamos o produto onde poucos concorrentes fazem bem: combinar dados públicos com <strong>governança de acesso</strong> e menor risco de vazamento de estratégia.
+          </p>
+          <ul>
+            <li><strong>Orientação à LGPD:</strong> política transparente sobre credenciais, perfil e tratamento (<a href="privacidade.html">privacidade</a>).</li>
+            <li><strong>Trânsito cifrado:</strong> uso esperado em <strong>HTTPS</strong> (TLS entre browser e hospedagem) e boas-práticas de tokens via Supabase.</li>
+            <li><strong>Controle de identidade:</strong> Google OAuth; <strong>aprovação de novas contas</strong>; unidades/perfil antes de dados sensíveis operacionais.</li>
+            <li><strong>Auditoria e responsabilização:</strong> trilhos de conta e papel do admin definidos nos <a href="termos-uso.html">termos de uso</a>.</li>
+            <li><strong>Discreção estratégica:</strong> tratar mapas internos como ativos — menos superfície de copiar/colar estratégia fora da equipe aprovada.</li>
+          </ul>
+          <p class="legal-mini">
+            <a href="privacidade.html">Política de privacidade</a> ·
+            <a href="termos-uso.html">Termos</a>
+          </p>
+        </details>
+
+        <p class="footnote-public">
+          Também público sem login:
+          <a href="landing-app.html">Landing do aplicativo</a> e a
+          <a href="landing-publico.html">agenda institucional e contatos</a>.
+          Áreas restritas ficam atrás da sessão aprovada.
+        </p>
       </section>
 
-      <section class="card-form" aria-labelledby="auth-form-title">
-        <h2 id="auth-form-title">Acesso</h2>
-        <p class="sub">Escolha entrar ou cadastro — em ambos os casos use o botão do Google.</p>
+      <section id="bloco-acesso" class="card-form" aria-labelledby="auth-form-title">
+        <h2 id="auth-form-title">Acesso ao painel</h2>
+        <p class="sub">Escolha <strong>Entrar</strong> ou <strong>Cadastrar</strong> — sempre com Google. Isso equivale ao &quot;Testar&quot;: após autorização, você cai nos dashboards.</p>
         <p id="err" class="error" hidden></p>
 
         <div class="tabs" role="tablist" aria-label="Entrar ou cadastrar">
@@ -367,7 +607,13 @@
 
     <footer class="site-credit">
       <p>
-        <strong>Politapp</strong> — apoio inteligente para campanhas e gestão pública, com dados públicos para análise. Cumpra a legislação eleitoral vigente.
+        <strong>Politapp</strong> — dados públicos para decisão rápida, com segurança e governança de acesso.
+        <span class="sep">|</span>
+        <a href="privacidade.html">Privacidade</a><span class="sep">·</span>
+        <a href="termos-uso.html">Termos</a>
+      </p>
+      <p>
+        Cumpre sempre a lei eleitoral e as normas do seu papel (campanha, mandato ou instituição).
       </p>
     </footer>
   </div>
@@ -376,6 +622,3 @@
   <script type="module" src="js/login.mjs"></script>
 </body>
 </html>
-
-
-
