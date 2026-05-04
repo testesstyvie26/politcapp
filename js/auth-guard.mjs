@@ -51,6 +51,12 @@ function isRecusadaPage() {
     return;
   }
 
+  /** Só para geração automática de material (PDF); não usar em produção no browser real. */
+  if (typeof window !== "undefined" && window.POLITAPP_PRESENTATION_CAPTURE === true) {
+    resolveReady({ session: null, profile: null });
+    return;
+  }
+
   document.documentElement.classList.add("auth-pending");
 
   try {
