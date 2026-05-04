@@ -4,6 +4,7 @@
  */
 import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
 import { profileAllowsAppAccess, isContaRejeitada } from "./org-api.mjs";
+import { attachPolitappLogoutButton } from "./logout-ui.mjs";
 
 let resolveReady;
 let rejectReady;
@@ -16,28 +17,6 @@ export const politappAuthReady = new Promise((res, rej) => {
 function loginUrlWithNext() {
   const path = (location.pathname.replace(/^\//, "") || "index.html") + location.search;
   return "login.html?" + new URLSearchParams({ next: path }).toString();
-}
-
-/** Botão global no menu (após sessão válida). */
-function injectShellLogout(supabase) {
-  if (!supabase || typeof document === "undefined") return;
-  const nav = document.querySelector("nav.site-nav");
-  if (!nav || nav.querySelector("[data-politapp-logout]")) return;
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.dataset.politappLogout = "";
-  btn.className = "site-nav-logout-btn";
-  btn.setAttribute("aria-label", "Deslogar e encerrar a sessão");
-  btn.textContent = "Deslogar";
-  btn.addEventListener("click", async () => {
-    btn.disabled = true;
-    try {
-      await supabase.auth.signOut();
-    } finally {
-      window.location.href = "login.html";
-    }
-  });
-  nav.appendChild(btn);
 }
 
 function currentPageFile() {
@@ -149,7 +128,7 @@ function isRecusadaPage() {
     }
 
     document.documentElement.classList.remove("auth-pending");
-    injectShellLogout(supabase);
+    attachPolitappLogoutButton(supabase);
     resolveReady({ session, profile });
   } catch (e) {
     console.error("[politapp] auth-guard:", e);
