@@ -4,6 +4,7 @@
  * Uso:
  *   npm run build:pdf-apresentacao              → técnico (todas as áreas + URL das telas)
  *   npm run build:pdf-apresentacao-comercial    → visão comercial (narrativa + prints essenciais)
+ *   npm run build:pdf-demonstracao-guia         → demonstração alinhada ao guia-uso.html
  *
  * Requer: npm install ; npx playwright install chromium
  */
@@ -17,12 +18,13 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 
-const isComercial = process.argv.includes("--comercial");
+const isGuiaDemo = process.argv.includes("--guia-demo");
+const isComercial = !isGuiaDemo && process.argv.includes("--comercial");
 
 const OUT = path.join(
   ROOT,
   "docs",
-  isComercial ? "Politapp-apresentacao-comercial.pdf" : "Politapp-apresentacao.pdf",
+  isGuiaDemo ? "Politapp-demonstracao-guia.pdf" : isComercial ? "Politapp-apresentacao-comercial.pdf" : "Politapp-apresentacao.pdf",
 );
 
 const MIME = {
@@ -76,7 +78,7 @@ function startStaticServer() {
   });
 }
 
-/** @type {{ title: string; detail: string; path: string; waitSelector?: string; timeoutMs?: number; fullPage?: boolean }[]} */
+/** @type {{ title: string; detail: string; path: string; waitSelector?: string; timeoutMs?: number; fullPage?: boolean; settleMs?: number }[]} */
 const SLIDES_TECNICO = [
   {
     title: "Entrar e cadastro",
@@ -214,6 +216,179 @@ const SLIDES_TECNICO = [
   },
 ];
 
+/**
+ * Ordem e textos alinhados a guia-uso.html (mapa rápido, fluxo, Câmara, RJ, transparência, WhatsApp, equipa).
+ * exemplos: candidato.html?id=204379 (Câmara, citado no guia).
+ */
+const SLIDES_GUIA = [
+  {
+    title: "Guia de uso — documento de referência",
+    detail:
+      "Mapa das funções principais, fluxos sugeridos e onde encontrar cada ferramenta. No telemóvel, deslize o menu no topo horizontalmente; com teclado, use «Ir ao conteúdo» para saltar o menu. Abaixo: o índice lateral do guia em captura (aguarde o diagrama Mermaid carregar).",
+    path: "/guia-uso.html",
+    waitSelector: ".content-panels, .wrap",
+    timeoutMs: 35000,
+    fullPage: true,
+    settleMs: 4000,
+  },
+  {
+    title: "Mapa rápido — landing pública",
+    detail:
+      "Exceção explícita no guia: sem sessão, o auth-guard não bloqueia esta página. Canal de agenda pública e contato institucional.",
+    path: "/landing-publico.html",
+    waitSelector: ".wrap header, header",
+    timeoutMs: 20000,
+    fullPage: true,
+  },
+  {
+    title: "Fluxo de acesso — Entrar (Google + Supabase)",
+    detail:
+      "Sem sessão, o auth-guard envia para o login (salvo páginas públicas). Novas contas podem precisar de aprovação administrativa antes do acesso completo.",
+    path: "/login.html",
+    waitSelector: ".page, body",
+    timeoutMs: 20000,
+    fullPage: true,
+  },
+  {
+    title: "Fluxo — conta pendente de aprovação",
+    detail:
+      "Estado descrito no diagrama do guia: após o primeiro login, o utilizador pode aguardar aprovação antes de aceder às demais áreas.",
+    path: "/aguarde-aprovacao.html",
+    waitSelector: ".card, body",
+    timeoutMs: 20000,
+    fullPage: true,
+  },
+  {
+    title: "Fluxo — conta recusada",
+    detail: "Caminho alternativo do fluxo manual: perfil recusado pela administração.",
+    path: "/conta-recusada.html",
+    waitSelector: ".card, body",
+    timeoutMs: 20000,
+    fullPage: true,
+  },
+  {
+    title: "Dados Câmara — lista de candidatos (index)",
+    detail:
+      "Conforme o guia: paginação, filtro por UF, ligação ao detalhe do deputado. Deputados federais via API Câmara com ligação a votos/perfil.",
+    path: "/index.html",
+    waitSelector: "#content table, #content .error",
+    timeoutMs: 90000,
+    fullPage: true,
+  },
+  {
+    title: "Dados Câmara — perfil do candidato",
+    detail:
+      "Perfil candidato.html: abre a partir da lista; biografia, comissões e contexto da API. Exemplo fixo id=204379 (referência típica Câmara no próprio arquivo).",
+    path: "/candidato.html?id=204379",
+    waitSelector: ".hero h1, .error, .wrap",
+    timeoutMs: 70000,
+    fullPage: true,
+  },
+  {
+    title: "Mapa rápido — Eleição 2022 · DF",
+    detail: "Recorte histórico / referência de deputado federal, citado no mapa rápido do guia.",
+    path: "/eleicao-2022-deputado-federal.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "Mapa rápido — Visão executiva",
+    detail: "Resumo para leitura de gestão e prioridades, conforme cartão do mapa rápido.",
+    path: "/executivo.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "Território RJ — Insights RJ",
+    detail:
+      "Três focos citados no guia: necessidades por município, comércio/feiras com horários, viagem OSRM e POIs. Use os blocos na própria página.",
+    path: "/insights-rj.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "Território RJ — Prefeituras",
+    detail: "Visão municipal complementar ao mapa estadual; mesmo capítulo Território RJ do guia.",
+    path: "/prefeituras-rj.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "Território RJ — Vereadores (lista)",
+    detail:
+      "Use o sub-menu em cada vista (lista, Caxias, mapa), como recomendado no guia para não se perder na família de páginas.",
+    path: "/vereadores-rj.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "Território RJ — Mapa de votos (sub-menu)",
+    detail: "Visualização zona/seção mencionada no guia dentro da família Vereadores RJ.",
+    path: "/vereadores-rj-mapa-votos.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 60000,
+    fullPage: true,
+  },
+  {
+    title: "Transparência e accountability",
+    detail:
+      "Painéis e referências para acompanhamento de informação pública; serviço nacional citado na secção «Transparência e mídia social».",
+    path: "/transparencia.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "Mídia social — escuta e conteúdo",
+    detail:
+      "Escuta curada e integrações. Para APIs com token, o guia recomenda servidor de desenvolvimento e proxy conforme README do projeto.",
+    path: "/midia-social.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 45000,
+    fullPage: true,
+  },
+  {
+    title: "WhatsApp — configuração do bot",
+    detail:
+      "Preencher por blocos (provedor, credenciais, webhook, comportamento), depois Salvar. Preferir Exportar JSON para backend; em produção, credenciais em variáveis de ambiente.",
+    path: "/whatsapp.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 25000,
+    fullPage: true,
+  },
+  {
+    title: "Conta, tarefas e equipa — Tarefas",
+    detail:
+      "Escolha data, unidade (se aplicável), marque itens; notas longas no mesmo ecrã. Sincronização por unidade (Supabase).",
+    path: "/tarefas.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 25000,
+    fullPage: true,
+  },
+  {
+    title: "Conta — estado do utilizador",
+    detail: "Dados do utilizador autenticado e mensagens de configuração (Supabase); ver também link para admin quando aplicável.",
+    path: "/conta.html",
+    waitSelector: "#panel, .wrap",
+    timeoutMs: 25000,
+    fullPage: true,
+  },
+  {
+    title: "Administração (perfil admin)",
+    detail:
+      "Apenas utilizadores admin: gestão de unidades e aprovações de novos utilizadores, como no fecho do guia.",
+    path: "/admin.html",
+    waitSelector: ".wrap, body",
+    timeoutMs: 25000,
+    fullPage: true,
+  },
+];
+
 /** Slides enxutos e copy comercial (benefícios; sem jargão de deploy). */
 const SLIDES_COMERCIAL = [
   {
@@ -326,7 +501,7 @@ const SLIDES_COMERCIAL = [
   },
 ];
 
-const SLIDES = isComercial ? SLIDES_COMERCIAL : SLIDES_TECNICO;
+const SLIDES = isGuiaDemo ? SLIDES_GUIA : isComercial ? SLIDES_COMERCIAL : SLIDES_TECNICO;
 
 function wrapLines(text, maxChars) {
   const words = text.split(/\s+/);
@@ -378,7 +553,10 @@ async function main() {
         if (slide.waitSelector) {
           await page.waitForSelector(slide.waitSelector, { timeout: slide.timeoutMs || 60000 });
         }
-        await page.evaluate(() => new Promise((r) => setTimeout(r, 900)));
+        await page.evaluate(
+          (ms) => new Promise((r) => setTimeout(r, ms)),
+          slide.settleMs ?? 900,
+        );
         const buf = await page.screenshot({
           type: "png",
           fullPage: slide.fullPage !== false,
@@ -592,7 +770,138 @@ async function main() {
     );
   }
 
-  if (isComercial) {
+  function drawCoverGuia() {
+    const page = pdfDoc.addPage([W, H]);
+    page.drawText("Politapp", {
+      x: margin,
+      y: H - margin - 40,
+      size: 26,
+      font: fontBold,
+      color: rgb(0.1, 0.14, 0.42),
+    });
+    page.drawText("Demonstração guiada do sistema", {
+      x: margin,
+      y: H - margin - 76,
+      size: 15,
+      font,
+      color: rgb(0.28, 0.32, 0.4),
+    });
+    drawTextBlock(
+      page,
+      wrapLines(
+        "Conteúdo baseado no ficheiro guia-uso.html: mapa das páginas, fluxo de acesso, dados da Câmara, território RJ, transparência, mídia, WhatsApp, conta/tarefas e administração.",
+        74,
+      ),
+      {
+        x: margin,
+        startY: H - margin - 118,
+        size: 10,
+        font,
+        color: rgb(0.25, 0.28, 0.34),
+        leading: 14,
+      },
+    );
+    page.drawText(`Atualizado · ${dateStr}`, {
+      x: margin,
+      y: margin + 28,
+      size: 9,
+      font,
+      color: rgb(0.45, 0.48, 0.52),
+    });
+  }
+
+  function drawGuiaIndiceAndFluxo() {
+    let p = pdfDoc.addPage([W, H]);
+    p.drawText("Índice do guia (Neste guia)", {
+      x: margin,
+      y: H - margin - 36,
+      size: 15,
+      font: fontBold,
+      color: rgb(0.1, 0.12, 0.18),
+    });
+    let y = H - margin - 64;
+    const idx = [
+      "Mapa rápido — o que é cada página",
+      "Fluxo de acesso",
+      "Dados da Câmara e perfil de candidato",
+      "Território RJ — vereadores e insights",
+      "Transparência e mídia social",
+      "WhatsApp e integrações",
+      "Conta, tarefas e administração",
+    ];
+    for (const item of idx) {
+      for (const line of wrapLines(`• ${item}`, 72)) {
+        p.drawText(line, { x: margin, y, size: 10, font, color: rgb(0.24, 0.26, 0.34) });
+        y -= 13;
+      }
+      y -= 4;
+      if (y < margin + 120) break;
+    }
+
+    p = pdfDoc.addPage([W, H]);
+    p.drawText("Fluxo de acesso (resumo do guia)", {
+      x: margin,
+      y: H - margin - 36,
+      size: 15,
+      font: fontBold,
+      color: rgb(0.1, 0.12, 0.18),
+    });
+    y = H - margin - 66;
+    const fluxLines = [
+      "1. Sem sessão, o auth-guard envia para o login — exceto páginas públicas (ex.: landing-publico.html).",
+      "2. Primeiro acesso cria perfil; administradores aprovam ou recusam.",
+      "3. Com sessão válida, o menu abre todas as áreas citadas no mapa rápido.",
+      "4. Dados sensíveis do WhatsApp permanecem no browser até exportar (ver guia).",
+      "5. Se algo não carregar: rede, js/auth-config.js e consola (F12) — última nota do guia.",
+    ];
+    for (const t of fluxLines) {
+      for (const line of wrapLines(t, 74)) {
+        p.drawText(line, { x: margin, y, size: 9.5, font, color: rgb(0.24, 0.26, 0.34) });
+        y -= 12;
+      }
+      y -= 6;
+      if (y < margin + 40) break;
+    }
+  }
+
+  function drawGuiaFecho() {
+    const p = pdfDoc.addPage([W, H]);
+    p.drawText("Referência viva", {
+      x: margin,
+      y: H - margin - 44,
+      size: 16,
+      font: fontBold,
+      color: rgb(0.1, 0.12, 0.18),
+    });
+    drawTextBlock(
+      p,
+      wrapLines(
+        "As capturas seguintes foram geradas automaticamente; o texto descritivo de cada slide segue a estrutura e as recomendações do Guia de uso (guia-uso.html). Para detalhes atualizados, abra sempre essa página no Politapp.",
+        76,
+      ),
+      {
+        x: margin,
+        startY: H - margin - 82,
+        size: 10,
+        font,
+        color: rgb(0.24, 0.26, 0.34),
+        leading: 14,
+      },
+    );
+    p.drawText(`Politapp · ${dateStr}`, {
+      x: margin,
+      y: margin + 22,
+      size: 9,
+      font,
+      color: rgb(0.5, 0.52, 0.56),
+    });
+  }
+
+  if (isGuiaDemo) {
+    drawCoverGuia();
+    drawGuiaIndiceAndFluxo();
+    drawGuiaFecho();
+  } else if (isComercial) {
     drawCoverComercial();
     drawComercialNarrativa();
   } else {

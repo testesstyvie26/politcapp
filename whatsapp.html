@@ -139,6 +139,37 @@
     @media (max-width: 640px) {
       .wrap { padding: 1rem 0.9rem 2.5rem; }
     }
+    .panel.impl-guide h3 {
+      font-size: 0.88rem;
+      margin: 1.15rem 0 0.5rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .panel.impl-guide h3:first-of-type { margin-top: 0.35rem; }
+    .impl-guide .guide-steps {
+      margin: 0.4rem 0 0;
+      padding-left: 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .impl-guide .guide-steps li { margin-bottom: 0.5rem; }
+    .impl-guide .guide-steps strong { color: var(--text); font-weight: 600; }
+    .impl-guide p { margin: 0 0 0.65rem; color: var(--muted); font-size: 0.92rem; }
+    .impl-guide p:last-child { margin-bottom: 0; }
+    .impl-guide code.inline {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.82em;
+      background: var(--surface2);
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    #guia-implementacao,
+    #sessao-heading {
+      scroll-margin-top: 5.5rem;
+    }
   </style>
   <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
   <link rel="stylesheet" href="css/site-theme.css?v=2" />
@@ -161,6 +192,7 @@
         <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
           <a href="midia-social.html">Painel · escuta e conteúdo</a>
           <a href="whatsapp.html" aria-current="page">WhatsApp · bot</a>
+          <a href="instagram.html">Instagram · API e posts</a>
         </div>
       </details>
       <a href="guia-uso.html">Guia de uso</a>
@@ -177,7 +209,71 @@
         Os dados sensíveis abaixo ficam <strong>só neste navegador</strong> (<code class="mono">localStorage</code>) até você exportar —
         em produção, guarde tokens no <strong>servidor</strong> e nunca os exponha em páginas estáticas públicas.
       </p>
+      <p class="note" style="margin-top:0.65rem;max-width:68ch;font-size:0.9rem">
+        <a href="#guia-implementacao">Ir ao guia de implementação do serviço</a>
+        ·
+        <a href="#sessao-heading">Ir ao painel de configuração</a>
+      </p>
     </header>
+
+    <section class="panel impl-guide" id="guia-implementacao" aria-labelledby="guia-impl-heading">
+      <h2 id="guia-impl-heading">Guia de implementação do serviço</h2>
+      <p>
+        O WhatsApp Cloud API exige um <strong>backend com URL pública em HTTPS</strong> para webhooks e para guardar o access token.
+        Esta página do Politapp é um <strong>quadro de trabalho</strong>: preencha os campos, use o checklist e exporte o JSON para o repositório ou para variáveis de ambiente no deploy — o runtime do bot fica no seu servidor (Node, Python, Cloud Functions, etc.).
+      </p>
+
+      <h3>Arquitetura recomendada</h3>
+      <ol class="guide-steps">
+        <li><strong>Meta</strong> entrega eventos (mensagens, status) no seu <code class="inline">POST /webhook</code>.</li>
+        <li><strong>O seu serviço</strong> valida o corpo (e, em produção, a assinatura <code class="inline">X-Hub-Signature-256</code>), deduplica por <code class="inline">id</code> da mensagem, aplica regras ou NLP e chama a Graph API para responder.</li>
+        <li><strong>Tokens e segredos</strong> só em cofre ou variáveis de ambiente no backend — nunca no bundle do site estático.</li>
+      </ol>
+
+      <h3>Setup na Meta (Cloud API)</h3>
+      <ol class="guide-steps">
+        <li>Crie um app em <a href="https://developers.facebook.com/" target="_blank" rel="noopener">Meta for Developers</a>, adicione o produto <strong>WhatsApp</strong> e associe uma <strong>WhatsApp Business Account (WABA)</strong> com número de produção ou de teste.</li>
+        <li>Em <strong>API Setup</strong>, copie <strong>Phone number ID</strong>, <strong>WABA ID</strong>, <strong>Temporary access token</strong> (troque depois por token de sistema de longa duração ou fluxo adequado à sua organização).</li>
+        <li>Defina um <strong>Verify token</strong> seu (string longa e aleatória) — o mesmo valor vai no Developer Console e na variável <code class="inline">WHATSAPP_VERIFY_TOKEN</code> do servidor.</li>
+        <li>Coloque o app em modo <strong>Live</strong> quando for para número real e políticas de uso comercial forem atendidas.</li>
+      </ol>
+
+      <h3>Webhook: verificação e eventos</h3>
+      <p>
+        No painel do app na Meta, cadastre a URL completa do webhook (ex.: <code class="inline">https://api.seudominio.com/webhooks/whatsapp</code>) e o mesmo verify token.
+        O seu endpoint deve:
+      </p>
+      <ol class="guide-steps">
+        <li><strong>GET</strong> — Responder <code class="inline">200</code> com o valor de <code class="inline">hub.challenge</code> quando <code class="inline">hub.verify_token</code> coincidir com o configurado. Isto conclui o “challenge” da Meta.</li>
+        <li><strong>POST</strong> — Responder <code class="inline">200</code> rapidamente (idealmente após enfileirar o processamento) para a Meta não reenviar o mesmo evento em excesso.</li>
+      </ol>
+      <p>
+        Com <strong>App Secret</strong> preenchido, calcule HMAC-SHA256 do corpo bruto em hexadecimal e compare com o cabeçalho <code class="inline">X-Hub-Signature-256</code> (prefixo <code class="inline">sha256=</code>) para garantir que o pedido veio da Meta.
+      </p>
+
+      <h3>Enviar mensagem de resposta (texto)</h3>
+      <p>Exemplo de pedido à Graph API (substitua versão, IDs e token pelos seus):</p>
+      <pre class="sample mono">curl -X POST "https://graph.facebook.com/v21.0/&lt;PHONE_NUMBER_ID&gt;/messages" \
+  -H "Authorization: Bearer &lt;ACCESS_TOKEN&gt;" \
+  -H "Content-Type: application/json" \
+  -d '{"messaging_product":"whatsapp","to":"5511999990000","type":"text","text":{"body":"Olá! Como posso ajudar?"}}'</pre>
+      <p>
+        Fora da <strong>janela de atendimento de 24 horas</strong> após a última mensagem do usuário, use apenas <strong>templates</strong> aprovados pela Meta (categoria utilidade/marketing conforme o caso).
+      </p>
+
+      <h3>Comportamento do bot e handoff</h3>
+      <p>
+        Mapeie palavras-chave e mensagens de boas-vindas no bloco “Comportamento” abaixo como especificação para o time.
+        Para <strong>escalar para humano</strong>, o backend pode chamar um URL interno (CRM, fila, Slack) com o número do remetente e o texto — use o campo <em>Webhook interno para escalar humano</em> para documentar esse endpoint.
+      </p>
+
+      <h3>Go-live e conformidade</h3>
+      <ul class="guide-steps" style="list-style:disc;padding-left:1.35rem">
+        <li>HTTPS válido, logs estruturados, limites de débito e fila para picos.</li>
+        <li>Opt-in explícito, política de privacidade e regras eleitorais/comerciais aplicáveis ao seu caso.</li>
+        <li>Preencha o <strong>checklist</strong> mais abaixo antes de apontar tráfego real.</li>
+      </ul>
+    </section>
 
     <section class="panel" aria-labelledby="sessao-heading">
       <h2 id="sessao-heading">Sessão e persistência</h2>

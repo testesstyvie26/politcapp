@@ -160,6 +160,7 @@
         <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
           <a href="midia-social.html">Painel · escuta e conteúdo</a>
           <a href="whatsapp.html">WhatsApp · bot</a>
+          <a href="instagram.html">Instagram · API e posts</a>
         </div>
       </details>
       <a href="guia-uso.html" aria-current="page">Guia de uso</a>
@@ -187,7 +188,7 @@
           <li><a href="#dados-camara">Dados Câmara e candidatos</a></li>
           <li><a href="#territorio-rj">Território RJ</a></li>
           <li><a href="#transparencia-midia">Transparência e mídia</a></li>
-          <li><a href="#integracoes">WhatsApp e API</a></li>
+          <li><a href="#integracoes">WhatsApp, Instagram e API</a></li>
           <li><a href="#equipa">Conta, tarefas e admin</a></li>
         </ul>
       </aside>
@@ -237,7 +238,9 @@
               <a href="midia-social.html">midia-social.html</a>
               ·
               <a href="whatsapp.html">whatsapp.html</a>
-              <span>No menu global, o WhatsApp aparece como submenu de «Mídia social». Escuta e conteúdo no painel principal; setup do bot (tokens, checklist) na página WhatsApp.</span>
+              ·
+              <a href="instagram.html">instagram.html</a>
+              <span>No menu global, WhatsApp e Instagram aparecem no submenu «Mídia social». Escuta e conteúdo no painel principal; setup de bot e tokens nas páginas dedicadas.</span>
             </div>
             <div class="map-card">
               <strong>Tarefas</strong>
@@ -276,7 +279,7 @@ flowchart TD
           <ol class="note" style="padding-left:1.2rem;margin:0.75rem 0 0;line-height:1.65">
             <li>Sem sessão, o <strong>auth-guard</strong> envia para o login (exceto páginas públicas como <code>landing-publico.html</code>, <code>landing-app.html</code>, <code>landing.html</code>, <code>privacidade.html</code> e <code>termos-uso.html</code>).</li>
             <li>Primeiro acesso cria perfil; administradores podem aprovar ou recusar.</li>
-            <li>Com sessão válida, o menu leva a todas as áreas; dados sensíveis do WhatsApp ficam no browser até exportar.</li>
+            <li>Com sessão válida, o menu leva a todas as áreas; dados sensíveis de WhatsApp e Instagram ficam no browser até exportar.</li>
           </ol>
         </section>
 
@@ -307,9 +310,10 @@ flowchart TD
         </section>
 
         <section class="panel" id="integracoes">
-          <h2>WhatsApp e integrações</h2>
+          <h2>WhatsApp, Instagram e integrações</h2>
           <ul>
             <li><strong>whatsapp.html:</strong> preencha por blocos (provedor, credenciais, webhook, comportamento do bot), depois <strong>Salvar</strong>.</li>
+            <li><strong>instagram.html:</strong> credenciais Graph API, webhook, modelo de posts programados (worker/cron no servidor) e notas para bot/DMs.</li>
             <li>Use <strong>Exportar JSON</strong> para partilhar configuração com o backend sem copiar tokens à mão em chats inseguros.</li>
             <li>Em produção, migre credenciais para variáveis de ambiente no servidor.</li>
           </ul>

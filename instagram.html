@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Instagram — API, bot e posts programados | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --surface2: #1c2433;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8ecf2;
+      --muted: #8b95a8;
+      --accent: #3d8bfd;
+      --ig: #e4405f;
+      --warn: #fbbf24;
+      --danger: #f87171;
+      --radius: 12px;
+      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(228, 64, 95, 0.12), transparent),
+        radial-gradient(ellipse 80% 50% at 100% 50%, rgba(245, 133, 32, 0.08), transparent),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    header { margin-bottom: 1.5rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 3vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .ig-badge {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 0.2rem 0.5rem; border-radius: 6px;
+      background: rgba(228, 64, 95, 0.22); color: #fda4af;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 68ch; font-size: 0.95rem; }
+    header a { color: var(--accent); }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { font-size: 1.02rem; margin: 0 0 0.65rem; font-weight: 600; }
+    .panel h3 { font-size: 0.88rem; margin: 1.1rem 0 0.45rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .panel h3:first-child { margin-top: 0; }
+    .note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .note.warn { color: #fcd34d; border-left: 3px solid var(--warn); padding-left: 0.75rem; margin-top: 0.5rem; }
+    .grid-2 {
+      display: grid; gap: 1rem 1.25rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    label.field {
+      display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.72rem;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    }
+    input[type="text"], input[type="url"], input[type="password"], input[type="number"], select, textarea {
+      font-family: inherit; font-size: 0.9rem; padding: 0.55rem 0.65rem;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+    }
+    textarea { min-height: 88px; resize: vertical; line-height: 1.45; }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.82rem; }
+    pre.sample {
+      margin: 0.5rem 0 0; padding: 0.85rem 1rem; border-radius: 8px;
+      background: #0a0d12; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.78rem; line-height: 1.45;
+    }
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center;
+      margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+    .btn {
+      font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      padding: 0.55rem 1.1rem; border-radius: 8px; border: none; cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: #041018; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ig { background: var(--ig); color: #fff; }
+    .btn-ig:hover { filter: brightness(1.08); }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-danger { background: rgba(248, 113, 113, 0.15); color: #fecaca; border: 1px solid rgba(248,113,113,0.35); }
+    .btn-danger:hover { background: rgba(248, 113, 113, 0.25); }
+    #statusLine { font-size: 0.88rem; color: var(--muted); min-height: 1.4em; margin: 0.5rem 0 0; }
+    #statusLine.ok { color: #6ee7b7; }
+    #statusLine.err { color: var(--danger); }
+    details.setup-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+    }
+    details.setup-block > summary {
+      cursor: pointer; font-weight: 600; font-size: 0.92rem;
+      padding: 0.85rem 1rem; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+    details.setup-block > summary::-webkit-details-marker { display: none; }
+    details.setup-block[open] > summary { border-bottom: 1px solid var(--border); }
+    .setup-block .inner { padding: 1rem 1rem 1.1rem; }
+    .checklist { list-style: none; margin: 0; padding: 0; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.88rem; color: var(--muted);
+      margin-bottom: 0.45rem;
+    }
+    .checklist input { margin-top: 0.2rem; accent-color: var(--ig); }
+    .site-credit {
+      margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--muted); text-align: center; line-height: 1.55;
+    }
+    .site-credit a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .site-credit a:hover { text-decoration: underline; }
+    .site-credit-role { font-weight: 400; opacity: 0.92; }
+    @media (max-width: 640px) {
+      .wrap { padding: 1rem 0.9rem 2.5rem; }
+    }
+    .panel.impl-guide h3 {
+      font-size: 0.88rem;
+      margin: 1.15rem 0 0.5rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .panel.impl-guide h3:first-of-type { margin-top: 0.35rem; }
+    .impl-guide .guide-steps {
+      margin: 0.4rem 0 0;
+      padding-left: 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .impl-guide .guide-steps li { margin-bottom: 0.5rem; }
+    .impl-guide .guide-steps strong { color: var(--text); font-weight: 600; }
+    .impl-guide p { margin: 0 0 0.65rem; color: var(--muted); font-size: 0.92rem; }
+    .impl-guide p:last-child { margin-bottom: 0; }
+    .impl-guide code.inline {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.82em;
+      background: var(--surface2);
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    #guia-implementacao,
+    #sessao-heading {
+      scroll-margin-top: 5.5rem;
+    }
+  </style>
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
+  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+</head>
+<body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <script src="js/auth-config.js"></script>
+  <script type="module" src="js/auth-guard.mjs"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="index.html">Lista de candidatos</a>
+      <a href="eleicao-2022-deputado-federal.html">Eleição 2022 · DF</a>
+      <a href="executivo.html">Visão executiva</a>
+      <a href="insights-rj.html">Insights RJ</a>
+      <a href="prefeituras-rj.html">Prefeituras RJ</a>
+      <a href="vereadores-rj.html">Vereadores RJ</a>
+      <a href="transparencia.html">Transparência</a>
+      <details class="site-nav-dropdown" open>
+        <summary class="site-nav-dropdown__summary">Mídia social</summary>
+        <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+          <a href="midia-social.html">Painel · escuta e conteúdo</a>
+          <a href="whatsapp.html">WhatsApp · bot</a>
+          <a href="instagram.html" aria-current="page">Instagram · API e posts</a>
+        </div>
+      </details>
+      <a href="guia-uso.html">Guia de uso</a>
+      <a href="tarefas.html">Tarefas</a>
+      <a href="login.html">Entrar</a>
+      <a href="conta.html">Conta</a>
+      <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">Documentação da API</a>
+    </nav>
+
+    <header id="politapp-main" tabindex="-1">
+      <h1>Instagram Graph API <span class="ig-badge">Bot &amp; agendamento</span></h1>
+      <p>
+        Painel para <strong>configurar integração Instagram</strong> com a Meta (conta comercial/creator ligada a uma Página Facebook): <strong>publicação de feed</strong>,
+        <strong>fila programada</strong> no seu backend e opcionalmente <strong>automação de DMs</strong> onde as permissões do app permitirem.
+        Credenciais ficam <strong>só neste navegador</strong> (<code class="mono">localStorage</code>) até exportar — em produção use <strong>servidor + cofre</strong>.
+      </p>
+      <p class="note" style="margin-top:0.65rem;max-width:68ch;font-size:0.9rem">
+        <a href="#guia-implementacao">Guia de implementação</a>
+        ·
+        <a href="#sessao-heading">Painel de configuração</a>
+      </p>
+    </header>
+
+    <section class="panel impl-guide" id="guia-implementacao" aria-labelledby="guia-impl-heading">
+      <h2 id="guia-impl-heading">Guia de implementação</h2>
+      <p>
+        A <strong>Instagram Content Publishing API</strong> cria contenções de mídia e publica no feed/reels conforme tipo e permissões.
+        A Meta <strong>não agenda horários por si</strong>: o <strong>seu serviço</strong> (cron, Cloud Scheduler, fila Bull, etc.) chama a API no momento combinado.
+      </p>
+
+      <h3>Pré-requisitos</h3>
+      <ol class="guide-steps">
+        <li>Conta <strong>Instagram Profissional</strong> (Empresa ou Creator) ligada a uma <strong>Página do Facebook</strong> que você gere.</li>
+        <li>App em <a href="https://developers.facebook.com/" target="_blank" rel="noopener">Meta for Developers</a> com <strong>Instagram Graph API</strong> / produtos corretos e app em modo <strong>Live</strong> quando for escala real.</li>
+        <li><strong>Token de acesso</strong> com escopos adequados (ex.: <code class="inline">instagram_basic</code>, <code class="inline">pages_show_list</code>, <code class="inline">instagram_content_publish</code>; para mensagens, fluxos e revisão adicionais da Meta).</li>
+      </ol>
+
+      <h3>Fluxo de publicação (feed — imagem)</h3>
+      <ol class="guide-steps">
+        <li><code class="inline">POST /{ig-user-id}/media</code> com <code class="inline">image_url</code> (URL pública HTTPS, requisitos da documentação) e <code class="inline">caption</code> — resposta traz <code class="inline">id</code> do content creation.</li>
+        <li>Consulte o estado do container até estar pronto (campo <code class="inline">status_code</code> no objeto).</li>
+        <li><code class="inline">POST /{ig-user-id}/media_publish</code> com <code class="inline">creation_id</code> para publicar.</li>
+      </ol>
+      <p>Exemplo mínimo (valores ilustrativos):</p>
+      <pre class="sample mono">curl -X POST "https://graph.facebook.com/v21.0/&lt;IG_USER_ID&gt;/media" \
+  -d "image_url=https://exemplo.com/carteira.jpg" \
+  -d "caption=Texto%20do%20post%20%23politica" \
+  -d "access_token=&lt;PAGE_ACCESS_TOKEN&gt;"
+
+curl -X POST "https://graph.facebook.com/v21.0/&lt;IG_USER_ID&gt;/media_publish" \
+  -d "creation_id=&lt;CONTAINER_ID&gt;" \
+  -d "access_token=&lt;PAGE_ACCESS_TOKEN&gt;"</pre>
+      <p class="note" style="margin-top:0.65rem">
+        Vídeo, carrossel e Reels têm parâmetros e limites próprios — siga a documentação atual da Meta para cada tipo.
+      </p>
+
+      <h3>Postagens programadas</h3>
+      <ol class="guide-steps">
+        <li>Guarde na <strong>base de dados</strong> ou fila: horário UTC/local, legenda, URL da mídia (ou caminho no storage), tipo de post e idempotência (ex.: <code class="inline">slug</code> do conteúdo).</li>
+        <li>Um <strong>worker</strong> acordado pelo agendador executa o fluxo container → publish; em caso de falha, re-tentativas com backoff e alerta.</li>
+        <li>Respeite <strong>limites de taxa</strong> da API e políticas comerciais; em campanhas, alinhe com legislação eleitoral e regras de anúncio.</li>
+      </ol>
+
+      <h3>Bot e DMs</h3>
+      <p>
+        Respostas automáticas em mensagens diretas costumam exigir <strong>Instagram Messaging</strong>, webhook e permissões em revisão na Meta.
+        Trate o bot como um serviço à parte: recebe eventos, aplica regras (como nas palavras-chave abaixo) e chama os endpoints de envio permitidos ao seu app.
+      </p>
+
+      <h3>Webhook</h3>
+      <p>
+        O mesmo modelo de verificação <code class="inline">hub.verify_token</code> / <code class="inline">hub.challenge</code> (GET) e eventos (POST) usado no ecossistema Meta aplica-se aqui; subscreva os campos necessários (ex.: comentários, mensagens) no painel do app.
+      </p>
+    </section>
+
+    <section class="panel" aria-labelledby="sessao-heading">
+      <h2 id="sessao-heading">Sessão e persistência</h2>
+      <p class="note">
+        Use <strong>Salvar</strong> após preencher cada bloco. <strong>Limpar sessão</strong> remove só os dados desta página neste dispositivo.
+      </p>
+      <p id="statusLine" role="status"></p>
+      <div class="actions" style="margin-top:0.75rem;padding-top:0;border:none">
+        <button type="button" class="btn btn-primary" id="btnSave">Salvar configuração</button>
+        <button type="button" class="btn btn-ig" id="btnExport">Exportar JSON</button>
+        <label class="btn btn-ghost" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">
+          Importar JSON
+          <input type="file" id="importFile" accept="application/json" hidden />
+        </label>
+        <button type="button" class="btn btn-danger" id="btnClear">Limpar sessão local</button>
+      </div>
+    </section>
+
+    <details class="setup-block" open>
+      <summary>1 · Modelo e stack</summary>
+      <div class="inner">
+        <p class="note">Integração direta com a <strong>Instagram Graph API</strong> (recomendado) ou camada intermediária (SaaS / gateway) sob contrato.</p>
+        <div class="grid-2">
+          <label class="field">Integração
+            <select id="modelo">
+              <option value="meta_graph">Meta — Instagram Graph API</option>
+              <option value="meta_partner">Parceiro / BSP autorizado</option>
+              <option value="saas">Plataforma third-party (buffer, etc.)</option>
+              <option value="custom">Outro / personalizado</option>
+            </select>
+          </label>
+          <label class="field">Versão Graph API
+            <input type="text" id="graphVersion" class="mono" placeholder="v21.0" autocomplete="off" />
+          </label>
+        </div>
+        <label class="field" style="margin-top:0.75rem">Notas (repositório, ambiente, responsável)
+          <textarea id="notasModelo" placeholder="Ex.: repo github.com/org/ig-worker — produção na GCP"></textarea>
+        </label>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>2 · Credenciais do app e da página (nunca em repositório público)</summary>
+      <div class="inner">
+        <p class="note warn">
+          Tokens permitem publicar e ler dados da conta. Gire segredos se vazarem. Use token de <strong>Página</strong> de longa duração no servidor que publica.
+        </p>
+        <div class="grid-2">
+          <label class="field">App ID (Meta Developers)
+            <input type="text" id="appId" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">App Secret
+            <input type="password" id="appSecret" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">Page ID (Facebook)
+            <input type="text" id="pageId" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">Instagram Business Account ID (IG User)
+            <input type="text" id="igUserId" class="mono" autocomplete="off" placeholder="id numérico da conta IG" />
+          </label>
+          <label class="field">Page access token (long-lived)
+            <input type="password" id="pageAccessToken" class="mono" autocomplete="off" />
+          </label>
+          <label class="field">Verify token (webhook)
+            <input type="text" id="verifyToken" class="mono" autocomplete="off" />
+          </label>
+        </div>
+        <h3>Variáveis de ambiente (.env) — referência</h3>
+        <pre class="sample mono" id="envSample"></pre>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>3 · Webhook público</summary>
+      <div class="inner">
+        <p class="note">URL HTTPS para a Meta enviar eventos (comentários, mensagens, etc., conforme subscrições).</p>
+        <label class="field">URL do webhook
+          <input type="url" id="webhookUrl" placeholder="https://api.seudominio.com/webhooks/instagram" autocomplete="off" />
+        </label>
+        <div class="grid-2" style="margin-top:0.75rem">
+          <label class="field">Path interno
+            <input type="text" id="webhookPath" class="mono" placeholder="/webhooks/instagram" autocomplete="off" />
+          </label>
+          <label class="field">URL base da API própria (opcional)
+            <input type="url" id="workerApiBase" placeholder="https://api.seudominio.com" autocomplete="off" />
+          </label>
+        </div>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>4 · Postagens automáticas e agendamento</summary>
+      <div class="inner">
+        <p class="note">
+          Defina padrões para o worker: a <strong>hora exata</strong> vem do agendador/cron no servidor, não desta página.
+        </p>
+        <label class="field">Timezone para agendamentos
+          <input type="text" id="schedTimezone" class="mono" placeholder="America/Sao_Paulo" autocomplete="off" />
+        </label>
+        <div class="grid-2" style="margin-top:0.75rem">
+          <label class="field">Máx. publicações por dia (recomendado)
+            <input type="number" id="maxPostsPerDay" min="1" max="50" placeholder="5" autocomplete="off" />
+          </label>
+          <label class="field">Prefixo de URL para mídias publicadas (CDN / bucket)
+            <input type="url" id="mediaBaseUrl" placeholder="https://cdn.seudominio.com/ig/" autocomplete="off" />
+          </label>
+        </div>
+        <label class="field" style="margin-top:0.75rem">Modelo de legenda (template — variáveis como {titulo}, {data})
+          <textarea id="captionTemplate" class="mono" placeholder="{titulo}&#10;&#10;#politica #campanha"></textarea>
+        </label>
+        <label class="field" style="margin-top:0.75rem">Hashtags fixas ou bloco padrão (uma linha ou separadas por espaço)
+          <textarea id="hashtagBlock" class="mono" placeholder="#rj #brasil"></textarea>
+        </label>
+        <label class="field" style="margin-top:0.75rem">Como o agendador dispara (notas para o time)
+          <textarea id="schedulerNotes" placeholder="Ex.: Cloud Scheduler POST /internal/publish-due a cada minuto — fila Redis para deduplicação"></textarea>
+        </label>
+      </div>
+    </details>
+
+    <details class="setup-block" open>
+      <summary>5 · Bot / respostas (DM e automação)</summary>
+      <div class="inner">
+        <label class="field">Mensagem de boas-vindas (especificação)
+          <textarea id="welcomeMsg" placeholder="Texto sugerido quando o usuário inicia conversa (sujeito a aprovação Meta)"></textarea>
+        </label>
+        <label class="field" style="margin-top:0.75rem">Palavras-chave → respostas (uma por linha: chave | resposta)
+          <textarea id="keywordMap" class="mono" placeholder="oi|Olá! Envie CONTATO para falar com a equipa.&#10;agenda|Segunda a sexta, 9h–18h." style="min-height:100px"></textarea>
+        </label>
+        <div class="grid-2" style="margin-top:0.75rem">
+          <label class="field">Webhook para escalar humano (interno)
+            <input type="url" id="handoffUrl" placeholder="https://.../notify" autocomplete="off" />
+          </label>
+          <label class="field">Etiquetas / fila CRM (opcional)
+            <input type="text" id="crmLabels" placeholder="instagram_dm, suporte" autocomplete="off" />
+          </label>
+        </div>
+      </div>
+    </details>
+
+    <details class="setup-block">
+      <summary>6 · Checklist antes do go-live</summary>
+      <div class="inner">
+        <ul class="checklist" id="checklist">
+          <li><label><input type="checkbox" data-key="chk_app" /> App Meta em Live com Instagram Graph API</label></li>
+          <li><label><input type="checkbox" data-key="chk_ig_page" /> Conta IG profissional ligada à Página correta</label></li>
+          <li><label><input type="checkbox" data-key="chk_token" /> Token de página com escopos de publicação (e messaging se usar bot)</label></li>
+          <li><label><input type="checkbox" data-key="chk_publish" /> Teste container → publish em ambiente de staging</label></li>
+          <li><label><input type="checkbox" data-key="chk_schedule" /> Worker e fila de agendamento testados (fuso e horário de verão)</label></li>
+          <li><label><input type="checkbox" data-key="chk_webhook" /> Webhook verificado e assinatura validada em produção</label></li>
+          <li><label><input type="checkbox" data-key="chk_compliance" /> Políticas Meta, opt-in e legislação aplicável revisados</label></li>
+        </ul>
+      </div>
+    </details>
+
+    <section class="panel">
+      <h2>Documentação útil</h2>
+      <ul class="note" style="padding-left:1.2rem;margin:0;line-height:1.65">
+        <li><a href="https://developers.facebook.com/docs/instagram-platform" target="_blank" rel="noopener">Meta — Instagram Platform</a></li>
+        <li><a href="https://developers.facebook.com/docs/instagram-platform/content-publishing" target="_blank" rel="noopener">Content Publishing</a></li>
+        <li><a href="https://developers.facebook.com/docs/graph-api/webhooks" target="_blank" rel="noopener">Graph API Webhooks</a></li>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/instagram/get-started/" target="_blank" rel="noopener">Instagram Messaging — introdução</a></li>
+      </ul>
+    </section>
+
+    <footer class="site-credit" role="contentinfo">
+      <p>
+        Criado por
+        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
+        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
+        ·
+        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+      <p>
+        Criado por
+        <a href="https://www.linkedin.com/in/ulisses-cardoso/" target="_blank" rel="noopener noreferrer">Ulisses Cardoso</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "politapp_instagram_setup_v1";
+
+    function $(id) { return document.getElementById(id); }
+
+    function setStatus(msg, kind) {
+      const el = $("statusLine");
+      el.textContent = msg || "";
+      el.className = kind === "ok" ? "ok" : kind === "err" ? "err" : "";
+    }
+
+    function collectState() {
+      const checks = {};
+      document.querySelectorAll("#checklist input[type=checkbox]").forEach((cb) => {
+        checks[cb.getAttribute("data-key")] = cb.checked;
+      });
+      return {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        modelo: $("modelo").value,
+        graphVersion: $("graphVersion").value.trim(),
+        notasModelo: $("notasModelo").value,
+        appId: $("appId").value.trim(),
+        appSecret: $("appSecret").value,
+        pageId: $("pageId").value.trim(),
+        igUserId: $("igUserId").value.trim(),
+        pageAccessToken: $("pageAccessToken").value,
+        verifyToken: $("verifyToken").value,
+        webhookUrl: $("webhookUrl").value.trim(),
+        webhookPath: $("webhookPath").value.trim(),
+        workerApiBase: $("workerApiBase").value.trim(),
+        schedTimezone: $("schedTimezone").value.trim(),
+        maxPostsPerDay: $("maxPostsPerDay").value.trim(),
+        mediaBaseUrl: $("mediaBaseUrl").value.trim(),
+        captionTemplate: $("captionTemplate").value,
+        hashtagBlock: $("hashtagBlock").value,
+        schedulerNotes: $("schedulerNotes").value,
+        welcomeMsg: $("welcomeMsg").value,
+        keywordMap: $("keywordMap").value,
+        handoffUrl: $("handoffUrl").value.trim(),
+        crmLabels: $("crmLabels").value.trim(),
+        checklist: checks,
+      };
+    }
+
+    function applyState(data) {
+      if (!data || typeof data !== "object") return;
+      const set = (id, v) => { const el = $(id); if (el && v != null) el.value = v; };
+      set("modelo", data.modelo);
+      set("graphVersion", data.graphVersion);
+      set("notasModelo", data.notasModelo);
+      set("appId", data.appId);
+      set("appSecret", data.appSecret);
+      set("pageId", data.pageId);
+      set("igUserId", data.igUserId);
+      set("pageAccessToken", data.pageAccessToken);
+      set("verifyToken", data.verifyToken);
+      set("webhookUrl", data.webhookUrl);
+      set("webhookPath", data.webhookPath);
+      set("workerApiBase", data.workerApiBase);
+      set("schedTimezone", data.schedTimezone);
+      set("maxPostsPerDay", data.maxPostsPerDay);
+      set("mediaBaseUrl", data.mediaBaseUrl);
+      set("captionTemplate", data.captionTemplate);
+      set("hashtagBlock", data.hashtagBlock);
+      set("schedulerNotes", data.schedulerNotes);
+      set("welcomeMsg", data.welcomeMsg);
+      set("keywordMap", data.keywordMap);
+      set("handoffUrl", data.handoffUrl);
+      set("crmLabels", data.crmLabels);
+      if (data.checklist && typeof data.checklist === "object") {
+        document.querySelectorAll("#checklist input[type=checkbox]").forEach((cb) => {
+          const k = cb.getAttribute("data-key");
+          if (k in data.checklist) cb.checked = !!data.checklist[k];
+        });
+      }
+      refreshEnvSample();
+    }
+
+    function refreshEnvSample() {
+      const s = collectState();
+      const mask = (v) => (v ? `${String(v).slice(0, 6)}…` : "");
+      const lines = [
+        "# Servidor apenas — não expor no front-end público",
+        `INSTAGRAM_APP_ID=${s.appId || ""}`,
+        `INSTAGRAM_APP_SECRET=${s.appSecret ? mask(s.appSecret) + " (definido)" : ""}`,
+        `FACEBOOK_PAGE_ID=${s.pageId || ""}`,
+        `INSTAGRAM_BUSINESS_ACCOUNT_ID=${s.igUserId || ""}`,
+        `INSTAGRAM_PAGE_ACCESS_TOKEN=${s.pageAccessToken ? mask(s.pageAccessToken) + " (definido)" : ""}`,
+        `INSTAGRAM_VERIFY_TOKEN=${s.verifyToken || ""}`,
+        `INSTAGRAM_WEBHOOK_URL=${s.webhookUrl || ""}`,
+        `GRAPH_API_VERSION=${s.graphVersion || "v21.0"}`,
+      ];
+      $("envSample").textContent = lines.join("\n");
+    }
+
+    function saveLocal() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState()));
+        setStatus("Configuração guardada neste navegador.", "ok");
+        refreshEnvSample();
+      } catch (e) {
+        setStatus("Não foi possível guardar (armazenamento cheio ou privado).", "err");
+      }
+    }
+
+    function loadLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          $("graphVersion").value = "v21.0";
+          $("schedTimezone").value = "America/Sao_Paulo";
+          refreshEnvSample();
+          return;
+        }
+        applyState(JSON.parse(raw));
+        setStatus("Sessão carregada do armazenamento local.", "ok");
+      } catch (e) {
+        setStatus("Dados guardados inválidos — use Limpar e recomece.", "err");
+      }
+    }
+
+    function clearLocal() {
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll("input[type=text], input[type=url], input[type=password], input[type=number], select, textarea").forEach((el) => {
+        if (el.id === "modelo") { el.selectedIndex = 0; return; }
+        el.value = "";
+      });
+      document.querySelectorAll("#checklist input[type=checkbox]").forEach((cb) => { cb.checked = false; });
+      $("graphVersion").value = "v21.0";
+      $("schedTimezone").value = "America/Sao_Paulo";
+      refreshEnvSample();
+      setStatus("Sessão local limpa.", "ok");
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify(collectState(), null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "politapp-instagram-setup.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      setStatus("Exportação iniciada.", "ok");
+    }
+
+    $("btnSave").addEventListener("click", saveLocal);
+    $("btnClear").addEventListener("click", () => {
+      if (confirm("Apagar toda a configuração Instagram guardada neste navegador?")) clearLocal();
+    });
+    $("btnExport").addEventListener("click", exportJson);
+    $("importFile").addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try {
+          applyState(JSON.parse(String(r.result)));
+          saveLocal();
+          setStatus("Importado e guardado.", "ok");
+        } catch (err) {
+          setStatus("JSON inválido.", "err");
+        }
+      };
+      r.readAsText(f);
+    });
+
+    [
+      "appSecret", "pageAccessToken", "pageId", "igUserId", "webhookUrl", "graphVersion", "appId", "verifyToken",
+    ].forEach((id) => {
+      const el = $(id);
+      if (el) el.addEventListener("input", refreshEnvSample);
+    });
+
+    loadLocal();
+  </script>
+</body>
+</html>
