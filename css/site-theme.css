@@ -295,6 +295,24 @@ html body .crm-filters label {
   letter-spacing: normal !important;
   color: var(--text) !important;
   line-height: 1.5 !important;
+  /* Pílula com fundo escuro próprio: garante contraste do texto claro
+     mesmo se a página renderizar com fundo branco (cache/alto-contraste). */
+  background: rgba(6,14,30,0.92) !important;
+  border: 1px solid rgba(59,130,246,0.20) !important;
+  border-radius: 8px !important;
+  padding: .5rem .7rem !important;
+}
+/* Em ambientes de cores forçadas (alto contraste do SO), respeita o sistema */
+@media (forced-colors: active) {
+  html body label:has(input[type="checkbox"]),
+  html body label:has(input[type="radio"]),
+  html body .check-line,
+  html body .checklist label,
+  html body .crm-filters label {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border-color: CanvasText !important;
+  }
 }
 html body label:has(input[type="checkbox"]) strong,
 html body label:has(input[type="radio"]) strong,
