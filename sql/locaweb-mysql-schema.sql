@@ -137,27 +137,32 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ============================================================================
 DELIMITER //
 
+DROP TRIGGER IF EXISTS trg_unidades_bi//
 CREATE TRIGGER trg_unidades_bi BEFORE INSERT ON unidades FOR EACH ROW
 BEGIN
   IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF;
 END//
 
+DROP TRIGGER IF EXISTS trg_tarefas_bi//
 CREATE TRIGGER trg_tarefas_bi BEFORE INSERT ON tarefas FOR EACH ROW
 BEGIN
   IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF;
 END//
 
+DROP TRIGGER IF EXISTS trg_liderancas_bi//
 CREATE TRIGGER trg_liderancas_bi BEFORE INSERT ON liderancas_rj FOR EACH ROW
 BEGIN
   IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF;
   IF NEW.observacoes IS NULL THEN SET NEW.observacoes = ''; END IF;
 END//
 
+DROP TRIGGER IF EXISTS trg_notas_bi//
 CREATE TRIGGER trg_notas_bi BEFORE INSERT ON notas_unidade_dia FOR EACH ROW
 BEGIN
   IF NEW.corpo IS NULL THEN SET NEW.corpo = ''; END IF;
 END//
 
+DROP TRIGGER IF EXISTS trg_anuncio_bi//
 CREATE TRIGGER trg_anuncio_bi BEFORE INSERT ON anuncio_tarefas FOR EACH ROW
 BEGIN
   IF NEW.mensagem IS NULL THEN SET NEW.mensagem = ''; END IF;

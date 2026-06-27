@@ -112,12 +112,16 @@ CREATE TABLE IF NOT EXISTS auth_tentativas_login (
 -- TRIGGERS — UUID automático no id (equivalente ao gen_random_uuid())
 -- ----------------------------------------------------------------------------
 DELIMITER //
+DROP TRIGGER IF EXISTS trg_auth_users_bi//
 CREATE TRIGGER trg_auth_users_bi      BEFORE INSERT ON auth_users
   FOR EACH ROW BEGIN IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF; END//
+DROP TRIGGER IF EXISTS trg_auth_identities_bi//
 CREATE TRIGGER trg_auth_identities_bi BEFORE INSERT ON auth_identities
   FOR EACH ROW BEGIN IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF; END//
+DROP TRIGGER IF EXISTS trg_auth_sessions_bi//
 CREATE TRIGGER trg_auth_sessions_bi   BEFORE INSERT ON auth_sessions
   FOR EACH ROW BEGIN IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF; END//
+DROP TRIGGER IF EXISTS trg_auth_otp_bi//
 CREATE TRIGGER trg_auth_otp_bi        BEFORE INSERT ON auth_otp
   FOR EACH ROW BEGIN IF NEW.id IS NULL OR NEW.id = '' THEN SET NEW.id = UUID(); END IF; END//
 DELIMITER ;
