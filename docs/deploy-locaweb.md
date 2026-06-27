@@ -37,8 +37,13 @@ Envie para **`/public_html/politicapp/`** mantendo esta estrutura final no servi
 ├─ files/        ←  conteúdo de  php/files/
 ├─ lib/          ←  conteúdo de  php/lib/
 ├─ storage/      ←  conteúdo de  php/storage/   (uploads/ gravável)
-└─ config.php    ←  cópia de     php/config.example.php (preenchida)
+├─ config.php    ←  cópia de     php/config.example.php (preenchida)
+└─ .htaccess     ←  de           php/.htaccess  (MIME .mjs + protege config.php)
 ```
+
+> O `.htaccess` em `/politicapp/` é **obrigatório**: ele ensina o Apache a
+> servir `.mjs` como JavaScript. Sem ele, todos os módulos ES quebram e os
+> botões "não respondem ao clicar".
 
 ⚠️ **Atenção ao mapear o `php/`:** o conteúdo de `php/` é "achatado" na raiz de
 `/politicapp/`. Ou seja, `php/auth/login.php` vai para `/politicapp/auth/login.php`
@@ -99,6 +104,19 @@ Se algo falhar, confira o log de erros do PHP no painel Locaweb e o console do
 navegador (erros de CORS/cookie aparecem lá).
 
 ---
+
+## Troubleshooting
+
+- **Botões "não respondem ao clicar" / página estática:** o Apache está servindo
+  `.mjs` como `text/plain`. Confirme:
+  `curl -I https://cmbusinesstoken.com/politicapp/js/site-nav.mjs` deve mostrar
+  `Content-Type: application/javascript`. Se mostrar `text/plain`, falta a linha
+  `AddType application/javascript .mjs` no `.htaccess` de `/politicapp/`.
+- **CORS/cookie no login:** só ocorre se o front e o PHP estiverem em domínios
+  diferentes. Como tudo está em `cmbusinesstoken.com/politicapp` (same-origin),
+  não deve haver CORS. Se aparecer, confira `allowed_origins` no `config.php`.
+- **Erro 500 nos `.php`:** veja o log de erros PHP no painel; geralmente é
+  `config.php` ausente ou credencial de banco errada.
 
 ## Aprovar contas (admin)
 

@@ -1,3 +1,10 @@
+# MIME correto para ES modules — o Apache não conhece .mjs por padrão e os
+# serve como text/plain, o que (com nosniff) faz o navegador RECUSAR o módulo.
+AddType application/javascript .mjs
+<IfModule mod_mime.c>
+  AddType application/javascript .mjs .js
+</IfModule>
+
 # Protege o config.php (segredos) de acesso via web.
 <Files "config.php">
   Require all denied
