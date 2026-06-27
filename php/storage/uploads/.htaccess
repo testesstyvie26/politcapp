@@ -1,0 +1,16 @@
+# Pasta de uploads — NUNCA executar scripts aqui, nem listar diretório.
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .cgi .pl .py
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .phps
+
+<FilesMatch "\.(php|phtml|phar|cgi|pl|py|sh|htaccess)$">
+  Require all denied
+</FilesMatch>
+
+# Desliga o motor PHP nesta pasta, se for mod_php (protegido por IfModule)
+<IfModule mod_php7.c>
+  php_admin_flag engine off
+</IfModule>
+<IfModule mod_php.c>
+  php_admin_flag engine off
+</IfModule>

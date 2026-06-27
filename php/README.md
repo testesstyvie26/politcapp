@@ -19,7 +19,23 @@ php/
    ├─ google-callback.php  GET ?code&state              → conclui login Google
    ├─ phone-request.php    POST {telefone}              → envia OTP por SMS
    └─ phone-verify.php     POST {telefone,codigo}       → confere OTP e loga
+├─ files/
+│  ├─ upload.php          POST multipart {arquivo,...} → grava e registra
+│  └─ serve.php           GET ?id                      → entrega o arquivo (com escopo)
+└─ storage/uploads/       → arquivos físicos (não vão pro git; sem execução)
 ```
+
+## Upload de arquivos
+
+- Schema: rode `sql/locaweb-uploads.sql` (tabela `arquivos`).
+- `files/upload.php`: requer sessão; campo `arquivo` (+ opcionais `entidade`,
+  `entidade_id`). Valida o **MIME real** (finfo), aceita só JPG/PNG/WEBP/GIF/PDF,
+  máx. 8 MB, nome aleatório, grava em `storage/uploads/AAAA/MM/`.
+- `files/serve.php?id=<uuid>`: entrega o arquivo respeitando o escopo de unidade
+  (admin vê tudo). Ex. de uso no front:
+  `<img src="files/serve.php?id=UUID">`.
+- A pasta `storage/uploads/` tem `.htaccess` que **desliga execução de PHP** —
+  essencial: nunca sirva uploads de uma pasta que execute scripts.
 
 ## Pré-requisitos
 
