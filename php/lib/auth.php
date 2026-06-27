@@ -6,6 +6,35 @@
  */
 require_once __DIR__ . '/db.php';
 
+/* ── CORS + anti-CSRF por origem ────────────────────────────────────────── */
+function pa_cors(): void {
+  $origins = pa_config()['allowed_origins'] ?? [];
+  $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
+  $metodo  = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+  if ($origin !== '' && in_array($origin, $origins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Credentials: true');
+    header('Vary: Origin');
+  }
+  header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+  header('Access-Control-Allow-Headers: Content-Type');
+
+  // preflight
+  if ($metodo === 'OPTIONS') { http_response_code(204); exit; }
+
+  // CSRF: requisições que mudam estado (POST) só de origens autorizadas.
+  // (Origem vazia = mesma origem / chamada não-browser → permitido.)
+  if ($metodo === 'POST' && $origin !== '' && !in_array($origin, $origins, true)) {
+    http_response_code(403);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'erro' => 'origem não autorizada']);
+    exit;
+  }
+}
+// aplica CORS automaticamente em todo endpoint que inclui esta lib
+pa_cors();
+
 /* ── Helpers HTTP/JSON ─────────────────────────────────────────────────── */
 function pa_json($data, int $code = 200): void {
   http_response_code($code);

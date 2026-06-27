@@ -16,8 +16,20 @@ return [
     'cookie'    => 'politapp_sess',
     'ttl_days'  => 30,
     'secure'    => true,   // exige HTTPS (mantenha true em produção)
-    'samesite'  => 'Lax',
-    'domain'    => '',      // ex.: 'politcapp.com.br'
+    // 'None' permite o cookie em requisições cross-site (front no GitHub Pages,
+    // PHP na Locaweb). Exige Secure=true (HTTPS). Se tudo ficar no mesmo
+    // domínio, prefira 'Lax'.
+    'samesite'  => 'None',
+    'domain'    => '',      // ex.: '.politcapp.com.br'
+  ],
+
+  // Origens autorizadas a chamar a API (CORS). Liste os domínios do front.
+  // Cross-origin com cookies exige a origem EXATA aqui (não use '*').
+  'allowed_origins' => [
+    'https://politcapp.com.br',
+    'https://www.politcapp.com.br',
+    'https://testesstyvie26.github.io',
+    'http://localhost:3000',
   ],
   'google' => [
     'client_id'     => getenv('GOOGLE_CLIENT_ID') ?: '',

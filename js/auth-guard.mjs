@@ -1,11 +1,9 @@
 /**
- * Exige sessão Supabase + conta aprovada (exceto páginas de espera/recusa).
+ * Guard de autenticação. Despacha conforme window.POLITAPP_AUTH_PROVIDER:
+ *   "supabase" (padrão) → sessão Supabase + conta aprovada
+ *   "locaweb"           → auth próprio em PHP (js/locaweb-auth-guard.mjs)
  * Exporta politappAuthReady → resolve com { session, profile }.
  */
-import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
-import { profileAllowsAppAccess, isContaRejeitada } from "./org-api.mjs";
-import { attachPolitappLogoutButton } from "./logout-ui.mjs";
-
 let resolveReady;
 let rejectReady;
 
@@ -63,6 +61,17 @@ function isRecusadaPage() {
     resolveReady({ session: null, profile: null });
     return;
   }
+
+  /* Despacho para o auth Locaweb (PHP), se configurado. */
+  if ((window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb") {
+    const { runLocawebGuard } = await import("./locaweb-auth-guard.mjs");
+    return runLocawebGuard(resolveReady, rejectReady);
+  }
+
+  /* Supabase: importa as dependências só neste modo. */
+  const { getSupabase, isAuthConfigured } = await import("./auth-client.mjs");
+  const { profileAllowsAppAccess, isContaRejeitada } = await import("./org-api.mjs");
+  const { attachPolitappLogoutButton } = await import("./logout-ui.mjs");
 
   document.documentElement.classList.add("auth-pending");
 
