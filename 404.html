@@ -5,15 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Página não encontrada — Politapp</title>
   <style>
-    body {
-      font-family: "DM Sans", system-ui, sans-serif;
-      max-width: 32rem;
-      margin: 3rem auto;
-      padding: 0 1.25rem;
-      background: #0c0f14;
-      color: #e8ecf2;
-      line-height: 1.55;
-    }
     h1 { font-size: 1.35rem; margin-top: 0; }
     a { color: #4d9fff; }
     code { font-size: 0.88rem; background: #141a24; padding: 0.15rem 0.35rem; border-radius: 4px; }
@@ -23,10 +14,31 @@
     .mini-nav a { color: #4d9fff; font-weight: 600; text-decoration: none; white-space: nowrap; }
     .mini-nav a:hover { text-decoration: underline; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <script type="module" src="js/site-bg.mjs"></script>
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
 </head>
 <body>
+  <nav class="site-nav" aria-label="Navegação principal">
+    <a href="index.html">Candidatos</a>
+    <a href="executivo.html">Visão executiva</a>
+    <a href="insights-rj.html">Insights RJ</a>
+    <a href="vereadores-rj.html">Vereadores RJ</a>
+    <details class="site-nav-dropdown">
+      <summary class="site-nav-dropdown__summary">Mídia social</summary>
+      <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+        <a href="midia-social.html">Painel</a>
+        <a href="whatsapp.html">WhatsApp</a>
+        <a href="instagram.html">Instagram</a>
+      </div>
+    </details>
+    <a href="tarefas.html">Tarefas</a>
+    <a href="login.html">Entrar</a>
+    <a href="conta.html">Conta</a>
+  </nav>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <ul class="mini-nav" aria-label="Atalhos">
     <li><a href="index.html">Início</a></li>
@@ -60,6 +72,15 @@
   <script type="module" src="js/politapp-logout-if-session.mjs"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

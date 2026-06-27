@@ -9,36 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #0c0f14;
-      --surface: #141a24;
-      --surface2: #1c2433;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e8ecf2;
-      --muted: #8b95a8;
-      --accent: #3d8bfd;
-      --accent-dim: rgba(61, 139, 253, 0.15);
-      --ok: #34d399;
-      --radius: 12px;
-      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.18), transparent),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
     .wrap { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
-    .site-nav {
-      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1rem; font-size: 0.9rem;
-    }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
     .back { display: inline-block; margin-bottom: 1rem; color: var(--accent); text-decoration: none; font-size: 0.9rem; }
     .back:hover { text-decoration: underline; }
 
@@ -108,7 +79,7 @@
       font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
       color: var(--muted); font-weight: 600;
     }
-    tr:hover td { background: rgba(61, 139, 253, 0.04); }
+    tr:hover td { background: rgba(77, 142, 247, 0.04); }
 
     .note { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin: 0; }
     .note a { color: var(--accent); }
@@ -146,8 +117,12 @@
       opacity: 0.92;
     }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+<script type="module" src="js/site-nav.mjs?v=19"></script>
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -176,10 +151,13 @@
       <a href="conta.html">Conta</a>
       <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener">API Câmara</a>
     </nav>
+
+    <main>
     <div id="politapp-main" tabindex="-1">
     <a class="back" href="index.html">? Voltar à lista</a>
     <div id="app"><div class="loading"><div class="spinner"></div>Carregando perfil…</div>
     </div>
+    </main>
 
     <footer class="site-credit" role="contentinfo">
       <p>
@@ -528,6 +506,15 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

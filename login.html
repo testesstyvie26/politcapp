@@ -9,42 +9,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
   <style>
-    :root {
-      --bg: #070a0f;
-      --surface: rgba(20, 26, 36, 0.88);
-      --surface2: #121a26;
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #f0f3f8;
-      --muted: #94a0b8;
-      --accent: #4d9fff;
-      --accent-soft: rgba(77, 159, 255, 0.14);
-      --gold: #e8c547;
-      --mint: rgba(52, 211, 153, 0.12);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --font-display: "Outfit", system-ui, sans-serif;
-    }
-    * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      color: var(--text);
-      line-height: 1.55;
-      background: var(--bg);
-      overflow-x: hidden;
-    }
     .login-bg {
       position: fixed;
       inset: 0;
       z-index: 0;
       background:
-        radial-gradient(ellipse 100% 80% at 10% -10%, rgba(77, 159, 255, 0.22), transparent 50%),
+        radial-gradient(ellipse 100% 80% at 10% -10%, rgba(77, 142, 247, 0.22), transparent 50%),
         radial-gradient(ellipse 80% 60% at 100% 30%, rgba(52, 211, 153, 0.08), transparent 45%),
-        linear-gradient(180deg, #070a0f 0%, #0d1219 100%);
+        linear-gradient(180deg, #060c18 0%, #030609 100%);
       pointer-events: none;
     }
     .page {
@@ -72,23 +47,10 @@
       text-decoration: none;
     }
     .brand:hover { color: var(--accent); }
-    nav.site-nav {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.6rem 1rem;
-      font-size: 0.86rem;
-      font-weight: 500;
-    }
-    nav.site-nav a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-    nav.site-nav a:hover { color: var(--accent); }
-    nav.site-nav a[aria-current="page"] {
-      color: var(--accent);
-      font-weight: 600;
-    }
+    nav
+    nav
+    nav
+    nav
 
     .login-grid {
       display: grid;
@@ -218,19 +180,19 @@
     .pill-btn.ghost:hover {
       color: var(--text);
       background: var(--accent-soft);
-      border-color: rgba(77, 159, 255, 0.35);
+      border-color: rgba(77, 142, 247, 0.35);
     }
     .pill-btn.primary-soft {
       background: var(--accent-soft);
       color: var(--text);
-      border-color: rgba(77, 159, 255, 0.4);
+      border-color: rgba(77, 142, 247, 0.4);
     }
     .pill-btn.primary-soft:hover { filter: brightness(1.07); }
 
     .proof-panel {
       padding: 1rem 1.05rem;
-      background: rgba(77, 159, 255, 0.07);
-      border: 1px solid rgba(77, 159, 255, 0.24);
+      background: rgba(77, 142, 247, 0.07);
+      border: 1px solid rgba(77, 142, 247, 0.24);
       border-radius: var(--radius-sm);
       margin-bottom: 1rem;
     }
@@ -474,6 +436,10 @@
     .site-credit a:hover { text-decoration: underline; }
     .site-credit .sep { margin: 0 0.35rem; opacity: 0.6; }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -502,21 +468,21 @@
 
         <div class="value-trio">
           <article class="value-card">
-            <span class="value-q">👉 Para quem é?</span>
+            <span class="value-q">?? Para quem é?</span>
             <p>
               <strong>Direção de campanha, coordenação territorial e equipes de dados</strong>
               que precisam ler urna e geografia no mesmo quadro — na hora da decisão, não depois da reunião.
             </p>
           </article>
           <article class="value-card">
-            <span class="value-q">👉 Como me ajuda?</span>
+            <span class="value-q">?? Como me ajuda?</span>
             <p>
               Dados públicos <strong>espalhados em vários portais</strong>; a equipe cruza TSE, Câmara e recortes locais
               <strong>sem uma visão única</strong> para priorizar onde atuar ou o que comunicar.
             </p>
           </article>
           <article class="value-card">
-            <span class="value-q">👉 Qual resultado entrega?</span>
+            <span class="value-q">?? Qual resultado entrega?</span>
             <p>
               <strong>Leitura por seção e região</strong>, cenários territoriais comparáveis e painéis escuros pensados
               para <strong>decisão rápida</strong> com arquivos e APIs oficiais — menos achismo, mais dado no mesmo lugar.
@@ -666,3 +632,12 @@
   <script type="module" src="js/login.mjs"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+

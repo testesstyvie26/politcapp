@@ -7,25 +7,47 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg: #0c0f14; --text: #e8ecf2; --muted: #8b95a8; --accent: #3d8bfd; --border: rgba(255,255,255,0.08); --surface: #141a24; --warn: #f87171; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; padding: 1.25rem; }
     .card { max-width: 420px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; }
     h1 { font-size: 1.25rem; margin: 0 0 0.75rem; color: var(--warn); }
     p { color: var(--muted); line-height: 1.55; margin: 0 0 1rem; font-size: 0.95rem; }
-    button { font: inherit; font-weight: 600; padding: 0.6rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #041018; }
+    button { font: inherit; font-weight: 600; padding: 0.6rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #030912; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <script type="module" src="js/site-bg.mjs"></script>
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
 </head>
 <body>
+  <nav class="site-nav" aria-label="Navegação principal">
+    <a href="index.html">Candidatos</a>
+    <a href="executivo.html">Visão executiva</a>
+    <a href="insights-rj.html">Insights RJ</a>
+    <a href="vereadores-rj.html">Vereadores RJ</a>
+    <details class="site-nav-dropdown">
+      <summary class="site-nav-dropdown__summary">Mídia social</summary>
+      <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+        <a href="midia-social.html">Painel</a>
+        <a href="whatsapp.html">WhatsApp</a>
+        <a href="instagram.html">Instagram</a>
+      </div>
+    </details>
+    <a href="tarefas.html">Tarefas</a>
+    <a href="login.html">Entrar</a>
+    <a href="conta.html">Conta</a>
+  </nav>
+
+    <main>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <div class="card">
     <h1 id="politapp-main" tabindex="-1">Acesso não autorizado</h1>
     <p>O seu pedido de conta não foi aprovado. Se precisar de ajuda, contacte um administrador do Politapp.</p>
     <p style="margin:0 0 1rem;font-size:0.88rem"><a href="guia-uso.html">Guia de uso do site</a></p>
     <p><button type="button" id="btnSair">Deslogar</button></p>
-  </div>
+    </main>
+
+    </div>
   <script src="js/auth-config.js"></script>
   <script type="module">
     import { getSupabase } from "./js/auth-client.mjs";
@@ -45,6 +67,16 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
 
 
 

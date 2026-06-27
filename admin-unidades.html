@@ -7,33 +7,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #0c0f14;
-      --surface: #141a24;
-      --surface2: #1c2433;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e8ecf2;
-      --muted: #8b95a8;
-      --accent: #3d8bfd;
-      --ok: #34d399;
-      --radius: 12px;
-      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.12), transparent),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
     .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
-    .site-nav { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 0.9rem; }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
     h1 { font-size: 1.45rem; margin: 0 0 0.5rem; }
     .lede { color: var(--muted); margin: 0 0 1.25rem; font-size: 0.95rem; max-width: 56ch; }
     .panel {
@@ -58,7 +32,7 @@
     button.primary {
       font: inherit; font-weight: 600; font-size: 0.9rem;
       padding: 0.55rem 1.1rem; border-radius: 8px; border: none;
-      cursor: pointer; background: var(--accent); color: #041018; margin-top: 0.75rem;
+      cursor: pointer; background: var(--accent); color: #030912; margin-top: 0.75rem;
     }
     button.primary:hover { filter: brightness(1.06); }
     button.primary:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -71,8 +45,12 @@
     .muted { color: var(--muted); font-size: 0.82rem; }
     .hint { font-size: 0.82rem; color: var(--muted); margin: 0.35rem 0 0; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+<script type="module" src="js/site-nav.mjs?v=19"></script>
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -94,6 +72,8 @@
       <a href="guia-uso.html">Guia de uso</a>
       <a href="index.html">Início</a>
     </nav>
+
+    <main>
     <h1 id="politapp-main" tabindex="-1">Unidades</h1>
     <p class="lede">Cada unidade tem um <strong>slug</strong> único (URL-friendly). Se deixar o slug em branco, ele é gerado a partir do nome.</p>
     <p id="err" class="err" hidden></p>
@@ -131,10 +111,21 @@
         </table>
       </div>
     </section>
-  </div>
+    </main>
+
+    </div>
   <script type="module" src="js/admin-unidades.mjs"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

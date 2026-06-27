@@ -9,36 +9,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
   <style>
-    :root {
-      --bg: #070a0f;
-      --surface: rgba(20, 26, 36, 0.92);
-      --surface2: #121a26;
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #f0f3f8;
-      --muted: #94a0b8;
-      --accent: #4d9fff;
-      --accent-soft: rgba(77, 159, 255, 0.14);
-      --mint: rgba(52, 211, 153, 0.12);
-      --gold: #e8c547;
-      --radius: 16px;
-      --radius-sm: 12px;
-      --font-display: "Outfit", system-ui, sans-serif;
-    }
-    * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-    }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      color: var(--text);
-      line-height: 1.55;
-      background: var(--bg);
-      overflow-x: hidden;
     }
     .bg {
       position: fixed;
@@ -391,8 +366,30 @@
     }
     .politapp-skip:focus:not(:focus-visible) { outline: none; }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <script type="module" src="js/site-bg.mjs"></script>
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
 </head>
 <body>
+  <nav class="site-nav" aria-label="Navegação principal">
+    <a href="index.html">Candidatos</a>
+    <a href="executivo.html">Visão executiva</a>
+    <a href="insights-rj.html">Insights RJ</a>
+    <a href="vereadores-rj.html">Vereadores RJ</a>
+    <details class="site-nav-dropdown">
+      <summary class="site-nav-dropdown__summary">Mídia social</summary>
+      <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+        <a href="midia-social.html">Painel</a>
+        <a href="whatsapp.html">WhatsApp</a>
+        <a href="instagram.html">Instagram</a>
+      </div>
+    </details>
+    <a href="tarefas.html">Tarefas</a>
+    <a href="login.html">Entrar</a>
+    <a href="conta.html">Conta</a>
+  </nav>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
   <div class="bg" aria-hidden="true"></div>
 
@@ -417,21 +414,21 @@
 
         <div class="value-trio">
           <article class="value-card">
-            <span class="value-q">👉 Para quem é?</span>
+            <span class="value-q">?? Para quem é?</span>
             <p>
               <strong>Direção de campanha, coordenação territorial e equipes de dados</strong>
               que precisam ler urna e geografia no mesmo quadro — na hora da decisão, não depois da reunião.
             </p>
           </article>
           <article class="value-card">
-            <span class="value-q">👉 Como me ajuda?</span>
+            <span class="value-q">?? Como me ajuda?</span>
             <p>
               Dados públicos <strong>espalhados em vários portais</strong>; a equipe cruza TSE, Câmara e recortes locais
               <strong>sem uma visão única</strong> para priorizar onde atuar ou o que comunicar.
             </p>
           </article>
           <article class="value-card">
-            <span class="value-q">👉 Qual resultado entrega?</span>
+            <span class="value-q">?? Qual resultado entrega?</span>
             <p>
               <strong>Leitura por seção e região</strong>, cenários territoriais comparáveis e painéis escuros pensados
               para <strong>decisão rápida</strong> com arquivos e APIs oficiais — menos achismo, mais dado no mesmo lugar.
@@ -559,3 +556,14 @@
   <script type="module" src="js/politapp-logout-if-session.mjs"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+

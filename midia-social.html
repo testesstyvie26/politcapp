@@ -8,43 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0c0f14;
-      --surface: #141a24;
-      --surface2: #1c2433;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e8ecf2;
-      --muted: #8b95a8;
-      --accent: #3d8bfd;
-      --radius: 12px;
-      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-      --heat-low: #2ec4b6;
-      --heat-mid: #f4a261;
-      --heat-high: #e07a5f;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.14), transparent),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.55;
-    }
-    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-    .site-nav {
-      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
-    }
+  <style>
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
     html body .wrap > nav.site-nav[aria-label] {
       position: relative;
       z-index: 5;
-    }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
-    .site-nav a[aria-current="page"] { color: var(--accent); }
+    }
     header { margin-bottom: 1.5rem; }
     header h1 {
       font-size: clamp(1.45rem, 3vw, 1.95rem);
@@ -1229,8 +1198,12 @@
       min-width: 140px;
     }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -1268,6 +1241,8 @@
         Os níveis são <strong>ilustrativos</strong> — calibre com fontes em tempo real, <strong>território e bairro</strong> que você representa ou acompanha.
       </p>
     </header>
+
+    <main>
 
     <section class="panel">
       <h2>Onde medir o “calor” dos temas</h2>
@@ -1637,6 +1612,7 @@
         Em dúvida sobre propaganda eleitoral, consulte o <a href="https://www.tse.jus.br/" target="_blank" rel="noopener">TSE</a> e assessoria jurídica qualificada.
       </p>
     </section>
+    </main>
 
     <footer class="site-credit" role="contentinfo">
       <p>

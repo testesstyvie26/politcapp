@@ -7,16 +7,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #0c0f14; --surface: #141a24; --border: rgba(255,255,255,0.08);
-      --text: #e8ecf2; --muted: #8b95a8; --accent: #3d8bfd; --ok: #34d399; --bad: #f87171;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
     .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
-    .site-nav { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 0.9rem; }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
     h1 { font-size: 1.45rem; margin: 0 0 0.5rem; }
     .lede { color: var(--muted); margin: 0 0 1.5rem; font-size: 0.95rem; }
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; overflow-x: auto; }
@@ -28,21 +19,25 @@
       font: inherit; font-weight: 600; font-size: 0.82rem; padding: 0.4rem 0.75rem;
       border-radius: 6px; border: none; cursor: pointer;
     }
-    .btn-ok { background: var(--ok); color: #041018; }
+    .btn-ok { background: var(--ok); color: #030912; }
     .btn-bad { background: rgba(248,113,113,0.2); color: #fecaca; border: 1px solid rgba(248,113,113,0.4); }
     .empty { color: var(--muted); margin: 0; }
     .err { color: var(--bad); font-size: 0.9rem; margin-bottom: 1rem; }
     .mono { font-family: ui-monospace, monospace; font-size: 0.78rem; word-break: break-all; }
     .help-box {
       font-size: 0.85rem; color: var(--muted); line-height: 1.55;
-      background: rgba(61, 139, 253, 0.08); border: 1px solid rgba(61, 139, 253, 0.25);
+      background: rgba(77, 142, 247, 0.08); border: 1px solid rgba(77, 142, 247, 0.25);
       border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.25rem;
     }
     .help-box strong { color: var(--text); }
     .help-box code { font-size: 0.78rem; background: var(--bg); padding: 0.1rem 0.35rem; border-radius: 4px; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+<script type="module" src="js/site-nav.mjs?v=19"></script>
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -64,6 +59,8 @@
       <a href="guia-uso.html">Guia de uso</a>
       <a href="index.html">Início</a>
     </nav>
+
+    <main>
     <h1 id="politapp-main" tabindex="-1">Pedidos de conta pendentes</h1>
     <p class="lede">Aprove ou recuse novos utilizadores. Quem for aprovado passa a aceder ao Politapp; quem for recusado vê uma mensagem de acesso negado.</p>
     <div class="help-box">
@@ -88,10 +85,21 @@
         </tbody>
       </table>
     </section>
-  </div>
+    </main>
+
+    </div>
   <script type="module" src="js/admin-aprovacoes.mjs"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,532 +1,461 @@
 /**
- * Navegação global — fallbacks se site-theme.css falhar; o tema sobrescreve estes tokens.
- * Ordem no HTML: site-shell-nav.css → site-theme.css
+ * Politapp — Shell Nav  v15
+ * Topbar executivo. Dropdown panels em position:fixed (JS-posicionados).
  */
 
+/* ══════════════════════════════════════════════════
+   TOKENS
+   ══════════════════════════════════════════════════ */
 :root {
-  --shell-nav-accent: #6ec8ff;
-  --shell-nav-accent-dim: rgba(110, 200, 255, 0.2);
-  --shell-nav-accent-edge: rgba(110, 200, 255, 0.48);
-  --shell-nav-bg: rgba(16, 22, 36, 0.82);
-  --shell-nav-chip: rgba(255, 255, 255, 0.05);
-  --shell-nav-chip-hover: rgba(255, 255, 255, 0.1);
-  --shell-nav-border: rgba(255, 255, 255, 0.1);
-  --shell-nav-border-soft: rgba(255, 255, 255, 0.07);
-  --shell-nav-text: #98a3b8;
-  --shell-nav-text-hi: #f0f4fa;
-  --shell-nav-radius-bar: 16px;
-  --shell-nav-radius-chip: 11px;
-  --shell-nav-dur: 0.2s;
-  --shell-nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pn-h:        60px;
+  --pn-bg:       #07101f;
+  --pn-border:   rgba(59,130,246,0.14);
+  --pn-text:     #5d7a9a;
+  --pn-text-hi:  #dde9f9;
+  --pn-accent:   #3b82f6;
+  --pn-gold:     #f59e0b;
+  --pn-dur:      120ms;
+  --pn-ease:     cubic-bezier(0.16,1,0.3,1);
+}
+@media (prefers-reduced-motion: reduce) { :root { --pn-dur: 1ms; } }
+
+/* ══════════════════════════════════════════════════
+   CONTEÚDO — empurra abaixo do topbar
+   ══════════════════════════════════════════════════ */
+body.pn-has-topbar > .wrap,
+body.pn-has-topbar > .page,
+body.pn-has-topbar > main {
+  padding-top: calc(var(--pn-h) + 1.25rem);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --shell-nav-dur: 0.01ms;
+/* ══════════════════════════════════════════════════
+   TOPBAR
+   ══════════════════════════════════════════════════ */
+.pn-topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--pn-h);
+  z-index: 900;
+  /* Sem backdrop-filter no elemento raiz (cria containing-block) */
+}
+
+/* Camada de fundo com blur — em ::before para não criar containing-block */
+.pn-topbar::before {
+  content: '';
+  position: absolute; inset: 0;
+  z-index: -1;
+  background: var(--pn-bg);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 1px 0 var(--pn-border), 0 4px 32px rgba(0,0,0,0.5);
+}
+
+/* Linha de acento dourado → azul → dourado */
+.pn-topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245,158,11,0.7) 15%,
+    rgba(59,130,246,0.9) 50%,
+    rgba(245,158,11,0.7) 85%,
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pn-topbar {
+    animation: _pn-slide .3s var(--pn-ease);
+    animation-fill-mode: none !important;
+  }
+  @keyframes _pn-slide {
+    from { transform: translateY(-100%); }
+    to   { transform: translateY(0); }
   }
 }
 
-/* ——— Skip ——— */
-.politapp-skip {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10000;
-  padding: 0.5rem 1rem;
-  font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
-  background: var(--shell-nav-accent);
-  color: #0a0d12;
-  border: none;
-  border-radius: 0 0 10px 0;
+/* Inner */
+.pn-inner {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: 1rem;
+  gap: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   BRAND
+   ══════════════════════════════════════════════════ */
+.pn-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .25rem .5rem .25rem .25rem;
+  border-radius: 9px;
   text-decoration: none;
-  transform: translateY(-130%);
-  transition: transform var(--shell-nav-dur) var(--shell-nav-ease);
+  flex-shrink: 0;
+  margin-right: .5rem;
+  transition: background var(--pn-dur) ease;
 }
-.politapp-skip:focus {
-  transform: translateY(0);
-  outline: 2px solid var(--shell-nav-text-hi);
-  outline-offset: 2px;
+.pn-brand:hover { background: rgba(255,255,255,0.05); }
+
+.pn-brand__icon {
+  width: 30px; height: 30px;
+  border-radius: 7px;
+  flex-shrink: 0;
 }
-.politapp-skip:focus:not(:focus-visible) {
-  outline: none;
+.pn-brand__name {
+  font: 700 1rem/1 "DM Sans", system-ui, sans-serif;
+  letter-spacing: -.04em;
+  background: linear-gradient(110deg, #fff 0%, #93c5fd 45%, #f59e0b 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* ——— Menu principal (fluxo da página, sem faixa rolável) ——— */
-html body nav.site-nav[aria-label] {
-  position: relative;
-  top: auto;
-  z-index: 2;
-  isolation: isolate;
-  display: flex !important;
-  flex-wrap: wrap !important;
+/* ══════════════════════════════════════════════════
+   DRAWER — desktop: flex row inline; mobile: painel
+   ══════════════════════════════════════════════════ */
+.pn-drawer {
+  display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.35rem 0.5rem !important;
-  margin: 0 0 1.25rem !important;
-  padding: 0 !important;
-  max-width: 100%;
+  flex: 1;
   min-width: 0;
-  box-sizing: border-box;
-
-  overflow: visible;
-  scroll-snap-type: none;
-  scrollbar-width: none;
-
-  mask-image: none;
-  -webkit-mask-image: none;
-
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-
-  animation: shell-nav-in 0.45s var(--shell-nav-ease) both;
+  height: 100%;
 }
 
-html body nav.site-nav[aria-label]::-webkit-scrollbar {
-  display: none;
-}
-
-html body nav.site-nav[aria-label]::before {
-  display: none;
-}
-
-@keyframes shell-nav-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html body nav.site-nav[aria-label] {
-    animation: none;
-  }
-}
-
-html body nav.site-nav[aria-label] a {
-  position: relative;
-  z-index: 1;
-  display: inline-flex !important;
-  flex: 0 0 auto;
+/* ══════════════════════════════════════════════════
+   NAV LINKS — desktop
+   ══════════════════════════════════════════════════ */
+nav.site-nav {
+  display: flex !important;
   align-items: center;
-  justify-content: center;
-  padding: 0.38rem 0.62rem !important;
+  gap: 2px;
+  height: 100%;
+  padding: 0 .25rem;
   margin: 0 !important;
-  min-height: 2.2rem;
-  font-size: 0.78rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em;
-  color: var(--shell-nav-text) !important;
+  font-size: inherit !important;
+  list-style: none;
+  overflow: visible !important; /* nunca clipar dropdowns */
+}
+
+/* Link base */
+nav.site-nav > a,
+nav.site-nav > details.site-nav-dropdown > summary {
+  display: inline-flex !important;
+  align-items: center;
+  gap: .28rem;
+  padding: .38rem .65rem !important;
+  border-radius: 7px !important;
+  font: 500 .8rem/1 "DM Sans", system-ui, sans-serif !important;
+  color: var(--pn-text) !important;
   text-decoration: none !important;
   white-space: nowrap;
-  border-radius: var(--shell-nav-radius-chip) !important;
-  background: var(--shell-nav-chip) !important;
-  border: 1px solid var(--shell-nav-border-soft) !important;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
-  transition:
-    color var(--shell-nav-dur) var(--shell-nav-ease),
-    background var(--shell-nav-dur) var(--shell-nav-ease),
-    border-color var(--shell-nav-dur) ease,
-    box-shadow var(--shell-nav-dur) ease;
-}
-
-html body nav.site-nav[aria-label] a:hover {
-  color: var(--shell-nav-text-hi) !important;
-  background: var(--shell-nav-chip-hover) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-}
-
-html body nav.site-nav[aria-label] a:focus-visible {
-  outline: none !important;
-  color: var(--shell-nav-text-hi) !important;
-  border-color: var(--shell-nav-accent) !important;
-  box-shadow:
-    0 0 0 2px var(--shell-nav-accent-dim),
-    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
-}
-
-html body nav.site-nav[aria-label] a[aria-current="page"] {
-  color: var(--shell-nav-text-hi) !important;
-  font-weight: 600 !important;
-  background: var(--shell-nav-accent-dim) !important;
-  border-color: var(--shell-nav-accent-edge) !important;
-  box-shadow:
-    0 0 0 1px var(--shell-nav-accent-dim) inset,
-    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
-}
-
-html body nav.site-nav[aria-label] a:active {
-  transform: scale(0.98);
-  transition-duration: 0.06s;
-}
-
-/* ——— Deslogar ——— */
-html body nav.site-nav[aria-label] button.site-nav-logout-btn,
-nav.top-nav button.site-nav-logout-btn,
-.politapp-logout-floating-btn {
-  position: relative;
-  z-index: 1;
-  display: inline-flex !important;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: 0.38rem 0.62rem !important;
-  margin: 0 !important;
-  min-height: 2.2rem;
-  font: inherit;
-  font-size: 0.78rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em;
-  color: #f0b4b4 !important;
-  text-decoration: none !important;
-  white-space: nowrap;
-  border-radius: var(--shell-nav-radius-chip) !important;
-  background: rgba(248, 113, 113, 0.1) !important;
-  border: 1px solid rgba(248, 113, 113, 0.35) !important;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   cursor: pointer;
+  background: transparent !important;
+  border: 1px solid transparent !important;
   transition:
-    color var(--shell-nav-dur) var(--shell-nav-ease),
-    background var(--shell-nav-dur) var(--shell-nav-ease),
-    border-color var(--shell-nav-dur) ease,
-    box-shadow var(--shell-nav-dur) ease,
-    opacity var(--shell-nav-dur) ease;
-}
-html body nav.site-nav[aria-label] button.site-nav-logout-btn:hover:not(:disabled),
-nav.top-nav button.site-nav-logout-btn:hover:not(:disabled),
-.politapp-logout-floating-btn:hover:not(:disabled) {
-  color: #ffd4d4 !important;
-  background: rgba(248, 113, 113, 0.18) !important;
-  border-color: rgba(252, 165, 165, 0.55) !important;
-}
-html body nav.site-nav[aria-label] button.site-nav-logout-btn:focus-visible,
-nav.top-nav button.site-nav-logout-btn:focus-visible,
-.politapp-logout-floating-btn:focus-visible {
-  outline: none !important;
-  color: #fff0f0 !important;
-  border-color: #f87171 !important;
-  box-shadow:
-    0 0 0 2px rgba(248, 113, 113, 0.35),
-    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
-}
-html body nav.site-nav[aria-label] button.site-nav-logout-btn:disabled,
-nav.top-nav button.site-nav-logout-btn:disabled,
-.politapp-logout-floating-btn:disabled {
-  opacity: 0.55;
-  cursor: wait;
-}
-html body nav.site-nav[aria-label] button.site-nav-logout-btn:active:not(:disabled),
-nav.top-nav button.site-nav-logout-btn:active:not(:disabled),
-.politapp-logout-floating-btn:active:not(:disabled) {
-  transform: scale(0.98);
-  transition-duration: 0.06s;
+    color var(--pn-dur) ease,
+    background var(--pn-dur) ease,
+    border-color var(--pn-dur) ease !important;
+  user-select: none;
+  list-style: none;
 }
 
-.politapp-logout-fallback-bar {
+nav.site-nav > a:hover,
+nav.site-nav > details.site-nav-dropdown > summary:hover {
+  color: var(--pn-text-hi) !important;
+  background: rgba(255,255,255,0.055) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+nav.site-nav > a[aria-current="page"] {
+  color: #fff !important;
+  background: rgba(59,130,246,0.18) !important;
+  border-color: rgba(59,130,246,0.35) !important;
+  font-weight: 600 !important;
+}
+
+/* Remove marker do details */
+nav.site-nav > details.site-nav-dropdown {
+  list-style: none;
+  position: static; /* panel usa position:fixed via JS */
+}
+nav.site-nav > details.site-nav-dropdown > summary {
+  list-style: none;
+}
+nav.site-nav > details.site-nav-dropdown > summary::-webkit-details-marker,
+nav.site-nav > details.site-nav-dropdown > summary::marker { display: none; }
+
+/* Chevron */
+nav.site-nav > details.site-nav-dropdown > summary::after {
+  content: '';
+  display: inline-block;
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: .5;
+  margin-left: .15rem;
+  transition: transform var(--pn-dur) ease, opacity var(--pn-dur) ease;
+}
+nav.site-nav > details.site-nav-dropdown[open] > summary::after {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+nav.site-nav > details.site-nav-dropdown[open] > summary {
+  color: var(--pn-text-hi) !important;
+  background: rgba(59,130,246,0.12) !important;
+  border-color: rgba(59,130,246,0.28) !important;
+}
+
+/* ══════════════════════════════════════════════════
+   DROPDOWN PANEL — position:fixed via JS
+   ══════════════════════════════════════════════════ */
+.pn-dd-panel,
+.site-nav-dropdown__panel,
+.site-nav-dropdown-panel {
+  display: none; /* escondido quando não é .pn-dd-panel */
+}
+
+/* Quando movido para body via JS e aberto */
+body > .pn-dd-panel {
+  display: block;
   position: fixed;
-  top: 0.65rem;
-  right: 0.65rem;
-  z-index: 10002;
+  z-index: 9999;
+  min-width: 200px;
+  background: rgba(5,10,24,0.98);
+  border: 1px solid rgba(59,130,246,0.22);
+  border-radius: 11px;
+  padding: .35rem;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.80),
+    0 4px 20px rgba(37,99,235,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transition:
+    opacity var(--pn-dur) ease,
+    transform var(--pn-dur) var(--pn-ease);
+}
+
+body > .pn-dd-panel.is-open {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Linha dourada decorativa */
+body > .pn-dd-panel::before {
+  content: '';
+  display: block;
+  height: 2px;
+  margin: 0 .4rem .4rem;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--pn-gold), var(--pn-accent), var(--pn-gold));
+  opacity: .6;
+}
+
+body > .pn-dd-panel a {
+  display: flex !important;
+  align-items: center;
+  padding: .58rem .85rem !important;
+  border-radius: 8px !important;
+  font: 500 .82rem/1.3 "DM Sans", system-ui, sans-serif !important;
+  color: #6a88a8 !important;
+  text-decoration: none !important;
+  transition: color var(--pn-dur) ease, background var(--pn-dur) ease !important;
+  white-space: nowrap;
+}
+body > .pn-dd-panel a:hover {
+  color: var(--pn-text-hi) !important;
+  background: rgba(59,130,246,0.10) !important;
+}
+body > .pn-dd-panel a[aria-current="page"] {
+  color: var(--pn-accent) !important;
+  background: rgba(59,130,246,0.12) !important;
+}
+
+/* ══════════════════════════════════════════════════
+   TOGGLE HAMBURGER
+   ══════════════════════════════════════════════════ */
+.pn-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 38px; height: 38px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: background var(--pn-dur) ease, border-color var(--pn-dur) ease;
+}
+.pn-toggle:hover {
+  background: rgba(59,130,246,0.12);
+  border-color: rgba(59,130,246,0.30);
+}
+.pn-toggle span {
+  display: block;
+  width: 100%; height: 2px;
+  background: var(--pn-text-hi);
+  border-radius: 2px;
+  transform-origin: center;
+  transition: transform var(--pn-dur) var(--pn-ease), opacity var(--pn-dur) ease;
+}
+.pn-toggle.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.pn-toggle.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.pn-toggle.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ══════════════════════════════════════════════════
+   BACKDROP
+   ══════════════════════════════════════════════════ */
+.pn-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  z-index: 800;
+  background: rgba(2,5,14,0.75);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.pn-backdrop.is-visible {
+  opacity: 1;
   pointer-events: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html body nav.site-nav[aria-label] a:active,
-  html body nav.site-nav[aria-label] button.site-nav-logout-btn:active:not(:disabled),
-  nav.top-nav button.site-nav-logout-btn:active:not(:disabled),
-  .politapp-logout-floating-btn:active:not(:disabled) {
-    transform: none;
-  }
-}
-
-/* ——— Telemóvel (alvos de toque maiores) ——— */
+/* ══════════════════════════════════════════════════
+   MOBILE  ≤ 768px
+   ══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  html body nav.site-nav[aria-label] {
-    gap: 0.3rem 0.45rem !important;
+  .pn-toggle   { display: flex; }
+  .pn-backdrop { display: block; }
+
+  /* Drawer mobile: painel fullscreen abaixo do topbar */
+  .pn-drawer {
+    position: fixed !important;
+    top: var(--pn-h) !important;
+    left: 0 !important; right: 0 !important;
+    height: calc(100dvh - var(--pn-h)) !important;
+    background: rgba(4,8,20,0.99) !important;
+    border-top: 1px solid rgba(59,130,246,0.14) !important;
+    display: block !important;
+    overflow-y: auto !important;
+    z-index: 850 !important;
+    /* fechado */
+    opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none;
+    transition: opacity .2s ease, transform .24s var(--pn-ease);
+  }
+  .pn-drawer.is-open {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+    pointer-events: auto !important;
   }
 
-  html body nav.site-nav[aria-label] a {
-    min-height: 44px;
-    padding-inline: 0.72rem !important;
-    font-size: 0.8rem !important;
+  /* Nav mobile: lista vertical */
+  nav.site-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    height: auto !important;
+    padding: 1rem .75rem 2rem !important;
+    gap: 3px !important;
+    overflow: visible !important;
   }
 
-  html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
-    min-height: 44px;
-    padding-inline: 0.72rem !important;
-    padding-inline-end: 1.75rem !important;
-    font-size: 0.8rem !important;
+  nav.site-nav > a,
+  nav.site-nav > details.site-nav-dropdown > summary {
+    padding: .78rem 1rem !important;
+    font-size: .9rem !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    background: rgba(255,255,255,0.025) !important;
+  }
+  nav.site-nav > a:hover,
+  nav.site-nav > details.site-nav-dropdown > summary:hover {
+    background: rgba(59,130,246,0.10) !important;
+    border-color: rgba(59,130,246,0.22) !important;
+    color: var(--pn-text-hi) !important;
+  }
+  nav.site-nav > a[aria-current="page"] {
+    background: rgba(59,130,246,0.22) !important;
+    border-color: rgba(59,130,246,0.40) !important;
+    color: #fff !important;
   }
 
-  html body nav.site-nav[aria-label] button.site-nav-logout-btn,
-  nav.top-nav button.site-nav-logout-btn,
-  .politapp-logout-floating-btn {
-    min-height: 44px;
-    padding-inline: 0.72rem !important;
-    font-size: 0.8rem !important;
-  }
-}
-
-/* ——— Login ——— */
-header.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.85rem 1rem;
-  margin: -0.35rem -0.25rem 1.5rem;
-  padding: 0.6rem 0.8rem;
-  background: var(--shell-nav-bg);
-  border: 1px solid var(--shell-nav-border);
-  border-radius: var(--shell-nav-radius-bar);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  animation: shell-nav-in 0.4s var(--shell-nav-ease) both;
-}
-
-header.top-bar .brand {
-  transition: opacity var(--shell-nav-dur) ease;
-}
-header.top-bar .brand:hover {
-  opacity: 0.9;
-}
-
-html body header.top-bar nav.site-nav[aria-label] {
-  position: static !important;
-  top: auto;
-  flex: 1 1 auto;
-  justify-content: flex-end;
-  min-width: 0;
-  max-width: 100%;
-  margin: 0 !important;
-  padding: 0 !important;
-  flex-wrap: wrap !important;
-  overflow: visible;
-  scrollbar-width: none;
-  mask-image: none;
-  -webkit-mask-image: none;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none;
-  animation: none;
-}
-
-html body header.top-bar nav.site-nav[aria-label]::-webkit-scrollbar {
-  display: none;
-}
-
-html body header.top-bar nav.site-nav[aria-label]::before {
-  display: none;
-}
-
-@media (max-width: 720px) {
-  header.top-bar {
-    flex-direction: column;
-    align-items: stretch;
-    margin-left: 0;
-    margin-right: 0;
-  }
-  html body header.top-bar nav.site-nav[aria-label] {
-    justify-content: flex-start;
-    width: 100%;
+  /* Dropdown no mobile: painel fixed posicionado via JS */
+  body > .pn-dd-panel {
+    position: fixed !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    width: auto !important;
+    min-width: 0 !important;
+    top: calc(var(--pn-h) + .5rem) !important;
+    z-index: 9999 !important;
   }
 }
 
-/* ——— Vereador sub-nav ——— */
-.vereador-sub {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 0.3rem 0.4rem;
-  font-size: 0.8125rem;
-  margin-bottom: 1rem !important;
-  padding: 0.45rem 0.5rem !important;
-  background: var(--shell-nav-bg) !important;
-  border: 1px solid var(--shell-nav-border) !important;
-  border-radius: var(--shell-nav-radius-bar) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-}
-
-.vereador-sub a {
-  color: var(--shell-nav-text) !important;
-  text-decoration: none !important;
-  font-weight: 500;
-  padding: 0.38rem 0.72rem !important;
-  border-radius: var(--shell-nav-radius-chip) !important;
-  background: var(--shell-nav-chip) !important;
-  border: 1px solid var(--shell-nav-border-soft) !important;
-  transition:
-    color var(--shell-nav-dur) ease,
-    background var(--shell-nav-dur) ease,
-    border-color var(--shell-nav-dur) ease;
-}
-.vereador-sub a:hover {
-  color: var(--shell-nav-text-hi) !important;
-  background: var(--shell-nav-chip-hover) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
-}
-.vereador-sub a[aria-current="page"] {
-  color: var(--shell-nav-text-hi) !important;
-  font-weight: 600 !important;
-  background: var(--shell-nav-accent-dim) !important;
-  border-color: var(--shell-nav-accent-edge) !important;
-}
-.vereador-sub .sep {
-  color: rgba(255, 255, 255, 0.16);
-  user-select: none;
-  flex-shrink: 0;
-  align-self: center;
-}
-
-@media (max-width: 768px) {
-  .vereador-sub {
-    flex-wrap: wrap;
-    overflow: visible;
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-  .vereador-sub a {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-  }
-}
-
-#politapp-main:focus {
-  outline: none;
-}
-#politapp-main {
-  scroll-margin-top: 1.25rem;
-}
-
-/* ——— Mídia social · submenu (details + painel) ——— */
-html body nav.site-nav[aria-label] .site-nav-dropdown {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: stretch;
-  flex: 0 0 auto;
-  align-self: center;
-  z-index: 20;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
-  position: relative;
-  z-index: 1;
-  list-style: none;
-  cursor: pointer;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  padding: 0.38rem 0.62rem !important;
-  padding-inline-end: 1.65rem !important;
-  margin: 0 !important;
-  min-height: 2.2rem;
-  font-size: 0.78rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em;
-  color: var(--shell-nav-text) !important;
-  text-decoration: none !important;
-  white-space: nowrap;
-  border-radius: var(--shell-nav-radius-chip) !important;
-  background: var(--shell-nav-chip) !important;
-  border: 1px solid var(--shell-nav-border-soft) !important;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
-  transition:
-    color var(--shell-nav-dur) var(--shell-nav-ease),
-    background var(--shell-nav-dur) var(--shell-nav-ease),
-    border-color var(--shell-nav-dur) ease,
-    box-shadow var(--shell-nav-dur) ease;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__summary::-webkit-details-marker {
-  display: none;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__summary::after {
-  content: "▾";
-  position: absolute;
-  right: 0.55rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.65rem;
-  opacity: 0.75;
-  pointer-events: none;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown[open] > .site-nav-dropdown__summary::after {
-  opacity: 1;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__summary:hover {
-  color: var(--shell-nav-text-hi) !important;
-  background: var(--shell-nav-chip-hover) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__summary:focus-visible {
-  outline: none !important;
-  color: var(--shell-nav-text-hi) !important;
-  border-color: var(--shell-nav-accent) !important;
-  box-shadow:
-    0 0 0 2px var(--shell-nav-accent-dim),
-    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown[open] > .site-nav-dropdown__summary {
-  color: var(--shell-nav-text-hi) !important;
-  font-weight: 600 !important;
-  background: var(--shell-nav-accent-dim) !important;
-  border-color: var(--shell-nav-accent-edge) !important;
-  box-shadow:
-    0 0 0 1px var(--shell-nav-accent-dim) inset,
-    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__panel {
-  position: absolute;
-  top: calc(100% + 0.28rem);
-  left: 0;
-  min-width: min(260px, calc(100vw - 2rem));
-  padding: 0.4rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.28rem;
-  background: var(--shell-nav-bg) !important;
-  border: 1px solid var(--shell-nav-border) !important;
-  border-radius: 14px !important;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 18px 40px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(14px) saturate(1.08);
-  -webkit-backdrop-filter: blur(14px) saturate(1.08);
-  z-index: 400;
-}
-
-html body nav.site-nav[aria-label] .site-nav-dropdown__panel a {
+/* ══════════════════════════════════════════════════
+   FALLBACK SEM JS
+   ══════════════════════════════════════════════════ */
+body:not(.pn-has-topbar) nav.site-nav[aria-label] {
   display: flex !important;
-  justify-content: flex-start !important;
-  text-align: left;
-  white-space: normal;
-  width: 100%;
+  flex-wrap: wrap;
+  gap: .3rem;
+  padding: .6rem 1rem;
+  background: var(--pn-bg);
+  border-bottom: 1px solid var(--pn-border);
   margin: 0 !important;
 }
+body:not(.pn-has-topbar) nav.site-nav[aria-label] a {
+  display: inline-flex !important;
+  padding: .35rem .7rem !important;
+  border-radius: 7px !important;
+  font: 500 .8rem "DM Sans", system-ui, sans-serif !important;
+  color: var(--pn-text) !important;
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  text-decoration: none !important;
+}
+body:not(.pn-has-topbar) nav.site-nav[aria-label] a[aria-current="page"] {
+  color: #fff !important;
+  background: rgba(59,130,246,0.20) !important;
+  border-color: rgba(59,130,246,0.40) !important;
+}
 
-@media (max-width: 768px) {
-  html body nav.site-nav[aria-label] .site-nav-dropdown__summary {
-    min-height: 44px;
+/* ══════════════════════════════════════════════════
+   DESKTOP MÉDIO  769px – 1100px
+   ══════════════════════════════════════════════════ */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .pn-inner { padding-inline: .5rem; gap: 0; }
+  .pn-brand { margin-right: .25rem; }
+  .pn-brand__name { display: none; } /* só ícone em viewport estreito */
+
+  nav.site-nav { gap: 1px; overflow-x: auto; scroll-snap-type: x mandatory; }
+  nav.site-nav::-webkit-scrollbar { display: none; }
+  nav.site-nav { scrollbar-width: none; }
+
+  nav.site-nav > a,
+  nav.site-nav > details.site-nav-dropdown > summary {
+    font-size: .72rem !important;
+    padding: .32rem .48rem !important;
+    white-space: nowrap;
+    scroll-snap-align: start;
   }
 }
+
+/* Compatibilidade com seletores antigos */
+.politapp-topbar  { display: none; }
+.politapp-nav-drawer { display: none; }
+.politapp-nav-backdrop { display: none; }

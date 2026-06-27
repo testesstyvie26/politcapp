@@ -10,38 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <style>
-    :root {
-      --bg: #0c0f14;
-      --surface: #141a24;
-      --surface2: #1c2433;
-      --border: rgba(255, 255, 255, 0.1);
-      --text: #e8ecf2;
-      --muted: #8b95a8;
-      --accent: #3d8bfd;
-      --accent-soft: rgba(61, 139, 253, 0.18);
-      --ok: #2ec4b6;
-      --radius: 12px;
-      --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 120% 80% at 50% -25%, rgba(61, 139, 253, 0.16), transparent),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.55;
-    }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
-    .site-nav {
-      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.9rem;
-    }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <style>
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
     header { margin-bottom: 2rem; }
     header h1 {
       font-size: clamp(1.55rem, 4vw, 2.05rem);
@@ -425,6 +396,8 @@
       background: rgba(61, 139, 253, 0.1);
     }
   </style>
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <div class="wrap">
@@ -472,6 +445,8 @@
         As mensagens são encaminhadas pelo <strong>seu aplicativo de e-mail</strong> para o <strong>canal institucional da equipe</strong> (endereço não exibido nesta página).
       </p>
     </header>
+
+    <main>
 
     <section class="panel" id="agenda" aria-labelledby="agenda-titulo">
       <h2 id="agenda-titulo">Agenda pública</h2>
@@ -581,6 +556,7 @@
         Não armazenamos mensagens neste site: o envio depende do seu cliente de correio. Em dispositivos móveis, confira se a app de e-mail está configurada.
       </p>
     </section>
+    </main>
 
     <footer>
       Canal institucional de contato. Para propaganda eleitoral vigente, observe a legislação aplicável (TSE) e canais oficiais de campanha.

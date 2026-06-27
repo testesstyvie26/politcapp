@@ -8,30 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0c0f14;
-      --surface: #141a24;
-      --surface2: #1c2433;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e8ecf2;
-      --muted: #8b95a8;
-      --accent: #3d8bfd;
-      --ok: #34d399;
-      --radius: 12px;
-      --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DM Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(61, 139, 253, 0.16), transparent),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
+  <style>
     .wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
     .mode-banner {
       font-size: 0.88rem; color: var(--muted);
@@ -51,13 +28,7 @@
     .badge-grupo {
       font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.65rem; border-radius: 8px;
       background: rgba(61, 139, 253, 0.18); color: var(--accent); align-self: center;
-    }
-    .site-nav {
-      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem;
-    }
-    .site-nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { color: var(--accent); }
-    .site-nav a[aria-current="page"] { color: var(--accent); }
+    }
     header { margin-bottom: 1.5rem; }
     header h1 {
       font-size: clamp(1.4rem, 3vw, 1.85rem);
@@ -227,8 +198,12 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
-  <link rel="stylesheet" href="css/site-theme.css?v=2" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
+  <script type="module" src="js/site-bg.mjs"></script>
 </head>
 <body>
   <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
@@ -262,6 +237,8 @@
       <h1>Tarefas e anotações do dia</h1>
       <p>Checklist com concluído e bloco de notas por data. <strong>Os dados são salvos no banco</strong> (Supabase), por unidade — acessíveis ao time da mesma unidade, não apenas neste navegador.</p>
     </header>
+
+    <main>
 
     <p id="modeBanner" class="mode-banner" hidden></p>
 
@@ -312,6 +289,7 @@
       <textarea class="notes" id="notas" placeholder="Reuniões, ideias, contatos, lembretes de campanha…"></textarea>
       <p class="hint">Grava no banco (Supabase) ao sair do campo, após uma pausa na digitação ou ao trocar a data.</p>
     </section>
+    </main>
 
     <footer class="site-credit" role="contentinfo">
       <p>

@@ -10,9 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#070a0f; --surf:#141a24; --b:rgba(255,255,255,.09); --t:#f0f3f8; --m:#94a0b8; --a:#4d9fff; --r:12px; }
-    * { box-sizing: border-box; }
-    body { margin:0; min-height:100vh; font-family:"DM Sans",system-ui,sans-serif; background:var(--bg); color:var(--t); line-height:1.58; padding:1.75rem 1.2rem 3rem; }
     .wrap { max-width:680px; margin:0 auto; }
     .back { display:inline-block; margin-bottom:1.25rem; color:var(--a); font-weight:600; text-decoration:none; font-size:.9rem; }
     .back:hover { text-decoration:underline; }
@@ -25,11 +22,35 @@
     ul { padding-left:1.15rem; }
     code { font-size:.8rem; background:#0f141c; padding:.1rem .35rem; border-radius:4px; }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=6" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=13" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <script type="module" src="js/site-bg.mjs"></script>
+  <script type="module" src="js/site-nav.mjs?v=19"></script>
 </head>
 <body>
-  <div class="wrap">
-    <a class="back" href="login.html">← Voltar ao login</a>
+    <nav class="site-nav" aria-label="Navegação principal">
+    <a href="index.html">Candidatos</a>
+    <a href="executivo.html">Visão executiva</a>
+    <a href="insights-rj.html">Insights RJ</a>
+    <a href="vereadores-rj.html">Vereadores RJ</a>
+    <details class="site-nav-dropdown">
+      <summary class="site-nav-dropdown__summary">Mídia social</summary>
+      <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
+        <a href="midia-social.html">Painel</a>
+        <a href="whatsapp.html">WhatsApp</a>
+        <a href="instagram.html">Instagram</a>
+      </div>
+    </details>
+    <a href="tarefas.html">Tarefas</a>
+    <a href="login.html">Entrar</a>
+    <a href="conta.html">Conta</a>
+  </nav>
+
+    <main>
+<div class="wrap">
+    <a class="back" href="login.html">? Voltar ao login</a>
     <h1>Política de privacidade</h1>
     <p class="muted"><strong>Versão resumida e transparente.</strong> O Politapp pode evoluir; em caso de dúvidas institucionais, consulte a equipe responsável pelo deployment.</p>
 
@@ -68,8 +89,21 @@
     </section>
 
     <p style="margin-top:1.5rem;font-size:.82rem;color:var(--m)"><a href="termos-uso.html" style="color:var(--a);font-weight:600;text-decoration:none">Termos de uso</a></p>
-  </div>
+    </main>
+
+    </div>
   <script src="js/auth-config.js"></script>
   <script type="module" src="js/politapp-logout-if-session.mjs"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
