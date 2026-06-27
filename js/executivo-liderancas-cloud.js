@@ -1,8 +1,8 @@
 /**
  * Persistência das líderanças RJ (Supabase) por unidade — ver sql/supabase-liderancas-rj.sql
  */
-import { getSupabase } from "./auth-client.mjs";
-import { loadProfile, profileAllowsAppAccess } from "./org-api.mjs";
+import { getSupabase } from "./auth-client.js";
+import { loadProfile, profileAllowsAppAccess } from "./org-api.js";
 
 let ctx = null;
 

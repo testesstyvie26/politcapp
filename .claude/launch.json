@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "politapp-dev",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/politapp-dev-server.cjs"],
+      "port": 3000
+    }
+  ]
+}

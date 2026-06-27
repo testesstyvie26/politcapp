@@ -1,4 +1,4 @@
-import { requireAdmin } from "./admin-guard.mjs";
+import { requireAdmin } from "./admin-guard.js";
 
 const txt = document.getElementById("anuncioTexto");
 const msg = document.getElementById("anuncioMsg");

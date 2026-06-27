@@ -4,7 +4,7 @@ import {
   politappSafeNext,
   loginRedirectUrl,
   finalizeOAuthFromUrl,
-} from "./auth-client.mjs";
+} from "./auth-client.js";
 
 const errEl = document.getElementById("err");
 const btnLoginGoogle = document.getElementById("btnLoginGoogle");

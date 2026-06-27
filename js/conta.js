@@ -1,6 +1,6 @@
-import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
-import { politappAuthReady } from "./auth-guard.mjs";
-import { loadProfile, grupoLabel, contaStatusLabel } from "./org-api.mjs";
+import { getSupabase, isAuthConfigured } from "./auth-client.js";
+import { politappAuthReady } from "./auth-guard.js";
+import { loadProfile, grupoLabel, contaStatusLabel } from "./org-api.js";
 
 const loading = document.getElementById("loading");
 const content = document.getElementById("content");

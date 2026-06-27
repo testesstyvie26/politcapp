@@ -1,8 +1,8 @@
 /**
  * Páginas públicas: mostra "Deslogar" se existir sessão Supabase (sem auth-guard).
  */
-import { getSupabase, isAuthConfigured } from "./auth-client.mjs";
-import { attachPolitappLogoutButton } from "./logout-ui.mjs";
+import { getSupabase, isAuthConfigured } from "./auth-client.js";
+import { attachPolitappLogoutButton } from "./logout-ui.js";
 
 (async function () {
   if (!isAuthConfigured()) return;

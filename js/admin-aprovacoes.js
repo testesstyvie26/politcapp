@@ -1,5 +1,5 @@
-import { requireAdmin } from "./admin-guard.mjs";
-import { grupoLabel } from "./org-api.mjs";
+import { requireAdmin } from "./admin-guard.js";
+import { grupoLabel } from "./org-api.js";
 
 const tbody = document.getElementById("tbody");
 const errEl = document.getElementById("err");

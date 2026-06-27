@@ -1,6 +1,6 @@
-import { getSupabase } from "./auth-client.mjs";
-import { politappAuthReady } from "./auth-guard.mjs";
-import { loadProfile, listUnidadesForSelect, grupoLabel } from "./org-api.mjs";
+import { getSupabase } from "./auth-client.js";
+import { politappAuthReady } from "./auth-guard.js";
+import { loadProfile, listUnidadesForSelect, grupoLabel } from "./org-api.js";
 
 /** Legado: diário só no navegador; migrado uma vez para o Supabase. */
 const STORAGE_KEY = "politapp.diary.v1";

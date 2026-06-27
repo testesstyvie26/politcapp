@@ -9,8 +9,8 @@
  * legislação eleitoral. Disparo automático/massa exige backend + Cloud API +
  * templates aprovados pela Meta (a ser feito após a migração Locaweb).
  */
-import { getSupabase } from "./auth-client.mjs";
-import { loadProfile, profileAllowsAppAccess } from "./org-api.mjs";
+import { getSupabase } from "./auth-client.js";
+import { loadProfile, profileAllowsAppAccess } from "./org-api.js";
 
 const $ = (id) => document.getElementById(id);
 

@@ -1,4 +1,4 @@
-import { requireAdmin } from "./admin-guard.mjs";
+import { requireAdmin } from "./admin-guard.js";
 
 const tbody = document.getElementById("tbody");
 const errEl = document.getElementById("err");

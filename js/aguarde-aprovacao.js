@@ -2,9 +2,9 @@
  * Página aguarde-aprovacao: após o auth-guard, volta a ler o perfil e redireciona
  * se já estiver liberado (evita ficar preso quando o primeiro fetch falha ou atrasa).
  */
-import { getSupabase } from "./auth-client.mjs";
-import { politappAuthReady } from "./auth-guard.mjs";
-import { profileAllowsAppAccess } from "./org-api.mjs";
+import { getSupabase } from "./auth-client.js";
+import { politappAuthReady } from "./auth-guard.js";
+import { profileAllowsAppAccess } from "./org-api.js";
 
 const estadoEl = () => document.getElementById("estadoPerfil");
 

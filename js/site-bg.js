@@ -1,5 +1,5 @@
 /**
- * site-bg.mjs — Animação de fundo: rede de dados (nós + conexões)
+ * site-bg.js — Animação de fundo: rede de dados (nós + conexões)
  * Leve, 60fps limitado a ~40 partículas, pausa com prefers-reduced-motion
  */
 (function initDataBg() {

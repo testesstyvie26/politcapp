@@ -1,5 +1,5 @@
 /**
- * site-nav.mjs v15 — Topbar Politapp
+ * site-nav.js v15 — Topbar Politapp
  * Dropdown panels em position:fixed posicionados via JS
  * (evita todos os problemas de overflow / stacking context)
  */

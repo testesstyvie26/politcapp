@@ -1,4 +1,4 @@
-import { requireAdmin } from "./admin-guard.mjs";
+import { requireAdmin } from "./admin-guard.js";
 
 (async function init() {
   const ctx = await requireAdmin();
