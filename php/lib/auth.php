@@ -12,7 +12,14 @@ function pa_cors(): void {
   $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
   $metodo  = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-  if ($origin !== '' && in_array($origin, $origins, true)) {
+  // Origem do próprio servidor (same-origin é sempre confiável). Atrás de
+  // Cloudflare, o protocolo real vem em X-Forwarded-Proto.
+  $proto = $_SERVER['HTTP_X_FORWARDED_PROTO']
+        ?? ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+  $selfOrigin = $proto . '://' . ($_SERVER['HTTP_HOST'] ?? '');
+  $permitida = ($origin !== '' && (in_array($origin, $origins, true) || $origin === $selfOrigin));
+
+  if ($permitida) {
     header("Access-Control-Allow-Origin: $origin");
     header('Access-Control-Allow-Credentials: true');
     header('Vary: Origin');
@@ -23,9 +30,8 @@ function pa_cors(): void {
   // preflight
   if ($metodo === 'OPTIONS') { http_response_code(204); exit; }
 
-  // CSRF: requisições que mudam estado (POST) só de origens autorizadas.
-  // (Origem vazia = mesma origem / chamada não-browser → permitido.)
-  if ($metodo === 'POST' && $origin !== '' && !in_array($origin, $origins, true)) {
+  // CSRF: POST só de origens autorizadas (ou same-origin, ou sem Origin).
+  if ($metodo === 'POST' && $origin !== '' && !$permitida) {
     http_response_code(403);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['ok' => false, 'erro' => 'origem não autorizada']);
