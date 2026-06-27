@@ -170,8 +170,17 @@ function pa_logout(): void {
 }
 
 /* ── Google OAuth2 ─────────────────────────────────────────────────────── */
-function pa_google_auth_url(string $state): string {
+function pa_google_cfg(): array {
   $g = pa_config()['google'];
+  // remove espaços/quebras de linha acidentais (causa comum de invalid_client)
+  return [
+    'client_id'     => trim((string)($g['client_id'] ?? '')),
+    'client_secret' => trim((string)($g['client_secret'] ?? '')),
+    'redirect_uri'  => trim((string)($g['redirect_uri'] ?? '')),
+  ];
+}
+function pa_google_auth_url(string $state): string {
+  $g = pa_google_cfg();
   $q = http_build_query([
     'client_id'     => $g['client_id'],
     'redirect_uri'  => $g['redirect_uri'],
@@ -206,7 +215,7 @@ function pa_http_get(string $url, string $bearer): array {
 }
 /** Troca o code por dados do usuário Google e faz upsert (cria/liga a conta). */
 function pa_google_login(string $code, ?string $ua, ?string $ip): array {
-  $g = pa_config()['google'];
+  $g = pa_google_cfg();
   $tok = pa_http_post('https://oauth2.googleapis.com/token', [
     'code'          => $code,
     'client_id'     => $g['client_id'],
