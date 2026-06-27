@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
+  <style>
     .wrap { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
     header { margin-bottom: 1.5rem; }
     header h1 {
@@ -145,10 +145,10 @@
       scroll-margin-top: 5.5rem;
     }
   </style>
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=17" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=18" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <link rel="stylesheet" href="css/site-theme.css?v=16" />
+  <link rel="stylesheet" href="css/site-theme.css?v=19" />
   <script type="module" src="js/site-nav.mjs?v=19"></script>
   <script type="module" src="js/site-bg.mjs"></script>
 </head>
@@ -195,6 +195,54 @@
     </header>
 
     <main>
+
+    <section class="panel" id="disparo" aria-labelledby="disparo-heading" style="border-top:2px solid var(--wa)">
+      <h2 id="disparo-heading"><i class="fa-brands fa-whatsapp" aria-hidden="true" style="color:var(--wa)"></i> Disparo de mensagens (click-to-chat)</h2>
+      <p class="note">
+        Envia para os <strong>contatos cadastrados</strong> (tabela <code class="mono">liderancas_rj</code> da sua unidade) por <strong>wa.me</strong>:
+        a mensagem abre já preenchida no WhatsApp e você confirma o envio. Sem token, sem risco de banimento.
+      </p>
+      <p class="note warn">
+        Envio assistido (você no controle). Respeite <strong>opt-in</strong>, LGPD e a legislação eleitoral. Disparo automático em massa exige backend + Cloud API (a fazer após a migração Locaweb).
+      </p>
+
+      <label class="field" style="margin-top:.5rem">Mensagem (use campos: <code class="mono">{{nome}}</code>, <code class="mono">{{primeiro_nome}}</code>, <code class="mono">{{partido}}</code>)
+        <textarea id="waMensagem" placeholder="Olá {{primeiro_nome}}, tudo bem? Passando para convidar você para..."></textarea>
+      </label>
+
+      <p id="waDispStatus" role="status" style="font-size:.88rem;margin:.6rem 0"></p>
+
+      <div class="actions" style="margin-top:.4rem;padding-top:.4rem">
+        <button type="button" class="btn btn-ghost" id="btnWaCarregar"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Recarregar contatos</button>
+        <button type="button" class="btn btn-wa" id="btnWaIniciar"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Iniciar disparo dos selecionados</button>
+      </div>
+
+      <div class="table-wrap" style="margin-top:1rem;max-height:360px">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:2.5rem"><input type="checkbox" id="waSelTodos" checked aria-label="Selecionar todos" /></th>
+              <th>Contato</th>
+              <th>Telefone</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="waContatosBody">
+            <tr><td colspan="4" class="muted" style="text-align:center;padding:1rem">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="waFilaBox" hidden style="margin-top:1rem;padding:1rem;border:1px solid var(--wa);border-radius:10px;background:rgba(37,211,102,0.06)">
+        <p id="waFilaInfo" style="margin:0 0 .75rem"></p>
+        <div class="actions" style="margin:0;padding:0;border:none">
+          <a class="btn btn-wa" id="waFilaAbrir" target="_blank" rel="noopener" href="#"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Abrir conversa</a>
+          <button type="button" class="btn btn-primary" id="waFilaProximo" disabled>Marcar enviado → próximo</button>
+          <button type="button" class="btn btn-ghost" id="waFilaCancelar">Encerrar</button>
+        </div>
+        <p class="note" style="margin:.6rem 0 0">Abra a conversa, confira e envie no WhatsApp; depois clique em <strong>próximo</strong>.</p>
+      </div>
+    </section>
 
     <section class="panel impl-guide" id="guia-implementacao" aria-labelledby="guia-impl-heading">
       <h2 id="guia-impl-heading">Guia de implementação do serviço</h2>
@@ -621,6 +669,7 @@
 
     loadLocal();
   </script>
+  <script type="module" src="js/whatsapp-disparo.mjs"></script>
 </body>
 </html>
 

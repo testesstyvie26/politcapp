@@ -30,10 +30,12 @@
   --accent-dim:  rgba(59,130,246,0.15);
   --accent-soft: rgba(59,130,246,0.20);
   --ok:          #10b981;
-  --gold:        #d97706;
-  --gold-hi:     #f59e0b;
-  --gold-dim:    rgba(245,158,11,0.15);
+  --gold:        #b8801f;
+  --gold-hi:     #c79235;
+  --gold-dim:    rgba(199,146,53,0.14);
   --danger:      #ef4444;
+  --wa:          #25d366;   /* verde WhatsApp */
+  --warn:        #c79235;
 
   /* Estrutura */
   --radius:    12px;
@@ -45,8 +47,7 @@
   --shadow-soft: 0 8px 32px rgba(0,0,0,0.42);
 
   /* Cores extra */
-  --warn:    #f59e0b;
-  --caution: #f59e0b;
+  --caution: #c79235;
   --bad:     #ef4444;
   --risk:    #ef4444;
   --mint:    #10b981;
@@ -121,9 +122,10 @@ html body h1 {
   letter-spacing: -.035em !important;
   line-height: 1.15 !important;
   margin: 0 0 .4rem !important;
-  background: linear-gradient(120deg, #f0f6ff 0%, #93c5fd 45%, var(--gold-hi) 100%) !important;
-  -webkit-background-clip: text !important; background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
+  /* Sóbrio: branco institucional sólido, sem gradiente chamativo */
+  color: #f3f7fd !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
 }
 html body h2 {
   font-size: clamp(1.05rem, 2vw, 1.25rem) !important;
@@ -153,23 +155,23 @@ html body header a { color: var(--accent) !important; }
 html body .panel {
   position: relative !important;
   background: var(--surface) !important;
-  border: 1px solid rgba(255,255,255,0.07) !important;
-  border-top: 1px solid rgba(59,130,246,0.18) !important;
-  border-left: 3px solid var(--gold-hi) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-top: 1px solid rgba(255,255,255,0.10) !important;
+  /* Acento esquerdo discreto (1px), não a barra dourada larga */
+  border-left: 1px solid rgba(255,255,255,0.08) !important;
   border-radius: var(--radius) !important;
   padding: 1.35rem 1.4rem !important;
   margin-bottom: 1.5rem !important;
   box-shadow:
     var(--shadow-sm),
-    0 0 0 1px rgba(255,255,255,0.03) inset !important;
-  backdrop-filter: blur(20px) saturate(1.2) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
+    0 0 0 1px rgba(255,255,255,0.02) inset !important;
+  backdrop-filter: blur(16px) saturate(1.05) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.05) !important;
   transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease !important;
 }
 html body .panel:hover {
-  border-color: rgba(59,130,246,0.22) !important;
-  border-left-color: var(--gold-hi) !important;
-  box-shadow: var(--shadow), 0 0 40px rgba(37,99,235,0.10) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 html body .panel h2 {
   font-size: 1.05rem !important;
@@ -257,6 +259,15 @@ html body button:not(.politapp-nav-toggle):not(.politapp-brand):hover {
   filter: brightness(1.10) !important;
   box-shadow: 0 4px 20px rgba(59,130,246,0.35) !important;
 }
+/* Botões WhatsApp (verde) — especificidade ≥ regra global de botão */
+html body button.btn-wa:not(.secondary):not(.btn-ghost),
+html body a.btn-wa {
+  background: var(--wa) !important;
+  color: #04210f !important;
+  border: none !important;
+}
+html body button.btn-wa:hover,
+html body a.btn-wa:hover { filter: brightness(1.06) !important; box-shadow: 0 4px 20px rgba(37,211,102,0.30) !important; }
 html body button.secondary {
   background: rgba(255,255,255,0.06) !important;
   color: var(--text) !important;
