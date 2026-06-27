@@ -281,6 +281,28 @@ html body label {
   color: var(--muted) !important;
 }
 
+/* Rótulos de checkbox/radio (filtros): frases longas — texto legível,
+   sem caixa-alta/minúsculo herdado da regra de label acima.
+   Fundo dos filtros é escuro, então o texto precisa ser CLARO. */
+html body label:has(input[type="checkbox"]),
+html body label:has(input[type="radio"]),
+html body .check-line,
+html body .checklist label,
+html body .crm-filters label {
+  font-size: .9rem !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  color: var(--text) !important;
+  line-height: 1.5 !important;
+}
+html body label:has(input[type="checkbox"]) strong,
+html body label:has(input[type="radio"]) strong,
+html body .check-line strong {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
 /* ══════════════════════════════════════════════════
    UTILITÁRIOS
    ══════════════════════════════════════════════════ */
