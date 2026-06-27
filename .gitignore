@@ -13,3 +13,6 @@ tmp-pc-org.zip
 
 # Auth PHP — segredos locais
 php/config.php
+
+# Config local do Claude Code
+.claude/
