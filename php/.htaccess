@@ -1,0 +1,7 @@
+# Protege o config.php (segredos) de acesso via web.
+<Files "config.php">
+  Require all denied
+</Files>
+<FilesMatch "\.(example\.php)$">
+  Require all denied
+</FilesMatch>
