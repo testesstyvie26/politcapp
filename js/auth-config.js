@@ -10,13 +10,24 @@
   window.POLITAPP_SUPABASE_URL = "https://koqkdqrcuplhtjggvora.supabase.co";
   window.POLITAPP_SUPABASE_ANON_KEY = "sb_publishable_V5zHA8tmZs2KHWlbVU9nig_fAQkBbrV";
 
-  /* ── Provedor de autenticação ──────────────────────────────────────────
-   * "supabase" (padrão, em produção hoje) ou "locaweb" (auth próprio em PHP).
-   * Troque para "locaweb" quando o backend PHP estiver no ar.            */
-  window.POLITAPP_AUTH_PROVIDER = "supabase";
+  /* ── Provedor de autenticação (detecção automática por host) ───────────
+   * Na Locaweb (cmbusinesstoken.com/politicapp) usa o auth próprio em PHP.
+   * Em qualquer outro host (politcapp.com.br / GitHub Pages / localhost)
+   * mantém o Supabase. Assim o mesmo repositório serve os dois durante a
+   * migração, sem quebrar nada.
+   * Para forçar manualmente, defina window.POLITAPP_AUTH_PROVIDER antes
+   * de carregar este arquivo.                                            */
+  var host = location.hostname || "";
+  var naLocaweb =
+    /(^|\.)cmbusinesstoken\.com$/i.test(host) ||
+    /hospedagemdesites\.ws$/i.test(host);
 
-  /* Base (origin) do backend PHP da Locaweb. Vazio = mesmo domínio.
-   * Cross-origin (front no GitHub Pages, PHP na Locaweb): informe a origem,
-   * ex.: "https://app.politcapp.com.br" (sem barra no fim).               */
-  window.POLITAPP_AUTH_BASE = "";
+  if (naLocaweb) {
+    window.POLITAPP_AUTH_PROVIDER = "locaweb";
+    // App em subpasta /politicapp → base same-origin com esse prefixo.
+    window.POLITAPP_AUTH_BASE = "https://cmbusinesstoken.com/politicapp/php/";
+  } else {
+    window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "supabase";
+    window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE || "";
+  }
 })();

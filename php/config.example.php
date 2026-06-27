@@ -26,6 +26,8 @@ return [
   // Origens autorizadas a chamar a API (CORS). Liste os domínios do front.
   // Cross-origin com cookies exige a origem EXATA aqui (não use '*').
   'allowed_origins' => [
+    'https://cmbusinesstoken.com',
+    'https://www.cmbusinesstoken.com',
     'https://politcapp.com.br',
     'https://www.politcapp.com.br',
     'https://testesstyvie26.github.io',
@@ -34,7 +36,8 @@ return [
   'google' => [
     'client_id'     => getenv('GOOGLE_CLIENT_ID') ?: '',
     'client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '',
-    'redirect_uri'  => getenv('GOOGLE_REDIRECT_URI') ?: 'https://politcapp.com.br/auth/google-callback.php',
+    // Registre esta URL EXATA no Google Cloud Console (Authorized redirect URIs).
+    'redirect_uri'  => getenv('GOOGLE_REDIRECT_URI') ?: 'https://cmbusinesstoken.com/politicapp/auth/google-callback.php',
   ],
   'otp' => [
     'ttl_minutes'    => 10,
@@ -42,5 +45,5 @@ return [
     'max_tentativas' => 5,
   ],
   // Front a redirecionar após login bem-sucedido
-  'app_url' => getenv('APP_URL') ?: 'https://politcapp.com.br/index.html',
+  'app_url' => getenv('APP_URL') ?: 'https://cmbusinesstoken.com/politicapp/index.html',
 ];
