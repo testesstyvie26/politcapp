@@ -4,15 +4,12 @@
  */
 import { lwMe, lwLogout } from "./locaweb-auth.js?v=27";
 
-const LOGIN_PAGE = "login-locaweb.html";
+// Home da área NÃO logada (visitante cai aqui; "Acessar o painel" leva ao login).
+const HOME_PAGE = "landing-app.html";
 
 function currentPageFile() {
   const parts = location.pathname.split("/").filter(Boolean);
   return parts.length ? parts[parts.length - 1] : "index.html";
-}
-function loginUrlWithNext() {
-  const path = (location.pathname.replace(/^\//, "") || "index.html") + location.search;
-  return LOGIN_PAGE + "?" + new URLSearchParams({ next: path }).toString();
 }
 function go(page) { window.location.replace(new URL(page, location.href).href); }
 
@@ -23,7 +20,7 @@ function attachLogout() {
   async function doLogout(e) {
     if (e) e.preventDefault();
     try { await lwLogout(); } catch {}
-    window.location.replace(new URL(LOGIN_PAGE, location.href).href);
+    window.location.replace(new URL(HOME_PAGE, location.href).href);
   }
   window.politappLogout = doLogout;
   document.querySelectorAll("[data-politapp-logout], #btnLogout, .politapp-logout").forEach((el) => {
@@ -39,7 +36,7 @@ export async function runLocawebGuard(resolve, reject) {
   document.documentElement.classList.add("auth-pending");
   try {
     const r = await lwMe();
-    if (!r || !r.ok || !r.autenticado) { window.location.replace(loginUrlWithNext()); return; }
+    if (!r || !r.ok || !r.autenticado) { go(HOME_PAGE); return; }
 
     const profile = r.profile || null;
 
@@ -55,6 +52,6 @@ export async function runLocawebGuard(resolve, reject) {
     console.error("[politapp] locaweb-auth-guard:", e);
     document.documentElement.classList.remove("auth-pending");
     reject(e);
-    try { window.location.replace(loginUrlWithNext()); } catch {}
+    try { go(HOME_PAGE); } catch {}
   }
 }
