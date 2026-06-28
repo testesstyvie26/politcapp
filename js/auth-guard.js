@@ -64,7 +64,7 @@ function isRecusadaPage() {
 
   /* Despacho para o auth Locaweb (PHP), se configurado. */
   if ((window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb") {
-    const { runLocawebGuard } = await import("./locaweb-auth-guard.js");
+    const { runLocawebGuard } = await import("./locaweb-auth-guard.js?v=2");
     return runLocawebGuard(resolveReady, rejectReady);
   }
 

@@ -2,7 +2,7 @@
  * Guard do auth Locaweb (PHP). Chamado por auth-guard.js quando
  * window.POLITAPP_AUTH_PROVIDER === "locaweb". Não importa nada do Supabase.
  */
-import { lwMe, lwLogout } from "./locaweb-auth.js";
+import { lwMe, lwLogout } from "./locaweb-auth.js?v=2";
 
 const LOGIN_PAGE = "login-locaweb.html";
 
