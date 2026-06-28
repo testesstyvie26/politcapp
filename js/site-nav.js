@@ -9,6 +9,16 @@
   if (!nav) return;
   if (nav.closest('.pn-topbar')) return;
 
+  /* ── Botão "Sair" (oculto; o guard revela e liga quando logado) ── */
+  if (!nav.querySelector('.pn-logout')) {
+    const sair = Object.assign(document.createElement('a'), {
+      href: '#', className: 'pn-logout', textContent: 'Sair',
+    });
+    sair.setAttribute('data-politapp-logout', '');
+    sair.hidden = true;
+    nav.appendChild(sair);
+  }
+
   /* ── Brand ─────────────────────────────────────── */
   const brand = Object.assign(document.createElement('a'), {
     href: 'index.html',

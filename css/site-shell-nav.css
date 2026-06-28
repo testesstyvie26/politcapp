@@ -451,6 +451,14 @@ body:not(.pn-has-topbar) nav.site-nav[aria-label] a[aria-current="page"] {
   }
 }
 
+/* Botão "Sair" no menu — leve tom de saída */
+nav.site-nav > a.pn-logout { color: #f0a8a8 !important; cursor: pointer; }
+nav.site-nav > a.pn-logout:hover {
+  color: #fff !important;
+  background: rgba(239,68,68,0.16) !important;
+  border-color: rgba(239,68,68,0.35) !important;
+}
+
 /* Compatibilidade com seletores antigos */
 .politapp-topbar  { display: none; }
 .politapp-nav-drawer { display: none; }

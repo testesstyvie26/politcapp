@@ -64,14 +64,14 @@ function isRecusadaPage() {
 
   /* Despacho para o auth Locaweb (PHP), se configurado. */
   if ((window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb") {
-    const { runLocawebGuard } = await import("./locaweb-auth-guard.js?v=27");
+    const { runLocawebGuard } = await import("./locaweb-auth-guard.js?v=28");
     return runLocawebGuard(resolveReady, rejectReady);
   }
 
   /* Supabase: importa as dependências só neste modo. */
-  const { getSupabase, isAuthConfigured } = await import("./auth-client.js?v=27");
-  const { profileAllowsAppAccess, isContaRejeitada } = await import("./org-api.js?v=27");
-  const { attachPolitappLogoutButton } = await import("./logout-ui.js?v=27");
+  const { getSupabase, isAuthConfigured } = await import("./auth-client.js?v=28");
+  const { profileAllowsAppAccess, isContaRejeitada } = await import("./org-api.js?v=28");
+  const { attachPolitappLogoutButton } = await import("./logout-ui.js?v=28");
 
   document.documentElement.classList.add("auth-pending");
 
