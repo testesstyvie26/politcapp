@@ -3,6 +3,6 @@
 # Formato típico: https://politapp-portal-transparencia-proxy.<subconta-da-conta>.workers.dev
 # Não inventar "politcapp.workers.dev" — a subconta vem da tua conta Cloudflare, não do domínio do site.
 
-name = "politapp-portal-transparencia-proxy"
+name = "politcapp"
 main = "workers/portal-transparencia-proxy.js"
 compatibility_date = "2024-10-01"
