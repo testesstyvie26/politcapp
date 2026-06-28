@@ -1000,8 +1000,8 @@
             );
             orfaos.sort((a, b) => (b.vap || 0) - (a.vap || 0));
             if (orfaos.length) {
-              el("painelSuplentes").hidden = false;
-              el("painelSuplentes").innerHTML = renderOrfaosTseTable(orfaos, ufFiltro);
+              orfaosCtx = { rows: orfaos, uf: ufFiltro, page: 1 };
+              renderSuplentesPanel();
             }
           } catch (se) {
             console.warn(se);
