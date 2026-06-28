@@ -1,20 +1,66 @@
-import { requireAdmin } from "./admin-guard.js";
+/**
+ * Aprovações de conta. Provider-aware:
+ *   locaweb  → API PHP (php/api/admin-*.php)
+ *   supabase → fluxo antigo (Supabase), carregado dinamicamente
+ */
 import { grupoLabel } from "./org-api.js";
 
 const tbody = document.getElementById("tbody");
 const errEl = document.getElementById("err");
 
-function showErr(msg) {
-  if (!errEl) return;
-  errEl.textContent = msg || "";
-  errEl.hidden = !msg;
+function showErr(msg) { if (errEl) { errEl.textContent = msg || ""; errEl.hidden = !msg; } }
+function escapeHtml(s) {
+  return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-(async function init() {
+function renderRows(rows, onAct) {
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="4" class="empty">Nenhum pedido pendente.</td></tr>`; return; }
+  tbody.innerHTML = rows.map((row) => {
+    const em = (row.email || "").trim() || "—";
+    return `<tr data-id="${row.id}">
+      <td>${escapeHtml(em)}</td>
+      <td>${escapeHtml(grupoLabel(row.grupo))}</td>
+      <td>${escapeHtml(row.unidade_nome || "—")}</td>
+      <td class="actions">
+        <button type="button" class="btn-ok" data-act="ok">Aprovar</button>
+        <button type="button" class="btn-bad" data-act="no">Recusar</button>
+      </td>
+    </tr>`;
+  }).join("");
+  tbody.querySelectorAll("button[data-act]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const tr = btn.closest("tr");
+      const id = tr?.getAttribute("data-id");
+      if (!id) return;
+      btn.disabled = true;
+      await onAct(id, btn.getAttribute("data-act") === "ok" ? "aprovado" : "rejeitado");
+      btn.disabled = false;
+    });
+  });
+}
+
+/* ── Locaweb (PHP) ──────────────────────────────────────────────────────── */
+async function initLocaweb() {
+  const { dget, dpost } = await import("./locaweb-data.js?v=1");
+  async function load() {
+    showErr("");
+    const r = await dget("api/admin-pendentes.php");
+    if (!r.ok) { showErr(r.erro || "Não foi possível listar pedidos."); tbody.innerHTML = `<tr><td colspan="4" class="empty">—</td></tr>`; return; }
+    renderRows(r.pendentes || [], async (id, status) => {
+      const up = await dpost("api/admin-aprovar.php", { id, status });
+      if (!up.ok) { alert(up.erro || "Erro ao atualizar."); return; }
+      load();
+    });
+  }
+  load();
+}
+
+/* ── Supabase (antigo) ──────────────────────────────────────────────────── */
+async function initSupabase() {
+  const { requireAdmin } = await import("./admin-guard.js");
   const ctx = await requireAdmin();
   if (!ctx) return;
   const { supabase } = ctx;
-
   async function load() {
     showErr("");
     const { data, error } = await supabase
@@ -22,74 +68,19 @@ function showErr(msg) {
       .select("id, email, grupo, unidade_id, conta_status, unidades ( nome )")
       .eq("conta_status", "pendente")
       .order("email", { ascending: true });
-
-    if (error) {
-      let msg = error.message || "Não foi possível listar pedidos.";
-      if (/policy|permission|RLS|42501|violates row/i.test(msg)) {
-        msg +=
-          " Verifique se o seu utilizador tem grupo admin (sql/promover-admin.sql no Supabase).";
-      }
-      showErr(msg);
-      tbody.innerHTML = `<tr><td colspan="4" class="empty">—</td></tr>`;
-      return;
-    }
-
-    if (!data?.length) {
-      tbody.innerHTML = `<tr><td colspan="4" class="empty">Nenhum pedido pendente.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = data
-      .map((row) => {
-        const un = Array.isArray(row.unidades) ? row.unidades[0] : row.unidades;
-        const unNome = un?.nome || "—";
-        const em = (row.email || "").trim() || "—";
-        return `<tr data-id="${row.id}">
-          <td>${escapeHtml(em)}</td>
-          <td>${escapeHtml(grupoLabel(row.grupo))}</td>
-          <td>${escapeHtml(unNome)}</td>
-          <td class="actions">
-            <button type="button" class="btn-ok" data-act="ok">Aprovar</button>
-            <button type="button" class="btn-bad" data-act="no">Recusar</button>
-          </td>
-        </tr>`;
-      })
-      .join("");
-
-    tbody.querySelectorAll("button[data-act]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const tr = btn.closest("tr");
-        const id = tr?.getAttribute("data-id");
-        if (!id) return;
-        const act = btn.getAttribute("data-act");
-        const nextStatus = act === "ok" ? "aprovado" : "rejeitado";
-        btn.disabled = true;
-        const { error: upErr } = await supabase
-          .from("profiles")
-          .update({ conta_status: nextStatus, updated_at: new Date().toISOString() })
-          .eq("id", id);
-        btn.disabled = false;
-        if (upErr) {
-          let m = upErr.message || "Erro ao atualizar.";
-          if (/policy|permission|RLS|42501|violates row/i.test(m)) {
-            m +=
-              "\n\nSó um admin pode aprovar. Execute no Supabase o script sql/promover-admin.sql (definir grupo = admin).";
-          }
-          alert(m);
-          return;
-        }
-        load();
-      });
+    if (error) { showErr(error.message || "Não foi possível listar pedidos."); tbody.innerHTML = `<tr><td colspan="4" class="empty">—</td></tr>`; return; }
+    const rows = (data || []).map((row) => {
+      const un = Array.isArray(row.unidades) ? row.unidades[0] : row.unidades;
+      return { ...row, unidade_nome: un?.nome || "—" };
+    });
+    renderRows(rows, async (id, status) => {
+      const { error: upErr } = await supabase
+        .from("profiles").update({ conta_status: status, updated_at: new Date().toISOString() }).eq("id", id);
+      if (upErr) { alert(upErr.message || "Erro ao atualizar."); return; }
+      load();
     });
   }
-
   load();
-})();
-
-function escapeHtml(s) {
-  return String(s ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
+
+(window.POLITAPP_AUTH_PROVIDER === "locaweb" ? initLocaweb() : initSupabase());
