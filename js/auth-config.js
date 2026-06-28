@@ -18,15 +18,25 @@
    * Para forçar manualmente, defina window.POLITAPP_AUTH_PROVIDER antes
    * de carregar este arquivo.                                            */
   var host = location.hostname || "";
+  // Locaweb (mesmo domínio do PHP): cmbusinesstoken.com/politicapp
   var naLocaweb =
     /(^|\.)cmbusinesstoken\.com$/i.test(host) ||
     /hospedagemdesites\.ws$/i.test(host);
+  // Front cross-origin (GitHub Pages) que usa o PHP da Locaweb por token
+  var crossOrigin =
+    /(^|\.)politcapp\.com\.br$/i.test(host) ||
+    /\.github\.io$/i.test(host);
 
   if (naLocaweb) {
     window.POLITAPP_AUTH_PROVIDER = "locaweb";
-    // App em subpasta /politicapp → base same-origin com esse prefixo.
-    window.POLITAPP_AUTH_BASE = "https://cmbusinesstoken.com/politicapp/php/";
+    // mesmo domínio: PHP em /politicapp/php/
+    window.POLITAPP_AUTH_BASE = location.origin + "/politicapp/php";
+  } else if (crossOrigin) {
+    // front no GitHub Pages → PHP na Locaweb (auth por token Bearer)
+    window.POLITAPP_AUTH_PROVIDER = "locaweb";
+    window.POLITAPP_AUTH_BASE = "https://cmbusinesstoken.com/politicapp/php";
   } else {
+    // localhost / outros: Supabase (não há PHP local)
     window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "supabase";
     window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE || "";
   }

@@ -20,5 +20,5 @@ $userId = $u['id'] ?? pa_create_user(['telefone' => $tel, 'telefone_verificado' 
 if ($u && !$u['telefone_verificado']) {
   pa_db()->prepare("UPDATE auth_users SET telefone_verificado = NOW() WHERE id = ?")->execute([$userId]);
 }
-pa_start_session($userId, $ua, $ip);
-pa_json(['ok' => true, 'user_id' => $userId]);
+$tok = pa_start_session($userId, $ua, $ip);
+pa_json(['ok' => true, 'user_id' => $userId, 'token' => $tok]);

@@ -129,7 +129,7 @@
 
   <script src="js/auth-config.js" data-cfasync="false"></script>
   <script type="module">
-    import { lwLogin, lwRegister, lwPhoneRequest, lwPhoneVerify, lwGoogleStartUrl, lwMe }
+    import { lwLogin, lwRegister, lwPhoneRequest, lwPhoneVerify, lwGoogleStartUrl, lwMe, lwCaptureTokenFromHash }
       from "./js/locaweb-auth.js";
 
     const $ = (id) => document.getElementById(id);
@@ -138,6 +138,9 @@
     const goNext = () => window.location.replace(new URL(next, location.href).href);
 
     function msg(el, txt, kind) { el.textContent = txt || ""; el.className = "auth-msg" + (kind ? " " + kind : ""); }
+
+    // retorno do Google: captura o token do fragmento (#token=...) antes de tudo
+    lwCaptureTokenFromHash();
 
     // já logado? vai direto
     lwMe().then((r) => { if (r && r.ok && r.autenticado) goNext(); }).catch(() => {});

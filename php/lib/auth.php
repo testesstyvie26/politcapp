@@ -25,7 +25,7 @@ function pa_cors(): void {
     header('Vary: Origin');
   }
   header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-  header('Access-Control-Allow-Headers: Content-Type');
+  header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
   // preflight
   if ($metodo === 'OPTIONS') { http_response_code(204); exit; }
@@ -140,9 +140,21 @@ function pa_start_session(string $userId, ?string $ua, ?string $ip): string {
   return $token;
 }
 
+/** Lê o token Bearer do header Authorization (para auth cross-origin sem cookie). */
+function pa_bearer_token(): string {
+  $h = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+  if (!$h && function_exists('getallheaders')) {
+    foreach (getallheaders() as $k => $v) {
+      if (strtolower($k) === 'authorization') { $h = $v; break; }
+    }
+  }
+  return preg_match('/Bearer\s+(\S+)/i', $h, $m) ? trim($m[1]) : '';
+}
+
 function pa_current_user(): ?array {
   $cfg = pa_config()['session'];
-  $token = $_COOKIE[$cfg['cookie']] ?? '';
+  // Bearer token (cross-origin) tem prioridade; senão, cookie (same-origin).
+  $token = pa_bearer_token() ?: ($_COOKIE[$cfg['cookie']] ?? '');
   if (!$token) return null;
   $hash = hash('sha256', $token);
   $st = pa_db()->prepare(
@@ -248,8 +260,8 @@ function pa_google_login(string $code, ?string $ua, ?string $ip): array {
     $db->prepare("INSERT INTO auth_identities (id, user_id, provider, provider_uid, email) VALUES (?,?, 'google', ?, ?)")
        ->execute([pa_uuid(), $userId, $sub, $email]);
   }
-  pa_start_session($userId, $ua, $ip);
-  return ['ok' => true, 'user_id' => $userId];
+  $tok = pa_start_session($userId, $ua, $ip);
+  return ['ok' => true, 'user_id' => $userId, 'token' => $tok];
 }
 
 /* ── Telefone / OTP ────────────────────────────────────────────────────── */

@@ -15,5 +15,12 @@ if (!$code || !$state || !hash_equals($esperado, $state)) {
 $r = pa_google_login($code, $_SERVER['HTTP_USER_AGENT'] ?? null, $_SERVER['REMOTE_ADDR'] ?? null);
 if (!$r['ok']) pa_json($r, 401);
 
-header('Location: ' . pa_config()['app_url']);
+// Para onde voltar: front cross-origin (se informado e autorizado) ou app_url.
+$dest = $_SESSION['google_return'] ?? pa_config()['app_url'];
+unset($_SESSION['google_return']);
+
+// Entrega o token no fragmento (#) — o front guarda no localStorage.
+// (Fragmento não vai ao servidor; melhor que query para não cair em logs.)
+$sep = (strpos($dest, '#') === false) ? '#' : '&';
+header('Location: ' . $dest . $sep . 'token=' . urlencode($r['token']));
 exit;

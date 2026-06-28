@@ -18,5 +18,5 @@ $id = pa_create_user([
   'nome'       => $nome ?: null,
   'status'     => 'ativo',
 ]);
-pa_start_session($id, $_SERVER['HTTP_USER_AGENT'] ?? null, $_SERVER['REMOTE_ADDR'] ?? null);
-pa_json(['ok' => true, 'user_id' => $id]);
+$tok = pa_start_session($id, $_SERVER['HTTP_USER_AGENT'] ?? null, $_SERVER['REMOTE_ADDR'] ?? null);
+pa_json(['ok' => true, 'user_id' => $id, 'token' => $tok]);

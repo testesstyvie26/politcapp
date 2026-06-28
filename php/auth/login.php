@@ -20,5 +20,5 @@ if (!$u || !$u['senha_hash'] || !password_verify($senha, $u['senha_hash'])) {
 if ($u['status'] === 'bloqueado') pa_json(['ok' => false, 'erro' => 'conta bloqueada'], 403);
 
 pa_record_attempt($email, $ip, true);
-pa_start_session($u['id'], $ua, $ip);
-pa_json(['ok' => true, 'user_id' => $u['id']]);
+$tok = pa_start_session($u['id'], $ua, $ip);
+pa_json(['ok' => true, 'user_id' => $u['id'], 'token' => $tok]);
