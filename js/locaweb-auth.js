@@ -15,16 +15,23 @@ function base() { return (window.POLITAPP_AUTH_BASE || "").replace(/\/$/, ""); }
 function url(rel) { return base() + "/" + rel.replace(/^\//, ""); }
 
 async function api(rel, { method = "GET", body = null } = {}) {
-  const opts = { method, credentials: "include", headers: {} };
+  // IMPORTANTE: requisição "simples" (sem header Authorization e sem
+  // Content-Type application/json) para NÃO disparar preflight CORS — o
+  // Cloudflare do site bloqueia OPTIONS. O token vai por _token (query/corpo)
+  // e o corpo é enviado como texto puro (o PHP lê php://input mesmo assim).
   const tok = lwGetToken();
-  if (tok) opts.headers["Authorization"] = "Bearer " + tok;
-  if (body != null) {
-    opts.headers["Content-Type"] = "application/json";
-    opts.body = JSON.stringify(body);
+  let path = rel;
+  const opts = { method, credentials: "include" };
+  if (method === "GET") {
+    if (tok) path += (path.includes("?") ? "&" : "?") + "_token=" + encodeURIComponent(tok);
+  } else {
+    const payload = Object.assign({}, body || {});
+    if (tok) payload._token = tok;
+    opts.body = JSON.stringify(payload); // fetch define Content-Type: text/plain
   }
   let res, data;
   try {
-    res = await fetch(url(rel), opts);
+    res = await fetch(url(path), opts);
   } catch (e) {
     return { ok: false, erro: "rede indisponível (verifique a URL do backend / CORS)" };
   }

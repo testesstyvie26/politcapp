@@ -49,10 +49,12 @@ function pa_json($data, int $code = 200): void {
   exit;
 }
 function pa_input(): array {
+  static $cache = null;
+  if ($cache !== null) return $cache;
   $raw = file_get_contents('php://input');
   $j = json_decode($raw, true);
-  if (is_array($j)) return $j;
-  return $_POST ?: [];
+  $cache = is_array($j) ? $j : ($_POST ?: []);
+  return $cache;
 }
 function pa_uuid(): string {
   $d = random_bytes(16);
@@ -151,10 +153,20 @@ function pa_bearer_token(): string {
   return preg_match('/Bearer\s+(\S+)/i', $h, $m) ? trim($m[1]) : '';
 }
 
+/** Token da requisição: header Bearer, ou _token na query/corpo (evita preflight CORS). */
+function pa_request_token(): string {
+  $t = pa_bearer_token();
+  if ($t !== '') return $t;
+  if (!empty($_GET['_token'])) return trim((string)$_GET['_token']);
+  $in = pa_input();
+  if (!empty($in['_token'])) return trim((string)$in['_token']);
+  return '';
+}
+
 function pa_current_user(): ?array {
   $cfg = pa_config()['session'];
-  // Bearer token (cross-origin) tem prioridade; senão, cookie (same-origin).
-  $token = pa_bearer_token() ?: ($_COOKIE[$cfg['cookie']] ?? '');
+  // token (cross-origin) tem prioridade; senão, cookie (same-origin).
+  $token = pa_request_token() ?: ($_COOKIE[$cfg['cookie']] ?? '');
   if (!$token) return null;
   $hash = hash('sha256', $token);
   $st = pa_db()->prepare(
