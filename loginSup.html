@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Em hosts com auth Locaweb (PHP), usa o login novo. Redireciona cedo, sem flash. -->
+  <script data-cfasync="false">
+    (function () {
+      var h = location.hostname || "";
+      if (/(^|\.)cmbusinesstoken\.com$/i.test(h) || /hospedagemdesites\.ws$/i.test(h) ||
+          /(^|\.)politcapp\.com\.br$/i.test(h) || /\.github\.io$/i.test(h)) {
+        location.replace("login-locaweb.html" + (location.search || ""));
+      }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Politapp — inteligência eleitoral em tempo real: análise por seção, estratégia territorial e decisão com dados. Tecnologia web com APIs públicas e governança de acesso. Entrada com Google após conformidade da conta." />
+  <title>Politapp — Acesso ao painel</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=18" />
+  <style>
+    html { scroll-behavior: smooth; }
+    .login-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 100% 80% at 10% -10%, rgba(77, 142, 247, 0.22), transparent 50%),
+        radial-gradient(ellipse 80% 60% at 100% 30%, rgba(52, 211, 153, 0.08), transparent 45%),
+        linear-gradient(180deg, #060c18 0%, #030609 100%);
+      pointer-events: none;
+    }
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 2.5rem;
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .brand:hover { color: var(--accent); }
+    nav
+    nav
+    nav
+    nav
+
+    .login-grid {
+      display: grid;
+      gap: 2rem;
+      align-items: start;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 960px) {
+      .login-grid { grid-template-columns: 1.05fr 0.95fr; gap: 2.75rem; }
+    }
+
+    .hero .pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--gold);
+      margin-bottom: 0.65rem;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.28rem, 3.9vw, 2.06rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      margin: 0 0 0.85rem;
+      line-height: 1.17;
+      max-width: 36ch;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-kicker {
+      margin: 0 0 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .value-trio {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 1.1rem;
+    }
+    @media (min-width: 620px) {
+      .value-trio { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    }
+    .value-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.82rem 0.92rem;
+    }
+    .value-q {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gold);
+      margin-bottom: 0.32rem;
+    }
+    .value-card p {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+    .value-card p strong { color: var(--text); font-weight: 600; }
+
+    .strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1.1rem;
+      padding: 0.85rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.805rem;
+      color: var(--muted);
+      max-width: fit-content;
+      margin-bottom: 0.85rem;
+    }
+    .strip strong { color: var(--text); font-weight: 600; }
+
+    .tech-note {
+      margin: 0 0 1.05rem;
+      font-size: 0.815rem;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.5;
+    }
+    .tech-note a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .tech-note a:hover { text-decoration: underline; }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.52rem 0.92rem;
+      border-radius: 999px;
+      font-size: 0.845rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: background 0.15s ease, filter 0.15s ease, color 0.15s ease;
+    }
+    .pill-btn.ghost {
+      background: transparent;
+      color: var(--muted);
+    }
+    .pill-btn.ghost:hover {
+      color: var(--text);
+      background: var(--accent-soft);
+      border-color: rgba(77, 142, 247, 0.35);
+    }
+    .pill-btn.primary-soft {
+      background: var(--accent-soft);
+      color: var(--text);
+      border-color: rgba(77, 142, 247, 0.4);
+    }
+    .pill-btn.primary-soft:hover { filter: brightness(1.07); }
+
+    .proof-panel {
+      padding: 1rem 1.05rem;
+      background: rgba(77, 142, 247, 0.07);
+      border: 1px solid rgba(77, 142, 247, 0.24);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+    .proof-title {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin: 0 0 0.7rem;
+    }
+    .proof-grid {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 520px) {
+      .proof-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .proof-chip {
+      display: flex;
+      gap: 0.55rem;
+      align-items: flex-start;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.38;
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 8px;
+      padding: 0.48rem 0.62rem;
+      border: 1px solid var(--border);
+    }
+    .proof-chip strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.05rem;
+    }
+    .proof-chip .proof-num {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .security-block {
+      margin-top: 0.25rem;
+      padding: 0.88rem 1rem;
+      background: var(--mint);
+      border: 1px solid rgba(52, 211, 153, 0.22);
+      border-radius: var(--radius-sm);
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+    .security-block summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+    }
+    .security-block[open] summary { margin-bottom: 0.45rem; }
+    .security-block ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.1rem;
+    }
+    .security-block li { margin-bottom: 0.38rem; }
+    .security-block .legal-mini {
+      margin-top: 0.7rem;
+      font-size: 0.8rem;
+    }
+    .security-block a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .security-block a:hover { text-decoration: underline; }
+
+    .footnote-public {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      max-width: 52ch;
+      line-height: 1.5;
+    }
+    .footnote-public a { color: var(--accent); font-weight: 600; }
+
+    #bloco-acesso { scroll-margin-top: 1.5rem; }
+
+    .card-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.35rem 1.65rem;
+      backdrop-filter: blur(8px);
+    }
+    .card-form h2 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      margin: 0 0 0.35rem;
+    }
+    .card-form .sub {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0 0 1.1rem;
+    }
+    .card-form .sub a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .card-form .sub a:hover { text-decoration: underline; }
+
+    .tabs {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.15rem;
+      padding: 0.2rem;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .tabs button {
+      flex: 1;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.55rem 0.75rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+    }
+    .tabs button[aria-selected="true"] {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+    .tabs button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .tab-panel[hidden] { display: none !important; }
+    .tab-panel p.hint {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin: 0 0 1rem;
+    }
+
+    .btn-google {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      transition: filter 0.15s ease;
+    }
+    .btn-google:hover { filter: brightness(1.03); }
+    .btn-google:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .error {
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fecaca;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+    }
+    .error[hidden] { display: none !important; }
+
+    details.dev-hint {
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    details.dev-hint summary { cursor: pointer; font-weight: 600; color: var(--text); }
+    details.dev-hint code {
+      font-size: 0.78rem;
+      background: var(--surface2);
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .politapp-skip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10000;
+      padding: 0.5rem 1rem;
+      font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
+      background: var(--accent);
+      color: #0a0d12;
+      border: none;
+      border-radius: 0 0 10px 0;
+      text-decoration: none;
+      transform: translateY(-130%);
+      transition: transform 0.18s ease;
+    }
+    .politapp-skip:focus {
+      transform: translateY(0);
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+    }
+    .politapp-skip:focus:not(:focus-visible) { outline: none; }
+
+    .site-credit {
+      margin-top: 2.75rem;
+      padding-top: 1.35rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.79rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .site-credit a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .site-credit a:hover { text-decoration: underline; }
+    .site-credit .sep { margin: 0 0.35rem; opacity: 0.6; }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/site-theme.css?v=19" />
+  <script type="module" src="js/site-bg.js?v=27"></script>
+</head>
+<body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <div class="login-bg" aria-hidden="true"></div>
+  <div class="page">
+    <header class="top-bar">
+      <a class="brand" href="landing-app.html">Politapp</a>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <a href="landing-app.html">Página Politapp</a>
+        <a href="landing-publico.html">Solicitar acesso</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="termos-uso.html">Termos</a>
+        <a href="login.html?next=guia-uso.html">Guia</a>
+        <a href="login.html" aria-current="page">Entrar</a>
+      </nav>
+    </header>
+
+    <main id="politapp-main" class="login-grid" tabindex="-1">
+      <section class="hero" aria-labelledby="auth-hero-title">
+        <p class="pill">Inteligência · tecnologia · território</p>
+        <h1 id="auth-hero-title">
+          Inteligência eleitoral em tempo real para campanhas que querem <em>vencer</em> —
+          análise de votos por seção, estratégia territorial e decisão baseada em dados.
+        </h1>
+        <p class="hero-kicker">Os três eixos primeiro — antes de recurso técnico</p>
+
+        <div class="value-trio">
+          <article class="value-card">
+            <span class="value-q">?? Para quem é?</span>
+            <p>
+              <strong>Direção de campanha, coordenação territorial e equipes de dados</strong>
+              que precisam ler urna e geografia no mesmo quadro — na hora da decisão, não depois da reunião.
+            </p>
+          </article>
+          <article class="value-card">
+            <span class="value-q">?? Como me ajuda?</span>
+            <p>
+              Dados públicos <strong>espalhados em vários portais</strong>; a equipe cruza TSE, Câmara e recortes locais
+              <strong>sem uma visão única</strong> para priorizar onde atuar ou o que comunicar.
+            </p>
+          </article>
+          <article class="value-card">
+            <span class="value-q">?? Qual resultado entrega?</span>
+            <p>
+              <strong>Leitura por seção e região</strong>, cenários territoriais comparáveis e painéis escuros pensados
+              para <strong>decisão rápida</strong> com arquivos e APIs oficiais — menos achismo, mais dado no mesmo lugar.
+            </p>
+          </article>
+        </div>
+
+        <div class="cta-row" aria-label="Ações rápidas">
+          <a class="pill-btn ghost" href="landing-app.html">Conhecer o produto</a>
+          <a class="pill-btn primary-soft" href="#bloco-acesso">Testar · entrar</a>
+          <a class="pill-btn ghost" href="landing-publico.html">Solicitar acesso</a>
+        </div>
+
+        <div class="strip" role="note">
+          <span><strong>Dados &amp; stack:</strong></span>
+          <span>TSE</span>
+          <span>·</span>
+          <span>Câmara (API aberta)</span>
+          <span>·</span>
+          <span>Web + governança de acesso</span>
+        </div>
+        <p class="tech-note">
+          Arquitetura em <strong>web modular</strong>; sessão com <strong>OAuth Google</strong> e <strong>aprovação administrativa</strong>.
+          Conformidade: <a href="privacidade.html">privacidade</a> ·
+          <a href="termos-uso.html">termos</a>.
+        </p>
+
+        <div class="proof-panel" aria-label="Inteligência e tecnologia no produto">
+          <p class="proof-title">Inteligência &amp; tecnologia · por que existe engenharia</p>
+          <div class="proof-grid">
+            <div class="proof-chip">
+              <span class="proof-num" aria-hidden="true">01</span>
+              <div>
+                <strong>Geointeligência eleitoral</strong>
+                Zona e seção como primeira classe: comparar comportamento territorial e orientar recurso onde a urna pesa mais.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-num" aria-hidden="true">02</span>
+              <div>
+                <strong>Pipeline de dados públicos</strong>
+                Junção no mesmo frontend de <strong>APIs abertas e arquivos oficiais</strong> (Câmara, divulgação TSE, etc.) — menos retrabalho de planilha.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-num" aria-hidden="true">03</span>
+              <div>
+                <strong>Painéis para decidir rápido</strong>
+                UI escura tipo dashboard, pronta para <strong>indicadores e camadas RJ</strong> quando ativadas no seu ambiente.
+              </div>
+            </div>
+            <div class="proof-chip">
+              <span class="proof-num" aria-hidden="true">04</span>
+              <div>
+                <strong>Camada zero-trust institucional</strong>
+                Tráfego em <strong>HTTPS</strong>, conta com revisão administrativa e trilhos de perfil para <strong>menor circulação de briefing sensível</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <details class="security-block">
+          <summary>Segurança da informação aplicada à política</summary>
+          <p style="margin:0.45rem 0 0;line-height:1.5;font-size:.84rem">
+            Posicionamos o produto onde poucos concorrentes fazem bem: combinar dados públicos com <strong>governança de acesso</strong> e menor risco de vazamento de estratégia.
+          </p>
+          <ul>
+            <li><strong>Orientação à LGPD:</strong> política transparente sobre credenciais, perfil e tratamento (<a href="privacidade.html">privacidade</a>).</li>
+            <li><strong>Trânsito cifrado:</strong> uso esperado em <strong>HTTPS</strong> (TLS entre browser e hospedagem) e boas-práticas de tokens via Supabase.</li>
+            <li><strong>Controle de identidade:</strong> Google OAuth; <strong>aprovação de novas contas</strong>; unidades/perfil antes de dados sensíveis operacionais.</li>
+            <li><strong>Auditoria e responsabilização:</strong> trilhos de conta e papel do admin definidos nos <a href="termos-uso.html">termos de uso</a>.</li>
+            <li><strong>Discreção estratégica:</strong> tratar mapas internos como ativos — menos superfície de copiar/colar estratégia fora da equipe aprovada.</li>
+          </ul>
+          <p class="legal-mini">
+            <a href="privacidade.html">Política de privacidade</a> ·
+            <a href="termos-uso.html">Termos</a>
+          </p>
+        </details>
+        Contato institucional
+        </section>
+
+      <section id="bloco-acesso" class="card-form" aria-labelledby="auth-form-title">
+        <h2 id="auth-form-title">Acesso ao painel</h2>
+        <p class="sub">
+          <strong>Entrar</strong> ou <strong>Cadastrar</strong> com Google — equivalente a &quot;Testar · entrar&quot;: após conformidade do administrador, você acessa os painéis e o <a href="login.html?next=guia-uso.html">guia de uso</a>.
+        </p>
+        <p id="err" class="error" hidden></p>
+
+        <div class="tabs" role="tablist" aria-label="Entrar ou cadastrar">
+          <button type="button" role="tab" id="tabLogin" aria-selected="true" aria-controls="panelLogin">Entrar</button>
+          <button type="button" role="tab" id="tabRegister" aria-selected="false" aria-controls="panelRegister" tabindex="-1">Cadastrar</button>
+        </div>
+
+        <div id="panelLogin" class="tab-panel" role="tabpanel" aria-labelledby="tabLogin">
+          <p class="hint">Já tem conta? Continue com Google para entrar.</p>
+          <button type="button" class="btn-google" id="btnLoginGoogle">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continuar com Google
+          </button>
+        </div>
+
+        <div id="panelRegister" class="tab-panel" role="tabpanel" aria-labelledby="tabRegister" hidden>
+          <p class="hint">Primeira vez? O Google cria seu cadastro na primeira autenticação.</p>
+          <button type="button" class="btn-google" id="btnRegisterGoogle">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Cadastrar com Google
+          </button>
+        </div>
+
+        <details class="dev-hint">
+          <summary>Configuração (Supabase + Google)</summary>
+          <p style="margin: 0.75rem 0 0">
+            Preencha <code>js/auth-config.js</code> (URL + chave publishable em Project Settings ? API).
+            No Supabase, em <strong>Authentication ? URL Configuration</strong>, cadastre a URL exata de <code>login.html</code>;
+            no Google Cloud, o redirect autorizado é <code>…supabase.co/auth/v1/callback</code> (não é o seu domínio).
+            Passo a passo: <code>docs/supabase-login-setup.md</code> no repositório.
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="site-credit">
+      <p>
+        <strong>Politapp</strong> — inteligência eleitoral em stack web aberto, com dados públicos e governança de acesso.
+        <span class="sep">|</span>
+        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener noreferrer">API Câmara</a>
+        <span class="sep">·</span>
+        <a href="privacidade.html">Privacidade</a><span class="sep">·</span>
+        <a href="termos-uso.html">Termos</a>
+      </p>
+      <p>Uso compatível com o seu papel (campanha, mandato ou equipe técnica) e com a lei eleitoral aplicável.</p>
+    </footer>
+  </div>
+
+  <script src="js/auth-config.js?v=27" data-cfasync="false"></script>
+  <script type="module" src="js/politapp-logout-if-session.js?v=27"></script>
+  <script type="module" src="js/login.js?v=27"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

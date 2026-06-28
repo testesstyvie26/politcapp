@@ -741,8 +741,22 @@
       return n.toLocaleString("pt-BR");
     }
 
-    function renderOrfaosTseTable(orfaos, uf) {
-      const body = orfaos
+    const ORFAOS_PAGE_SIZE = 25;
+    let orfaosCtx = { rows: [], uf: "", page: 1 };
+
+    function renderSuplentesPanel() {
+      const host = el("painelSuplentes");
+      const { rows, uf } = orfaosCtx;
+      const total = rows.length;
+      if (!total) { host.hidden = true; host.innerHTML = ""; return; }
+
+      const pages = Math.max(1, Math.ceil(total / ORFAOS_PAGE_SIZE));
+      if (orfaosCtx.page > pages) orfaosCtx.page = pages;
+      if (orfaosCtx.page < 1) orfaosCtx.page = 1;
+      const start = (orfaosCtx.page - 1) * ORFAOS_PAGE_SIZE;
+      const slice = rows.slice(start, start + ORFAOS_PAGE_SIZE);
+
+      const body = slice
         .map(
           (t) => `
         <tr>
@@ -758,7 +772,16 @@
         </tr>`
         )
         .join("");
-      return `
+
+      const pager = total > ORFAOS_PAGE_SIZE ? `
+        <div class="pager-row" style="margin-top:1rem">
+          <button type="button" class="secondary" data-orf="prev" ${orfaosCtx.page <= 1 ? "disabled" : ""}>Anterior</button>
+          <span class="pager-meta">Página <strong>${orfaosCtx.page}</strong> de <strong>${pages}</strong> · ${fmtInt(total)} registro${total === 1 ? "" : "s"}</span>
+          <button type="button" class="secondary" data-orf="next" ${orfaosCtx.page >= pages ? "disabled" : ""}>Próxima</button>
+        </div>` : "";
+
+      host.hidden = false;
+      host.innerHTML = `
         <section class="panel" style="margin-top:1.25rem">
           <h2 style="margin:0 0 0.5rem;font-size:1.05rem">Suplentes e candidatos somente no TSE — ${escapeHtml(uf)}</h2>
           <p class="note" style="margin-bottom:0.75rem">
@@ -770,7 +793,16 @@
             </tr></thead>
             <tbody>${body}</tbody>
           </table></div>
+          ${pager}
         </section>`;
+
+      host.querySelectorAll("button[data-orf]").forEach((b) => {
+        b.addEventListener("click", () => {
+          orfaosCtx.page += b.dataset.orf === "next" ? 1 : -1;
+          renderSuplentesPanel();
+          host.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
     }
 
     async function fetchCamaraNomeSetUf(uf) {
