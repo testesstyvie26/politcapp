@@ -2,10 +2,6 @@ import { getSupabase } from "./auth-client.js";
 import { politappAuthReady } from "./auth-guard.js";
 import { loadProfile, listUnidadesForSelect, grupoLabel } from "./org-api.js";
 
-/** Legado: diário só no navegador; migrado uma vez para o Supabase. */
-const STORAGE_KEY = "politapp.diary.v1";
-const MIGRATED_KEY = "politapp.diary.migrated.v1";
-
 const elDia = document.getElementById("dia");
 const elLista = document.getElementById("lista");
 const elVazia = document.getElementById("listaVazia");
@@ -20,395 +16,189 @@ const modeBanner = document.getElementById("modeBanner");
 const anuncioAlert = document.getElementById("anuncioAlert");
 const anuncioAlertText = document.getElementById("anuncioAlertText");
 
+const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
+
 function todayISODate() {
   const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-/**
- * Importa dados antigos do localStorage (mesma chave do modo removido) para a unidade atual.
- * Roda no máximo uma vez por navegador.
- */
-async function importLocalDiaryOnce(supabase, unidadeId, userId) {
-  if (localStorage.getItem(MIGRATED_KEY)) return;
-  let all;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    all = raw ? JSON.parse(raw) : null;
-  } catch {
-    localStorage.setItem(MIGRATED_KEY, "1");
-    return;
+/* ── Data-layer: duas implementações, mesma interface ───────────────────── */
+async function makeDataLayer(supabase, session) {
+  if (LOCAWEB) {
+    const { dget, dpost } = await import("./locaweb-data.js?v=1");
+    return {
+      async listTarefas(uid, dia) {
+        const r = await dget(`api/tarefas.php?unidade_id=${encodeURIComponent(uid)}&dia=${encodeURIComponent(dia)}`);
+        if (!r.ok) throw new Error(r.erro || "erro");
+        return { tarefas: r.tarefas || [], nota: r.nota || "" };
+      },
+      addTarefa: (uid, dia, texto) => dpost("api/tarefas.php", { action: "add", unidade_id: uid, dia, texto }),
+      toggleTarefa: (id, concluida) => dpost("api/tarefas.php", { action: "toggle", id, concluida }),
+      delTarefa: (id) => dpost("api/tarefas.php", { action: "del", id }),
+      saveNota: (uid, dia, corpo) => dpost("api/tarefas.php", { action: "nota", unidade_id: uid, dia, corpo }),
+      async getAnuncio() { const r = await dget("api/anuncio.php"); return r.ok ? (r.mensagem || "") : ""; },
+    };
   }
-  if (!all || typeof all !== "object") {
-    localStorage.setItem(MIGRATED_KEY, "1");
-    return;
-  }
-
-  let hadFailure = false;
-
-  for (const [dataDia, day] of Object.entries(all)) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dataDia)) continue;
-    const tasks = day?.tasks;
-    const notes = typeof day?.notes === "string" ? day.notes : "";
-
-    const { count, error: cErr } = await supabase
-      .from("tarefas")
-      .select("id", { count: "exact", head: true })
-      .eq("unidade_id", unidadeId)
-      .eq("data_dia", dataDia);
-    if (cErr) {
-      console.error(cErr);
-      hadFailure = true;
-      break;
-    }
-
-    if (Array.isArray(tasks) && tasks.length && (count ?? 0) === 0) {
-      let ord = 0;
-      for (const t of tasks) {
-        const texto = typeof t.text === "string" ? t.text.trim() : "";
-        if (!texto) continue;
-        const { error: insErr } = await supabase.from("tarefas").insert({
-          unidade_id: unidadeId,
-          data_dia: dataDia,
-          texto,
-          concluida: !!t.done,
-          ordem: ord++,
-          created_by: userId,
-        });
-        if (insErr) {
-          console.error(insErr);
-          hadFailure = true;
-          break;
-        }
-      }
-      if (hadFailure) break;
-    }
-
-    if (notes.trim()) {
-      const { data: existing } = await supabase
-        .from("notas_unidade_dia")
-        .select("corpo")
-        .eq("unidade_id", unidadeId)
-        .eq("data_dia", dataDia)
-        .maybeSingle();
-      if (!existing?.corpo?.trim()) {
-        const { error: nErr } = await supabase.from("notas_unidade_dia").upsert(
-          {
-            unidade_id: unidadeId,
-            data_dia: dataDia,
-            corpo: notes,
-            updated_by: userId,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "unidade_id,data_dia" }
-        );
-        if (nErr) {
-          console.error(nErr);
-          hadFailure = true;
-          break;
-        }
-      }
-    }
-  }
-
-  if (!hadFailure) {
-    localStorage.setItem(MIGRATED_KEY, "1");
-  }
+  // Supabase
+  return {
+    async listTarefas(uid, dia) {
+      const { data: tarefas, error } = await supabase.from("tarefas")
+        .select("id, texto, concluida, ordem").eq("unidade_id", uid).eq("data_dia", dia).order("ordem", { ascending: true });
+      if (error) throw error;
+      const { data: notaRow } = await supabase.from("notas_unidade_dia")
+        .select("corpo").eq("unidade_id", uid).eq("data_dia", dia).maybeSingle();
+      return { tarefas: tarefas || [], nota: notaRow?.corpo ?? "" };
+    },
+    async addTarefa(uid, dia, texto) {
+      const { data: ex } = await supabase.from("tarefas").select("ordem")
+        .eq("unidade_id", uid).eq("data_dia", dia).order("ordem", { ascending: false }).limit(1).maybeSingle();
+      return supabase.from("tarefas").insert({
+        unidade_id: uid, data_dia: dia, texto, concluida: false, ordem: (ex?.ordem ?? -1) + 1, created_by: session.user.id,
+      });
+    },
+    toggleTarefa: (id, concluida) => supabase.from("tarefas").update({ concluida, updated_at: new Date().toISOString() }).eq("id", id),
+    delTarefa: (id) => supabase.from("tarefas").delete().eq("id", id),
+    saveNota: (uid, dia, corpo) => supabase.from("notas_unidade_dia").upsert(
+      { unidade_id: uid, data_dia: dia, corpo, updated_by: session.user.id, updated_at: new Date().toISOString() },
+      { onConflict: "unidade_id,data_dia" }),
+    async getAnuncio() {
+      const { data } = await supabase.from("anuncio_tarefas").select("mensagem").eq("id", 1).maybeSingle();
+      return (data?.mensagem ?? "").trim();
+    },
+  };
 }
 
 function setAnuncioVisible(show) {
   if (!anuncioAlert) return;
-  if (show) {
-    anuncioAlert.removeAttribute("hidden");
-  } else {
-    anuncioAlert.setAttribute("hidden", "");
-  }
+  show ? anuncioAlert.removeAttribute("hidden") : anuncioAlert.setAttribute("hidden", "");
 }
-
-async function loadAnuncioTarefas(supabase) {
+async function loadAnuncio(dl) {
   if (!anuncioAlert || !anuncioAlertText) return;
-  anuncioAlert.classList.remove("anuncio-alert--erro");
-
-  const { data, error } = await supabase
-    .from("anuncio_tarefas")
-    .select("mensagem")
-    .eq("id", 1)
-    .maybeSingle();
-
-  if (error) {
-    console.warn("[politapp] anuncio_tarefas:", error.code, error.message);
-    anuncioAlertText.textContent =
-      "Não foi possível carregar o aviso. Confirme no Supabase: tabela anuncio_tarefas, políticas RLS e execute sql/supabase-anuncio-tarefas-grants.sql se necessário.";
-    anuncioAlert.classList.add("anuncio-alert--erro");
-    setAnuncioVisible(true);
-    return;
-  }
-
-  const m = (data?.mensagem ?? "").trim();
-  if (m) {
-    anuncioAlertText.textContent = m;
-    setAnuncioVisible(true);
-  } else {
-    setAnuncioVisible(false);
-  }
+  try {
+    const m = (await dl.getAnuncio()).trim();
+    if (m) { anuncioAlertText.textContent = m; setAnuncioVisible(true); } else setAnuncioVisible(false);
+  } catch { setAnuncioVisible(false); }
 }
 
-function initModoCloud(supabase, session, profile) {
+function initModoCloud(dl, profile) {
   if (modeBanner) modeBanner.hidden = true;
   if (cloudBar) cloudBar.hidden = false;
-  loadAnuncioTarefas(supabase);
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      loadAnuncioTarefas(supabase);
-    }
-  });
+  loadAnuncio(dl);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") loadAnuncio(dl); });
   if (elGrupoBadge) elGrupoBadge.textContent = grupoLabel(profile.grupo);
-  if (elHeaderP) {
-    elHeaderP.innerHTML =
-      "Tarefas e anotações por <strong>unidade</strong> e data, <strong>salvas no banco</strong> (Supabase) — visíveis ao time da mesma unidade.";
-  }
+  if (elHeaderP) elHeaderP.innerHTML = "Tarefas e anotações por <strong>unidade</strong> e data, <strong>salvas no banco</strong> — visíveis ao time da mesma unidade.";
 
-  let unidadeId = null;
-  let notasTimer = null;
-
+  let unidadeId = null, notasTimer = null;
   elDia.value = todayISODate();
 
   async function fillUnidades() {
-    const { rows, error } = await listUnidadesForSelect(supabase, profile);
+    const { rows, error } = await listUnidadesForSelect(getSupabase(), profile);
     selUnidade.innerHTML = "";
     if (error || !rows.length) {
       selUnidade.innerHTML = '<option value="">— Nenhuma unidade —</option>';
-      elLista.innerHTML = "";
-      elVazia.hidden = false;
-      elVazia.textContent =
-        "Nenhuma unidade disponível. Um admin deve executar o SQL em sql/supabase-org-tarefas.sql e atribuir sua unidade em Perfis.";
+      elLista.innerHTML = ""; elVazia.hidden = false;
+      elVazia.textContent = "Nenhuma unidade disponível. Um admin precisa criar unidades e atribuir a sua.";
       return;
     }
-    rows.forEach((r) => {
-      const o = document.createElement("option");
-      o.value = r.id;
-      o.textContent = r.nome;
-      selUnidade.appendChild(o);
-    });
-    if (profile.grupo !== "admin" && profile.unidade_id) {
-      unidadeId = profile.unidade_id;
-      selUnidade.value = unidadeId;
-      selUnidade.disabled = rows.length <= 1;
-    } else {
-      unidadeId = rows[0].id;
-      selUnidade.value = unidadeId;
-      selUnidade.disabled = rows.length <= 1;
-    }
+    rows.forEach((r) => { const o = document.createElement("option"); o.value = r.id; o.textContent = r.nome; selUnidade.appendChild(o); });
+    unidadeId = (profile.grupo !== "admin" && profile.unidade_id) ? profile.unidade_id : rows[0].id;
+    selUnidade.value = unidadeId;
+    selUnidade.disabled = rows.length <= 1;
   }
 
-  async function loadNotasAndRenderTasks() {
+  async function refresh() {
     const dia = elDia.value || todayISODate();
     if (!unidadeId) return;
-
-    const { data: tasks, error: e1 } = await supabase
-      .from("tarefas")
-      .select("id, texto, concluida, ordem")
-      .eq("unidade_id", unidadeId)
-      .eq("data_dia", dia)
-      .order("ordem", { ascending: true });
-
-    if (e1) {
-      console.error(e1);
-      elVazia.hidden = false;
-      elVazia.textContent = "Erro ao carregar tarefas: " + (e1.message || String(e1));
-      return;
-    }
-
-    const { data: notaRow } = await supabase
-      .from("notas_unidade_dia")
-      .select("corpo")
-      .eq("unidade_id", unidadeId)
-      .eq("data_dia", dia)
-      .maybeSingle();
-
-    elNotas.value = notaRow?.corpo ?? "";
-    renderCloudTasks(tasks || []);
+    let res;
+    try { res = await dl.listTarefas(unidadeId, dia); }
+    catch (e) { elVazia.hidden = false; elVazia.textContent = "Erro ao carregar: " + (e.message || e); return; }
+    elNotas.value = res.nota || "";
+    renderTasks(res.tarefas);
   }
 
-  function renderCloudTasks(tasks) {
+  function renderTasks(tasks) {
     elLista.innerHTML = "";
     const done = tasks.filter((t) => t.concluida).length;
     elProgress.innerHTML = `<strong>${done}</strong> / ${tasks.length} concluída${tasks.length === 1 ? "" : "s"}`;
-
-    if (!tasks.length) {
-      elVazia.hidden = false;
-      elVazia.textContent = "Nenhuma tarefa neste dia. Adicione acima.";
-      return;
-    }
+    if (!tasks.length) { elVazia.hidden = false; elVazia.textContent = "Nenhuma tarefa neste dia. Adicione acima."; return; }
     elVazia.hidden = true;
-
     tasks.forEach((t) => {
       const li = document.createElement("li");
       li.className = "task-item" + (t.concluida ? " done" : "");
-
       const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!t.concluida;
-      cb.setAttribute("aria-label", t.concluida ? "Marcar como pendente" : "Marcar como concluída");
+      cb.type = "checkbox"; cb.checked = !!t.concluida;
       cb.addEventListener("change", async () => {
-        const { error } = await supabase
-          .from("tarefas")
-          .update({ concluida: cb.checked, updated_at: new Date().toISOString() })
-          .eq("id", t.id);
-        if (error) {
-          cb.checked = !cb.checked;
-          alert(error.message);
-          return;
-        }
-        loadNotasAndRenderTasks();
+        const r = await dl.toggleTarefa(t.id, cb.checked);
+        if (r && r.error) { cb.checked = !cb.checked; alert(r.error.message || r.error); return; }
+        if (r && r.ok === false) { cb.checked = !cb.checked; alert(r.erro); return; }
+        refresh();
       });
-
-      const span = document.createElement("span");
-      span.className = "task-text";
-      span.textContent = t.texto;
-
+      const span = document.createElement("span"); span.className = "task-text"; span.textContent = t.texto;
       const del = document.createElement("button");
-      del.type = "button";
-      del.className = "task-del";
-      del.setAttribute("aria-label", "Remover tarefa");
-      del.innerHTML = "&times;";
+      del.type = "button"; del.className = "task-del"; del.setAttribute("aria-label", "Remover"); del.innerHTML = "&times;";
       del.addEventListener("click", async () => {
-        const { error } = await supabase.from("tarefas").delete().eq("id", t.id);
-        if (error) {
-          alert(error.message);
-          return;
-        }
-        loadNotasAndRenderTasks();
+        const r = await dl.delTarefa(t.id);
+        if (r && r.error) { alert(r.error.message || r.error); return; }
+        if (r && r.ok === false) { alert(r.erro); return; }
+        refresh();
       });
-
-      li.appendChild(cb);
-      li.appendChild(span);
-      li.appendChild(del);
-      elLista.appendChild(li);
+      li.append(cb, span, del); elLista.appendChild(li);
     });
   }
 
-  async function addTaskCloud() {
+  async function addTask() {
     const text = elNova.value.trim();
     const dia = elDia.value || todayISODate();
     if (!text || !unidadeId) return;
-
-    const { data: existing } = await supabase
-      .from("tarefas")
-      .select("ordem")
-      .eq("unidade_id", unidadeId)
-      .eq("data_dia", dia)
-      .order("ordem", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    const nextOrd = (existing?.ordem ?? -1) + 1;
-
-    const { error } = await supabase.from("tarefas").insert({
-      unidade_id: unidadeId,
-      data_dia: dia,
-      texto: text,
-      concluida: false,
-      ordem: nextOrd,
-      created_by: session.user.id,
-    });
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-    elNova.value = "";
-    elNova.focus();
-    loadNotasAndRenderTasks();
+    const r = await dl.addTarefa(unidadeId, dia, text);
+    if (r && r.error) { alert(r.error.message || r.error); return; }
+    if (r && r.ok === false) { alert(r.erro); return; }
+    elNova.value = ""; elNova.focus(); refresh();
   }
-
-  function scheduleNotasSave() {
-    clearTimeout(notasTimer);
-    notasTimer = setTimeout(saveNotasCloud, 500);
-  }
-
-  async function saveNotasCloud() {
+  async function saveNotas() {
     const dia = elDia.value || todayISODate();
     if (!unidadeId) return;
-    const { error } = await supabase.from("notas_unidade_dia").upsert(
-      {
-        unidade_id: unidadeId,
-        data_dia: dia,
-        corpo: elNotas.value,
-        updated_by: session.user.id,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "unidade_id,data_dia" }
-    );
-    if (error) console.error(error);
+    const r = await dl.saveNota(unidadeId, dia, elNotas.value);
+    if (r && r.error) console.error(r.error);
   }
 
-  document.getElementById("btnAdd").addEventListener("click", addTaskCloud);
-  elNova.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTaskCloud();
-    }
-  });
-
-  elDia.addEventListener("change", () => loadNotasAndRenderTasks());
-
-  selUnidade.addEventListener("change", () => {
-    unidadeId = selUnidade.value || null;
-    loadNotasAndRenderTasks();
-  });
-
-  elNotas.addEventListener("input", scheduleNotasSave);
-  elNotas.addEventListener("blur", saveNotasCloud);
-
+  document.getElementById("btnAdd").addEventListener("click", addTask);
+  elNova.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addTask(); } });
+  elDia.addEventListener("change", refresh);
+  selUnidade.addEventListener("change", () => { unidadeId = selUnidade.value || null; refresh(); });
+  elNotas.addEventListener("input", () => { clearTimeout(notasTimer); notasTimer = setTimeout(saveNotas, 500); });
+  elNotas.addEventListener("blur", saveNotas);
   document.getElementById("tab-t").addEventListener("click", () => {
     document.getElementById("tab-t").setAttribute("aria-selected", "true");
     document.getElementById("tab-n").setAttribute("aria-selected", "false");
-    document.getElementById("panel-t").hidden = false;
-    document.getElementById("panel-n").hidden = true;
+    document.getElementById("panel-t").hidden = false; document.getElementById("panel-n").hidden = true;
   });
   document.getElementById("tab-n").addEventListener("click", () => {
     document.getElementById("tab-n").setAttribute("aria-selected", "true");
     document.getElementById("tab-t").setAttribute("aria-selected", "false");
-    document.getElementById("panel-n").hidden = false;
-    document.getElementById("panel-t").hidden = true;
+    document.getElementById("panel-n").hidden = false; document.getElementById("panel-t").hidden = true;
   });
 
-  fillUnidades().then(async () => {
-    if (unidadeId) {
-      await importLocalDiaryOnce(supabase, unidadeId, session.user.id);
-    }
-    loadNotasAndRenderTasks();
-  });
+  fillUnidades().then(refresh);
 }
 
 (async function main() {
   let ready;
-  try {
-    ready = await politappAuthReady;
-  } catch {
-    return;
-  }
-
+  try { ready = await politappAuthReady; } catch { return; }
   const supabase = getSupabase();
-  const { session } = ready;
-  if (!supabase || !session?.user) {
-    return;
-  }
+  const { session, profile: readyProfile } = ready;
+  if (!session?.user) return;
 
-  const { data: profile, error: pErr } = await loadProfile(supabase, session.user.id);
-
-  if (pErr || !profile) {
-    if (modeBanner) {
-      modeBanner.hidden = false;
-      modeBanner.innerHTML =
-        "Não foi possível carregar seu perfil. Confira o script <code>sql/supabase-org-tarefas.sql</code> no Supabase (SQL Editor).";
+  let profile = readyProfile;
+  if (!profile) {
+    const { data, error } = await loadProfile(supabase, session.user.id);
+    if (error || !data) {
+      if (modeBanner) { modeBanner.hidden = false; modeBanner.textContent = "Não foi possível carregar seu perfil."; }
+      return;
     }
-    return;
+    profile = data;
   }
-
-  initModoCloud(supabase, session, profile);
+  const dl = await makeDataLayer(supabase, session);
+  initModoCloud(dl, profile);
 })();

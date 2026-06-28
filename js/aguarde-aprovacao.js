@@ -1,48 +1,35 @@
 /**
- * Página aguarde-aprovacao: após o auth-guard, volta a ler o perfil e redireciona
- * se já estiver liberado (evita ficar preso quando o primeiro fetch falha ou atrasa).
+ * Página aguarde-aprovacao: relê o perfil e redireciona se já liberado.
+ * Provider-aware: locaweb (me.php) / supabase.
  */
 import { getSupabase } from "./auth-client.js";
 import { politappAuthReady } from "./auth-guard.js";
 import { profileAllowsAppAccess } from "./org-api.js";
 
+const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
 const estadoEl = () => document.getElementById("estadoPerfil");
 
 export async function redirectIfCanEnter() {
-  const sb = getSupabase();
-  if (!sb) return false;
-
-  await sb.auth.refreshSession().catch(() => {});
-  const {
-    data: { user },
-    error: userErr,
-  } = await sb.auth.getUser();
-  if (userErr || !user) {
-    if (estadoEl()) {
-      estadoEl().textContent = userErr
-        ? "Sessão: " + userErr.message
-        : "Sem utilizador na sessão. Use Sair e entre de novo.";
-    }
-    return false;
+  let profile = null;
+  if (LOCAWEB) {
+    const { dget } = await import("./locaweb-data.js?v=1");
+    const r = await dget("auth/me.php");
+    if (!r || !r.ok || !r.autenticado) { if (estadoEl()) estadoEl().textContent = "Sessão expirada. Saia e entre de novo."; return false; }
+    profile = r.profile || null;
+  } else {
+    const sb = getSupabase();
+    if (!sb) return false;
+    await sb.auth.refreshSession().catch(() => {});
+    const { data: { user }, error: userErr } = await sb.auth.getUser();
+    if (userErr || !user) { if (estadoEl()) estadoEl().textContent = "Sem utilizador na sessão. Saia e entre de novo."; return false; }
+    const { data } = await sb.from("profiles").select("conta_status, grupo").eq("id", user.id).maybeSingle();
+    profile = data;
   }
-
-  const { data: profile, error } = await sb
-    .from("profiles")
-    .select("conta_status, grupo")
-    .eq("id", user.id)
-    .maybeSingle();
 
   const el = estadoEl();
-  if (el) {
-    if (error) {
-      el.textContent = "Erro ao ler perfil: " + error.message;
-    } else if (!profile) {
-      el.textContent =
-        "Sem linha em profiles para este login. No Supabase, execute sql/backfill-profiles-from-auth.sql.";
-    } else {
-      el.textContent = `Estado lido agora: grupo = ${profile.grupo ?? "—"}, conta_status = ${profile.conta_status ?? "—"}`;
-    }
-  }
+  if (el) el.textContent = profile
+    ? `Estado lido agora: grupo = ${profile.grupo ?? "—"}, conta_status = ${profile.conta_status ?? "—"}`
+    : "Sem perfil para este login.";
 
   if (profileAllowsAppAccess(profile)) {
     window.location.replace(new URL("index.html", location.href).href);
@@ -52,12 +39,7 @@ export async function redirectIfCanEnter() {
 }
 
 (async function init() {
-  try {
-    await politappAuthReady;
-  } catch {
-    /* redirecionado pelo guard */
-  }
-
+  try { await politappAuthReady; } catch { /* redirecionado pelo guard */ }
   await redirectIfCanEnter();
 
   document.getElementById("btnRefresh")?.addEventListener("click", async () => {
@@ -66,8 +48,14 @@ export async function redirectIfCanEnter() {
   });
 
   document.getElementById("btnSair")?.addEventListener("click", async () => {
-    const sb = getSupabase();
-    if (sb) await sb.auth.signOut();
-    window.location.href = "login.html";
+    if (LOCAWEB) {
+      const { lwLogout } = await import("./locaweb-auth.js?v=2");
+      await lwLogout();
+      window.location.href = "login-locaweb.html";
+    } else {
+      const sb = getSupabase();
+      if (sb) await sb.auth.signOut();
+      window.location.href = "login.html";
+    }
   });
 })();

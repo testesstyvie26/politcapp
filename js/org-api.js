@@ -41,7 +41,16 @@ export function isContaRejeitada(profile) {
   return normalizeContaStatus(profile?.conta_status) === "rejeitado";
 }
 
+function isLocaweb() { return (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb"; }
+
 export async function loadProfile(supabase, userId) {
+  if (isLocaweb()) {
+    const { dget } = await import("./locaweb-data.js?v=1");
+    const r = await dget("auth/me.php");
+    if (!r || !r.ok || !r.autenticado) return { data: null, error: new Error("sem sessão") };
+    const p = r.profile || {};
+    return { data: { grupo: p.grupo, unidade_id: p.unidade_id, conta_status: p.conta_status, unidades: null }, error: null };
+  }
   return supabase
     .from("profiles")
     .select("grupo, unidade_id, conta_status, unidades ( id, nome, slug )")
@@ -49,9 +58,14 @@ export async function loadProfile(supabase, userId) {
     .maybeSingle();
 }
 
-/** Unidades que o usuário pode escolher na lista de tarefas: todas se admin; senão só a própria. */
+/** Unidades que o usuário pode escolher: todas se admin; senão só a própria. */
 export async function listUnidadesForSelect(supabase, profile) {
   if (!profile) return { rows: [], error: new Error("sem perfil") };
+  if (isLocaweb()) {
+    const { dget } = await import("./locaweb-data.js?v=1");
+    const r = await dget("api/unidades.php");
+    return { rows: r.ok ? (r.unidades || []) : [], error: r.ok ? null : new Error(r.erro || "erro") };
+  }
   if (profile.grupo === "admin") {
     const { data, error } = await supabase.from("unidades").select("id, nome, slug").order("nome");
     return { rows: data ?? [], error };
