@@ -10,6 +10,13 @@ try {
   $st = pa_db()->prepare("SELECT grupo, unidade_id, conta_status FROM profiles WHERE id = ? LIMIT 1");
   $st->execute([$u['id']]);
   $prof = $st->fetch() ?: null;
+  // auto-cura: se a conta não tem profile (cadastro antigo / insert falhou), cria como pendente
+  if (!$prof) {
+    pa_db()->prepare("INSERT INTO profiles (id, email, grupo, conta_status) VALUES (?,?, 'operacoes', 'pendente')")
+            ->execute([$u['id'], $u['email']]);
+    $st->execute([$u['id']]);
+    $prof = $st->fetch() ?: null;
+  }
 } catch (Throwable $e) { /* profiles opcional */ }
 
 pa_json([
