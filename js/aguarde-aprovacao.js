@@ -2,9 +2,9 @@
  * Página aguarde-aprovacao: relê o perfil e redireciona se já liberado.
  * Provider-aware: locaweb (me.php) / supabase.
  */
-import { getSupabase } from "./auth-client.js";
-import { politappAuthReady } from "./auth-guard.js";
-import { profileAllowsAppAccess } from "./org-api.js";
+import { getSupabase } from "./auth-client.js?v=27";
+import { politappAuthReady } from "./auth-guard.js?v=27";
+import { profileAllowsAppAccess } from "./org-api.js?v=27";
 
 const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
 const estadoEl = () => document.getElementById("estadoPerfil");
@@ -12,7 +12,7 @@ const estadoEl = () => document.getElementById("estadoPerfil");
 export async function redirectIfCanEnter() {
   let profile = null;
   if (LOCAWEB) {
-    const { dget } = await import("./locaweb-data.js?v=1");
+    const { dget } = await import("./locaweb-data.js?v=27");
     const r = await dget("auth/me.php");
     if (!r || !r.ok || !r.autenticado) { if (estadoEl()) estadoEl().textContent = "Sessão expirada. Saia e entre de novo."; return false; }
     profile = r.profile || null;
@@ -49,7 +49,7 @@ export async function redirectIfCanEnter() {
 
   document.getElementById("btnSair")?.addEventListener("click", async () => {
     if (LOCAWEB) {
-      const { lwLogout } = await import("./locaweb-auth.js?v=2");
+      const { lwLogout } = await import("./locaweb-auth.js?v=27");
       await lwLogout();
       window.location.href = "login-locaweb.html";
     } else {

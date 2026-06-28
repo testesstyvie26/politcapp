@@ -1,6 +1,6 @@
-import { getSupabase } from "./auth-client.js";
-import { politappAuthReady } from "./auth-guard.js";
-import { loadProfile } from "./org-api.js";
+import { getSupabase } from "./auth-client.js?v=27";
+import { politappAuthReady } from "./auth-guard.js?v=27";
+import { loadProfile } from "./org-api.js?v=27";
 
 /** Garante sessão e grupo admin; caso contrário redireciona. */
 export async function requireAdmin() {

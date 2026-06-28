@@ -29,7 +29,7 @@ function wire(getLoadErr, gravar) {
 }
 
 async function initLocaweb() {
-  const { dget, dpost } = await import("./locaweb-data.js?v=1");
+  const { dget, dpost } = await import("./locaweb-data.js?v=27");
   const r = await dget("api/anuncio.php");
   let loadErr = "";
   if (!r.ok) loadErr = r.erro || "Não foi possível carregar o anúncio.";
@@ -41,7 +41,7 @@ async function initLocaweb() {
 }
 
 async function initSupabase() {
-  const { requireAdmin } = await import("./admin-guard.js");
+  const { requireAdmin } = await import("./admin-guard.js?v=27");
   const ctx = await requireAdmin(); if (!ctx) return;
   const { supabase, session } = ctx;
   const { data, error } = await supabase.from("anuncio_tarefas").select("mensagem").eq("id", 1).maybeSingle();

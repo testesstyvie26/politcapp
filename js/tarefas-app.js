@@ -1,6 +1,6 @@
-import { getSupabase } from "./auth-client.js";
-import { politappAuthReady } from "./auth-guard.js";
-import { loadProfile, listUnidadesForSelect, grupoLabel } from "./org-api.js";
+import { getSupabase } from "./auth-client.js?v=27";
+import { politappAuthReady } from "./auth-guard.js?v=27";
+import { loadProfile, listUnidadesForSelect, grupoLabel } from "./org-api.js?v=27";
 
 const elDia = document.getElementById("dia");
 const elLista = document.getElementById("lista");
@@ -26,7 +26,7 @@ function todayISODate() {
 /* ── Data-layer: duas implementações, mesma interface ───────────────────── */
 async function makeDataLayer(supabase, session) {
   if (LOCAWEB) {
-    const { dget, dpost } = await import("./locaweb-data.js?v=1");
+    const { dget, dpost } = await import("./locaweb-data.js?v=27");
     return {
       async listTarefas(uid, dia) {
         const r = await dget(`api/tarefas.php?unidade_id=${encodeURIComponent(uid)}&dia=${encodeURIComponent(dia)}`);

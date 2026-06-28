@@ -3,7 +3,7 @@
  *   locaweb  → API PHP (php/api/admin-*.php)
  *   supabase → fluxo antigo (Supabase), carregado dinamicamente
  */
-import { grupoLabel } from "./org-api.js";
+import { grupoLabel } from "./org-api.js?v=27";
 
 const tbody = document.getElementById("tbody");
 const errEl = document.getElementById("err");
@@ -41,7 +41,7 @@ function renderRows(rows, onAct) {
 
 /* ── Locaweb (PHP) ──────────────────────────────────────────────────────── */
 async function initLocaweb() {
-  const { dget, dpost } = await import("./locaweb-data.js?v=1");
+  const { dget, dpost } = await import("./locaweb-data.js?v=27");
   async function load() {
     showErr("");
     const r = await dget("api/admin-pendentes.php");
@@ -57,7 +57,7 @@ async function initLocaweb() {
 
 /* ── Supabase (antigo) ──────────────────────────────────────────────────── */
 async function initSupabase() {
-  const { requireAdmin } = await import("./admin-guard.js");
+  const { requireAdmin } = await import("./admin-guard.js?v=27");
   const ctx = await requireAdmin();
   if (!ctx) return;
   const { supabase } = ctx;

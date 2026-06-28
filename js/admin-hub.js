@@ -3,9 +3,9 @@ const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
 
 (async function init() {
   if (LOCAWEB) {
-    const { politappAuthReady } = await import("./auth-guard.js");
+    const { politappAuthReady } = await import("./auth-guard.js?v=27");
     try { await politappAuthReady; } catch { return; }
-    const { dget } = await import("./locaweb-data.js?v=1");
+    const { dget } = await import("./locaweb-data.js?v=27");
     const r = await dget("auth/me.php");
     if (!r || !r.ok || (r.profile?.grupo !== "admin")) {
       window.location.replace(new URL("index.html", location.href).href);
@@ -14,7 +14,7 @@ const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
     const root = document.getElementById("root"); if (root) root.hidden = false;
     return;
   }
-  const { requireAdmin } = await import("./admin-guard.js");
+  const { requireAdmin } = await import("./admin-guard.js?v=27");
   const ctx = await requireAdmin();
   if (!ctx) return;
   const root = document.getElementById("root"); if (root) root.hidden = false;

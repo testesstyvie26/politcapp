@@ -1,7 +1,7 @@
 /** Página Conta. Provider-aware: locaweb (me.php) / supabase. */
-import { getSupabase, isAuthConfigured } from "./auth-client.js";
-import { politappAuthReady } from "./auth-guard.js";
-import { loadProfile, grupoLabel, contaStatusLabel } from "./org-api.js";
+import { getSupabase, isAuthConfigured } from "./auth-client.js?v=27";
+import { politappAuthReady } from "./auth-guard.js?v=27";
+import { loadProfile, grupoLabel, contaStatusLabel } from "./org-api.js?v=27";
 
 const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
 const loading = document.getElementById("loading");
@@ -21,8 +21,8 @@ const logoutBtn = document.getElementById("logout");
   try { await politappAuthReady; } catch { return; }
 
   if (LOCAWEB) {
-    const { dget } = await import("./locaweb-data.js?v=1");
-    const { lwLogout } = await import("./locaweb-auth.js?v=2");
+    const { dget } = await import("./locaweb-data.js?v=27");
+    const { lwLogout } = await import("./locaweb-auth.js?v=27");
     const r = await dget("auth/me.php");
     loading.hidden = true;
     if (!r || !r.ok || !r.autenticado) { denied.hidden = false; return; }

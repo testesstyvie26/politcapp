@@ -35,7 +35,7 @@ function wireSlug() {
 }
 
 async function initLocaweb() {
-  const { dget, dpost } = await import("./locaweb-data.js?v=1");
+  const { dget, dpost } = await import("./locaweb-data.js?v=27");
   const root = document.getElementById("root"); if (root) root.hidden = false;
   wireSlug();
   async function load() {
@@ -61,7 +61,7 @@ async function initLocaweb() {
 }
 
 async function initSupabase() {
-  const { requireAdmin } = await import("./admin-guard.js");
+  const { requireAdmin } = await import("./admin-guard.js?v=27");
   const ctx = await requireAdmin(); if (!ctx) return;
   const { supabase } = ctx;
   const root = document.getElementById("root"); if (root) root.hidden = false;

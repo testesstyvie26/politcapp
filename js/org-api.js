@@ -45,7 +45,7 @@ function isLocaweb() { return (window.POLITAPP_AUTH_PROVIDER || "supabase") === 
 
 export async function loadProfile(supabase, userId) {
   if (isLocaweb()) {
-    const { dget } = await import("./locaweb-data.js?v=1");
+    const { dget } = await import("./locaweb-data.js?v=27");
     const r = await dget("auth/me.php");
     if (!r || !r.ok || !r.autenticado) return { data: null, error: new Error("sem sessão") };
     const p = r.profile || {};
@@ -62,7 +62,7 @@ export async function loadProfile(supabase, userId) {
 export async function listUnidadesForSelect(supabase, profile) {
   if (!profile) return { rows: [], error: new Error("sem perfil") };
   if (isLocaweb()) {
-    const { dget } = await import("./locaweb-data.js?v=1");
+    const { dget } = await import("./locaweb-data.js?v=27");
     const r = await dget("api/unidades.php");
     return { rows: r.ok ? (r.unidades || []) : [], error: r.ok ? null : new Error(r.erro || "erro") };
   }
