@@ -2,6 +2,16 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <!-- Em hosts com auth Locaweb (PHP), usa o login novo. Redireciona cedo, sem flash. -->
+  <script data-cfasync="false">
+    (function () {
+      var h = location.hostname || "";
+      if (/(^|\.)cmbusinesstoken\.com$/i.test(h) || /hospedagemdesites\.ws$/i.test(h) ||
+          /(^|\.)politcapp\.com\.br$/i.test(h) || /\.github\.io$/i.test(h)) {
+        location.replace("login-locaweb.html" + (location.search || ""));
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Politapp — inteligência eleitoral em tempo real: análise por seção, estratégia territorial e decisão com dados. Tecnologia web com APIs públicas e governança de acesso. Entrada com Google após conformidade da conta." />
   <title>Politapp — Acesso ao painel</title>
