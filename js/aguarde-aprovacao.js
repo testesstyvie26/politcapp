@@ -51,7 +51,7 @@ export async function redirectIfCanEnter() {
     if (LOCAWEB) {
       const { lwLogout } = await import("./locaweb-auth.js?v=27");
       await lwLogout();
-      window.location.href = "login-locaweb.html";
+      window.location.href = "login.html";
     } else {
       const sb = getSupabase();
       if (sb) await sb.auth.signOut();

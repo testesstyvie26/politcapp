@@ -35,7 +35,7 @@ const logoutBtn = document.getElementById("logout");
     if (unidadeEl) unidadeEl.textContent = "—";
     if (contaStatusEl) contaStatusEl.textContent = profile.conta_status ? contaStatusLabel(profile.conta_status) : "—";
     if (adminHubLink && profile.grupo === "admin") adminHubLink.hidden = false;
-    logoutBtn?.addEventListener("click", async () => { await lwLogout(); window.location.href = "login-locaweb.html"; });
+    logoutBtn?.addEventListener("click", async () => { await lwLogout(); window.location.href = "login.html"; });
     return;
   }
 
