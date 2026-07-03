@@ -1070,10 +1070,51 @@
       }
     }
 
-    async function fetchJson(url) {
-      const res = await fetch(url, { headers: JSON_HDR });
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      return res.json();
+    async function fetchJson(url, { retries = 2, timeout = 15000 } = {}) {
+      let lastErr;
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), timeout);
+        try {
+          const res = await fetch(url, { headers: JSON_HDR, signal: ctrl.signal, cache: "no-store" });
+          clearTimeout(timer);
+          if (!res.ok) {
+            const httpErr = new Error(`HTTP ${res.status} ${res.statusText}`);
+            httpErr.httpStatus = res.status;
+            if (res.status < 500 || attempt === retries) throw httpErr;
+            lastErr = httpErr;
+          } else {
+            return await res.json();
+          }
+        } catch (err) {
+          clearTimeout(timer);
+          err.isNetwork = err.name === "AbortError" || err.name === "TypeError";
+          lastErr = err;
+          if (!err.isNetwork || attempt === retries) throw err;
+        }
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
+      throw lastErr || new Error("Falha desconhecida ao buscar dados");
+    }
+
+    /* Traduz o erro cru numa mensagem acionável para o usuário. */
+    function diagnoseFetchError(e) {
+      const isFile = window.location.protocol === "file:";
+      const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+      const netLike = e && (e.isNetwork || e.name === "TypeError" || e.name === "AbortError" || /Failed to fetch|NetworkError|load failed/i.test(e.message || ""));
+      if (isFile && netLike) {
+        return "A p\u00e1gina foi aberta como arquivo local (file://), e o navegador bloqueia as chamadas \u00e0 API da C\u00e2mara nesse modo. Publique o site ou rode um servidor local (ex.: \u201cnpx serve\u201d ou a extens\u00e3o Live Server) e acesse por http://localhost.";
+      }
+      if (offline) {
+        return "Sem conexao com a internet. Verifique a rede e clique em \u201cAtualizar dados\u201d.";
+      }
+      if (e && e.name === "AbortError") {
+        return "A API da Câmara demorou demais para responder (tempo esgotado). Tente novamente em instantes.";
+      }
+      if (netLike) {
+        return "Não foi possível alcançar a API da Câmara (falha de rede ou bloqueio de CORS/firewall/extensão do navegador). Tente novamente; se persistir, verifique firewall corporativo ou bloqueadores.";
+      }
+      return e && e.message ? e.message : String(e);
     }
 
     async function fetchAllDeputadosLegislatura() {
@@ -1588,7 +1629,15 @@
       } catch (e) {
         console.error(e);
         meta.textContent = "";
-        main.innerHTML = `<p class="error">Falha ao montar o painel: ${escapeHtml(e.message)}</p>`;
+        const msg = diagnoseFetchError(e);
+        main.innerHTML =
+          `<div class="panel" role="alert" style="border-color:rgba(239,68,68,0.3)">
+             <h2 style="color:#fecaca">Não foi possível carregar o painel</h2>
+             <p style="margin:.25rem 0 1rem">${escapeHtml(msg)}</p>
+             <button type="button" id="retryDash" class="btn-gold">Tentar de novo</button>
+           </div>`;
+        const rb = document.getElementById("retryDash");
+        if (rb) rb.addEventListener("click", loadDashboard);
       }
     }
 
