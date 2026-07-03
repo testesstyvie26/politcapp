@@ -76,6 +76,31 @@
   parent.insertBefore(backdrop, anchor);
   document.body.classList.add('pn-has-topbar');
 
+  /* ── Barra de progresso de leitura ──────────────── */
+  const progress = document.createElement('div');
+  progress.className = 'pn-progress';
+  progress.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(progress);
+
+  let progressTick = false;
+  function updateProgress() {
+    const doc = document.documentElement;
+    const scrollable = doc.scrollHeight - doc.clientHeight;
+    const pct = scrollable > 0 ? (doc.scrollTop / scrollable) * 100 : 0;
+    progress.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    progressTick = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!progressTick) { progressTick = true; requestAnimationFrame(updateProgress); }
+  }, { passive: true });
+  window.addEventListener('resize', updateProgress, { passive: true });
+  updateProgress();
+
+  /* Sombra reforçada ao rolar */
+  window.addEventListener('scroll', () => {
+    topbar.classList.toggle('pn-scrolled', window.scrollY > 8);
+  }, { passive: true });
+
   /* ── Dropdowns: painel em position:fixed ─────────── */
   const summaries = nav.querySelectorAll('details.site-nav-dropdown > summary');
 
