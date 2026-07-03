@@ -1070,29 +1070,82 @@
       }
     }
 
-    async function fetchJson(url, { retries = 2, timeout = 15000 } = {}) {
-      let lastErr;
-      for (let attempt = 0; attempt <= retries; attempt++) {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), timeout);
-        try {
-          const res = await fetch(url, { headers: JSON_HDR, signal: ctrl.signal, cache: "no-store" });
-          clearTimeout(timer);
-          if (!res.ok) {
-            const httpErr = new Error(`HTTP ${res.status} ${res.statusText}`);
-            httpErr.httpStatus = res.status;
-            if (res.status < 500 || attempt === retries) throw httpErr;
-            lastErr = httpErr;
-          } else {
-            return await res.json();
-          }
-        } catch (err) {
-          clearTimeout(timer);
-          err.isNetwork = err.name === "AbortError" || err.name === "TypeError";
-          lastErr = err;
-          if (!err.isNetwork || attempt === retries) throw err;
+    /* Proxies CORS de fallback: a API da Camara nao envia Access-Control-Allow-Origin,
+       entao o navegador bloqueia a leitura direta. Como o dado e publico, roteamos
+       por um proxy quando a chamada direta falha. Ordem = prioridade. */
+    const CORS_PROXIES = [
+      (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+      (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    ];
+    /* Uma vez que um proxy funcione (ou o direto), memoriza para as proximas chamadas.
+       -1 = direto; 0..n = indice em CORS_PROXIES. */
+    let PREFERRED_SOURCE = -1;
+
+    function buildSourceOrder() {
+      const order = [];
+      if (PREFERRED_SOURCE === -1) {
+        order.push(-1);
+        for (let i = 0; i < CORS_PROXIES.length; i++) order.push(i);
+      } else {
+        order.push(PREFERRED_SOURCE);
+        order.push(-1);
+        for (let i = 0; i < CORS_PROXIES.length; i++) if (i !== PREFERRED_SOURCE) order.push(i);
+      }
+      return order;
+    }
+
+    function sourceUrl(src, url) {
+      return src === -1 ? url : CORS_PROXIES[src](url);
+    }
+
+    async function rawFetchJson(url, timeout) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), timeout);
+      try {
+        const res = await fetch(url, { headers: JSON_HDR, signal: ctrl.signal, cache: "no-store" });
+        clearTimeout(timer);
+        if (!res.ok) {
+          const httpErr = new Error(`HTTP ${res.status} ${res.statusText}`);
+          httpErr.httpStatus = res.status;
+          throw httpErr;
         }
-        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+        return await res.json();
+      } catch (err) {
+        clearTimeout(timer);
+        err.isNetwork = err.name === "AbortError" || err.name === "TypeError";
+        throw err;
+      }
+    }
+
+    /* Mesma origem (JSON local do TSE) nunca precisa de proxy. So a API externa. */
+    function isProxyEligible(url) {
+      try { return new URL(url, window.location.href).origin !== window.location.origin; }
+      catch { return false; }
+    }
+
+    async function fetchJson(url, { retries = 1, timeout = 15000 } = {}) {
+      const eligible = isProxyEligible(url);
+      const sources = eligible ? buildSourceOrder() : [-1];
+      let lastErr;
+      for (const src of sources) {
+        const target = sourceUrl(src, url);
+        for (let attempt = 0; attempt <= retries; attempt++) {
+          try {
+            const data = await rawFetchJson(target, timeout);
+            if (eligible) PREFERRED_SOURCE = src; // lembra o caminho que funcionou
+            return data;
+          } catch (err) {
+            lastErr = err;
+            // 4xx nao adianta repetir nem trocar de fonte (erro do recurso, nao de rede)
+            if (err.httpStatus && err.httpStatus < 500 && err.httpStatus !== 429) throw err;
+            // erro transitorio: tenta de novo na mesma fonte; senao, proxima fonte
+            if (err.isNetwork && attempt < retries) {
+              await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+              continue;
+            }
+            break; // vai para a proxima fonte
+          }
+        }
       }
       throw lastErr || new Error("Falha desconhecida ao buscar dados");
     }
@@ -1112,7 +1165,7 @@
         return "A API da Câmara demorou demais para responder (tempo esgotado). Tente novamente em instantes.";
       }
       if (netLike) {
-        return "Não foi possível alcançar a API da Câmara (falha de rede ou bloqueio de CORS/firewall/extensão do navegador). Tente novamente; se persistir, verifique firewall corporativo ou bloqueadores.";
+        return "Não foi possível alcançar a API da Câmara — nem diretamente, nem pelos proxies de fallback. Pode ser rede sem saída, firewall corporativo ou os proxies públicos temporariamente fora do ar. Tente novamente em instantes.";
       }
       return e && e.message ? e.message : String(e);
     }
@@ -1452,9 +1505,10 @@
         }
 
         const ms = Math.round(performance.now() - t0);
+        const viaProxy = PREFERRED_SOURCE !== -1;
         meta.textContent = `Atualizado em ${new Date().toLocaleString("pt-BR")} · Câmara: ${deps.length} deputados${
           tseFetch ? " · TSE/RJ: JSON" : " · TSE/RJ: indisponível"
-        } · ${ms} ms`;
+        }${viaProxy ? " · via proxy" : ""} · ${ms} ms`;
 
         const total = deps.length;
         if (total === 0) {
