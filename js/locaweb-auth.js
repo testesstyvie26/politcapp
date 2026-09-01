@@ -66,7 +66,7 @@ export async function api(rel, { method = "GET", body = null } = {}) {
   } else {
     const payload = Object.assign({}, body || {});
     if (tok) payload._token = tok;
-    opts.body = JSON.stringify(payload); // Cloudflare aceita JSON
+    opts.body = JSON.stringify(payload); // fetch define Content-Type: text/plain
   }
   
   let res, data;
