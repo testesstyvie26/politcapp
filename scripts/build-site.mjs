@@ -8,13 +8,16 @@ const folders = ['css', 'data', 'docs', 'js', 'vendor'];
 const rootFiles = ['favicon.svg', 'CNAME', 'tse-votos-2022.js'];
 const assetVersion = '20260901-2';
 
+// Remove e cria dist
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 
+// Copiar pastas normais
 for (const folder of folders) {
   await cp(path.join(root, folder), path.join(output, folder), { recursive: true });
 }
 
+// Copiar arquivos-root (HTML)
 for (const entry of await readdir(root, { withFileTypes: true })) {
   if (entry.isFile() && entry.name.endsWith('.html')) {
     const source = await readFile(path.join(root, entry.name), 'utf8');
@@ -26,30 +29,14 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
   }
 }
 
+// Copiar arquivos-root extras (favicon, CNAME, etc.)
 for (const file of rootFiles) {
   await cp(path.join(root, file), path.join(output, file));
 }
 
-await writeFile(path.join(output, '_headers'), `/*
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
-  X-Frame-Options: SAMEORIGIN
+// Escrever _headers e _redirects no dist
+await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  X-Frame-Options: SAMEORIGIN\n\n/css/*\n  Cache-Control: public, max-age=604800\n\n/js/*\n  Cache-Control: public, max-age=604800\n\n/data/*\n  Cache-Control: public, max-age=3600\n`, 'utf8');
 
-/css/*
-  Cache-Control: public, max-age=604800
-
-/js/*
-  Cache-Control: public, max-age=604800
-
-/data/*
-  Cache-Control: public, max-age=3600
-`, 'utf8');
-
-await writeFile(path.join(output, '_redirects'), `/ /landing-app.html 302
-/inicio /landing-app.html 302
-/entrar /login.html 302
-/app /index.html 302
-`, 'utf8');
+await writeFile(path.join(output, '_redirects'), `/ /landing-app.html 302\n/inicio /landing-app.html 302\n/entrar /login.html 302\n/app /index.html 302\n`, 'utf8');
 
 console.log(`Politapp pronto em ${path.relative(root, output)}.`);

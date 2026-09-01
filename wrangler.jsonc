@@ -7,6 +7,6 @@
     "nodejs_compat"
   ],
   "vars": {
-    "ALLOWED_ORIGINS": "https://politcapp.com.br,https://f49b7c1f.politcapp.pages.dev"
+    "ALLOWED_ORIGINS": "https://politcapp.com.br,https://f49b7c1f.politcapp.pages.dev,https://3e828904.politcapp.pages.dev"
   }
 }
