@@ -11,7 +11,8 @@
 
   /* Arquitetura de informação única em todas as páginas. O menu escrito no
      HTML permanece como fallback, mas a experiência ativa deixa de variar. */
-  const currentFile = location.pathname.replace(/^.*\//, '') || 'index.html';
+  const currentPathPart = location.pathname.replace(/^.*\//, '') || 'index.html';
+  const currentFile = currentPathPart.includes('.') ? currentPathPart : currentPathPart + '.html';
   const adminArea = /^admin(?:-|\.)/.test(currentFile);
   const dropdown = (label, group, links) =>
     '<details class="site-nav-dropdown" data-nav-group="' + group + '">' +
@@ -23,6 +24,7 @@
 
   nav.innerHTML =
     '<a href="executivo.html">Visão geral</a>' +
+    '<a href="presidencial-2026.html">Presidencial 2026</a>' +
     dropdown('Dados eleitorais', 'dados', [
       ['index.html', 'Deputados atuais'],
       ['eleicao-2022-deputado-federal.html', 'Eleição federal 2022'],

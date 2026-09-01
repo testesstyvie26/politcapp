@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Painel neutro da eleição presidencial de 2026: candidaturas, propostas, calendário e notícias.">
+  <title>Presidencial 2026 — candidatos, propostas e notícias | Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=16">
+  <link rel="stylesheet" href="css/site-theme.css?v=10">
+  <style>
+    .e26-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.7fr);gap:1rem;align-items:stretch;margin-bottom:1.25rem}
+    .e26-kicker{color:#93c5fd;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .55rem}
+    .e26-hero__main,.e26-countdown{padding:clamp(1.25rem,3vw,2rem);border:1px solid var(--border);border-radius:16px;background:rgba(9,19,37,.9);box-shadow:var(--shadow-sm)}
+    .e26-hero h1{max-width:18ch!important;font-size:clamp(2rem,4vw,3.5rem)!important}
+    .e26-countdown{display:flex;flex-direction:column;justify-content:center}
+    .e26-countdown strong{font:700 clamp(2rem,6vw,4rem)/1 "JetBrains Mono",monospace;color:#fff}
+    .e26-countdown span{color:var(--muted)}
+    .e26-meta{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:1rem}
+    .e26-chip{display:inline-flex;align-items:center;min-height:32px;padding:.35rem .7rem;border:1px solid rgba(148,163,184,.2);border-radius:999px;background:rgba(255,255,255,.04);color:#dbeafe;font-size:.8rem}
+    .e26-jump{display:flex;gap:.45rem;overflow-x:auto;padding:.25rem 0 1.1rem;scrollbar-width:none}
+    .e26-jump a{white-space:nowrap;text-decoration:none;color:#cbd5e1;padding:.55rem .8rem;border:1px solid var(--border);border-radius:9px;background:rgba(9,19,37,.82)}
+    .e26-jump a:hover{color:#fff;border-color:rgba(96,165,250,.45)}
+    .e26-section{scroll-margin-top:82px;margin-bottom:1.25rem}
+    .e26-section__head{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:.85rem}
+    .e26-section__head p{margin:0;color:var(--muted);max-width:65ch}
+    .e26-search{width:min(100%,380px);margin-bottom:1rem}
+    .e26-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem}
+    .e26-card{padding:1rem;border:1px solid var(--border);border-radius:12px;background:rgba(9,19,37,.88)}
+    .e26-card h3{margin:0 0 .2rem;font-size:1rem;color:#fff}
+    .e26-party{display:inline-flex;margin-bottom:.65rem;color:#93c5fd;font-weight:700;font-size:.78rem;letter-spacing:.04em}
+    .e26-card p{margin:.25rem 0 .8rem;color:var(--muted);font-size:.86rem}
+    .e26-card a{color:#bfdbfe;font-size:.85rem;font-weight:600;text-decoration:none}
+    .e26-card a:hover{text-decoration:underline}
+    .e26-topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem}
+    .e26-topic{padding:.85rem;border-left:3px solid #3b82f6;border-radius:0 10px 10px 0;background:rgba(96,165,250,.07)}
+    .e26-topic strong{display:block;color:#fff;margin-bottom:.2rem}
+    .e26-topic span{color:var(--muted);font-size:.84rem}
+    .e26-timeline{display:grid;gap:.6rem}
+    .e26-date{display:grid;grid-template-columns:120px 1fr;gap:1rem;padding:.85rem 0;border-bottom:1px solid var(--border)}
+    .e26-date time{font:600 .84rem "JetBrains Mono",monospace;color:#93c5fd}
+    .e26-date p{margin:0;color:#dbe4ef}
+    .e26-news{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.8rem}
+    .e26-news article{display:flex;flex-direction:column;min-height:190px;padding:1rem;border:1px solid var(--border);border-radius:12px;background:rgba(9,19,37,.88)}
+    .e26-news small{color:#93a4b8}.e26-news h3{font-size:1rem;margin:.6rem 0}.e26-news p{color:var(--muted);font-size:.86rem;margin:0 0 1rem}.e26-news a{margin-top:auto;color:#bfdbfe;text-decoration:none;font-weight:600}
+    .e26-source{display:flex;gap:.6rem;flex-wrap:wrap}.e26-source a{display:inline-flex;padding:.6rem .75rem;border:1px solid var(--border);border-radius:9px;color:#dbeafe;text-decoration:none;background:rgba(255,255,255,.035)}
+    .e26-disclaimer{font-size:.82rem;color:var(--muted);padding:.85rem 1rem;border:1px solid rgba(245,158,11,.25);border-radius:10px;background:rgba(245,158,11,.06)}
+    @media(max-width:760px){.e26-hero{grid-template-columns:1fr}.e26-section__head{display:block}.e26-date{grid-template-columns:1fr;gap:.25rem}}
+  </style>
+</head>
+<body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal"><a href="presidencial-2026.html" aria-current="page">Presidencial 2026</a></nav>
+
+    <main id="politapp-main" tabindex="-1">
+      <section class="e26-hero" aria-labelledby="e26-title">
+        <div class="e26-hero__main">
+          <p class="e26-kicker">Eleições gerais · Brasil</p>
+          <h1 id="e26-title">Presidencial 2026</h1>
+          <p>Um ponto de partida neutro para comparar candidaturas, localizar planos de governo, acompanhar o calendário oficial e ler notícias recentes.</p>
+          <div class="e26-meta"><span class="e26-chip">13 candidaturas registradas</span><span class="e26-chip">1º turno · 4 out</span><span class="e26-chip">Atualizado · 1 set 2026</span></div>
+        </div>
+        <aside class="e26-countdown" aria-label="Contagem regressiva para o primeiro turno">
+          <span>Faltam</span><strong id="daysToElection">33</strong><span>dias para o 1º turno</span>
+        </aside>
+      </section>
+
+      <nav class="e26-jump" aria-label="Nesta página">
+        <a href="#candidaturas">Candidaturas</a><a href="#propostas">Propostas</a><a href="#calendario">Calendário</a><a href="#noticias">Notícias</a><a href="#fontes">Fontes oficiais</a>
+      </nav>
+
+      <section class="panel e26-section" id="candidaturas">
+        <div class="e26-section__head"><div><h2>Candidaturas à Presidência</h2><p>Pedidos registrados no TSE. A situação jurídica pode mudar durante o julgamento dos registros.</p></div></div>
+        <label class="e26-search">Buscar por nome ou partido<input id="candidateSearch" type="search" placeholder="Ex.: Lula, Novo, Flávio…" autocomplete="off"></label>
+        <div class="e26-grid" id="candidateGrid"></div>
+        <p id="candidateEmpty" class="muted" hidden>Nenhuma candidatura encontrada.</p>
+      </section>
+
+      <section class="panel e26-section" id="propostas">
+        <div class="e26-section__head"><div><h2>Compare propostas por tema</h2><p>Use os planos entregues à Justiça Eleitoral como fonte primária e a cobertura comparativa como apoio de leitura.</p></div></div>
+        <div class="e26-topics">
+          <div class="e26-topic"><strong>Economia e emprego</strong><span>Renda, impostos, contas públicas, indústria e trabalho.</span></div>
+          <div class="e26-topic"><strong>Saúde</strong><span>SUS, atenção básica, filas, financiamento e prevenção.</span></div>
+          <div class="e26-topic"><strong>Educação</strong><span>Ensino básico, universidades, formação técnica e ciência.</span></div>
+          <div class="e26-topic"><strong>Segurança</strong><span>Crime organizado, polícias, sistema penal e fronteiras.</span></div>
+          <div class="e26-topic"><strong>Meio ambiente</strong><span>Clima, Amazônia, energia, agro e transição ecológica.</span></div>
+          <div class="e26-topic"><strong>Políticas sociais</strong><span>Pobreza, moradia, direitos humanos e inclusão.</span></div>
+          <div class="e26-topic"><strong>Instituições</strong><span>Democracia, corrupção, gestão pública e relação entre Poderes.</span></div>
+          <div class="e26-topic"><strong>Política externa</strong><span>Comércio, integração regional, defesa e alianças.</span></div>
+        </div>
+        <div class="e26-source" style="margin-top:1rem">
+          <a href="https://divulgacandcontas.tse.jus.br/divulga/#/" target="_blank" rel="noopener">Planos oficiais no TSE ↗</a>
+          <a href="https://www.opovo.com.br/agencia/bbc/2026/08/31/eleicao-2026-quais-sao-as-propostas-dos-candidatos-a-presidente.html" target="_blank" rel="noopener">Comparador de propostas · BBC ↗</a>
+        </div>
+      </section>
+
+      <section class="panel e26-section" id="calendario">
+        <div class="e26-section__head"><div><h2>Calendário essencial</h2><p>Datas nacionais definidas pela Justiça Eleitoral.</p></div></div>
+        <div class="e26-timeline">
+          <div class="e26-date"><time datetime="2026-08-16">16 ago</time><p>Início oficial da propaganda eleitoral.</p></div>
+          <div class="e26-date"><time datetime="2026-08-28">28 ago</time><p>Início da propaganda eleitoral gratuita no rádio e na televisão.</p></div>
+          <div class="e26-date"><time datetime="2026-10-01">1 out</time><p>Último dia da propaganda eleitoral gratuita antes do primeiro turno.</p></div>
+          <div class="e26-date"><time datetime="2026-10-04">4 out</time><p><strong>Primeiro turno</strong> das Eleições Gerais de 2026.</p></div>
+          <div class="e26-date"><time datetime="2026-10-25">25 out</time><p><strong>Segundo turno</strong>, se necessário.</p></div>
+        </div>
+      </section>
+
+      <section class="e26-section" id="noticias">
+        <div class="e26-section__head"><div><h2>Notícias e contexto</h2><p>Seleção recente com fonte e data visíveis. Links abrem o conteúdo original.</p></div></div>
+        <div class="e26-news">
+          <article><small>BBC News Brasil / O Povo · 31 ago 2026</small><h3>Propostas dos candidatos em oito áreas</h3><p>Especial comparativo com os posicionamentos das 13 candidaturas.</p><a href="https://www.opovo.com.br/agencia/bbc/2026/08/31/eleicao-2026-quais-sao-as-propostas-dos-candidatos-a-presidente.html" target="_blank" rel="noopener">Ler análise ↗</a></article>
+          <article><small>CNN Brasil · 28 ago 2026</small><h3>Quem são os candidatos à Presidência</h3><p>Perfil geral das candidaturas registradas para a disputa presidencial.</p><a href="https://www.cnnbrasil.com.br/eleicoes/quem-sao-os-candidatos-a-presidencia-da-republica/" target="_blank" rel="noopener">Ler notícia ↗</a></article>
+          <article><small>TSE · 28 ago 2026</small><h3>Começa o horário eleitoral gratuito</h3><p>Regras para rádio, TV, inteligência artificial, mensagens e atos de campanha.</p><a href="https://www.tse.jus.br/comunicacao/noticias/2026/Agosto/eleicoes-2026-horario-eleitoral-gratuito-comeca-nesta-sexta-feira-28-1" target="_blank" rel="noopener">Ler no TSE ↗</a></article>
+          <article><small>Senado Notícias · 17 ago 2026</small><h3>Números das candidaturas oficializadas</h3><p>Panorama nacional dos pedidos de registro para todos os cargos.</p><a href="https://www12.senado.leg.br/noticias/materias/2026/08/17/eleicoes-2026-veja-os-numeros-das-candidaturas-oficializadas" target="_blank" rel="noopener">Ler no Senado ↗</a></article>
+        </div>
+      </section>
+
+      <section class="panel e26-section" id="fontes">
+        <div class="e26-section__head"><div><h2>Fontes oficiais</h2><p>Consulte diretamente os dados de candidatura, contas, pesquisas e regras eleitorais.</p></div></div>
+        <div class="e26-source">
+          <a href="https://www.tse.jus.br/eleicoes/eleicoes-2026" target="_blank" rel="noopener">Portal Eleições 2026 · TSE ↗</a>
+          <a href="https://divulgacandcontas.tse.jus.br/divulga/#/" target="_blank" rel="noopener">DivulgaCandContas ↗</a>
+          <a href="https://dadosabertos.tse.jus.br/pt_BR/dataset/candidatos-2026" target="_blank" rel="noopener">Dados abertos de candidaturas ↗</a>
+          <a href="https://www.tse.jus.br/eleicoes/calendario-eleitoral/" target="_blank" rel="noopener">Calendário eleitoral ↗</a>
+        </div>
+      </section>
+
+      <p class="e26-disclaimer"><strong>Nota editorial:</strong> o Politapp não endossa candidaturas. Informações eleitorais podem ser alteradas por decisões partidárias ou judiciais; confirme sempre a situação no TSE. Última revisão manual: 1º de setembro de 2026.</p>
+    </main>
+  </div>
+
+  <script>
+    const candidates=[
+      ['Clariana Barão','DC'],['Edmilson Costa','PCB'],['Escritor Augusto Cury','Avante'],
+      ['Flávio Bolsonaro','PL'],['Hertz Dias','PSTU'],['Lula','PT'],['Pablo Marçal','PRTB'],
+      ['Renan Santos','Missão'],['Ronaldo Caiado','PSD'],['Rui Costa Pimenta','PCO'],
+      ['Samara','UP'],['Veterinário Wilson Grassi','Democrata'],['Zema','Novo']
+    ];
+    const grid=document.getElementById('candidateGrid'),empty=document.getElementById('candidateEmpty');
+    const official='https://divulgacandcontas.tse.jus.br/divulga/#/';
+    function renderCandidates(query=''){
+      const q=query.trim().toLocaleLowerCase('pt-BR');
+      const shown=candidates.filter(([name,party])=>(name+' '+party).toLocaleLowerCase('pt-BR').includes(q));
+      grid.innerHTML=shown.map(([name,party])=>`<article class="e26-card"><span class="e26-party">${party}</span><h3>${name}</h3><p>Candidatura registrada para a Presidência da República.</p><a href="${official}" target="_blank" rel="noopener">Ver registro e plano oficial ↗</a></article>`).join('');
+      empty.hidden=shown.length>0;
+    }
+    renderCandidates();
+    document.getElementById('candidateSearch').addEventListener('input',e=>renderCandidates(e.target.value));
+    const election=new Date('2026-10-04T08:00:00-03:00');
+    const days=Math.max(0,Math.ceil((election-Date.now())/86400000));
+    document.getElementById('daysToElection').textContent=days;
+  </script>
+  <script src="js/site-bg.js?v=2"></script>
+  <script src="js/site-nav.js?v=17"></script>
+  <script src="js/site-interactions.js?v=2"></script>
+</body>
+</html>
