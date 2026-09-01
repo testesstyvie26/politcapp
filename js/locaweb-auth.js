@@ -1,11 +1,9 @@
 /**
  * Cliente de autenticação Politapp - Cloudflare Workers (sem dependência Locaweb PHP)
  * 
- * URLs substituídas:
- *   - antigo: auth/google-start.php   (PHP/Locaweb)
- *   - novo:   /api/google-start       (Cloudflare Workers JS)
- *   - antigo: auth/google-callback    (PHP/Locaweb)  
- *   - novo:   /api/google-callback    (Cloudflare Workers JS)
+ * URLs:
+ *   - /api/google-start       ← Cloudflare Workers JS (OAuth initiation)
+ *   - /api/google-callback    ← Cloudflare Workers JS (OAuth callback)
  * 
  * Fluxo OAuth Google:
  *   1. Frontend chama /api/google-start?return=...
@@ -23,7 +21,7 @@ const TOKEN_KEY = "politapp_token";
 
 export function googleStartUrl(returnUrl) {
   const ret = returnUrl || (location.origin + location.pathname);
-  // Usa o novo endpoint do Cloudflare Workers
+  // Usa o novo endpoint do Cloudflare Workers (RELATIVO, sem domínio externo)
   return "/api/google-start" + "?return=" + encodeURIComponent(ret);
 }
 
