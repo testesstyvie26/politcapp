@@ -29,5 +29,8 @@
     "pdf-lib": "^1.17.1",
     "playwright": "^1.49.1",
     "wrangler": "^4.127.1"
+  },
+  "dependencies": {
+    "itty-router": "^5.0.24"
   }
 }

@@ -3,5 +3,17 @@
   "name": "politcapp",
   "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-09-01",
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "PA_AUTH_STATE",
+      "id": "PA_AUTH_STATE_ID_PLACEHOLDER"
+    },
+    {
+      "binding": "PA_CACHE",
+      "id": "PA_CACHE_ID_PLACEHOLDER"
+    }
+  ]
 }
