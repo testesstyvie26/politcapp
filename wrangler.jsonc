@@ -6,14 +6,7 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "kv_namespaces": [
-    {
-      "binding": "PA_AUTH_STATE",
-      "id": "PA_AUTH_STATE_ID_PLACEHOLDER"
-    },
-    {
-      "binding": "PA_CACHE",
-      "id": "PA_CACHE_ID_PLACEHOLDER"
-    }
-  ]
+  "vars": {
+    "ALLOWED_ORIGINS": "https://politcapp.com.br,https://f49b7c1f.politcapp.pages.dev"
+  }
 }
