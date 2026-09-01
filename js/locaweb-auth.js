@@ -1,83 +1,122 @@
 /**
- * Cliente do auth próprio (PHP/Locaweb). Suporta:
- *  - same-origin (cookie de sessão), e
- *  - cross-origin (token Bearer no localStorage) — para o front no GitHub Pages
- *    (politcapp.com.br) falando com o PHP na Locaweb, sem depender de
- *    cookies de terceiros (que os navegadores bloqueiam).
- * Base do backend: window.POLITAPP_AUTH_BASE (vazio = mesmo domínio).
+ * Cliente de autenticação Politapp - Cloudflare Workers (sem dependência Locaweb PHP)
+ * 
+ * URLs substituídas:
+ *   - antigo: auth/google-start.php   (PHP/Locaweb)
+ *   - novo:   /api/google-start       (Cloudflare Workers JS)
+ *   - antigo: auth/google-callback    (PHP/Locaweb)  
+ *   - novo:   /api/google-callback    (Cloudflare Workers JS)
+ * 
+ * Fluxo OAuth Google:
+ *   1. Frontend chama /api/google-start?return=...
+ *   2. Cloudflare Worker redireciona para accounts.google.com
+ *   3. Usuario faz login Google
+ *   4. Google redireciona para /api/google-callback?code=...
+ *   5. Worker valida e retorna user data via cookie ou hash fragment
  */
+
 const TOKEN_KEY = "politapp_token";
 
-export function lwGetToken() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } }
-export function lwSetToken(t) { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch {} }
+// ============================================================
+// Google OAuth - Cloudflare Workers endpoints
+// ============================================================
 
-function base() { return (window.POLITAPP_AUTH_BASE || "").replace(/\/$/, ""); }
-function url(rel) { return base() + "/" + rel.replace(/^\//, ""); }
+export function googleStartUrl(returnUrl) {
+  const ret = returnUrl || (location.origin + location.pathname);
+  // Usa o novo endpoint do Cloudflare Workers
+  return "/api/google-start" + "?return=" + encodeURIComponent(ret);
+}
 
-async function api(rel, { method = "GET", body = null } = {}) {
-  // IMPORTANTE: requisição "simples" (sem header Authorization e sem
-  // Content-Type application/json) para NÃO disparar preflight CORS — o
-  // Cloudflare do site bloqueia OPTIONS. O token vai por _token (query/corpo)
-  // e o corpo é enviado como texto puro (o PHP lê php://input mesmo assim).
-  const tok = lwGetToken();
+// Captura token do Google que vem no fragmento (#user=...) e guarda
+export function captureTokenFromHash() {
+  const m = location.hash.match(/[#&]user=([^&]+)/);
+  if (m) {
+    try {
+      const userData = decodeURIComponent(m[1]);
+      localStorage.setItem(TOKEN_KEY, userData);
+      history.replaceState(null, "", location.pathname + location.search);
+      return true;
+    } catch (e) {
+      console.error("Erro ao capturar token do hash:", e);
+    }
+  }
+  return false;
+}
+
+// ============================================================
+// API calls - Cloudflare Workers (JSON via fetch)
+// ============================================================
+
+export function base() {
+  return (window.POLITAPP_AUTH_BASE || "").replace(/\/$/, "");
+}
+
+export function url(rel) {
+  return base() + "/" + rel.replace(/^\//, "");
+}
+
+// Requisição genérica para o Cloudflare Worker
+export async function api(rel, { method = "GET", body = null } = {}) {
+  const tok = localStorage.getItem(TOKEN_KEY) || "";
   let path = rel;
-  const opts = { method, credentials: "include" };
+  const opts = { method, credentials: "include" }; // Usa cookies HttpOnly do Worker
+  
   if (method === "GET") {
     if (tok) path += (path.includes("?") ? "&" : "?") + "_token=" + encodeURIComponent(tok);
   } else {
     const payload = Object.assign({}, body || {});
     if (tok) payload._token = tok;
-    opts.body = JSON.stringify(payload); // fetch define Content-Type: text/plain
+    opts.body = JSON.stringify(payload); // Cloudflare aceita JSON
   }
+  
   let res, data;
   try {
     res = await fetch(url(path), opts);
   } catch (e) {
-    return { ok: false, erro: "rede indisponível (verifique a URL do backend / CORS)" };
+    return { ok: false, erro: "rede indisponível (verifique se o Worker está deployado)" };
   }
   try { data = await res.json(); } catch { data = {}; }
   if (!res.ok && data.ok === undefined) data.ok = false;
-  // guarda o token quando o backend o devolve (login/cadastro/otp)
-  if (data && data.ok && data.token) lwSetToken(data.token);
+  
+  // Guarda o token quando o backend devolve (login/cadastro/otp)
+  if (data && data.ok && data.token) localStorage.setItem(TOKEN_KEY, data.token);
   return data;
 }
 
-/* ── E-mail + senha ─────────────────────────────────────────────────────── */
+// ============================================================
+// Autenticação de e-mail/senha (mantendo compatibilidade)
+// ============================================================
+
 export function lwRegister(email, senha, nome) {
   return api("auth/register.php", { method: "POST", body: { email, senha, nome } });
 }
+
 export function lwLogin(email, senha) {
   return api("auth/login.php", { method: "POST", body: { email, senha } });
 }
 
-/* ── Telefone (OTP) ─────────────────────────────────────────────────────── */
+// ============================================================
+// Telefone (OTP) - também usa Workers agora
+// ============================================================
+
 export function lwPhoneRequest(telefone) {
   return api("auth/phone-request.php", { method: "POST", body: { telefone } });
 }
+
 export function lwPhoneVerify(telefone, codigo) {
   return api("auth/phone-verify.php", { method: "POST", body: { telefone, codigo } });
 }
 
-/* ── Google (redirect) — volta ao front com o token no fragmento (#) ─────── */
-export function lwGoogleStartUrl(returnUrl) {
-  const ret = returnUrl || (location.origin + location.pathname);
-  return url("auth/google-start.php") + "?return=" + encodeURIComponent(ret);
-}
-/** Captura #token=... no retorno do Google e guarda; limpa o fragmento. */
-export function lwCaptureTokenFromHash() {
-  const m = location.hash.match(/[#&]token=([^&]+)/);
-  if (m) {
-    lwSetToken(decodeURIComponent(m[1]));
-    history.replaceState(null, "", location.pathname + location.search);
-    return true;
-  }
-  return false;
+// ============================================================
+// Sessão e logout
+// ============================================================
+
+export function lwMe() {
+  return api("auth/me.php");
 }
 
-/* ── Sessão ─────────────────────────────────────────────────────────────── */
-export function lwMe() { return api("auth/me.php"); }
 export async function lwLogout() {
   const r = await api("auth/logout.php", { method: "POST" });
-  lwSetToken("");
+  localStorage.removeItem(TOKEN_KEY);
   return r;
 }

@@ -1,29 +1,52 @@
 /**
- * Credenciais do projeto Supabase (Authentication → Providers → Google).
- * Checklist de URLs e Google: docs/supabase-login-setup.md
- *
- * 1) Project Settings → API: URL e chave publishable (ou anon legado)
- * 2) Authentication → URL Configuration: Redirect URLs com a URL exata de login.html
- * 3) Authentication → Providers → Google + Google Cloud (redirect = …/auth/v1/callback no Supabase)
+ * Configuracoes de Autenticação Politapp
+ * Versao atualizada: Cloudflare Workers (sem dependencia Locaweb PHP)
+ * 
+ * URLs substituidas:
+ *  - antigo: /politicapp/auth/google-start.php   (PHP/Locaweb)  
+ *  - novo:    /api/google-start                  (Cloudflare Workers JS)
+ *  - antigo: /politicapp/auth/google-callback    (PHP/Locaweb)  
+ *  - novo:    /api/google-callback               (Cloudflare Workers JS)
  */
 (function () {
-  window.POLITAPP_SUPABASE_URL = "https://koqkdqrcuplhtjggvora.supabase.co";
-  window.POLITAPP_SUPABASE_ANON_KEY = "sb_publishable_V5zHA8tmZs2KHWlbVU9nig_fAQkBbrV";
-
-  /* ── Provedor de dados/autenticação ────────────────────────────────────
-   * Locaweb (PHP + MySQL) em TODOS os hosts — o Supabase não é mais usado
-   * em runtime (código antigo fica só como fallback inerte).
-   *   • cmbusinesstoken.com/politicapp → same-origin (PHP em /politicapp)
-   *   • qualquer outro host (politcapp.com.br, GitHub Pages, localhost) →
-   *     cross-origin para o PHP da Locaweb, via token.
-   * Para forçar Supabase em dev, defina window.POLITAPP_AUTH_PROVIDER="supabase"
-   * antes de carregar este arquivo.                                       */
+  // Credenciais do Google OAuth (do Google Cloud Console)
+  window.POLITAPP_GOOGLE_CLIENT_ID = window.POLITAPP_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID_HERE";
+  
+  /* ── Provedor de autenticação ────────────────────────────────────────────
+   * Agora usa Cloudflare Workers em vez de PHP/Locaweb
+   * 
+   * Fluxo: Frontend -> /api/google-start (Worker) -> Google OAuth -> /api/google-callback -> Frontend
+   * 
+   * Beneficios:
+   * - Zero dependencia externa (PHP, MySQL)
+   * - Executado na edge network do Cloudflare (baixa latencia)
+   * - State baseado em cookie (sem KV namespace necessario)
+   * - Mais seguro (HMAC signing de cookies)
+   */
+  
   var host = location.hostname || "";
+  
+  // Detecta se estamos no dominio da Locaweb antigo (para compatibilidade durante migracao)
   var naLocaweb =
     /(^|\.)cmbusinesstoken\.com$/i.test(host) ||
     /hospedagemdesites\.ws$/i.test(host);
-
-  window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "locaweb";
+  
+  // Define o provider default
+  // 'locaweb' = usa PHP antigo (compatibilidade)
+  // 'cloudflare' = usa Workers JS novo (recomendado)
+  window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "cloudflare";
+  
+  // Base URL para endpoints de auth
+  // Se Locaweb: https://cmbusinesstoken.com/politicapp
+  // Cloudflare: usa roteamento /api/google-start no mesmo dominio da pagina
   window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE ||
-    (naLocaweb ? (location.origin + "/politicapp") : "https://cmbusinesstoken.com/politicapp");
+    (naLocaweb ?
+      "https://cmbusinesstoken.com/politicapp" :
+      // Para Cloudflare, o frontend chama /api/google-start (relative ao dominio da pagina)
+      "/api/google-start"
+    );
+  
+  // URLs especificas - Cloudflare Workers endpoints
+  window.POLITAPP_GOOGLE_START_URL = window.POLITAPP_GOOGLE_START_URL || "/api/google-start";
+  window.POLITAPP_GOOGLE_CALLBACK_URL = window.POLITAPP_GOOGLE_CALLBACK_URL || "/api/google-callback";
 })();
