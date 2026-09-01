@@ -1,0 +1,56 @@
+name: Deploy Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+concurrency:
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v6
+
+      - name: Preparar Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Validar e gerar site
+        run: npm run build
+
+      - name: Publicar no Cloudflare Pages
+        id: cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          packageManager: npm
+          command: pages deploy dist --project-name=politcapp --branch=${{ github.ref_name }} --commit-hash=${{ github.sha }} --commit-message="${{ github.event.head_commit.message }}"
+
+      - name: Resumo da publicação
+        env:
+          DEPLOYMENT_URL: ${{ steps.cloudflare.outputs.deployment-url }}
+          DEPLOYMENT_ALIAS_URL: ${{ steps.cloudflare.outputs.pages-deployment-alias-url }}
+        run: |
+          echo "## Cloudflare Pages" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`${GITHUB_SHA::8}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Deploy: $DEPLOYMENT_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Alias: $DEPLOYMENT_ALIAS_URL" >> "$GITHUB_STEP_SUMMARY"
