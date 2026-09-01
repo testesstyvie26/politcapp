@@ -710,3 +710,95 @@ html body .politapp-skip:focus { top: 0; outline: none; }
   html body .actions button { flex: 1 1 auto; }
   html body #pt-totop { width: 42px; height: 42px; right: 12px; bottom: 12px; }
 }
+
+/* UX refresh — conteúdo calmo; o fundo existente segue como protagonista. */
+:root {
+  --surface: rgba(9, 19, 37, .88);
+  --surface2: rgba(13, 26, 47, .94);
+  --border: rgba(148, 163, 184, .18);
+  --text: #f1f5f9;
+  --muted: #a8b5c7;
+  --accent: #60a5fa;
+  --radius: 12px;
+  --shadow-sm: 0 12px 32px rgba(0, 0, 0, .28);
+}
+html body { line-height: 1.55 !important; }
+html body h1 {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: #f8fafc !important;
+  max-width: 28ch;
+}
+html body header { margin-bottom: clamp(1.25rem, 3vw, 2rem) !important; }
+html body header p,
+html body header .lead,
+html body header .lede { max-width: 78ch !important; color: var(--muted) !important; }
+html body .panel {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  overflow: visible !important;
+}
+html body .panel::before { content: none !important; }
+html body .panel:hover {
+  transform: none !important;
+  border-color: rgba(148, 163, 184, .26) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html body button:not(.pn-toggle):not(.pt-tab),
+html body a.btn,
+html body a.button {
+  background: #2563eb !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+html body button:not(.pn-toggle):not(.pt-tab):hover,
+html body a.btn:hover,
+html body a.button:hover {
+  background: #1d4ed8 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+html body button.secondary,
+html body button.btn-ghost {
+  background: rgba(255,255,255,.055) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+}
+html body input:not([type=checkbox]):not([type=radio]):not([type=range]),
+html body select,
+html body textarea {
+  min-height: 44px;
+  background: rgba(3, 10, 23, .72) !important;
+  border-color: rgba(148, 163, 184, .25) !important;
+}
+html body :focus-visible {
+  outline: 3px solid rgba(96, 165, 250, .75) !important;
+  outline-offset: 3px !important;
+}
+html body .table-wrap { background: rgba(6, 14, 28, .88) !important; }
+html body th { background: #101d31 !important; color: #cbd5e1 !important; }
+html body tr:hover td { background: rgba(96, 165, 250, .07) !important; }
+html body .actions { gap: .65rem !important; }
+html body .note {
+  color: #b8c5d6 !important;
+  background: rgba(96, 165, 250, .07) !important;
+  border-left: 3px solid rgba(96, 165, 250, .55) !important;
+  padding: .75rem .9rem !important;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html body .wrap > * { animation-duration: .24s !important; }
+}
+@media (max-width: 768px) {
+  html body .wrap,
+  html body .page,
+  html body > .wrap,
+  html body > .page {
+    max-width: 100% !important;
+    padding-inline: 1rem !important;
+  }
+  html body .panel { padding: 1rem !important; }
+  html body table { font-size: .8rem !important; }
+}

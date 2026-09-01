@@ -3,6 +3,9 @@
   "private": true,
   "description": "Site estático (HTML/CSS/JS). Proxy opcional para API Portal da Transparência.",
   "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "preview": "npm run build && wrangler pages dev dist",
+    "deploy:pages": "npm run build && wrangler pages deploy dist --project-name politcapp --branch main",
     "build:tse-prefeitos-rj": "node scripts/build-tse-prefeitos-rj-2024.js",
     "sync:pref-tse-embed": "node scripts/sync-pref-tse-embed.js",
     "build:vereadores-rj": "node scripts/build-vereadores-rj-json.cjs",
@@ -15,7 +18,7 @@
     "dev": "node scripts/politapp-dev-server.cjs",
     "dev:portal-proxy": "node scripts/portal-transparencia-proxy.cjs",
     "dev:escuta-proxy": "node scripts/escuta-social-proxy.cjs",
-    "deploy:worker": "npx wrangler deploy",
+    "deploy:worker": "wrangler deploy --config wrangler.worker.jsonc",
     "build:pdf-apresentacao": "node scripts/generate-apresentacao-pdf.mjs",
     "build:pdf-apresentacao-comercial": "node scripts/generate-apresentacao-pdf.mjs --comercial",
     "build:pdf-demonstracao-guia": "node scripts/generate-apresentacao-pdf.mjs --guia-demo"
@@ -24,6 +27,7 @@
     "adm-zip": "^0.5.16",
     "iconv-lite": "^0.6.3",
     "pdf-lib": "^1.17.1",
-    "playwright": "^1.49.1"
+    "playwright": "^1.49.1",
+    "wrangler": "^4.127.1"
   }
 }

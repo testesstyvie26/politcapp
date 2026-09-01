@@ -9,6 +9,70 @@
   if (!nav) return;
   if (nav.closest('.pn-topbar')) return;
 
+  /* Arquitetura de informação única em todas as páginas. O menu escrito no
+     HTML permanece como fallback, mas a experiência ativa deixa de variar. */
+  const currentFile = location.pathname.replace(/^.*\//, '') || 'index.html';
+  const adminArea = /^admin(?:-|\.)/.test(currentFile);
+  const dropdown = (label, group, links) =>
+    '<details class="site-nav-dropdown" data-nav-group="' + group + '">' +
+      '<summary class="site-nav-dropdown__summary">' + label + '</summary>' +
+      '<div class="site-nav-dropdown__panel" role="group" aria-label="' + label + '">' +
+        links.map(([href, text]) => '<a href="' + href + '">' + text + '</a>').join('') +
+      '</div>' +
+    '</details>';
+
+  nav.innerHTML =
+    '<a href="executivo.html">Visão geral</a>' +
+    dropdown('Dados eleitorais', 'dados', [
+      ['index.html', 'Deputados atuais'],
+      ['eleicao-2022-deputado-federal.html', 'Eleição federal 2022'],
+      ['prefeituras-rj.html', 'Prefeituras do RJ'],
+      ['vereadores-rj.html', 'Vereadores do RJ'],
+      ['vereadores-caxias-ordem-votos.html', 'Vereadores de Caxias'],
+      ['vereadores-rj-mapa-votos.html', 'Mapa de votos']
+    ]) +
+    dropdown('Análises', 'analises', [
+      ['insights-rj.html', 'Insights do RJ'],
+      ['transparencia.html', 'Transparência e verbas'],
+      ['vereador-heitor-queiroz-2024.html', 'Análise Heitor Queiroz'],
+      ['vereador-heitor-comparativo-2024.html', 'Comparativo eleitoral']
+    ]) +
+    dropdown('Comunicação', 'comunicacao', [
+      ['midia-social.html', 'Painel de mídia social'],
+      ['whatsapp.html', 'WhatsApp'],
+      ['instagram.html', 'Instagram']
+    ]) +
+    '<a href="tarefas.html">Tarefas</a>' +
+    dropdown('Ajuda', 'ajuda', [
+      ['guia-uso.html', 'Guia de uso'],
+      ['conta.html', 'Minha conta'],
+      ['privacidade.html', 'Privacidade'],
+      ['termos-uso.html', 'Termos de uso']
+    ]) +
+    (adminArea ? dropdown('Administração', 'admin', [
+      ['admin.html', 'Painel administrativo'],
+      ['admin-unidades.html', 'Unidades'],
+      ['admin-aprovacoes.html', 'Aprovar contas']
+    ]) : '') +
+    '<a class="pn-login" href="login.html">Entrar</a>';
+
+  /* Garante um destino consistente para teclado e leitores de tela inclusive
+     nas landing pages antigas. */
+  let mainTarget = document.getElementById('politapp-main');
+  if (!mainTarget) {
+    mainTarget = document.querySelector('main') || document.querySelector('h1');
+    if (mainTarget) {
+      mainTarget.id = 'politapp-main';
+      mainTarget.setAttribute('tabindex', '-1');
+    }
+  }
+  if (mainTarget && !document.querySelector('.politapp-skip')) {
+    const skip = Object.assign(document.createElement('a'), {
+      className: 'politapp-skip', href: '#politapp-main', textContent: 'Ir ao conteúdo'
+    });
+    document.body.prepend(skip);
+  }
+
   /* ── Botão "Sair" (oculto; o guard revela e liga quando logado) ── */
   if (!nav.querySelector('.pn-logout')) {
     const sair = Object.assign(document.createElement('a'), {
@@ -108,6 +172,7 @@
     const details = summary.closest('details');
     const panel   = details.querySelector('.site-nav-dropdown__panel, .site-nav-dropdown-panel');
     if (!panel) return;
+    panel._ownerDetails = details;
 
     /* Move o panel para o body (position:fixed, z-index alto) */
     document.body.appendChild(panel);
@@ -182,9 +247,13 @@
   });
 
   /* ── Página ativa ───────────────────────────────── */
-  const path = location.pathname.replace(/^.*\//, '') || 'index.html';
-  nav.querySelectorAll('a[href]').forEach(a => {
-    if (a.getAttribute('href') === path) a.setAttribute('aria-current', 'page');
+  const path = currentFile;
+  document.querySelectorAll('nav.site-nav a[href], body > .pn-dd-panel a[href]').forEach(a => {
+    if (a.getAttribute('href') === path) {
+      a.setAttribute('aria-current', 'page');
+      const parentGroup = a.closest('.pn-dd-panel');
+      parentGroup?._ownerDetails?.querySelector('summary')?.setAttribute('aria-current', 'page');
+    }
   });
 
   /* ── Abertura/fechamento do drawer mobile ─────────── */
@@ -199,6 +268,7 @@
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Fechar menu');
     document.body.style.overflow = 'hidden';
+    setTimeout(() => nav.querySelector('a, summary')?.focus(), 0);
   }
   function closeDrawer() {
     drawerOpen = false;
@@ -216,6 +286,15 @@
   toggle.addEventListener('click', () => drawerOpen ? closeDrawer() : openDrawer());
   backdrop.addEventListener('click', closeDrawer);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); } });
+  document.addEventListener('keydown', e => {
+    if (!drawerOpen || e.key !== 'Tab') return;
+    const focusable = [...drawer.querySelectorAll('a[href], summary, button:not([disabled])')]
+      .filter(el => !el.hidden && el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   MQ.addEventListener('change', e => { if (!e.matches) closeDrawer(); });
 
   /* Fechar drawer ao clicar em link (mobile) */

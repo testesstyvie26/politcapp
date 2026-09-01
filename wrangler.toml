@@ -1,8 +1,0 @@
-# Deploy (na raiz): npx wrangler deploy
-# A URL do Worker aparece no fim do comando ou em: Cloudflare → Workers → politapp-portal-transparencia-proxy → Domains
-# Formato típico: https://politapp-portal-transparencia-proxy.<subconta-da-conta>.workers.dev
-# Não inventar "politcapp.workers.dev" — a subconta vem da tua conta Cloudflare, não do domínio do site.
-
-name = "politcapp"
-main = "workers/portal-transparencia-proxy.js"
-compatibility_date = "2024-10-01"
