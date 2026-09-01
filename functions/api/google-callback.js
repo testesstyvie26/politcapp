@@ -34,8 +34,11 @@ router.get('/api/google-callback', async (request, env) => {
   let data;
   try {
     // Add padding if needed
-    const padded = dataB64.replace(/-/g, '+').replace(/_/g, '/');
-    while (padded.length % 4) padded += '=';
+    let padded = dataB64.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding until length is multiple of 4
+    while (padded.length % 4) {
+      padded += '=';
+    }
     const rawData = atob(padded);
     data = JSON.parse(rawData);
   } catch (e) {
