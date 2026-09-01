@@ -13,7 +13,7 @@
   /* ── Provedor de dados/autenticação ────────────────────────────────────
    * Locaweb (PHP + MySQL) em TODOS os hosts — o Supabase não é mais usado
    * em runtime (código antigo fica só como fallback inerte).
-   *   • cmbusinesstoken.com/politicapp → same-origin (PHP em /politicapp/php)
+   *   • cmbusinesstoken.com/politicapp → same-origin (PHP em /politicapp)
    *   • qualquer outro host (politcapp.com.br, GitHub Pages, localhost) →
    *     cross-origin para o PHP da Locaweb, via token.
    * Para forçar Supabase em dev, defina window.POLITAPP_AUTH_PROVIDER="supabase"
@@ -25,5 +25,5 @@
 
   window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "locaweb";
   window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE ||
-    (naLocaweb ? (location.origin + "/politicapp/php") : "https://cmbusinesstoken.com/politicapp/php");
+    (naLocaweb ? (location.origin + "/politicapp") : "https://cmbusinesstoken.com/politicapp");
 })();
