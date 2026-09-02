@@ -19,7 +19,7 @@ for (const folder of folders) {
   await cp(path.join(root, folder), path.join(output, folder), { recursive: true });
 }
 
-// **IMPORTANTE**: Copiar pasta functions para dist/functions/ (Cloudflare Workers API endpoints)
+// **IMPORTANTE**: Copiar pasta functions para dist/functions/ (Cloudflare Workers + MySQL)
 try {
   await mkdir(outputFunctionsDir, { recursive: true });
   await cp(functionsDir, outputFunctionsDir, { recursive: true });
