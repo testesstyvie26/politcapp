@@ -6,6 +6,5 @@ import googleCallback from './api/google-callback.js';
 export default {
   '/api/google-start': googleStart,
   '/api/google-callback': googleCallback,
-  // Rotas adicionais
-  '/api/auth/login': googleCallback, // Usando o mesmo worker para login
+  '/api/auth/login': './functions/api/auth-login.js', // Login email/senha dedicado
 };
