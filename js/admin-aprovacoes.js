@@ -41,7 +41,7 @@ function renderRows(rows, onAct) {
 
 /* ── Locaweb (PHP) ──────────────────────────────────────────────────────── */
 async function initLocaweb() {
-  const { dget, dpost } = await import("./locaweb-data.js?v=28");
+  const { dget, dpost } = await import("./locaweb-data.js?v=29");
   async function load() {
     showErr("");
     const r = await dget("api/admin-pendentes.php");

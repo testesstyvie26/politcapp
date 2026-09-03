@@ -26,7 +26,7 @@ function todayISODate() {
 /* ── Data-layer: duas implementações, mesma interface ───────────────────── */
 async function makeDataLayer(supabase, session) {
   if (LOCAWEB) {
-    const { dget, dpost } = await import("./locaweb-data.js?v=28");
+    const { dget, dpost } = await import("./locaweb-data.js?v=29");
     return {
       async listTarefas(uid, dia) {
         const r = await dget(`api/tarefas.php?unidade_id=${encodeURIComponent(uid)}&dia=${encodeURIComponent(dia)}`);

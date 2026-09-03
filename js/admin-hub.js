@@ -5,7 +5,7 @@ const LOCAWEB = (window.POLITAPP_AUTH_PROVIDER || "supabase") === "locaweb";
   if (LOCAWEB) {
     const { politappAuthReady } = await import("./auth-guard.js?v=28");
     try { await politappAuthReady; } catch { return; }
-    const { dget } = await import("./locaweb-data.js?v=28");
+    const { dget } = await import("./locaweb-data.js?v=29");
     const r = await dget("auth/me.php");
     if (!r || !r.ok || (r.profile?.grupo !== "admin")) {
       window.location.replace(new URL("index.html", location.href).href);

@@ -29,7 +29,7 @@ function wire(getLoadErr, gravar) {
 }
 
 async function initLocaweb() {
-  const { dget, dpost } = await import("./locaweb-data.js?v=28");
+  const { dget, dpost } = await import("./locaweb-data.js?v=29");
   const r = await dget("api/anuncio.php");
   let loadErr = "";
   if (!r.ok) loadErr = r.erro || "Não foi possível carregar o anúncio.";

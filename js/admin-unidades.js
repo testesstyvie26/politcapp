@@ -35,7 +35,7 @@ function wireSlug() {
 }
 
 async function initLocaweb() {
-  const { dget, dpost } = await import("./locaweb-data.js?v=28");
+  const { dget, dpost } = await import("./locaweb-data.js?v=29");
   const root = document.getElementById("root"); if (root) root.hidden = false;
   wireSlug();
   async function load() {

@@ -60,7 +60,7 @@ export async function lwCompleteGoogleCallback() {
 // ============================================================
 
 export function base() {
-  return (window.POLITAPP_AUTH_BASE || "").replace(/\/$/, "");
+  return (window.POLITAPP_AUTH_API_BASE || window.POLITAPP_AUTH_BASE || "").replace(/\/$/, "");
 }
 
 export function url(rel) {
@@ -85,7 +85,7 @@ export async function api(rel, { method = "GET", body = null } = {}) {
   try {
     res = await fetch(url(path), opts);
   } catch (e) {
-    return { ok: false, erro: "rede indisponível (verifique se o Worker está deployado)" };
+    return { ok: false, erro: "Não foi possível acessar o serviço de autenticação." };
   }
   try { data = await res.json(); } catch { data = {}; }
   if (!res.ok && data.ok === undefined) data.ok = false;

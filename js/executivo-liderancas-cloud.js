@@ -15,7 +15,7 @@ function ensureUuid(raw) { return raw && UUID_RE.test(String(raw).trim()) ? Stri
 export async function initLiderancasCloud() {
   ctx = null;
   if (LOCAWEB) {
-    const { dget } = await import("./locaweb-data.js?v=28");
+    const { dget } = await import("./locaweb-data.js?v=29");
     const r = await dget("auth/me.php");
     if (!r || !r.ok || !r.autenticado) return { ok: false, reason: "no_session" };
     const p = r.profile || {};
@@ -40,7 +40,7 @@ export function isCloudReady() { return ctx != null; }
 export async function fetchStoreFromCloud() {
   if (!ctx) throw new Error("cloud não inicializado");
   if (ctx.mode === "locaweb") {
-    const { dget } = await import("./locaweb-data.js?v=28");
+    const { dget } = await import("./locaweb-data.js?v=29");
     const r = await dget("api/liderancas.php");
     if (!r.ok) throw new Error(r.erro || "erro");
     return r.store || {};
@@ -64,7 +64,7 @@ export async function fetchStoreFromCloud() {
 export async function replaceCloudStore(storeObject) {
   if (!ctx) throw new Error("cloud não inicializado");
   if (ctx.mode === "locaweb") {
-    const { dpost } = await import("./locaweb-data.js?v=28");
+    const { dpost } = await import("./locaweb-data.js?v=29");
     const r = await dpost("api/liderancas.php", { action: "replace", store: storeObject || {} });
     if (!r.ok) throw new Error(r.erro || "erro ao salvar");
     return;

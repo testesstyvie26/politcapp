@@ -5,7 +5,12 @@
 const TOKEN_KEY = "politapp_token";
 function tok() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } }
 function base() { return (window.POLITAPP_AUTH_BASE || "").replace(/\/$/, ""); }
-function urlOf(rel) { return base() + "/" + rel.replace(/^\//, ""); }
+function urlOf(rel) {
+  const selectedBase = rel.startsWith("auth/")
+    ? (window.POLITAPP_AUTH_API_BASE || base())
+    : base();
+  return selectedBase.replace(/\/$/, "") + "/" + rel.replace(/^\//, "");
+}
 
 export async function dget(rel) {
   let p = rel;

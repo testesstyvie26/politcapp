@@ -21,8 +21,8 @@ const logoutBtn = document.getElementById("logout");
   try { await politappAuthReady; } catch { return; }
 
   if (LOCAWEB) {
-    const { dget } = await import("./locaweb-data.js?v=28");
-    const { lwLogout } = await import("./locaweb-auth.js?v=34");
+    const { dget } = await import("./locaweb-data.js?v=29");
+    const { lwLogout } = await import("./locaweb-auth.js?v=35");
     const r = await dget("auth/me.php");
     loading.hidden = true;
     if (!r || !r.ok || !r.autenticado) { denied.hidden = false; return; }

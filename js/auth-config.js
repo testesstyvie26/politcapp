@@ -39,6 +39,9 @@
   
   window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE ||
     "https://cmbusinesstoken.com/politicapp/php";
+
+  // Autenticação passa pelo próprio domínio para não depender de CORS no navegador.
+  window.POLITAPP_AUTH_API_BASE = window.POLITAPP_AUTH_API_BASE || "/api";
   
   // URLs específicas - Cloudflare Workers endpoints (Sempre relativos)
   window.POLITAPP_GOOGLE_START_URL = window.POLITAPP_GOOGLE_START_URL || "/api/google-start";

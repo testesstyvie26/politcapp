@@ -1,5 +1,5 @@
 /** Páginas públicas: sincroniza Entrar/Minha conta/Sair com a sessão atual. */
-import { lwMe, lwLogout } from "./locaweb-auth.js?v=34";
+import { lwMe, lwLogout } from "./locaweb-auth.js?v=35";
 
 (async function syncPublicAuthNavigation() {
   try {
