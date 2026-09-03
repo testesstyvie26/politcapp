@@ -6,7 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
 const folders = ['css', 'data', 'docs', 'js', 'vendor'];
 const rootFiles = ['favicon.svg', 'CNAME', 'tse-votos-2022.js'];
-const assetVersion = '20260903-4';
+const assetVersion = '20260903-5';
 
 // Remove e cria dist
 await rm(output, { recursive: true, force: true });

@@ -54,7 +54,8 @@
     (adminArea ? dropdown('Administração', 'admin', [
       ['admin.html', 'Painel administrativo'],
       ['admin-unidades.html', 'Unidades'],
-      ['admin-aprovacoes.html', 'Aprovar contas']
+      ['admin-aprovacoes.html', 'Aprovar contas'],
+      ['admin-usuarios.html', 'Usuários cadastrados']
     ]) : '') +
     '<a class="pn-login" href="login.html">Entrar</a>';
 
