@@ -128,7 +128,13 @@ export function lwMe() {
 }
 
 export async function lwLogout() {
-  const r = await api("auth/logout.php", { method: "POST" });
+  // api() lê o token de forma síncrona antes do primeiro await. Iniciamos a
+  // revogação no servidor e limpamos a sessão local imediatamente, para que
+  // uma indisponibilidade do backend não mantenha o usuário preso na UI.
+  const request = api("auth/logout.php", { method: "POST" });
   localStorage.removeItem(TOKEN_KEY);
-  return r;
+  return Promise.race([
+    request,
+    new Promise((resolve) => setTimeout(() => resolve({ ok: false, erro: "timeout" }), 3000)),
+  ]);
 }

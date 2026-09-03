@@ -506,6 +506,7 @@ body:not(.pn-has-topbar) nav.site-nav[aria-label] a[aria-current="page"] {
 }
 
 /* Botão "Sair" no menu — leve tom de saída */
+nav.site-nav > a.pn-logout[hidden] { display: none !important; }
 nav.site-nav > a.pn-logout { color: #f0a8a8 !important; cursor: pointer; }
 nav.site-nav > a.pn-logout:hover {
   color: #fff !important;
