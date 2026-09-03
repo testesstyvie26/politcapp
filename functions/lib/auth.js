@@ -1,52 +1,44 @@
-// functions/lib/auth.js
-export const PA_COOKIE_NAME = 'politcapp_auth_state';
-export const PA_COOKIE_MAX_AGE = 600; // 10 minutes in seconds
+const COOKIE_NAME = "politapp_oauth_state";
+const encoder = new TextEncoder();
 
-// Sign data using HMAC-SHA256 with a secret
-export async function signData(data, secret) {
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
-  // Convert to base64url
-  return btoa(String.fromCharCode(...new Uint8Array(signature)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/g, '');
+function base64UrlEncode(bytes) {
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
-
-// Verify signature
-export async function verifySignature(data, secret, signature) {
-  const expected = await signData(data, secret);
-  return expected === signature;
+function base64UrlDecode(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+  return Uint8Array.from(atob(padded), (char) => char.charCodeAt(0));
 }
-
-// Parse cookies from cookie string
-export function parseCookies(cookieHeader) {
-  return cookieHeader
-    .split(';')
-    .map(c => c.trim())
-    .filter(c => c)
-    .reduce((acc, c) => {
-      const [name, value] = c.split('=');
-      acc[name] = decodeURIComponent(value);
-      return acc;
-    }, {});
+async function hmac(data, secret) {
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(data)));
 }
-
-// Set cookie header
-export function setCookie(name, value, options = {}) {
-  const { path = '/', maxAge, secure = true, sameSite = 'Strict', httpOnly = true } = options;
-  let cookie = `${name}=${encodeURIComponent(value)}`;
-  cookie += `; path=${path}`;
-  if (maxAge) cookie += `; max-age=${maxAge}`;
-  if (secure) cookie += `; secure`;
-  cookie += `; same-site=${sameSite}`;
-  if (httpOnly) cookie += `; HttpOnly`;
-  return cookie;
+async function verifyHmac(data, secret, signature) {
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+  return crypto.subtle.verify("HMAC", key, signature, encoder.encode(data));
+}
+export function safeReturnUrl(candidate, origin) {
+  try {
+    const url = new URL(candidate || "/login", origin);
+    return url.origin === origin ? url.toString() : `${origin}/login`;
+  } catch { return `${origin}/login`; }
+}
+export async function createSignedStateCookie(payload, secret) {
+  const data = base64UrlEncode(encoder.encode(JSON.stringify(payload)));
+  const signature = base64UrlEncode(await hmac(data, secret));
+  return `${COOKIE_NAME}=${data}.${signature}; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=Lax`;
+}
+export async function readSignedStateCookie(header, secret) {
+  const pair = header.split(";").map((item) => item.trim()).find((item) => item.startsWith(`${COOKIE_NAME}=`));
+  if (!pair) return null;
+  const value = pair.slice(COOKIE_NAME.length + 1);
+  const separator = value.lastIndexOf(".");
+  if (separator < 1) return null;
+  const data = value.slice(0, separator);
+  const provided = base64UrlDecode(value.slice(separator + 1));
+  if (!(await verifyHmac(data, secret, provided))) return null;
+  try { return JSON.parse(new TextDecoder().decode(base64UrlDecode(data))); } catch { return null; }
+}
+export function clearStateCookie() {
+  return `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
 }

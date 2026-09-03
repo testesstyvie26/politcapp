@@ -127,10 +127,10 @@
     </main>
   </div>
 
-  <script src="js/auth-config.js?v=30" data-cfasync="false"></script>
+  <script src="js/auth-config.js?v=32" data-cfasync="false"></script>
   <script type="module">
-    import { lwLogin, lwRegister, lwPhoneRequest, lwPhoneVerify, lwGoogleStartUrl, lwMe, lwCaptureTokenFromHash }
-      from "./js/locaweb-auth.js?v=29";
+    import { lwLogin, lwRegister, lwPhoneRequest, lwPhoneVerify, lwGoogleStartUrl, lwMe, lwCaptureTokenFromHash, lwCompleteGoogleCallback }
+      from "./js/locaweb-auth.js?v=32";
 
     const $ = (id) => document.getElementById(id);
     const params = new URLSearchParams(location.search);
@@ -139,11 +139,19 @@
 
     function msg(el, txt, kind) { el.textContent = txt || ""; el.className = "auth-msg" + (kind ? " " + kind : ""); }
 
-    // retorno do Google: captura o token do fragmento (#token=...) antes de tudo
-    lwCaptureTokenFromHash();
-
-    // já logado? vai direto
-    lwMe().then((r) => { if (r && r.ok && r.autenticado) goNext(); }).catch(() => {});
+    async function initializeLogin() {
+      const oauthError = params.get("erro");
+      if (oauthError) msg($("msgEntrar"), oauthError, "err");
+      lwCaptureTokenFromHash(); // compatibilidade com o callback PHP antigo
+      const google = await lwCompleteGoogleCallback();
+      if (google.handled && !google.ok) {
+        msg($("msgEntrar"), google.erro || "Não foi possível concluir o login com Google.", "err");
+        return;
+      }
+      const r = await lwMe();
+      if (r && r.ok && r.autenticado) goNext();
+    }
+    initializeLogin().catch(() => msg($("msgEntrar"), "Não foi possível verificar a sessão.", "err"));
 
     // tabs
     function tab(entrar) {

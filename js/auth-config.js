@@ -33,12 +33,12 @@
    */
   
   // Detecta o host atual - NÃO há mais detecção de Locaweb/cmbusinesstoken
-  // O auth sempre usa o provider configurado (cloudflare)
-  window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "cloudflare";
+  // A sessão e os dados continuam no backend PHP; o callback OAuth ocorre
+  // diretamente no domínio do Politapp via Pages Functions.
+  window.POLITAPP_AUTH_PROVIDER = window.POLITAPP_AUTH_PROVIDER || "locaweb";
   
-  // Base URL para endpoints de auth - SEMPRE usa Cloudflare Workers
-  // Relativo ao domínio da página (não depende de host externo)
-  window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE || "/";
+  window.POLITAPP_AUTH_BASE = window.POLITAPP_AUTH_BASE ||
+    "https://cmbusinesstoken.com/politicapp/php";
   
   // URLs específicas - Cloudflare Workers endpoints (Sempre relativos)
   window.POLITAPP_GOOGLE_START_URL = window.POLITAPP_GOOGLE_START_URL || "/api/google-start";

@@ -85,6 +85,21 @@
     nav.appendChild(sair);
   }
 
+  /** Mantém os controles de conta consistentes em páginas públicas e protegidas. */
+  function setAuthNavState(loggedIn) {
+    const accountLink = nav.querySelector('.pn-login');
+    const logoutLink = nav.querySelector('.pn-logout');
+    if (accountLink) {
+      accountLink.hidden = false;
+      accountLink.href = loggedIn ? 'conta.html' : 'login.html';
+      accountLink.textContent = loggedIn ? 'Minha conta' : 'Entrar';
+      accountLink.setAttribute('aria-label', loggedIn ? 'Abrir minha conta' : 'Entrar no Politapp');
+    }
+    if (logoutLink) logoutLink.hidden = !loggedIn;
+  }
+  window.politappSetAuthNavState = setAuthNavState;
+  setAuthNavState(false);
+
   /* ── Brand ─────────────────────────────────────── */
   const brand = Object.assign(document.createElement('a'), {
     href: 'index.html',

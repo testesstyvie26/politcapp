@@ -25,6 +25,22 @@ Nunca salve o token em `.env`, workflow, commit ou arquivo do projeto.
 
 Após o deploy, `GET /api/deployment` retorna o projeto, branch, commit e URL que estão atendendo a requisição. A resposta não é armazenada em cache.
 
+### Login Google no domínio do Politapp
+
+Cadastre estas variáveis em **Workers & Pages → politcapp → Settings → Variables and Secrets**:
+
+- `GOOGLE_CLIENT_ID`: ID público do cliente OAuth;
+- `GOOGLE_CLIENT_SECRET`: segredo, marcado como **Secret**;
+- `COOKIE_SECRET`: segredo aleatório forte, marcado como **Secret**.
+
+No Google Cloud Console, o cliente OAuth deve ter exatamente esta URI em
+**URIs de redirecionamento autorizados**:
+
+`https://politcapp.com.br/api/google-callback`
+
+O callback ocorre no Cloudflare Pages e o ID token é enviado ao backend PHP
+para validação e criação da sessão compatível com o restante do Politapp.
+
 ## Publicação manual
 
 O workflow também aceita **Run workflow** na aba Actions do GitHub.

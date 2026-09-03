@@ -1,16 +1,25 @@
-/**
- * Páginas públicas: mostra "Deslogar" se existir sessão Supabase (sem auth-guard).
- */
-import { getSupabase, isAuthConfigured } from "./auth-client.js?v=28";
-import { attachPolitappLogoutButton } from "./logout-ui.js?v=28";
+/** Páginas públicas: sincroniza Entrar/Minha conta/Sair com a sessão atual. */
+import { lwMe, lwLogout } from "./locaweb-auth.js?v=33";
 
-(async function () {
-  if (!isAuthConfigured()) return;
-  const supabase = getSupabase();
-  if (!supabase) return;
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.user) return;
-  attachPolitappLogoutButton(supabase);
+(async function syncPublicAuthNavigation() {
+  try {
+    const result = await lwMe();
+    const loggedIn = !!(result && result.ok && result.autenticado);
+    window.politappSetAuthNavState?.(loggedIn);
+    if (!loggedIn) return;
+
+    const logout = document.querySelector(".pn-logout, [data-politapp-logout]");
+    if (!logout || logout.dataset.logoutReady === "true") return;
+    logout.dataset.logoutReady = "true";
+    logout.addEventListener("click", async (event) => {
+      event.preventDefault();
+      logout.setAttribute("aria-disabled", "true");
+      try { await lwLogout(); } finally {
+        window.politappSetAuthNavState?.(false);
+        window.location.replace(new URL("landing-app.html", location.href).href);
+      }
+    });
+  } catch {
+    window.politappSetAuthNavState?.(false);
+  }
 })();

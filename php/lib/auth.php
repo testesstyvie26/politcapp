@@ -249,6 +249,11 @@ function pa_google_login(string $code, ?string $ua, ?string $ip): array {
   ]);
   if (empty($tok['access_token'])) return ['ok' => false, 'erro' => 'falha ao trocar code'];
   $info = pa_http_get('https://www.googleapis.com/oauth2/v3/userinfo', $tok['access_token']);
+  return pa_google_login_from_info($info, $ua, $ip);
+}
+
+/** Cria/liga a conta a partir de dados Google previamente validados. */
+function pa_google_login_from_info(array $info, ?string $ua, ?string $ip): array {
   if (empty($info['sub'])) return ['ok' => false, 'erro' => 'userinfo inválido'];
 
   $sub   = $info['sub'];

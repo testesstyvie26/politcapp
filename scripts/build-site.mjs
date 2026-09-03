@@ -6,9 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
 const folders = ['css', 'data', 'docs', 'js', 'vendor'];
 const rootFiles = ['favicon.svg', 'CNAME', 'tse-votos-2022.js'];
-const functionsDir = path.join(root, 'functions');
-const outputFunctionsDir = path.join(output, 'functions');
-const assetVersion = '20260901-2';
+const assetVersion = '20260902-1';
 
 // Remove e cria dist
 await rm(output, { recursive: true, force: true });
@@ -19,14 +17,6 @@ for (const folder of folders) {
   await cp(path.join(root, folder), path.join(output, folder), { recursive: true });
 }
 
-// **IMPORTANTE**: Copiar pasta functions para dist/functions/ (Cloudflare Workers + MySQL)
-try {
-  await mkdir(outputFunctionsDir, { recursive: true });
-  await cp(functionsDir, outputFunctionsDir, { recursive: true });
-} catch (e) {
-  console.error('Aviso: não foi possível copiar pasta functions:', e.message);
-}
-
 // Copiar arquivos-root (HTML .html na raiz)
 for (const entry of await readdir(root, { withFileTypes: true })) {
   if (entry.isFile() && entry.name.endsWith('.html') && entry.name !== '404.html') {
@@ -34,7 +24,10 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
     const versioned = source
       .replace(/(css\/site-shell-nav\.css)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`)
       .replace(/(css\/site-theme\.css)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`)
-      .replace(/(js\/site-nav\.js)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`);
+      .replace(/(js\/site-nav\.js)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`)
+      .replace(/(js\/auth-config\.js)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`)
+      .replace(/(js\/auth-guard\.js)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`)
+      .replace(/(js\/politapp-logout-if-session\.js)(?:\?v=[^"']+)?/g, `$1?v=${assetVersion}`);
     await writeFile(path.join(output, entry.name), versioned, 'utf8');
   }
 }

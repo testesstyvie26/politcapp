@@ -20,10 +20,12 @@ const TOKEN_KEY = "politapp_token";
 // ============================================================
 
 export function googleStartUrl(returnUrl) {
-  const ret = returnUrl || (location.origin + location.pathname);
-  // Usa o novo endpoint do Cloudflare Workers (RELATIVO, sem domínio externo)
-  return "/api/google-start" + "?return=" + encodeURIComponent(ret);
+  const ret = returnUrl || (location.origin + location.pathname + location.search);
+  return (window.POLITAPP_GOOGLE_START_URL || "/api/google-start") + "?return=" + encodeURIComponent(ret);
 }
+
+// Nomes mantidos para compatibilidade com login.html.
+export const lwGoogleStartUrl = googleStartUrl;
 
 // Captura token do Google que vem no fragmento (#user=...) e guarda
 export function captureTokenFromHash() {
@@ -39,6 +41,18 @@ export function captureTokenFromHash() {
     }
   }
   return false;
+}
+
+export const lwCaptureTokenFromHash = captureTokenFromHash;
+
+/** Troca o ID token recebido no callback do site por uma sessão Politapp. */
+export async function lwCompleteGoogleCallback() {
+  const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+  const idToken = params.get("google_id_token");
+  if (!idToken) return { handled: false, ok: false };
+  history.replaceState(null, "", location.pathname + location.search);
+  const result = await api("auth/google-token.php", { method: "POST", body: { id_token: idToken } });
+  return { handled: true, ...result };
 }
 
 // ============================================================
