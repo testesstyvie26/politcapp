@@ -22,7 +22,7 @@ const logoutBtn = document.getElementById("logout");
 
   if (LOCAWEB) {
     const { dget } = await import("./locaweb-data.js?v=28");
-    const { lwLogout } = await import("./locaweb-auth.js?v=28");
+    const { lwLogout } = await import("./locaweb-auth.js?v=34");
     const r = await dget("auth/me.php");
     loading.hidden = true;
     if (!r || !r.ok || !r.autenticado) { denied.hidden = false; return; }
@@ -35,7 +35,9 @@ const logoutBtn = document.getElementById("logout");
     if (unidadeEl) unidadeEl.textContent = "—";
     if (contaStatusEl) contaStatusEl.textContent = profile.conta_status ? contaStatusLabel(profile.conta_status) : "—";
     if (adminHubLink && profile.grupo === "admin") adminHubLink.hidden = false;
-    logoutBtn?.addEventListener("click", async () => { await lwLogout(); window.location.href = "login.html"; });
+    logoutBtn?.addEventListener("click", async () => {
+      try { await lwLogout(); } finally { window.location.replace("login.html"); }
+    });
     return;
   }
 

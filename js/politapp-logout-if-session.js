@@ -1,5 +1,5 @@
 /** Páginas públicas: sincroniza Entrar/Minha conta/Sair com a sessão atual. */
-import { lwMe, lwLogout } from "./locaweb-auth.js?v=33";
+import { lwMe, lwLogout } from "./locaweb-auth.js?v=34";
 
 (async function syncPublicAuthNavigation() {
   try {
@@ -14,8 +14,8 @@ import { lwMe, lwLogout } from "./locaweb-auth.js?v=33";
     logout.addEventListener("click", async (event) => {
       event.preventDefault();
       logout.setAttribute("aria-disabled", "true");
+      window.politappSetAuthNavState?.(false);
       try { await lwLogout(); } finally {
-        window.politappSetAuthNavState?.(false);
         window.location.replace(new URL("landing-app.html", location.href).href);
       }
     });
