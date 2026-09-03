@@ -60,7 +60,9 @@ export async function lwCompleteGoogleCallback() {
 // ============================================================
 
 export function base() {
-  return (window.POLITAPP_AUTH_API_BASE || window.POLITAPP_AUTH_BASE || "").replace(/\/$/, "");
+  // O fallback local evita que uma cópia antiga de auth-config.js faça o
+  // navegador voltar a chamar o backend externo diretamente.
+  return (window.POLITAPP_AUTH_API_BASE || "/api").replace(/\/$/, "");
 }
 
 export function url(rel) {

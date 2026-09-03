@@ -49,7 +49,7 @@ export async function redirectIfCanEnter() {
 
   document.getElementById("btnSair")?.addEventListener("click", async () => {
     if (LOCAWEB) {
-      const { lwLogout } = await import("./locaweb-auth.js?v=35");
+      const { lwLogout } = await import("./locaweb-auth.js?v=36");
       await lwLogout();
       window.location.href = "login.html";
     } else {

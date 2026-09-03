@@ -22,7 +22,7 @@ const logoutBtn = document.getElementById("logout");
 
   if (LOCAWEB) {
     const { dget } = await import("./locaweb-data.js?v=29");
-    const { lwLogout } = await import("./locaweb-auth.js?v=35");
+    const { lwLogout } = await import("./locaweb-auth.js?v=36");
     const r = await dget("auth/me.php");
     loading.hidden = true;
     if (!r || !r.ok || !r.autenticado) { denied.hidden = false; return; }
