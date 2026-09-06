@@ -44,6 +44,9 @@
       ['whatsapp.html', 'WhatsApp'],
       ['instagram.html', 'Instagram']
     ]) +
+    dropdown('Configurações', 'configuracoes', [
+      ['configuracoes.html', 'Integração Meta']
+    ]) +
     '<a href="tarefas.html">Tarefas</a>' +
     dropdown('Ajuda', 'ajuda', [
       ['guia-uso.html', 'Guia de uso'],

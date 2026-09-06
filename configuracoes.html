@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Configurações e integração Meta — Politapp</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site-shell-nav.css?v=29" />
+  <link rel="stylesheet" href="css/site-theme.css?v=29" />
+  <style>
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h1 { margin: 0 0 .4rem; font-size: clamp(1.55rem,3vw,2rem); }
+    .page-head p { margin: 0; color: var(--muted); max-width: 68ch; }
+    .status-card { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding: 1.25rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+    .meta-mark { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg,#0866ff,#8b5cf6); font-size: 1.35rem; font-weight: 700; }
+    .status-card h2 { margin: 0 0 .25rem; font-size: 1.08rem; }
+    .status-card p { margin: 0; color: var(--muted); font-size: .88rem; }
+    .badge { display: inline-flex; align-items: center; gap: .35rem; margin-top: .55rem; padding: .25rem .55rem; border-radius: 999px; color: #fde68a; background: rgba(245,158,11,.12); font-size: .72rem; font-weight: 700; }
+    .badge.ok { color: #6ee7b7; background: rgba(16,185,129,.12); }
+    .actions { display: flex; flex-wrap: wrap; gap: .55rem; justify-content: flex-end; }
+    .btn { min-height: 40px; padding: .55rem .9rem; border: 1px solid transparent; border-radius: 8px; cursor: pointer; font: 600 .85rem "DM Sans",sans-serif; text-decoration: none; }
+    .btn-primary { color: #fff; background: #0866ff; }
+    .btn-ghost { color: var(--text); background: transparent; border-color: var(--border); }
+    .btn-danger { color: #fecaca; background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.25); }
+    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1rem; margin-top: 1rem; }
+    .panel { padding: 1.25rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+    .panel h2 { margin: 0 0 .85rem; font-size: 1rem; }
+    .steps { margin: 0; padding: 0; list-style: none; display: grid; gap: .75rem; }
+    .steps li { display: grid; grid-template-columns: 28px 1fr; gap: .65rem; color: var(--muted); font-size: .88rem; line-height: 1.45; }
+    .step-number { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; color: #93c5fd; background: rgba(59,130,246,.12); font-weight: 700; }
+    .steps strong { display: block; color: var(--text); margin-bottom: .12rem; }
+    .permissions { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .permission { padding: .28rem .5rem; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); background: var(--surface2); font: .7rem ui-monospace,monospace; }
+    .callback { margin-top: 1rem; padding: .8rem; border-radius: 8px; background: var(--surface2); color: #93c5fd; font: .76rem ui-monospace,monospace; word-break: break-all; }
+    .pages { display: grid; gap: .6rem; }
+    .page-item { padding: .8rem; border: 1px solid var(--border); border-radius: 9px; }
+    .page-item strong, .page-item span { display: block; }
+    .page-item span { margin-top: .2rem; color: var(--muted); font-size: .78rem; }
+    .empty { color: var(--muted); font-size: .88rem; }
+    .notice { margin-top: 1rem; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+    @media (max-width: 760px) { .status-card { grid-template-columns: auto 1fr; } .status-card .actions { grid-column: 1/-1; justify-content: stretch; } .status-card .btn { flex: 1; } .grid { grid-template-columns: 1fr; } }
+  </style>
+  <script type="module" src="js/site-nav.js?v=29"></script>
+  <script type="module" src="js/site-bg.js?v=29"></script>
+</head>
+<body>
+  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
+  <script src="js/auth-config.js?v=32" data-cfasync="false"></script>
+  <script type="module" src="js/auth-guard.js?v=29"></script>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Navegação principal"><a href="executivo.html">Visão geral</a><a href="configuracoes.html" aria-current="page">Configurações</a></nav>
+    <main id="politapp-main" tabindex="-1">
+      <header class="page-head"><h1>Configurações</h1><p>Conecte os ativos da Meta ao Politapp para apoiar a gestão de Facebook e Instagram em um único ambiente.</p></header>
+      <section class="status-card" aria-labelledby="meta-title">
+        <div class="meta-mark" aria-hidden="true">M</div>
+        <div><h2 id="meta-title">Painel Meta</h2><p>Facebook Pages e contas profissionais do Instagram.</p><span id="metaBadge" class="badge">Verificando configuração…</span></div>
+        <div class="actions"><a id="connectMeta" class="btn btn-primary" href="/api/meta-start" hidden>Conectar com a Meta</a><button id="disconnectMeta" class="btn btn-danger" type="button" hidden>Desconectar</button><button id="refreshMeta" class="btn btn-ghost" type="button">Atualizar</button></div>
+      </section>
+      <div class="grid">
+        <section class="panel"><h2>Como configurar</h2><ol class="steps">
+          <li><span class="step-number">1</span><div><strong>Crie ou selecione o app</strong>No Meta for Developers, use um aplicativo do tipo Business conectado ao portfólio correto.</div></li>
+          <li><span class="step-number">2</span><div><strong>Cadastre o retorno OAuth</strong>Adicione exatamente a URL de callback abaixo nas configurações do Facebook Login.</div></li>
+          <li><span class="step-number">3</span><div><strong>Configure os segredos no Cloudflare</strong>Cadastre META_APP_ID, META_APP_SECRET e META_SESSION_SECRET como segredos do projeto Pages.</div></li>
+          <li><span class="step-number">4</span><div><strong>Conecte e autorize</strong>Use o botão acima e selecione as Páginas e contas profissionais que o Politapp poderá gerenciar.</div></li>
+        </ol><div class="callback" id="callbackUrl">https://politcapp.com.br/api/meta-callback</div></section>
+        <aside class="panel"><h2>Permissões solicitadas</h2><div class="permissions"><span class="permission">pages_show_list</span><span class="permission">pages_read_engagement</span><span class="permission">pages_manage_posts</span><span class="permission">instagram_basic</span><span class="permission">instagram_manage_insights</span><span class="permission">instagram_content_publish</span></div><p class="notice">A Meta pode exigir modo Live, verificação da empresa e revisão do aplicativo para uso por pessoas fora da equipe de desenvolvimento.</p></aside>
+      </div>
+      <section class="panel" style="margin-top:1rem"><h2>Ativos conectados</h2><div id="metaPages" class="pages"><p class="empty">Nenhuma conexão ativa.</p></div></section>
+    </main>
+  </div>
+  <script type="module" src="js/configuracoes-meta.js?v=1"></script>
+</body>
+</html>
+
