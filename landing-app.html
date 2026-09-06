@@ -62,7 +62,8 @@
     <nav class="top-actions" aria-label="Navegação principal">
       <a href="privacidade.html">Privacidade</a>
       <a href="landing-publico.html">Contato</a>
-      <a class="button button-primary" href="login.html">Entrar</a>
+      <a class="button button-primary" href="login.html" data-politapp-account>Entrar</a>
+      <a href="#" data-politapp-logout hidden>Sair</a>
     </nav>
   </header>
   <main id="conteudo" class="page">
@@ -71,7 +72,7 @@
       <h1>Uma visão completa da sua campanha.</h1>
       <p class="hero-copy">Ferramenta para <strong>monitoramento de informações, integrações e visão global e de mídia</strong> para campanhas políticas. Tudo centralizado, organizado e acessível em um só lugar.</p>
       <div class="hero-actions">
-        <a class="button button-primary" href="login.html">Acessar o Politapp</a>
+        <a class="button button-primary" href="login.html" data-politapp-account>Acessar o Politapp</a>
         <a class="button button-secondary" href="#recursos">Conhecer recursos</a>
       </div>
     </section>
@@ -87,11 +88,11 @@
     <section class="final-cta">
       <h2>Mais clareza para coordenar. Mais agilidade para decidir.</h2>
       <p>Entre no Politapp e concentre a operação da campanha em uma visão simples e objetiva.</p>
-      <a class="button button-primary" href="login.html">Entrar ou cadastrar</a>
+      <a class="button button-primary" href="login.html" data-politapp-account>Entrar ou cadastrar</a>
     </section>
   </main>
   <footer class="page"><span>© 2026 Politapp</span><span><a href="privacidade.html">Privacidade</a> · <a href="termos-uso.html">Termos de uso</a></span></footer>
   <script src="js/auth-config.js?v=32" data-cfasync="false"></script>
-  <script type="module" src="js/politapp-logout-if-session.js?v=36"></script>
+  <script type="module" src="js/politapp-logout-if-session.js?v=37"></script>
 </body>
 </html>
