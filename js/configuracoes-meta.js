@@ -1,40 +1,6 @@
-const badge = document.getElementById("metaBadge");
-const pages = document.getElementById("metaPages");
-const connect = document.getElementById("connectMeta");
-const disconnect = document.getElementById("disconnectMeta");
-const refresh = document.getElementById("refreshMeta");
-
-function escapeHtml(value) { return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function setBadge(text, ok = false) { badge.textContent = text; badge.classList.toggle("ok", ok); }
-
-async function loadStatus() {
-  refresh.disabled = true;
-  try {
-    const response = await fetch("/api/meta-status", { credentials: "include", cache: "no-store" });
-    const result = await response.json();
-    if (!result.configured) {
-      setBadge("Aguardando credenciais no Cloudflare"); connect.hidden = true; disconnect.hidden = true;
-      pages.innerHTML = '<p class="empty">Configure os três segredos indicados para habilitar a conexão.</p>'; return;
-    }
-    connect.hidden = !!result.connected; disconnect.hidden = !result.connected;
-    if (!result.connected) {
-      setBadge(result.expired ? "Conexão expirada" : "Pronto para conectar");
-      pages.innerHTML = '<p class="empty">Clique em “Conectar com a Meta” para selecionar os ativos.</p>'; return;
-    }
-    setBadge("Conectado", true);
-    const rows = result.pages || [];
-    pages.innerHTML = rows.length ? rows.map((item) => `<article class="page-item"><strong>${escapeHtml(item.name)}</strong><span>Facebook Page ID: ${escapeHtml(item.id)}</span><span>${item.instagram ? `Instagram: @${escapeHtml(item.instagram.username || item.instagram.id)}` : "Sem conta profissional do Instagram vinculada"}</span></article>`).join("") : '<p class="empty">Conectado, mas nenhuma Página foi autorizada.</p>';
-  } catch { setBadge("Serviço Meta indisponível"); }
-  finally { refresh.disabled = false; }
-}
-
-disconnect.addEventListener("click", async () => {
-  disconnect.disabled = true;
-  try { await fetch("/api/meta-disconnect", { method: "POST", credentials: "include" }); } finally { disconnect.disabled = false; await loadStatus(); }
-});
-refresh.addEventListener("click", loadStatus);
-
-const feedback = new URLSearchParams(location.search).get("meta");
-if (feedback) history.replaceState(null, "", location.pathname);
-loadStatus();
-
+const byId=(id)=>document.getElementById(id);let assets=[];const badge=byId("metaBadge");
+function setBadge(text,ok=false){badge.textContent=text;badge.classList.toggle("ok",ok)}function num(v){return Number(v||0).toLocaleString("pt-BR")}function node(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+function showView(name){document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!==`view-${name}`);document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===name))}
+function render(){byId("metricPages").textContent=num(assets.length);byId("metricFacebook").textContent=num(assets.reduce((s,a)=>s+Number(a.followersCount||a.fanCount||0),0));byId("metricInstagram").textContent=num(assets.filter(a=>a.instagram).length);byId("metricIgFollowers").textContent=num(assets.reduce((s,a)=>s+Number(a.instagram?.followers_count||0),0));const list=byId("metaPages"),select=byId("publishPage"),insights=byId("metaInsights"),recent=byId("recentPosts");list.replaceChildren();insights.replaceChildren();select.replaceChildren(new Option(assets.length?"Selecione uma Página":"Conecte a Meta primeiro",""));for(const a of assets){const card=node("article","asset");card.append(node("strong","",a.name),node("span","",`${a.category||"Página do Facebook"} · ID ${a.id}`),node("span","",a.instagram?`Instagram: @${a.instagram.username||a.instagram.id}`:"Sem Instagram profissional vinculado"));list.append(card);select.append(new Option(a.name,a.id));const metric=node("article","asset"),total=(a.insights||[]).reduce((t,m)=>t+(m.values||[]).reduce((s,i)=>s+Number(i.value||0),0),0);metric.append(node("strong","",a.name),node("span","",a.insights?.length?`${num(total)} eventos nas métricas disponíveis (28 dias)`:"Métricas detalhadas ainda não liberadas para este ativo"));insights.append(metric)}if(!assets.length){list.append(node("p","empty","Nenhum ativo autorizado."));insights.append(node("p","empty","Nenhum dado disponível."))}recent.replaceChildren();const posts=assets.flatMap(a=>(a.posts||[]).map(p=>({...p,pageName:a.name}))).sort((a,b)=>new Date(b.created_time)-new Date(a.created_time)).slice(0,8);for(const p of posts){const c=node("article","post");c.append(node("small","",`${p.pageName} · ${new Date(p.created_time).toLocaleDateString("pt-BR")}`),node("p","",p.message||"Publicação sem texto"),node("small","",`${num(p.reactions?.summary?.total_count)} reações · ${num(p.comments?.summary?.total_count)} comentários · ${num(p.shares?.count)} compartilhamentos`));recent.append(c)}if(!posts.length)recent.append(node("p","empty","Nenhuma publicação recente disponível."))}
+async function load(){byId("refreshMeta").disabled=true;try{const sr=await fetch("/api/meta-status",{credentials:"include",cache:"no-store"}),s=await sr.json();if(!s.configured){setBadge("Aguardando credenciais no Cloudflare");byId("connectMeta").hidden=true;byId("disconnectMeta").hidden=true;assets=[];render();return}byId("connectMeta").hidden=!!s.connected;byId("disconnectMeta").hidden=!s.connected;if(!s.connected){setBadge(s.expired?"Conexão expirada":"Pronto para conectar");assets=[];render();return}setBadge("Conectado",true);const r=await fetch("/api/meta-dashboard",{credentials:"include",cache:"no-store"}),d=await r.json();if(!r.ok||!d.ok)throw new Error();assets=d.assets||[];render()}catch{setBadge("Não foi possível carregar os dados")}finally{byId("refreshMeta").disabled=false}}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));byId("refreshMeta").addEventListener("click",load);byId("disconnectMeta").addEventListener("click",async()=>{await fetch("/api/meta-disconnect",{method:"POST",credentials:"include"});await load()});byId("publishForm").addEventListener("submit",async(e)=>{e.preventDefault();const b=e.submitter,f=byId("publishFeedback");b.disabled=true;f.className="feedback";f.textContent="Publicando…";try{const r=await fetch("/api/meta-publish",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({pageId:byId("publishPage").value,message:byId("publishMessage").value})}),d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||"Não foi possível publicar.");f.className="feedback ok";f.textContent="Conteúdo publicado com sucesso.";byId("publishMessage").value="";await load()}catch(x){f.className="feedback err";f.textContent=x.message||"Não foi possível publicar."}finally{b.disabled=false}});if(new URLSearchParams(location.search).get("meta"))history.replaceState(null,"",location.pathname);load();

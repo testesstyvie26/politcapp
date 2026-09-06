@@ -13,7 +13,6 @@ export async function onRequestGet({ request, env }) {
   authUrl.searchParams.set("redirect_uri", `${url.origin}/api/meta-callback`);
   authUrl.searchParams.set("state", state);
   authUrl.searchParams.set("response_type", "code");
-  authUrl.searchParams.set("scope", "pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_manage_insights,instagram_content_publish");
+  authUrl.searchParams.set("scope", "pages_show_list,pages_read_engagement,pages_manage_posts,read_insights,instagram_basic,instagram_manage_insights,instagram_content_publish");
   return new Response(null, { status: 302, headers: { Location: authUrl.toString(), "Set-Cookie": stateCookie(sealedState), "Cache-Control": "no-store" } });
 }
-
