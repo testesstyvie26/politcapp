@@ -45,7 +45,8 @@
       ['instagram.html', 'Instagram']
     ]) +
     dropdown('Configurações', 'configuracoes', [
-      ['configuracoes.html', 'Integração Meta']
+      ['configuracoes.html', 'Integração Meta'],
+      ['configuracoes-ia.html', 'Integração com IA']
     ]) +
     '<a href="tarefas.html">Tarefas</a>' +
     dropdown('Ajuda', 'ajuda', [
