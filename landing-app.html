@@ -3,565 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Politapp — inteligência eleitoral em tempo real: análise por seção, estratégia territorial e decisão com dados. Tecnologia web com APIs públicas e governança de acesso." />
-  <title>Politapp — Inteligência eleitoral e tecnologia</title>
+  <meta name="description" content="Politapp centraliza monitoramento, integrações e visão de mídia para campanhas políticas, com informações organizadas de forma segura." />
+  <title>Politapp — Monitoramento para campanhas políticas</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site-shell-nav.css?v=29" />
-  <style>
-    html { scroll-behavior: smooth; }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-    }
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background:
-        radial-gradient(ellipse 90% 70% at 15% -5%, rgba(59, 130, 246, 0.16), transparent 52%),
-        radial-gradient(ellipse 70% 50% at 95% 20%, rgba(59, 130, 246, 0.08), transparent 48%),
-        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(199, 146, 53, 0.06), transparent 45%),
-        linear-gradient(180deg, #06101e 0%, #0a1424 55%, #06101e 100%);
-      pointer-events: none;
-    }
-    .shell {
-      position: relative;
-      z-index: 1;
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 0 1.25rem 4rem;
-    }
-    header.top {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem 0 2rem;
-    }
-    .brand {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1.4rem;
-      letter-spacing: -0.03em;
-      color: var(--text);
-      text-decoration: none;
-    }
-    .brand:hover { color: var(--accent); }
-    nav.top-nav {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.65rem 1.15rem;
-      font-size: 0.88rem;
-      font-weight: 500;
-    }
-    nav.top-nav a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-    nav.top-nav a:hover { color: var(--accent); }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font: inherit;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 0.62rem 1.15rem;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      text-decoration: none;
-      transition: filter 0.15s ease, background 0.15s ease;
-    }
-    .btn:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #061018;
-      border-color: rgba(255, 255, 255, 0.12);
-    }
-    .btn-primary:hover { filter: brightness(1.06); }
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border);
-    }
-    .btn-ghost:hover {
-      background: var(--accent-soft);
-      border-color: rgba(77, 159, 255, 0.35);
-    }
-    .hero {
-      padding-bottom: 2.75rem;
-    }
-    .hero .pill {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 0.85rem;
-    }
-    .hero h1 {
-      font-family: var(--font-display);
-      font-size: clamp(1.28rem, 4vw, 2.15rem);
-      font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1.14;
-      margin: 0 0 0.75rem;
-      max-width: 38ch;
-    }
-    .hero h1 em {
-      font-style: normal;
-      color: var(--accent);
-    }
-    .hero-kicker {
-      margin: 0 0 1.25rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .value-trio {
-      display: grid;
-      gap: 0.75rem;
-      grid-template-columns: 1fr;
-      margin: 1.35rem 0 1.5rem;
-    }
-    @media (min-width: 720px) {
-      .value-trio { grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
-    }
-    .value-card {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.95rem 1.05rem;
-    }
-    .value-q {
-      display: block;
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 0.4rem;
-    }
-    .value-card p {
-      margin: 0;
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-    .value-card p strong { color: var(--text); font-weight: 600; }
-
-    .tech-note {
-      margin-top: 0.25rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      max-width: 58ch;
-      line-height: 1.5;
-    }
-    .tech-note code {
-      font-size: 0.76rem;
-      background: var(--surface2);
-      padding: 0.1rem 0.35rem;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
-    .mini-tech {
-      display: grid;
-      gap: 0.65rem;
-      margin-top: 1.25rem;
-    }
-    @media (min-width: 640px) {
-      .mini-tech { grid-template-columns: repeat(3, 1fr); }
-    }
-    .mini-tech div {
-      font-size: 0.8rem;
-      color: var(--muted);
-      padding: 0.65rem 0.75rem;
-      background: rgba(77, 159, 255, 0.06);
-      border: 1px solid rgba(77, 159, 255, 0.18);
-      border-radius: 10px;
-      line-height: 1.4;
-    }
-    .mini-tech strong {
-      display: block;
-      color: var(--text);
-      font-size: 0.82rem;
-      margin-bottom: 0.2rem;
-    }
-    .hero-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-    }
-    .strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.25rem;
-      padding: 0.95rem 1.15rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.82rem;
-      color: var(--muted);
-      max-width: fit-content;
-    }
-    .strip strong { color: var(--text); font-weight: 600; }
-
-    section.block {
-      margin-top: 2.75rem;
-    }
-    .block h2 {
-      font-family: var(--font-display);
-      font-size: clamp(1.2rem, 2vw, 1.45rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.5rem;
-    }
-    .block .subtitle {
-      margin: 0 0 1.35rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-      max-width: 60ch;
-    }
-    .grid {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 620px) {
-      .grid.features { grid-template-columns: repeat(2, 1fr); }
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1.2rem 1.25rem;
-      height: 100%;
-    }
-    .card .icon {
-      width: 2.35rem;
-      height: 2.35rem;
-      border-radius: 10px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    .card h3 {
-      margin: 0 0 0.4rem;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-    .card p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .band {
-      margin-top: 2.75rem;
-      padding: 1.5rem 1.35rem;
-      border-radius: var(--radius);
-      border: 1px solid rgba(77, 159, 255, 0.22);
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(199, 146, 53, 0.06));
-    }
-    .band h2 {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      margin: 0 0 0.5rem;
-    }
-    .band p {
-      margin: 0;
-      font-size: 0.93rem;
-      color: var(--muted);
-      max-width: 70ch;
-    }
-    .cta {
-      margin-top: 3rem;
-      text-align: center;
-      padding: 2rem 1.25rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--surface);
-    }
-    .cta h2 {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      margin: 0 0 0.5rem;
-      letter-spacing: -0.02em;
-    }
-    .cta > p {
-      margin: 0 0 1.25rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    .cta-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-    }
-    .muted-note {
-      margin-top: 1rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      max-width: 48ch;
-      margin-inline: auto;
-    }
-    .site-credit {
-      margin-top: 3rem;
-      padding-top: 1.35rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.65;
-    }
-    .site-credit a {
-      color: var(--accent);
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .site-credit a:hover { text-decoration: underline; }
-    .site-credit-role { font-weight: 400; opacity: 0.92; }
-
-    /* Skip link — mesmo comportamento das outras páginas públicas */
-    .politapp-skip {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10000;
-      padding: 0.5rem 1rem;
-      font: 600 0.8125rem "DM Sans", system-ui, sans-serif;
-      background: var(--accent);
-      color: #0a0d12;
-      border: none;
-      border-radius: 0 0 10px 0;
-      text-decoration: none;
-      transform: translateY(-130%);
-      transition: transform 0.18s ease;
-    }
-    .politapp-skip:focus {
-      transform: translateY(0);
-      outline: 2px solid var(--text);
-      outline-offset: 2px;
-    }
-    .politapp-skip:focus:not(:focus-visible) { outline: none; }
-  </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site-theme.css?v=29" />
-  <script type="module" src="js/site-bg.js?v=29"></script>
-  <script type="module" src="js/site-interactions.js?v=29"></script>
-  <script type="module" src="js/site-nav.js?v=29"></script>
+  <style>
+    :root { --landing-width: 1080px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #07111f; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 15% 0%, rgba(59,130,246,.16), transparent 38%); }
+    .page { position: relative; width: min(var(--landing-width), calc(100% - 2.5rem)); margin: 0 auto; }
+    .topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .brand { color: var(--text); font: 700 1.45rem Outfit, sans-serif; letter-spacing: -.04em; text-decoration: none; }
+    .top-actions { display: flex; align-items: center; gap: .8rem; }
+    .top-actions > a:not(.button) { color: var(--muted); text-decoration: none; font-size: .9rem; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .65rem 1.15rem; border-radius: 9px; font-weight: 700; text-decoration: none; }
+    .button-primary { color: #06101b; background: var(--accent); }
+    .button-secondary { color: var(--text); border: 1px solid var(--border); background: rgba(255,255,255,.025); }
+    .hero { padding: clamp(4rem, 10vw, 7.5rem) 0 4rem; max-width: 840px; }
+    .eyebrow { margin: 0 0 1rem; color: var(--accent); font-size: .76rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+    h1 { margin: 0; color: var(--text); font: 700 clamp(2.25rem, 6vw, 4.5rem)/1.02 Outfit, sans-serif; letter-spacing: -.055em; }
+    .hero-copy { max-width: 700px; margin: 1.4rem 0 0; color: var(--muted); font-size: clamp(1rem, 2vw, 1.22rem); line-height: 1.65; }
+    .hero-copy strong { color: var(--text); font-weight: 600; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+    .capabilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 1rem 0 4.5rem; }
+    .capability { min-height: 190px; padding: 1.35rem; border: 1px solid var(--border); border-radius: 14px; background: rgba(14,27,47,.72); }
+    .number { display: block; color: var(--accent); font: 700 .75rem Outfit, sans-serif; letter-spacing: .08em; }
+    .capability h2 { margin: 1.5rem 0 .55rem; color: var(--text); font: 600 1.08rem Outfit, sans-serif; }
+    .capability p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+    .security { display: grid; grid-template-columns: .8fr 1.2fr; gap: 2rem; align-items: center; padding: 2.25rem; border: 1px solid rgba(77,159,255,.24); border-radius: 16px; background: linear-gradient(135deg, rgba(59,130,246,.11), rgba(14,27,47,.8)); }
+    .security-label { margin: 0; color: var(--accent); font: 700 .76rem Outfit, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+    .security h2 { margin: .6rem 0 0; color: var(--text); font: 700 clamp(1.55rem, 3vw, 2.15rem)/1.15 Outfit, sans-serif; letter-spacing: -.03em; }
+    .security p { margin: 0; color: var(--muted); line-height: 1.65; }
+    .final-cta { padding: 5rem 0; text-align: center; }
+    .final-cta h2 { margin: 0; color: var(--text); font: 700 clamp(1.6rem, 4vw, 2.35rem) Outfit, sans-serif; }
+    .final-cta p { margin: .8rem auto 1.4rem; max-width: 580px; color: var(--muted); }
+    footer { padding: 1.35rem 0 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: .8rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    .politapp-skip { position: fixed; z-index: 20; left: 0; top: 0; padding: .55rem 1rem; color: #06101b; background: var(--accent); transform: translateY(-120%); }
+    .politapp-skip:focus { transform: translateY(0); }
+    @media (max-width: 760px) {
+      .topbar { min-height: 68px; }
+      .top-actions > a:not(.button) { display: none; }
+      .hero { padding-top: 4rem; }
+      .capabilities, .security { grid-template-columns: 1fr; }
+      .capability { min-height: auto; }
+      footer { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-  <nav class="site-nav" aria-label="Navegação principal">
-    <a href="index.html">Candidatos</a>
-    <a href="executivo.html">Visão executiva</a>
-    <a href="insights-rj.html">Insights RJ</a>
-    <a href="vereadores-rj.html">Vereadores RJ</a>
-    <details class="site-nav-dropdown">
-      <summary class="site-nav-dropdown__summary">Mídia social</summary>
-      <div class="site-nav-dropdown__panel" role="group" aria-label="Submenu Mídia social">
-        <a href="midia-social.html">Painel</a>
-        <a href="whatsapp.html">WhatsApp</a>
-        <a href="instagram.html">Instagram</a>
+  <a class="politapp-skip" href="#conteudo">Ir ao conteúdo</a>
+  <header class="page topbar">
+    <a class="brand" href="landing-app.html" aria-current="page">Politapp</a>
+    <nav class="top-actions" aria-label="Navegação principal">
+      <a href="privacidade.html">Privacidade</a>
+      <a href="landing-publico.html">Contato</a>
+      <a class="button button-primary" href="login.html">Entrar</a>
+    </nav>
+  </header>
+  <main id="conteudo" class="page">
+    <section class="hero">
+      <p class="eyebrow">Informação para decisões políticas</p>
+      <h1>Uma visão completa da sua campanha.</h1>
+      <p class="hero-copy">Ferramenta para <strong>monitoramento de informações, integrações e visão global e de mídia</strong> para campanhas políticas. Tudo centralizado, organizado e acessível em um só lugar.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="login.html">Acessar o Politapp</a>
+        <a class="button button-secondary" href="#recursos">Conhecer recursos</a>
       </div>
-    </details>
-    <a href="tarefas.html">Tarefas</a>
-    <a href="login.html">Entrar</a>
-    <a href="conta.html">Conta</a>
-  </nav>
-  <a class="politapp-skip" href="#politapp-main">Ir ao conteúdo</a>
-  <div class="bg" aria-hidden="true"></div>
-
-  <div class="shell">
-    <header class="top">
-      <a class="brand" href="landing-app.html" aria-current="page">Politapp</a>
-      <nav class="top-nav" aria-label="Navegação">
-        <a href="privacidade.html">Privacidade</a>
-        <a href="landing-publico.html">Contato</a>
-        <a href="login.html" class="btn btn-primary" style="padding: 0.5rem 1rem">Entrar</a>
-      </nav>
-    </header>
-
-    <main id="politapp-main">
-      <section class="hero" aria-labelledby="hero-title">
-        <p class="pill">Inteligência · tecnologia · território</p>
-        <h1 id="hero-title">
-          Inteligência eleitoral em tempo real para campanhas que querem <em>vencer</em> —
-          análise de votos por seção, estratégia territorial e decisão baseada em dados.
-        </h1>
-        <p class="hero-kicker">Os três eixos primeiro — antes de recurso técnico</p>
-
-        <div class="value-trio">
-          <article class="value-card">
-            <span class="value-q"><i class="fa-solid fa-bullseye" aria-hidden="true"></i> Para quem é?</span>
-            <p>
-              <strong>Direção de campanha, coordenação territorial e equipes de dados</strong>
-              que precisam ler urna e geografia no mesmo quadro — na hora da decisão, não depois da reunião.
-            </p>
-          </article>
-          <article class="value-card">
-            <span class="value-q"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Como me ajuda?</span>
-            <p>
-              Dados públicos <strong>espalhados em vários portais</strong>; a equipe cruza TSE, Câmara e recortes locais
-              <strong>sem uma visão única</strong> para priorizar onde atuar ou o que comunicar.
-            </p>
-          </article>
-          <article class="value-card">
-            <span class="value-q"><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Qual resultado entrega?</span>
-            <p>
-              <strong>Leitura por seção e região</strong>, cenários territoriais comparáveis e painéis escuros pensados
-              para <strong>decisão rápida</strong> com arquivos e APIs oficiais — menos achismo, mais dado no mesmo lugar.
-            </p>
-          </article>
-        </div>
-
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="login.html">Acessar o painel</a>
-          <a class="btn btn-ghost" href="login.html?next=guia-uso.html">Guia após entrar</a>
-        </div>
-        <div class="strip" role="note">
-          <span><strong>Dados &amp; stack:</strong></span>
-          <span>TSE</span>
-          <span>·</span>
-          <span>Câmara (API aberta)</span>
-          <span>·</span>
-          <span>Web + governança de acesso</span>
-        </div>
-        <p class="tech-note">
-          Arquitetura em <strong>web modular</strong>; sessão com <strong>OAuth Google</strong> e <strong>aprovação administrativa</strong>.
-          Conformidade e transparência: <a href="privacidade.html" style="color: var(--accent); font-weight: 600">privacidade</a> ·
-          <a href="termos-uso.html" style="color: var(--accent); font-weight: 600">termos</a>.
-        </p>
-      </section>
-
-      <section class="block" aria-labelledby="feat-title">
-        <h2 id="feat-title">Inteligência &amp; tecnologia (por que existe engenharia)</h2>
-        <p class="subtitle">
-          Só pontos onde software e método se encontram: <strong>território tratado como dado</strong>, ingestão oficial e confiança no acesso.
-        </p>
-        <div class="grid features">
-          <article class="card">
-            <div class="icon" aria-hidden="true">01</div>
-            <h3>Geointeligência eleitoral</h3>
-            <p>Zona/seção tratadas como primeira classe: base para comparar comportamento territorial e orientar recurso onde a urna falou mais alto ou mais baixo.</p>
-          </article>
-          <article class="card">
-            <div class="icon" aria-hidden="true">02</div>
-            <h3>Pipeline de dados públicos</h3>
-            <p>Junção sob o mesmo frontend de <strong>APIs abertas e arquivos oficiais</strong> já homologados (Câmara, divulgação TSE, etc.), com menos retrabalho de planilha.</p>
-          </article>
-          <article class="card">
-            <div class="icon" aria-hidden="true">03</div>
-            <h3>Painéis para decidir rápido</h3>
-            <p>UI escura estilo dashboard, preparada para <strong>indicadores e camadas RJ</strong> quando ativadas no seu ambiente — foco cognitivo, não poluição visual.</p>
-          </article>
-          <article class="card">
-            <div class="icon" aria-hidden="true">04</div>
-            <h3>Camada zero-trust institucional</h3>
-            <p>Tráfego esperado em <strong>HTTPS</strong>, conta com revisão administrativa e trilhos de perfil pensados para <strong>circulação menor de briefing sensível</strong>.</p>
-          </article>
-        </div>
-
-        <div class="mini-tech" aria-label="Observações técnicas">
-          <div>
-            <strong>Atualização &amp; “real time”</strong>
-            Métricas e mapas refrescam segundo a própria fonte pública e a rede — prometemos arquitetura para acompanhar, não SLA ilegível de órgão terceiro.
-          </div>
-          <div>
-            <strong>Extensível</strong>
-            Proxies e integrações opcionais para manter navegador em origem única quando a infra do cliente assim definir.
-          </div>
-          <div>
-            <strong>Evolução</strong>
-            Camada frontend estática permite somar datasets e vistas sem obrigar refactor completo antes de nova eleição.
-          </div>
-        </div>
-      </section>
-
-      <aside class="band" aria-label="Uso responsável">
-        <h2>Uso responsável</h2>
-        <p>
-          O Politapp opera sobre <strong>dados públicos para análise</strong>; não substitui assessoria jurídica nem compliance eleitoral.
-          Adeque o uso ao seu papel institucional (<strong>campanha</strong>, <strong>mandato</strong> ou <strong>equipe técnica</strong>).
-        </p>
-      </aside>
-
-      <section class="cta" aria-labelledby="cta-title">
-        <h2 id="cta-title">Testar o produto na prática</h2>
-        <p>Login com Google habilita o restante das rotas após conformidade do perfil definida pelo administrador.</p>
-        <div class="cta-actions">
-          <a class="btn btn-primary" href="login.html">Entrar ou cadastrar</a>
-          <a class="btn btn-ghost" href="landing-publico.html">Contato institucional</a>
-        </div>
-        <p class="muted-note">
-          Landing pública · Módulos adicionais (transparência, escuta, etc.) ficam dentro do mesmo shell após acesso.
-        </p>
-      </section>
-    </main>
-
-    <footer class="site-credit">
-      <p>
-        Politapp — inteligência eleitoral em stack web aberto.
-        ·
-        <a href="https://dadosabertos.camara.leg.br/swagger/api.html" target="_blank" rel="noopener noreferrer">API Câmara</a>
-        ·
-        <a href="privacidade.html">Privacidade</a>
-        ·
-        <a href="termos-uso.html">Termos</a>
-      </p>
-      <p>
-        Criado por
-        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rafael Ribeiro</a>
-        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
-        ·
-        <a href="https://www.linkedin.com/in/rafaelribeiro01" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      </p>
-      <p>
-        Criado por
-        <a href="https://testesstyvie26.github.io/RafaelRibeiro/" target="_blank" rel="noopener noreferrer">Rodrigo Carran</a>
-        <span class="site-credit-role">— Especialista em Segurança da Informação &amp; DevSecOps</span>
-        ·
-        <a href="https://www.linkedin.com/in/rodrigocarran/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      </p>
-      <p>
-        Criado por
-        <a href="https://www.linkedin.com/in/ulisses-cardoso/" target="_blank" rel="noopener noreferrer">Ulisses Cardoso</a>
-        ·
-        <a href="https://www.linkedin.com/in/ulisses-cardoso/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      </p>
-    </footer>
-  </div>
+    </section>
+    <section id="recursos" class="capabilities" aria-label="Principais recursos">
+      <article class="capability"><span class="number">01</span><h2>Monitoramento</h2><p>Acompanhe informações relevantes e mantenha a equipe alinhada sobre o cenário da campanha.</p></article>
+      <article class="capability"><span class="number">02</span><h2>Integrações</h2><p>Reúna diferentes fontes, dados eleitorais e canais de comunicação em uma única operação.</p></article>
+      <article class="capability"><span class="number">03</span><h2>Visão global e de mídia</h2><p>Visualize o contexto geral, acompanhe a presença digital e transforme informação em ação.</p></article>
+    </section>
+    <section class="security" aria-labelledby="seguranca-titulo">
+      <div><p class="security-label">Centralização segura</p><h2 id="seguranca-titulo">Informações organizadas com controle de acesso.</h2></div>
+      <p>Dados, análises e atividades ficam reunidos em um ambiente com autenticação e perfis de acesso, reduzindo a dispersão de informações sensíveis da campanha.</p>
+    </section>
+    <section class="final-cta">
+      <h2>Mais clareza para coordenar. Mais agilidade para decidir.</h2>
+      <p>Entre no Politapp e concentre a operação da campanha em uma visão simples e objetiva.</p>
+      <a class="button button-primary" href="login.html">Entrar ou cadastrar</a>
+    </section>
+  </main>
+  <footer class="page"><span>© 2026 Politapp</span><span><a href="privacidade.html">Privacidade</a> · <a href="termos-uso.html">Termos de uso</a></span></footer>
   <script src="js/auth-config.js?v=32" data-cfasync="false"></script>
-  <script type="module" src="js/politapp-logout-if-session.js?v=29"></script>
+  <script type="module" src="js/politapp-logout-if-session.js?v=36"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
