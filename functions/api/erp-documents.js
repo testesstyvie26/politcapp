@@ -1,41 +1,23 @@
-const UPSTREAM = "https://cmbusinesstoken.com/politicapp/php/api/documentos.php";
-const baseHeaders = { "Cache-Control": "no-store" };
-
-function json(data, status = 200) {
-  return Response.json(data, { status, headers: baseHeaders });
-}
-
-export async function onRequest({ request }) {
-  if (!["GET", "POST"].includes(request.method)) return json({ ok: false, error: "Método não permitido." }, 405);
-  const requestUrl = new URL(request.url);
-  const origin = request.headers.get("Origin");
-  if (request.method === "POST" && origin && origin !== requestUrl.origin) return json({ ok: false, error: "Origem não autorizada." }, 403);
-
-  const upstreamUrl = new URL(UPSTREAM);
-  upstreamUrl.search = requestUrl.search;
-  const headers = new Headers();
-  headers.set("Accept", request.headers.get("Accept") || "application/json");
-  const contentType = request.headers.get("Content-Type");
-  if (contentType) headers.set("Content-Type", contentType);
-
-  let upstream;
-  try {
-    upstream = await fetch(upstreamUrl, {
-      method: request.method,
-      headers,
-      body: request.method === "POST" ? request.body : undefined,
-      redirect: "manual",
-      signal: AbortSignal.timeout(30000),
-    });
-  } catch (error) {
-    console.error(JSON.stringify({ event: "erp_documents_upstream_failed", message: String(error) }));
-    return json({ ok: false, error: "O serviço de documentos está temporariamente indisponível." }, 502);
-  }
-
-  const responseHeaders = new Headers(baseHeaders);
-  for (const name of ["content-type", "content-length", "content-disposition", "x-content-type-options"]) {
-    const value = upstream.headers.get(name);
-    if (value) responseHeaders.set(name, value);
-  }
-  return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+const H={"Cache-Control":"no-store","Content-Type":"application/json; charset=utf-8"},MAX=8*1024*1024;
+const STATUS=new Set(["rascunho","revisando","aprovado","arquivado"]),VIS=new Set(["gabinete","restrito"]);
+const MIMES=new Set(["application/pdf","image/jpeg","image/png","image/webp","text/plain","text/csv","application/csv","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","application/vnd.ms-excel","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.ms-powerpoint","application/vnd.openxmlformats-officedocument.presentationml.presentation","application/vnd.oasis.opendocument.text","application/vnd.oasis.opendocument.spreadsheet"]);
+const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:H});
+const clean=(v,n=500)=>String(v||"").trim().slice(0,n),isManager=r=>r==="admin"||r==="gestao",isUuid=v=>/^[0-9a-f-]{36}$/i.test(String(v||""));
+async function connect(env){if(!env.ERP_MYSQL)return null;const {createConnection}=await import("mysql2/promise");return createConnection({host:env.ERP_MYSQL.host,user:env.ERP_MYSQL.user,password:env.ERP_MYSQL.password,database:env.ERP_MYSQL.database,port:env.ERP_MYSQL.port,disableEval:true,connectTimeout:10000})}
+async function account(db,token){if(!token)return null;const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(token)),hash=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");const [rows]=await db.execute("SELECT u.id,u.email,u.nome,p.grupo,p.unidade_id,p.conta_status FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id JOIN profiles p ON p.id=u.id WHERE s.token_hash=? AND s.revogado_em IS NULL AND s.expira_em>UTC_TIMESTAMP() AND u.status='ativo' LIMIT 1",[hash]);return rows[0]?.conta_status==="aprovado"?rows[0]:null}
+async function schema(db){await db.execute("CREATE TABLE IF NOT EXISTS erp_documents(id CHAR(36) NOT NULL,unidade_id CHAR(36) NOT NULL,titulo VARCHAR(200) NOT NULL,descricao TEXT NULL,categoria VARCHAR(80) NULL,status VARCHAR(24) NOT NULL DEFAULT 'rascunho',visibilidade VARCHAR(24) NOT NULL DEFAULT 'gabinete',versao_atual INT UNSIGNED NOT NULL DEFAULT 0,created_by CHAR(36) NOT NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,PRIMARY KEY(id),KEY idx_doc_office_status(unidade_id,status)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");await db.execute("CREATE TABLE IF NOT EXISTS erp_document_versions(id CHAR(36) NOT NULL,document_id CHAR(36) NOT NULL,numero INT UNSIGNED NOT NULL,nome_arquivo VARCHAR(255) NOT NULL,mime VARCHAR(127) NOT NULL,tamanho BIGINT UNSIGNED NOT NULL,checksum_sha256 CHAR(64) NOT NULL,observacao VARCHAR(500) NULL,conteudo LONGBLOB NOT NULL,uploaded_by CHAR(36) NOT NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(id),UNIQUE KEY uq_doc_version(document_id,numero),KEY idx_versions_doc(document_id,created_at),CONSTRAINT fk_versions_doc FOREIGN KEY(document_id) REFERENCES erp_documents(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");await db.execute("CREATE TABLE IF NOT EXISTS erp_document_events(id CHAR(36) NOT NULL,document_id CHAR(36) NOT NULL,user_id CHAR(36) NOT NULL,evento VARCHAR(40) NOT NULL,detalhes VARCHAR(500) NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(id),KEY idx_events_doc(document_id,created_at),CONSTRAINT fk_events_doc FOREIGN KEY(document_id) REFERENCES erp_documents(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci")}
+async function find(db,id,office){const [r]=await db.execute("SELECT * FROM erp_documents WHERE id=? AND unidade_id=? LIMIT 1",[id,office]);return r[0]||null}
+const canRead=(d,a)=>d.visibilidade==="gabinete"||isManager(a.grupo)||d.created_by===a.id;
+async function audit(db,id,user,event,details=null){await db.execute("INSERT INTO erp_document_events(id,document_id,user_id,evento,detalhes) VALUES(?,?,?,?,?)",[crypto.randomUUID(),id,user,event,details])}
+export async function onRequest({request,env}){
+ if(!["GET","POST"].includes(request.method))return json({ok:false,error:"Método não permitido."},405);const url=new URL(request.url),origin=request.headers.get("Origin");if(request.method==="POST"&&origin&&origin!==url.origin)return json({ok:false,error:"Origem não autorizada."},403);if(!env.ERP_MYSQL)return json({ok:false,error:"Conexão MySQL ERP_MYSQL não vinculada ao Cloudflare Pages."},503);
+ let form=null;if(request.method==="POST"){if(Number(request.headers.get("content-length")||0)>MAX+1048576)return json({ok:false,error:"Envio maior que 8 MB."},413);form=await request.formData().catch(()=>null);if(!form)return json({ok:false,error:"Dados de envio inválidos."},400)}
+ const action=clean(form?.get("action")||url.searchParams.get("action")||(request.method==="GET"?"list":""),30),token=clean(form?.get("_token")||url.searchParams.get("_token"),256);const db=await connect(env).catch(e=>{console.error("documents_connect",e);return null});if(!db)return json({ok:false,error:"Não foi possível conectar ao MySQL pelo Cloudflare."},503);
+ try{const a=await account(db,token);if(!a)return json({ok:false,error:"Sessão inválida."},401);await schema(db);const office=String(a.unidade_id||"central");
+  if(request.method==="GET"&&action==="list"){const [items]=await db.execute("SELECT d.id,d.titulo,d.descricao,d.categoria,d.status,d.visibilidade,d.versao_atual,d.created_by,d.created_at,d.updated_at,v.id version_id,v.nome_arquivo,v.mime,v.tamanho,v.checksum_sha256,v.created_at version_created_at,(SELECT COUNT(*) FROM erp_document_versions x WHERE x.document_id=d.id) total_versoes FROM erp_documents d LEFT JOIN erp_document_versions v ON v.document_id=d.id AND v.numero=d.versao_atual WHERE d.unidade_id=? AND (d.visibilidade='gabinete' OR d.created_by=? OR ?=1) ORDER BY d.updated_at DESC LIMIT 300",[office,a.id,isManager(a.grupo)?1:0]);return json({ok:true,storage:"mysql-hyperdrive",items})}
+  if(request.method==="GET"&&action==="detail"){const id=clean(url.searchParams.get("id"),36),doc=isUuid(id)?await find(db,id,office):null;if(!doc||!canRead(doc,a))return json({ok:false,error:"Documento não encontrado."},404);const [versions]=await db.execute("SELECT id,numero,nome_arquivo,mime,tamanho,checksum_sha256,observacao,uploaded_by,created_at FROM erp_document_versions WHERE document_id=? ORDER BY numero DESC",[id]);return json({ok:true,item:doc,versions})}
+  if(request.method==="GET"&&action==="download"){const id=clean(url.searchParams.get("version_id"),36),[rows]=await db.execute("SELECT v.nome_arquivo,v.mime,v.tamanho,v.conteudo,d.visibilidade,d.created_by FROM erp_document_versions v JOIN erp_documents d ON d.id=v.document_id WHERE v.id=? AND d.unidade_id=? LIMIT 1",[id,office]),v=rows[0];if(!v||!canRead(v,a))return json({ok:false,error:"Documento não encontrado."},404);return new Response(v.conteudo,{headers:{"Content-Type":v.mime,"Content-Disposition":`attachment; filename*=UTF-8''${encodeURIComponent(v.nome_arquivo)}`,"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"}})}
+  if(request.method==="POST"&&action==="upload"){const file=form.get("arquivo");if(!(file instanceof File)||!file.size)return json({ok:false,error:"Selecione um arquivo."},422);if(file.size>MAX)return json({ok:false,error:"O arquivo deve ter no máximo 8 MB."},413);const mime=clean(file.type||"application/octet-stream",127);if(!MIMES.has(mime))return json({ok:false,error:"Tipo de arquivo não permitido."},422);const bytes=new Uint8Array(await file.arrayBuffer()),digest=await crypto.subtle.digest("SHA-256",bytes),checksum=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");let id=clean(form.get("document_id"),36),doc=null,number=1;if(id){doc=isUuid(id)?await find(db,id,office):null;if(!doc||!canRead(doc,a))return json({ok:false,error:"Documento não encontrado."},404);number=Number(doc.versao_atual||0)+1}else{id=crypto.randomUUID();const title=clean(form.get("titulo")||file.name.replace(/\.[^.]+$/, ""),200);if(!title)return json({ok:false,error:"Informe o título."},422);const visibility=VIS.has(String(form.get("visibilidade")))?String(form.get("visibilidade")):"gabinete";await db.execute("INSERT INTO erp_documents(id,unidade_id,titulo,descricao,categoria,status,visibilidade,versao_atual,created_by) VALUES(?,?,?,?,?,'rascunho',?,0,?)",[id,office,title,clean(form.get("descricao"),5000)||null,clean(form.get("categoria"),80)||null,visibility,a.id])}const version=crypto.randomUUID();await db.beginTransaction();try{await db.execute("INSERT INTO erp_document_versions(id,document_id,numero,nome_arquivo,mime,tamanho,checksum_sha256,observacao,conteudo,uploaded_by) VALUES(?,?,?,?,?,?,?,?,?,?)",[version,id,number,clean(file.name,255),mime,file.size,checksum,clean(form.get("observacao"),500)||null,bytes,a.id]);await db.execute("UPDATE erp_documents SET versao_atual=?,updated_at=UTC_TIMESTAMP() WHERE id=?",[number,id]);await audit(db,id,a.id,doc?"nova_versao":"criado",`Versão ${number}`);await db.commit()}catch(e){await db.rollback();if(!doc)await db.execute("DELETE FROM erp_documents WHERE id=?",[id]);throw e}return json({ok:true,id,version_id:version,version:number},201)}
+  const id=clean(form?.get("id"),36),doc=isUuid(id)?await find(db,id,office):null;if(!doc||!canRead(doc,a))return json({ok:false,error:"Documento não encontrado."},404);if(action==="status"){const status=clean(form.get("status"),24);if(!STATUS.has(status))return json({ok:false,error:"Status inválido."},422);if(status==="aprovado"&&!isManager(a.grupo))return json({ok:false,error:"A aprovação exige perfil de gestão."},403);await db.execute("UPDATE erp_documents SET status=?,updated_at=UTC_TIMESTAMP() WHERE id=? AND unidade_id=?",[status,id,office]);await audit(db,id,a.id,"status",`${doc.status} → ${status}`);return json({ok:true,id})}if(action==="delete"){if(!isManager(a.grupo))return json({ok:false,error:"A exclusão exige perfil de gestão."},403);await db.execute("DELETE FROM erp_documents WHERE id=? AND unidade_id=?",[id,office]);return json({ok:true,id})}return json({ok:false,error:"Ação inválida."},400)
+ }catch(e){console.error(JSON.stringify({event:"erp_documents_failed",message:String(e),stack:e?.stack}));return json({ok:false,error:"Não foi possível concluir a operação no MySQL."},500)}finally{await db.end().catch(()=>{})}
 }
