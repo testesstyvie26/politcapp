@@ -89,3 +89,17 @@ CREATE TABLE IF NOT EXISTS erp_audit (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_erp_audit_office_date (office_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS erp_communications (
+  id CHAR(36) PRIMARY KEY,
+  office_id VARCHAR(64) NOT NULL,
+  title VARCHAR(220) NOT NULL,
+  channel VARCHAR(40) NOT NULL DEFAULT 'social',
+  status ENUM('rascunho','revisao','aprovado','publicado','cancelado') NOT NULL DEFAULT 'rascunho',
+  content TEXT NULL,
+  scheduled_at DATETIME NULL,
+  owner_id VARCHAR(64) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_erp_communications_office_status (office_id, status, scheduled_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

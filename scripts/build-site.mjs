@@ -17,6 +17,13 @@ for (const folder of folders) {
   await cp(path.join(root, folder), path.join(output, folder), { recursive: true });
 }
 
+const erpIndexPath = path.join(output, 'erp', 'index.html');
+const erpIndex = await readFile(erpIndexPath, 'utf8');
+await writeFile(erpIndexPath, erpIndex
+  .replace(/styles\.css(?:\?v=[^"']+)?/g, `styles.css?v=${assetVersion}`)
+  .replace(/app\.js(?:\?v=[^"']+)?/g, `app.js?v=${assetVersion}`)
+  .replace(/\.\.\/js\/auth-config\.js(?:\?v=[^"']+)?/g, `../js/auth-config.js?v=${assetVersion}`), 'utf8');
+
 // Copiar arquivos-root (HTML .html na raiz)
 for (const entry of await readdir(root, { withFileTypes: true })) {
   if (entry.isFile() && entry.name.endsWith('.html') && entry.name !== '404.html') {
