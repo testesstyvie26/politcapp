@@ -1,12 +1,19 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "politcapp",
-  "pages_build_output_dir": "./dist",
-  "compatibility_date": "2026-09-07",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "vars": {
-    "ALLOWED_ORIGINS": "https://politcapp.com.br,https://f49b7c1f.politcapp.pages.dev,https://3e828904.politcapp.pages.dev"
-  }
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "politcapp",
+	"pages_build_output_dir": "./dist",
+	"compatibility_date": "2026-09-07",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"vars": {
+		"ALLOWED_ORIGINS": "https://politcapp.com.br,https://f49b7c1f.politcapp.pages.dev,https://3e828904.politcapp.pages.dev"
+	},
+	"d1_databases": [
+		{
+			"binding": "ERP_DB",
+			"database_name": "erppoli-db",
+			"database_id": "32693619-7c1e-49a9-9744-ef1cb292c95b"
+		}
+	]
 }
