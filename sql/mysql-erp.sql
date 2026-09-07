@@ -103,3 +103,23 @@ CREATE TABLE IF NOT EXISTS erp_communications (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_erp_communications_office_status (office_id, status, scheduled_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS erp_vehicles (
+  id CHAR(36) PRIMARY KEY,
+  office_id VARCHAR(64) NOT NULL,
+  plate VARCHAR(12) NOT NULL,
+  make VARCHAR(120) NULL,
+  model VARCHAR(160) NULL,
+  year SMALLINT NULL,
+  driver VARCHAR(180) NULL,
+  status ENUM('disponivel','em_uso','manutencao','inativo') NOT NULL DEFAULT 'disponivel',
+  odometer INT UNSIGNED NOT NULL DEFAULT 0,
+  next_maintenance DATE NULL,
+  monthly_cost_cents BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  notes TEXT NULL,
+  created_by VARCHAR(64) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_erp_vehicles_office_plate (office_id, plate),
+  INDEX idx_erp_vehicles_office_status (office_id, status, next_maintenance)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

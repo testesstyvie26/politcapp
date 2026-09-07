@@ -6,7 +6,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
 const folders = ['css', 'data', 'docs', 'erp', 'js', 'vendor'];
 const rootFiles = ['favicon.svg', 'CNAME', 'tse-votos-2022.js'];
-const assetVersion = '20260907-10';
+const assetVersion = '20260907-11';
+const erpRoutes = ['kanban','demandas','cidadaos','relacionamentos','campo','atendimentos','agenda','metas','projetos','comunicacao','financeiro','territorios','relatorios','administracao'];
 
 // Remove e cria dist
 await rm(output, { recursive: true, force: true });
@@ -19,10 +20,16 @@ for (const folder of folders) {
 
 const erpIndexPath = path.join(output, 'erp', 'index.html');
 const erpIndex = await readFile(erpIndexPath, 'utf8');
-await writeFile(erpIndexPath, erpIndex
+const versionedErpIndex = erpIndex
   .replace(/styles\.css(?:\?v=[^"']+)?/g, `styles.css?v=${assetVersion}`)
   .replace(/app\.js(?:\?v=[^"']+)?/g, `app.js?v=${assetVersion}`)
-  .replace(/\.\.\/js\/auth-config\.js(?:\?v=[^"']+)?/g, `../js/auth-config.js?v=${assetVersion}`), 'utf8');
+  .replace(/\/js\/auth-config\.js(?:\?v=[^"']+)?/g, `/js/auth-config.js?v=${assetVersion}`);
+await writeFile(erpIndexPath, versionedErpIndex, 'utf8');
+for (const route of erpRoutes) {
+  const routeDirectory = path.join(output, 'erp', route);
+  await mkdir(routeDirectory, { recursive: true });
+  await writeFile(path.join(routeDirectory, 'index.html'), versionedErpIndex, 'utf8');
+}
 
 // Copiar arquivos-root (HTML .html na raiz)
 for (const entry of await readdir(root, { withFileTypes: true })) {
