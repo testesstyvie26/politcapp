@@ -1,0 +1,39 @@
+const create = (tag, className, text) => { const element = document.createElement(tag); if (className) element.className = className; if (text !== undefined) element.textContent = text; return element; };
+
+function inputFor([name, label, type, extra]) {
+  const wrap = create("label", "field"), caption = create("span", "", label); let input;
+  if (type === "textarea") input = document.createElement("textarea");
+  else if (type === "select") { input = document.createElement("select"); for (const value of extra) input.append(new Option(value.replaceAll("_", " "), value)); }
+  else { input = document.createElement("input"); input.type = type === "currency" ? "number" : type || "text"; if (type === "currency") { input.step = "0.01"; input.min = "0"; input.inputMode = "decimal"; input.dataset.currency = "cents"; } }
+  input.name = name; if (extra === true) input.required = true; wrap.append(caption, input); return wrap;
+}
+
+export async function renderCrudV2({ view, resource, schema, api, toast, displayValue, subtitle }) {
+  let editingId = "", loadVersion = 0;
+  view.replaceChildren();
+  const toolbar = create("div", "module-toolbar module-toolbar-v2"), copy = create("div");
+  copy.append(create("p", "eyebrow-small", "OPERAÇÃO DO GABINETE"), create("h2", "module-title", schema.title.replace(/^Nov[oa] /, "")));
+  const add = create("button", "primary", "+ Novo registro"); toolbar.append(copy, add); view.append(toolbar);
+  const filters = create("section", "card compact-filters"), search = document.createElement("input"), counter = create("span", "record-counter", "Carregando…"); search.type = "search"; search.placeholder = "Buscar nesta área"; search.setAttribute("aria-label", "Buscar registros"); filters.append(search, counter); view.append(filters);
+  const list = create("section", "record-grid"), backdrop = create("button", "drawer-backdrop"); backdrop.type = "button"; backdrop.setAttribute("aria-label", "Fechar formulário");
+  const drawer = create("aside", "data-drawer"); drawer.setAttribute("aria-label", schema.title); const drawerHead = create("div", "drawer-head"), drawerTitle = create("div"), close = create("button", "drawer-close", "×"); close.type = "button"; drawerTitle.append(create("small", "", "CADASTRO ORIENTADO"), create("h3", "", schema.title)); drawerHead.append(drawerTitle, close);
+  const form = create("form", "drawer-form"), essential = create("div", "essential-fields"), optional = document.createElement("details"), optionalSummary = document.createElement("summary"), optionalFields = create("div", "optional-fields"); optionalSummary.textContent = "Mais detalhes (opcional)"; optional.append(optionalSummary, optionalFields);
+  schema.fields.forEach((definition, index) => (index < 3 ? essential : optionalFields).append(inputFor(definition))); form.append(essential); if (schema.fields.length > 3) form.append(optional);
+  const actions = create("div", "drawer-actions"), cancel = create("button", "secondary", "Cancelar"), save = create("button", "primary", "Salvar"); cancel.type = "button"; save.type = "submit"; actions.append(cancel, save); form.append(actions); drawer.append(drawerHead, form); view.append(list, backdrop, drawer);
+
+  const openDrawer = item => { editingId = item?.id || ""; form.reset(); optional.open = false; drawerTitle.querySelector("h3").textContent = editingId ? "Atualizar registro" : schema.title; save.textContent = editingId ? "Salvar alterações" : "Salvar"; if (item) for (const field of schema.fields) { const input = form.elements[field[0]]; if (input) input.value = input.dataset.currency === "cents" && item[field[0]] !== null && item[field[0]] !== undefined ? (Number(item[field[0]]) / 100).toFixed(2) : item[field[0]] ?? ""; } drawer.classList.add("open"); backdrop.classList.add("open"); document.body.classList.add("drawer-open"); setTimeout(() => form.querySelector("input,select,textarea")?.focus(), 80); };
+  const closeDrawer = () => { drawer.classList.remove("open"); backdrop.classList.remove("open"); document.body.classList.remove("drawer-open"); editingId = ""; };
+  add.onclick = () => openDrawer(); close.onclick = closeDrawer; cancel.onclick = closeDrawer; backdrop.onclick = closeDrawer; drawer.addEventListener("keydown", event => { if (event.key === "Escape") closeDrawer(); });
+
+  form.onsubmit = async event => { event.preventDefault(); save.disabled = true; const data = Object.fromEntries(new FormData(form)); form.querySelectorAll('[data-currency="cents"]').forEach(input => { data[input.name] = input.value === "" ? "" : String(Math.round(Number(input.value.replace(",", ".")) * 100)); }); const updating = Boolean(editingId), id = editingId; try { await api(resource, { method: updating ? "PATCH" : "POST", body: updating ? { ...data, id } : data }); closeDrawer(); toast(updating ? "Alterações salvas." : "Registro criado."); await load(); } catch (error) { toast(error.message, true); } finally { save.disabled = false; } };
+  async function remove(item, card) { if (!confirm(`Remover “${displayValue(item)}”? Esta ação não pode ser desfeita.`)) return; card.classList.add("removing"); try { await api(resource, { method: "DELETE", body: { id: item.id } }); toast("Registro removido."); await load(); } catch (error) { card.classList.remove("removing"); toast(error.message, true); } }
+  function progressFor(item) { if (resource === "goals") return Math.min(100, Math.round(Number(item.current_value || 0) / Math.max(1, Number(item.target_value || 0)) * 100)); if (resource === "field-actions") return Math.min(100, Math.round(Number(item.actual_contacts || 0) / Math.max(1, Number(item.target_contacts || 0)) * 100)); return null; }
+  async function load() {
+    const version = ++loadVersion; list.setAttribute("aria-busy", "true");
+    try { const data = await api(resource); if (version !== loadVersion) return; counter.textContent = `${data.items.length} registro(s)`; list.replaceChildren(); for (const item of data.items) { const card = create("article", "card record-card"), content = create("div", "record-content"), title = create("strong", "", displayValue(item)), meta = create("span", "", subtitle(resource, item)), rowActions = create("div", "record-actions"); content.append(title, meta); const progress = progressFor(item); if (progress !== null) { const progressWrap = create("div", "inline-progress"), bar = create("i"); bar.style.width = `${progress}%`; progressWrap.append(bar); content.append(progressWrap, create("small", "", `${progress}% da meta`)); } const edit = create("button", "secondary", "Editar"), removeButton = create("button", "danger", "Remover"); edit.onclick = () => openDrawer(item); removeButton.onclick = () => remove(item, card); rowActions.append(edit); if (resource === "demands" && item.status !== "resolvida") { const resolve = create("button", "secondary", "Resolver"); resolve.onclick = async () => { try { await api(resource, { method: "PATCH", body: { id: item.id, status: "resolvida" } }); toast("Demanda resolvida."); await load(); } catch (error) { toast(error.message, true); } }; rowActions.append(resolve); } rowActions.append(removeButton); card.dataset.search = `${displayValue(item)} ${subtitle(resource, item)}`.toLowerCase(); card.append(content, rowActions); list.append(card); } if (!data.items.length) list.append(create("div", "card empty-state", "Nenhum registro nesta área. Use “Novo registro” para começar.")); filter(); } catch (error) { if (version === loadVersion) list.replaceChildren(create("section", "card empty", error.message)); } finally { if (version === loadVersion) list.removeAttribute("aria-busy"); }
+  }
+  function filter() { const term = search.value.trim().toLowerCase(); list.querySelectorAll(".record-card").forEach(card => card.hidden = !card.dataset.search.includes(term)); }
+  search.oninput = filter;
+  await load();
+  return { refresh: load };
+}
