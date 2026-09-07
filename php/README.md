@@ -23,6 +23,7 @@ php/
 │  ├─ upload.php          POST multipart {arquivo,...} → grava e registra
 │  └─ serve.php           GET ?id                      → entrega o arquivo (com escopo)
 └─ storage/uploads/       → arquivos físicos (não vão pro git; sem execução)
+└─ api/documentos.php     → documentos do ERP, versões e download protegido
 ```
 
 ## Upload de arquivos
@@ -34,6 +35,15 @@ php/
 - `files/serve.php?id=<uuid>`: entrega o arquivo respeitando o escopo de unidade
   (admin vê tudo). Ex. de uso no front:
   `<img src="files/serve.php?id=UUID">`.
+
+## Guardar documentos (ERP)
+
+Rode `sql/locaweb-documentos.sql` depois dos schemas de autenticação. O módulo
+usa as tabelas `erp_documents`, `erp_document_versions` e
+`erp_document_events`: cada versão é armazenada como `LONGBLOB` no MySQL,
+com SHA-256, MIME, tamanho, autor e histórico de status. O endpoint
+`api/documentos.php` é acessado pelo proxy `/api/erp-documents` do Cloudflare
+Pages e respeita a unidade do usuário e os perfis RBAC.
 - A pasta `storage/uploads/` tem `.htaccess` que **desliga execução de PHP** —
   essencial: nunca sirva uploads de uma pasta que execute scripts.
 

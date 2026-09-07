@@ -57,6 +57,16 @@
     .bar { height: 6px; border-radius: 999px; background: rgba(148,163,184,.13); overflow: hidden; }
     .bar::before { content: ""; display: block; width: var(--value); height: 100%; border-radius: inherit; background: linear-gradient(90deg,#3b82f6,#22d3ee); }
     .sample-note { margin: .7rem 0 0; color: #64748b; font-size: .58rem; text-align: right; }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: .85rem; padding: 0 0 4.5rem; }
+    .summary-card { padding: 1.15rem 1.25rem; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(145deg, rgba(20,39,68,.82), rgba(14,27,47,.58)); }
+    .summary-card strong { display: block; margin: .35rem 0 .2rem; color: var(--text); font: 600 1.05rem Outfit, sans-serif; }
+    .summary-card p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.45; }
+    .vulcan { display: grid; grid-template-columns: .72fr 1.28fr; gap: clamp(1.25rem, 4vw, 2.5rem); align-items: center; margin: 0 0 4.5rem; padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid rgba(245,158,11,.3); border-radius: 16px; background: linear-gradient(120deg, rgba(12,19,33,.96), rgba(30,28,27,.72)); box-shadow: 0 20px 55px rgba(0,0,0,.26); }
+    .vulcan-logo { width: min(100%, 230px); aspect-ratio: 1 / 1; object-fit: cover; justify-self: center; border-radius: 13px; border: 1px solid rgba(245,158,11,.5); box-shadow: 0 12px 34px rgba(0,0,0,.4); }
+    .vulcan-content h2 { margin: .45rem 0 .7rem; color: var(--text); font: 700 clamp(1.55rem, 3vw, 2.25rem)/1.12 Outfit, sans-serif; letter-spacing: -.035em; }
+    .vulcan-content p { margin: 0 0 .85rem; color: var(--muted); line-height: 1.65; }
+    .vulcan-content p strong { color: #fbbf24; }
+    .vulcan-visual { display: block; width: 100%; margin-top: 1.15rem; border-radius: 12px; border: 1px solid rgba(34,211,238,.24); box-shadow: 0 12px 34px rgba(0,0,0,.3); }
     .capabilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 1rem 0 4.5rem; }
     .capability { min-height: 190px; padding: 1.35rem; border: 1px solid var(--border); border-radius: 14px; background: rgba(14,27,47,.72); }
     .number { display: block; color: var(--accent); font: 700 .75rem Outfit, sans-serif; letter-spacing: .08em; }
@@ -87,9 +97,10 @@
       .topbar { min-height: 68px; }
       .top-actions > a:not(.button) { display: none; }
       .hero { grid-template-columns: 1fr; padding-top: 4rem; }
-      .capabilities, .security, .audience-grid { grid-template-columns: 1fr; }
+      .capabilities, .security, .audience-grid, .summary, .vulcan { grid-template-columns: 1fr; }
       .capability { min-height: auto; }
       footer { flex-direction: column; }
+      .vulcan-logo { width: min(100%, 190px); }
     }
   </style>
 </head>
@@ -100,6 +111,7 @@
     <nav class="top-actions" aria-label="Navegação principal">
       <a href="privacidade.html">Privacidade</a>
       <a href="landing-publico.html">Contato</a>
+      <a href="#sumario">Sumário</a>
       <a class="button button-secondary" href="/executivo">Ir para site</a>
       <a class="button button-primary" href="login.html" data-politapp-account>Entrar</a>
       <a href="#" data-politapp-logout hidden>Sair</a>
@@ -137,6 +149,21 @@
           <div class="bars-card"><div class="chart-label"><span>Temas</span><span>Interesse</span></div><div class="bar-row"><span>Saúde</span><div class="bar" style="--value:86%"></div></div><div class="bar-row"><span>Segurança</span><div class="bar" style="--value:68%"></div></div><div class="bar-row"><span>Emprego</span><div class="bar" style="--value:54%"></div></div></div>
         </div>
         <p class="sample-note">Dados ilustrativos para demonstração</p>
+      </div>
+    </section>
+    <section id="sumario" class="summary" aria-label="Sumário da plataforma">
+      <article class="summary-card"><span class="number">01 · VISÃO</span><strong>Dados em um só lugar</strong><p>Monitoramento, métricas e contexto para entender o cenário político.</p></article>
+      <article class="summary-card"><span class="number">02 · OPERAÇÃO</span><strong>Equipe coordenada</strong><p>Rotinas, demandas e comunicação organizadas em uma operação segura.</p></article>
+      <article class="summary-card"><span class="number">03 · ESTRATÉGIA</span><strong>Decisões mais claras</strong><p>Indicadores digitais que ajudam gabinetes e campanhas a priorizar ações.</p></article>
+    </section>
+    <section class="vulcan" aria-labelledby="vulcan-titulo">
+      <img class="vulcan-logo" src="images/vulcan-defense-logo.jpg" alt="Logo Vulcan Defense" loading="lazy" />
+      <div class="vulcan-content">
+        <p class="eyebrow">Parceria em segurança cibernética</p>
+        <h2 id="vulcan-titulo">Vulcan Defense: tecnologia para proteger decisões estratégicas.</h2>
+        <p>A <strong>Vulcan Defense</strong> participa do exercício do Exército Brasileiro <strong>Guardião Cibernético — EGC 8.0V</strong>, contribuindo para o preparo, a integração e a proteção do ambiente digital nacional.</p>
+        <p>Essa atuação reforça o compromisso com informação confiável, resposta coordenada e segurança para operações que não podem parar.</p>
+        <img class="vulcan-visual" src="images/vulcan-egc-2026.jpeg" alt="Vulcan Defense no exercício Guardião Cibernético EGC 8.0V" loading="lazy" />
       </div>
     </section>
     <section id="recursos" class="capabilities" aria-label="Principais recursos">
