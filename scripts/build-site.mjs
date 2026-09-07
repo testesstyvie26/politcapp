@@ -4,9 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
-const folders = ['css', 'data', 'docs', 'js', 'vendor'];
+const folders = ['css', 'data', 'docs', 'erp', 'js', 'vendor'];
 const rootFiles = ['favicon.svg', 'CNAME', 'tse-votos-2022.js'];
-const assetVersion = '20260905-6';
+const assetVersion = '20260907-1';
 
 // Remove e cria dist
 await rm(output, { recursive: true, force: true });

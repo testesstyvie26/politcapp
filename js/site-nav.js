@@ -23,6 +23,7 @@
     '</details>';
 
   nav.innerHTML =
+    '<a href="erp/">ERP Gabinete</a>' +
     '<a href="executivo.html">Visão geral</a>' +
     '<a href="presidencial-2026.html">Presidencial 2026</a>' +
     dropdown('Dados eleitorais', 'dados', [

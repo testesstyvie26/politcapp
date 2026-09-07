@@ -11,7 +11,7 @@ function currentPageFile() {
   const parts = location.pathname.split("/").filter(Boolean);
   return parts.length ? parts[parts.length - 1] : "index.html";
 }
-function go(page) { window.location.replace(new URL(page, location.href).href); }
+function go(page) { window.location.replace(new URL("/" + page.replace(/^\//, ""), location.origin).href); }
 
 function aprovado(profile) { return !!profile && profile.conta_status === "aprovado"; }
 function rejeitada(profile) { return !!profile && profile.conta_status === "rejeitado"; }

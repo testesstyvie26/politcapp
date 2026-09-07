@@ -14,7 +14,7 @@ export const politappAuthReady = new Promise((res, rej) => {
 
 function loginUrlWithNext() {
   const path = (location.pathname.replace(/^\//, "") || "index.html") + location.search;
-  return "login.html?" + new URLSearchParams({ next: path }).toString();
+  return "/login.html?" + new URLSearchParams({ next: path }).toString();
 }
 
 function currentPageFile() {
