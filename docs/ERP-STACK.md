@@ -7,7 +7,8 @@ Nova camada do sistema para gestão de gabinetes políticos, executada em Cloudf
 - Build e automações: Node.js.
 - Interface: HTML/CSS/JavaScript modular em `erp/`.
 - Backend: Cloudflare Pages Functions em `functions/api/erp/`.
-- Banco operacional: Cloudflare D1, binding `ERP_DB`.
+- Banco operacional principal: MySQL via Cloudflare Hyperdrive, binding `ERP_MYSQL`.
+- Compatibilidade alternativa: Cloudflare D1, binding `ERP_DB`.
 - Identidade: autenticação Politapp existente, validada novamente no servidor.
 - RBAC: `admin`, `gestao` e `operacoes`, com autorização por módulo no backend.
 
@@ -15,14 +16,16 @@ Nova camada do sistema para gestão de gabinetes políticos, executada em Cloudf
 
 Visão geral, demandas e protocolos, cidadãos e lideranças, agenda institucional, projetos e entregas, comunicação, territórios, relatórios e administração/RBAC.
 
-## Ativação do banco
+## Ativação com MySQL
 
-1. Criar um banco D1 no projeto Cloudflare.
-2. Vincular o banco às Pages Functions com o nome `ERP_DB`.
-3. Executar a migração `sql/cloudflare-d1-erp.sql`.
+1. Executar `sql/mysql-erp.sql` no banco MySQL.
+2. Criar uma configuração Hyperdrive apontando para o MySQL.
+3. Vincular o Hyperdrive às Pages Functions com o nome `ERP_MYSQL`.
 4. Publicar novamente o projeto.
 
-Sem o binding, a interface abre em modo inicial e informa indicadores zerados; operações persistentes retornam uma mensagem de configuração pendente.
+O arquivo `sql/cloudflare-d1-erp.sql` permanece disponível somente para instalações que escolherem D1/SQLite. Não o execute no MySQL.
+
+Sem um dos bindings, a interface abre em modo inicial e informa indicadores zerados; operações persistentes retornam uma mensagem de configuração pendente.
 
 ## Segurança
 

@@ -44,7 +44,7 @@ jobs:
           test -f dist/_redirects
           test -f functions/api/google-start.js
           test -f functions/api/google-callback.js
-          npx --no-install wrangler pages functions build --outdir .wrangler/functions-build
+          npx --no-install wrangler pages functions build --compatibility-date 2026-09-07 --compatibility-flags nodejs_compat --outdir .wrangler/functions-build
 
       - name: Publicar no Cloudflare Pages
         id: cloudflare
