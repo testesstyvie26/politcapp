@@ -37,6 +37,7 @@ put -O "$REMOTE_DIR" favicon.svg
 mirror -R --verbose --delete ./php/auth    "$REMOTE_DIR/auth"
 mirror -R --verbose --delete ./php/lib     "$REMOTE_DIR/lib"
 mirror -R --verbose --delete ./php/files   "$REMOTE_DIR/files"
+mirror -R --verbose --delete ./php/api     "$REMOTE_DIR/api"
 mirror -R --verbose          ./php/storage "$REMOTE_DIR/storage"
 put -O "$REMOTE_DIR" php/.htaccess
 bye
