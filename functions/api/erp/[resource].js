@@ -1,5 +1,5 @@
 const AUTH_ME="https://cmbusinesstoken.com/politicapp/php/auth/me.php";
-const ACCESS={summary:["admin","gestao","operacoes"],tasks:["admin","gestao","operacoes"],demands:["admin","gestao","operacoes"],citizens:["admin","gestao","operacoes"],services:["admin","gestao","operacoes"],events:["admin","gestao","operacoes"],projects:["admin","gestao"],communications:["admin","gestao"],finances:["admin","gestao"],territories:["admin","gestao"],reports:["admin","gestao"],users:["admin"]};
+const ACCESS={summary:["admin","gestao","operacoes"],tasks:["admin","gestao","operacoes"],demands:["admin","gestao","operacoes"],citizens:["admin","gestao","operacoes"],services:["admin","gestao","operacoes"],events:["admin","gestao","operacoes"],projects:["admin","gestao"],"project-stages":["admin","gestao"],communications:["admin","gestao"],finances:["admin","gestao"],territories:["admin","gestao"],reports:["admin","gestao"],users:["admin"]};
 const MODELS={
   tasks:{table:"erp_tasks",fields:["title","description","status","priority","assigned_to","due_date"],required:"title",order:"CASE status WHEN 'fazendo' THEN 0 WHEN 'hoje' THEN 1 WHEN 'aguardando' THEN 2 WHEN 'concluida' THEN 3 ELSE 4 END, due_date",creator:true},
   finances:{table:"erp_financial",fields:["type","description","category","party","amount_cents","due_date","status","paid_at","notes"],required:"description",order:"due_date",creator:true},
@@ -7,7 +7,8 @@ const MODELS={
   demands:{table:"erp_demands",fields:["title","description","category","priority","status","citizen_id","assignee_id","due_at"],required:"title",order:"created_at DESC"},
   citizens:{table:"erp_citizens",fields:["name","email","phone","neighborhood","city","state","tags","consent_at"],required:"name",order:"name"},
   events:{table:"erp_events",fields:["title","description","starts_at","ends_at","location","owner_id","status"],required:"title",order:"starts_at"},
-  projects:{table:"erp_projects",fields:["title","description","status","owner_id","budget_cents","starts_at","due_at"],required:"title",order:"created_at DESC"},
+  projects:{table:"erp_projects",fields:["title","description","status","phase","sponsor","objective","scope","owner_id","budget_cents","progress","starts_at","due_at"],required:"title",order:"created_at DESC"},
+  "project-stages":{table:"erp_project_stages",fields:["project_id","phase","name","description","status","owner_id","starts_at","due_at","progress"],required:"name",order:"due_at, created_at",creator:true},
   communications:{table:"erp_communications",fields:["title","channel","status","content","scheduled_at","owner_id"],required:"title",order:"created_at DESC"}
 };
 function response(data,status=200){return Response.json(data,{status,headers:{"Cache-Control":"no-store"}})}

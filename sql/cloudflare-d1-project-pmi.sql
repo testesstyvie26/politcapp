@@ -1,0 +1,11 @@
+PRAGMA foreign_keys = ON;
+ALTER TABLE erp_projects ADD COLUMN phase TEXT NOT NULL DEFAULT 'iniciacao';
+ALTER TABLE erp_projects ADD COLUMN sponsor TEXT;
+ALTER TABLE erp_projects ADD COLUMN objective TEXT DEFAULT '';
+ALTER TABLE erp_projects ADD COLUMN scope TEXT DEFAULT '';
+ALTER TABLE erp_projects ADD COLUMN progress INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE erp_projects ADD COLUMN updated_at TEXT;
+CREATE TABLE IF NOT EXISTS erp_project_stages(id TEXT PRIMARY KEY,office_id TEXT NOT NULL,project_id TEXT NOT NULL REFERENCES erp_projects(id) ON DELETE CASCADE,phase TEXT NOT NULL,name TEXT NOT NULL,description TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'pendente',owner_id TEXT,starts_at TEXT,due_at TEXT,progress INTEGER NOT NULL DEFAULT 0,created_by TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX IF NOT EXISTS idx_erp_project_stages_project ON erp_project_stages(office_id,project_id,due_at);
+CREATE TABLE IF NOT EXISTS erp_project_files(id TEXT PRIMARY KEY,office_id TEXT NOT NULL,project_id TEXT NOT NULL REFERENCES erp_projects(id) ON DELETE CASCADE,stage_id TEXT REFERENCES erp_project_stages(id) ON DELETE CASCADE,object_key TEXT NOT NULL,file_name TEXT NOT NULL,content_type TEXT NOT NULL,size_bytes INTEGER NOT NULL,uploaded_by TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX IF NOT EXISTS idx_erp_project_files_project ON erp_project_files(office_id,project_id,stage_id);
