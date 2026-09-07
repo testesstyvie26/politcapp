@@ -6,7 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
 const folders = ['css', 'data', 'docs', 'erp', 'js', 'vendor'];
 const rootFiles = ['favicon.svg', 'CNAME', 'tse-votos-2022.js'];
-const assetVersion = '20260907-7';
+const assetVersion = '20260907-8';
 
 // Remove e cria dist
 await rm(output, { recursive: true, force: true });
@@ -45,7 +45,7 @@ for (const file of rootFiles) {
 }
 
 // Escrever _headers e _redirects no dist
-await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  X-Frame-Options: SAMEORIGIN\n\n/css/*\n  Cache-Control: public, max-age=604800\n\n/js/*\n  Cache-Control: public, max-age=604800\n\n/data/*\n  Cache-Control: public, max-age=3600\n`, 'utf8');
+await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  X-Frame-Options: SAMEORIGIN\n\n/css/*\n  Cache-Control: public, max-age=604800\n\n/js/*\n  Cache-Control: public, max-age=604800\n\n/data/*\n  Cache-Control: public, max-age=3600\n\n/erp/*\n  Cache-Control: no-cache, no-store, must-revalidate\n`, 'utf8');
 
 await writeFile(path.join(output, '_redirects'), `/ /landing-app.html 302\n/inicio /landing-app.html 302\n/entrar /login.html 302\n/app /index.html 302\n`, 'utf8');
 
