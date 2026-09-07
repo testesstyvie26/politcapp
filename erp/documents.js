@@ -5,6 +5,14 @@ const COLUMNS = [
   ["arquivado", "Arquivados", "Histórico"],
 ];
 
+if (!document.querySelector('link[data-documents-ux]')) {
+  const stylesheet = document.createElement("link");
+  stylesheet.rel = "stylesheet";
+  stylesheet.href = "/erp/documents-ux.css?v=20260907-13";
+  stylesheet.dataset.documentsUx = "true";
+  document.head.append(stylesheet);
+}
+
 const formatSize = value => {
   const bytes = Number(value || 0);
   if (bytes < 1024) return `${bytes} B`;
@@ -44,8 +52,11 @@ export async function renderDocuments({ view, token, toast, role }) {
 
   const controls = node("div", "documents-controls");
   const search = document.createElement("input"); search.type = "search"; search.placeholder = "Buscar por título, categoria ou arquivo"; search.setAttribute("aria-label", "Buscar documentos");
+  const statusFilter = document.createElement("select"); statusFilter.setAttribute("aria-label", "Filtrar por situação");
+  statusFilter.append(new Option("Todas as situações", ""), ...COLUMNS.map(([value, label]) => new Option(label, value)));
   const totals = node("span", "documents-total", "Carregando…");
-  controls.append(search, totals);
+  const filters = node("div", "documents-filters"); filters.append(search, statusFilter);
+  controls.append(filters, totals);
   const board = node("div", "documents-board");
   view.append(intro, controls, board);
 
@@ -109,7 +120,8 @@ export async function renderDocuments({ view, token, toast, role }) {
 
   function render() {
     const term = search.value.trim().toLocaleLowerCase("pt-BR");
-    const visible = documents.filter(item => `${item.titulo} ${item.categoria || ""} ${item.nome_arquivo || ""}`.toLocaleLowerCase("pt-BR").includes(term));
+    const selectedStatus = statusFilter.value;
+    const visible = documents.filter(item => (!selectedStatus || item.status === selectedStatus) && `${item.titulo} ${item.categoria || ""} ${item.nome_arquivo || ""}`.toLocaleLowerCase("pt-BR").includes(term));
     totals.textContent = `${visible.length} documento${visible.length === 1 ? "" : "s"}`; board.replaceChildren();
     for (const [status, label, description] of COLUMNS) {
       const column = node("section", `document-column status-${status}`); column.dataset.status = status;
@@ -130,7 +142,11 @@ export async function renderDocuments({ view, token, toast, role }) {
         const updated = node("small", "document-updated", `Atualizado ${formatDate(item.updated_at)}`);
         const actions = node("div", "document-card-actions"); const details = node("button", "secondary", "Ver versões"); details.type = "button"; details.onclick = () => openDetails(item); actions.append(details);
         if (item.version_id) { const latest = node("button", "secondary", "↓"); latest.type = "button"; latest.title = "Baixar versão atual"; latest.onclick = () => download({ id: item.version_id, nome_arquivo: item.nome_arquivo }); actions.append(latest); }
-        card.append(category, open, file, meta, updated, actions); cards.append(card);
+        const moveLabel = node("label", "document-move"); moveLabel.append(node("span", "", "Mover para"));
+        const moveSelect = document.createElement("select"); moveSelect.setAttribute("aria-label", `Mover ${item.titulo}`);
+        for (const [value, columnLabel] of COLUMNS) { const option = new Option(columnLabel, value); option.selected = value === item.status; moveSelect.append(option); }
+        moveSelect.onchange = () => move(item.id, moveSelect.value); moveLabel.append(moveSelect);
+        card.append(category, open, file, meta, updated, moveLabel, actions); cards.append(card);
       }
       if (!entries.length) cards.append(node("p", "document-empty", "Arraste um documento para esta etapa")); column.append(cards); board.append(column);
     }
@@ -144,6 +160,6 @@ export async function renderDocuments({ view, token, toast, role }) {
   }
 
   search.oninput = render;
+  statusFilter.onchange = render;
   await load();
 }
-

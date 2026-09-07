@@ -1,0 +1,6 @@
+#erpMenu .menu-section{display:block;margin:13px 10px 5px;color:#60728f;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+#erpMenu .menu-section:first-child{margin-top:4px}
+#erpMenu button.active .menu-icon{background:linear-gradient(135deg,#367bf5,#7458e8);color:#fff;box-shadow:0 4px 13px rgba(54,123,245,.3)}
+#erpMenu button.active .menu-label{font-weight:700}
+#erpMenu button[data-module="documents"] .menu-icon{color:#ffd477;background:#302817}
+#erpMenu button[data-module="documents"].active .menu-icon{color:#111827;background:linear-gradient(135deg,#f4b942,#ffe19a)}
